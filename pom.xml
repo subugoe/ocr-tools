@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.uni-goettingen.sub</groupId>
+	<artifactId>ocr-tools</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>abbyy-ticket</module>
+	</modules>
+	<developers>
+		<developer>
+			<id>cmahnke</id>
+			<name>Christian Mahnke</name>
+			<email>mahnke@sub.uni-goettingen.de</email>
+			<roles>
+			</roles>
+		</developer>
+	</developers>
+	<organization>
+		<name>SUB Göttingen</name>
+		<url>http://www.sub.uni-goettingen.de</url>
+	</organization>
+	<distributionManagement>
+		<repository>
+			<id>archiva.internal</id>
+			<name>Internal Release Repository</name>
+			<url>https://repository.bibforge.org/archiva/repository/internal</url>
+		</repository>
+		<snapshotRepository>
+			<id>archiva.snapshots</id>
+			<name>Internal Snapshot Repository</name>
+			<url>https://repository.bibforge.org/archiva/repository/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<repositories>
+		<repository>
+			<id>archiva.internal.http</id>
+			<name>Archiva Managed Internal Repository</name>
+			<url>http://repository.bibforge.org/archiva/repository/internal</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>archiva.snapshots.http</id>
+			<name>Archiva Managed Snapshot Repository</name>
+			<url>http://repository.bibforge.org/archiva/repository/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<ciManagement>
+		<system>hudson</system>
+		<url>https://ci.bibforge.org/hudson/job/locbeans/</url>
+		<notifiers>
+			<notifier>
+				<type>mail</type>
+				<sendOnError>true</sendOnError>
+				<sendOnFailure>true</sendOnFailure>
+				<sendOnSuccess>false</sendOnSuccess>
+				<sendOnWarning>false</sendOnWarning>
+				<configuration>
+					<address>mahnke@sub.uni-goettingen.de</address>
+				</configuration>
+			</notifier>
+		</notifiers>
+	</ciManagement>
+</project>
