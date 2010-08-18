@@ -6,6 +6,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>abbyy-ticket</module>
+		<module>ocr-cli</module>
 	</modules>
 	<developers>
 		<developer>
