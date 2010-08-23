@@ -19,12 +19,21 @@ public class OCRProcess {
 	public void addLanguage(Locale locale) {
 		langs.add(locale);
 	}
+	/**
+	 * remove language from the list
+	 */
 	public void removeLanguage(Locale locale) {
 		langs.remove(locale);
 	}
+	/**
+	 * add Format in the list
+	 */
 	public void addOCRFormat(OCRFormat format) {
 		enums.add(format);
     }
+	/**
+	 * remove Format from the list
+	 */
 	public void removeOCRFormat(OCRFormat format) {
 		int i = enums.indexOf(format);
 		if (i>=0){
