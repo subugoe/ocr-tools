@@ -51,7 +51,7 @@
 			<name>Archiva Managed Snapshot Repository</name>
 			<url>http://repository.bibforge.org/archiva/repository/snapshots</url>
 			<releases>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
