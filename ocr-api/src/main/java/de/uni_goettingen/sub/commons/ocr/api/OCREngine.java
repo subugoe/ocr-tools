@@ -2,17 +2,44 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 import java.util.Observer;
 
+
+/**
+ * The Interface OCREngine.
+ */
 public interface OCREngine {
 
 	
-	  public void recognize ();
+	  /**
+  	 * Recognize.
+  	 */
+  	public void recognize ();
 	
-	  public void setOCRProcess(OCRProcess process);
+	  /**
+  	 * Sets the oCR process.
+  	 *
+  	 * @param process the new oCR process
+  	 */
+  	public void setOCRProcess(OCRProcess process);
 
-	  public OCRProcess getOCRProcess();
+	  /**
+  	 * Gets the oCR process.
+  	 *
+  	 * @return the oCR process
+  	 */
+  	public OCRProcess getOCRProcess();
 
-	  public OCROutput getResult();
+	  /**
+  	 * Gets the result.
+  	 *
+  	 * @return the result
+  	 */
+  	public OCROutput getResult();
 
-	  public void setObserver(Observer observer);
+	  /**
+  	 * Sets the observer.
+  	 *
+  	 * @param observer the new observer
+  	 */
+  	public void setObserver(Observer observer);
 	  	  
 }
