@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>ocr-tools</artifactId>
@@ -59,4 +60,51 @@
 			</plugin>
 		</plugins>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
+				<reportSets>
+					<reportSet>
+						<id>non-aggregate</id>
+						<configuration>
+							<show>package</show>
+							<version>true</version>
+							<javadocVersion>${source.version}</javadocVersion>
+							<failOnError>false</failOnError>
+							<linksource>true</linksource>
+							<serialwarn>true</serialwarn>
+							<detectLinks />
+							<links>
+								<link>http://java.sun.com/javase/6/docs/api/</link>
+								<link>http://java.sun.com/j2ee/1.4/docs/api/</link>
+
+								<link>
+									http://download.eclipse.org/modeling/mdt/uml2/javadoc/2.2.2/
+</link>
+
+								<link>
+									http://jakarta.apache.org/commons/collections/apidocs
+</link>
+								<link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+								<link>http://www.junit.org/junit/javadoc/</link>
+								<link>http://logging.apache.org/log4j/docs/api/</link>
+								<link>http://jakarta.apache.org/regexp/apidocs/</link>
+								<link>http://velocity.apache.org/engine/devel/apidocs/</link>
+							</links>
+							<detectOfflineLinks>false</detectOfflineLinks>
+						</configuration>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+				<configuration>
+					<!-- Generated sources are in ${basedir}/target/generated-sources/xmlbeans/ -->
+					<sourcepath>${basedir}/target/generated-sources/xmlbeans/</sourcepath>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
