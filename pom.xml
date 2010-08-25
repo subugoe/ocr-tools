@@ -60,7 +60,7 @@
 	</repositories>
 	<ciManagement>
 		<system>hudson</system>
-		<url>https://ci.bibforge.org/hudson/job/locbeans/</url>
+		<url>https://ci.bibforge.org/hudson/job/massenDigiMathe/</url>
 		<notifiers>
 			<notifier>
 				<type>mail</type>
@@ -74,4 +74,31 @@
 			</notifier>
 		</notifiers>
 	</ciManagement>
+	<build>
+		<defaultGoal>package</defaultGoal>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+					<fork>true</fork>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkMode>pertest</forkMode>
+					<argLine>-Xms256m -Xmx512m</argLine>
+					<testFailureIgnore>false</testFailureIgnore>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
