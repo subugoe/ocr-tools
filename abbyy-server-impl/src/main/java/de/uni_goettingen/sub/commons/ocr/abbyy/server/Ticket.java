@@ -127,15 +127,16 @@ public class Ticket extends OCRProcess{
 		
 		//Integer OCRTimeOut = engineConfig.getInputFiles().size() * 1000 * secondsPerImage;
 		Integer OCRTimeOut = getInputFiles().size() * millisPerFile;
-		
+		System.out.println("SAA" + getInputFiles().size());
 		//TODO: this doesn't seem to work
-		/*
+		System.out.println("SAA" + millisPerFile);
 		if (maxOCRTimeout < OCRTimeOut) {
+			System.out.print("Salut" + OCRTimeOut);
 			throw new IllegalStateException("Calculated OCR Timeout to high: " + OCRTimeOut);
 		}
-		
+		System.out.print("Salut1" + OCRTimeOut);
 		ticket.setOCRTimeout(BigInteger.valueOf(OCRTimeOut));
-		*/
+		
 		//TODO: The Method doesn't return anything yet
 		for (OCRProcess params : getInputFiles()) {
 			InputFile inputFile = ticket.addNewInputFile();
@@ -181,7 +182,7 @@ public class Ticket extends OCRProcess{
 			exportFormat.setOutputFlowType("SharedFolder");
 			exportFormat.setOutputFileFormat(ef.name());
 		
-			//exportFormat.setNamingRule(TicketHelper.getName(ef.name()));
+			//exportFormat.setNamingRule(TicketHelper.getName(getDefaultParams().getEnums().add(ef));
 			//exportFormat.setOutputLocation(TicketHelper.getLocation(ef.name()));
 			
 			settings[i] = exportFormat;
@@ -221,23 +222,9 @@ public class Ticket extends OCRProcess{
 		
 	}
 	
-	/*public String finereadLanguage(String language){
-		
-		langMapping = new HashMap<Locale, String>();
-    	langMapping.put(Locale.GERMAN, "German");
-		//langMapping.put(Locale.RUSSIAN, "Russian");
-		langMapping.put(Locale.ENGLISH, "English");
-		
-    	if (language.toLowerCase().equals("german")) {
-	    	language = "German";
-	    } else if (language.toLowerCase().equals("english")) {
-	    	language = "English";
-	    } 
-    	
-		return language;
-    }*/
+
 	
-/*	
+	
 	public OCRProcess getDefaultParams() {
 		if (defaultParams != null) {
 			return new OCRProcess(defaultParams);
@@ -245,11 +232,11 @@ public class Ticket extends OCRProcess{
 			return null;
 		}
 	}
-	*/
 	public List<OCRProcess> getInputFiles() {
 		return inputFiles;
 	}
-
+	
+	
 	
 	
 	

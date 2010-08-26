@@ -4,6 +4,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,12 +119,12 @@ public class OCRProcess {
 	 *
 	 * @param file the new file
 	 */
-/*
-	public void setFile(File file) {
+
+	/*public void setFile(File file) {
 		this.file = file.getAbsolutePath();
 	}
-	
 	*/
+	
 	/**
 	 * Sets the file.
 	 *
@@ -150,7 +151,7 @@ public class OCRProcess {
 	 * @return the enums
 	 */
 	public List<OCRFormat> getEnums() {
-		return enums;
+		return new ArrayList<OCRFormat> (enums);
 	}
 
 	/**
