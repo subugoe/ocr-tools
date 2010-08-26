@@ -3,7 +3,7 @@
  * @author Christian Mahnke
  * @version 1.0
  */
-package de.unigoettingen.sub.gdz.ocr.server;
+package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -76,16 +76,18 @@ import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+/*
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
+*/
 
 import de.unigoettingen.sub.gdz.ocr.simple.OCR;
 import de.unigoettingen.sub.gdz.ocr.simple.OCRExportFormat;
 import de.unigoettingen.sub.gdz.ocr.simple.OCRUtils;
 
-public class OCRRunner extends Thread implements OCRRunnerMBean {
+public class OCRCli {
 	//TODO: Test if languages are handled correctly
 	public final static String version = "0.0.4";
 
@@ -195,7 +197,7 @@ public class OCRRunner extends Thread implements OCRRunnerMBean {
 		opts.addOption("o", true, "Output folder");
 	}
 
-	private OCRRunner() {
+	private OCRCli() {
 		initOpts();
 	}
 
