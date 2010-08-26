@@ -157,11 +157,11 @@ public class OCRCli {
 	protected static Long totalFileSize = 0l;
 
 	//OCR Processes
-	Queue<OCRProcess> processes = new ConcurrentLinkedQueue<OCRProcess>();
+	//Queue<OCRProcess> processes = new ConcurrentLinkedQueue<OCRProcess>();
 
 	//Persistence related stuff
-	protected static SessionFactory sessionFactory;
-	protected Session session; 
+	//protected static SessionFactory sessionFactory;
+	//protected Session session; 
 	
 	//Cleanup related stuff
 	protected static Boolean emptyError = true;
@@ -826,117 +826,14 @@ public class OCRCli {
 
 
 	//Interface for stream handling to be able to plug in a XSLT Processor for example
+	//TODO: This should be a seperate interface as part of the API module
+	/*
 	public interface OCRStreamHandler {
 		public void setStream(InputStream is);
 
 		public void handle() throws IOException;
 	}
+*/
 
-
-	//TODO: Test this executor
-	//Executor that checks for Server constrains
-	public class OCRExecuter extends ThreadPoolExecutor implements Executor {
-		// TODO: Review:
-		// http://www.jboss.org/file-access/default/members/netty/freezone
-		// /api/3.0/org
-		// /jboss/netty/handler/execution/MemoryAwareThreadPoolExecutor.html
-		public Integer maxThreads;
-
-		private boolean isPaused;
-		private ReentrantLock pauseLock = new ReentrantLock();
-		private Condition unpaused = pauseLock.newCondition();
-
-		public OCRExecuter(Integer maxThreads) {
-			super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-			this.maxThreads = maxThreads;
-		}
-
-		@Override
-		protected void beforeExecute(Thread t, Runnable r) {
-			super.beforeExecute(t, r);
-			if (r instanceof OCRProcess) {
-				OCRProcess process = (OCRProcess) r;
-				saveCheckServerState();	
-				if (maxFiles != 0 && maxSize != 0) {
-					if (process.getFileCount() + totalFileCount > maxFiles || process.getFileSize() + totalFileSize > maxSize) {
-						pause();
-					}
-				}
-
-			} else {
-				throw new IllegalStateException("Not a OCRProcess object");
-			}
-
-			pauseLock.lock();
-			try {
-				while (isPaused) {
-					unpaused.await();
-				}
-			} catch (InterruptedException ie) {
-				t.interrupt();
-			} finally {
-				pauseLock.unlock();
-			}
-		}
-
-		@Override
-		protected void afterExecute(Runnable r, Throwable e) {
-			super.afterExecute(r, e);
-			if (r instanceof OCRProcess) {
-				OCRProcess process = (OCRProcess) r;
-				saveCheckServerState();
-				if (maxFiles != 0 && maxSize != 0) {
-					if (process.getFileCount() + totalFileCount < maxFiles || process.getFileSize() + totalFileSize < maxSize) {
-						pause();
-					}
-				}
-
-			} else {
-				throw new IllegalStateException("Not a OCRProcess object");
-			}
-		}
-
-		//TODO: Check if this stops only the processing of the pool or all threads containt in it
-		public void pause() {
-			pauseLock.lock();
-			try {
-				isPaused = true;
-			} finally {
-				pauseLock.unlock();
-			}
-		}
-
-		public void resume() {
-			pauseLock.lock();
-			try {
-				isPaused = false;
-				unpaused.signalAll();
-			} finally {
-				pauseLock.unlock();
-			}
-		}
-
-		//TODO: This should be removed
-		protected synchronized void saveCheckServerState () {
-			try {
-				checkServerState();
-			} catch (Exception e) {
-				logger.warn("Exception checking server State", e);
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-
-	public Long getDirectoryCount() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public void finalize () {
-		session.close();
-		sessionFactory.close();
-	}
 	
 }
