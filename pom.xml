@@ -17,6 +17,13 @@
 			<roles>
 			</roles>
 		</developer>
+			<developer>
+			<id>abergna</id>
+			<name>Mohamed Abergna</name>
+			<email>abergna@sub.uni-goettingen.de</email>
+			<roles>
+			</roles>
+		</developer>
 	</developers>
 	<organization>
 		<name>SUB Göttingen</name>
