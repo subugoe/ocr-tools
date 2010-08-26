@@ -28,17 +28,12 @@ public class TicketTest {
 
 	private Ticket ticket;
 	private static File basefolderFile;
-	public static URL basefolder;
+
 	
 	static {
 		/* base folder with tests */
 		basefolderFile = getBaseFolderAsFile();
-		try {
-			basefolder = basefolderFile.toURI().toURL();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 	}
 	/*@Test
 	public void testWrite () {
@@ -66,9 +61,9 @@ public class TicketTest {
 		ocrp.addOCRFormat(OCRFormat.PDF);
 		List<OCRProcess> inputFiles = new ArrayList<OCRProcess>();
 		//ocrp.getFile();
-		assertNotNull("base path is null", basefolder);
-		URL ticketUrl = new URL(basefolder.toString() + "ticket.xml");
-		File file = new File(ticketUrl.toString());
+		assertNotNull("base path is null", basefolderFile);
+		//URL ticketUrl = new URL(basefolder.toString() + );
+		File file = new File(basefolderFile.getAbsolutePath() + "ticket.xml");
 		//OCRImage ocri = new OCRImage(new File("C:/Test/TestB.tif/").toURI().toURL());
 		OCRImage ocri = new OCRImage(new File("/tmp").toURI().toURL());
 		
