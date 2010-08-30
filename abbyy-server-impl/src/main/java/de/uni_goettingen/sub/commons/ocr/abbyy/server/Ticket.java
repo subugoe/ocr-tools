@@ -53,8 +53,7 @@ public class Ticket extends OCRProcess{
 	//protected Integer secondsPerImage = 5;
 	protected Integer millisPerFile = 1200;
 	protected String language;
-	Map<Locale, String> langMapping = new HashMap<Locale, String>();
-	
+	protected static  String outPutLocation;
 	
 	
 	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
@@ -62,7 +61,7 @@ public class Ticket extends OCRProcess{
 	protected static OCRFormat PDF = OCRFormat.PDF;
 	protected static OCRFormat TXT = OCRFormat.TXT;
 	
-	private List<OCRProcess> inputFiles = new ArrayList<OCRProcess>();
+	private static List<File> inputFiles = new ArrayList<File>();
 	/** The opts. */
 	protected static XmlOptions opts = new XmlOptions();
 	
@@ -106,17 +105,18 @@ public class Ticket extends OCRProcess{
 		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.PDFA, null);
 		
+		/*inputFiles.add(new File("C:/Test/515-00000001.tif/"));
+		inputFiles.add(new File("C:/Test/515-00000002.tif/"));
+		inputFiles.add(new File("C:/Test/515-00000003.tif/"));
+		inputFiles.add(new File("C:/Test/515-00000004.tif/"));
+		inputFiles.add(new File("C:/Test/515-00000005.tif/"));*/
 	}
 	
 	public Ticket(OCRProcess params) {
 		super(params);
 		// TODO Auto-generated constructor stub
 	}
-	/*
-	public Ticket() {
-		// TODO Auto-generated constructor stub
-	}
-*/
+	
 	public void write(File ticketFile) throws IOException {
 		if (ticketFile == null) {
 			throw new IllegalStateException();
@@ -127,20 +127,20 @@ public class Ticket extends OCRProcess{
 		
 		//Integer OCRTimeOut = engineConfig.getInputFiles().size() * 1000 * secondsPerImage;
 		Integer OCRTimeOut = getInputFiles().size() * millisPerFile;
-		System.out.println("SAA" + getInputFiles().size());
+		
 		//TODO: this doesn't seem to work
-		System.out.println("SAA" + millisPerFile);
+		
 		if (maxOCRTimeout < OCRTimeOut) {
-			System.out.print("Salut" + OCRTimeOut);
+		
 			throw new IllegalStateException("Calculated OCR Timeout to high: " + OCRTimeOut);
 		}
-		System.out.print("Salut1" + OCRTimeOut);
+		
 		ticket.setOCRTimeout(BigInteger.valueOf(OCRTimeOut));
 		
 		//TODO: The Method doesn't return anything yet
-		for (OCRProcess params : getInputFiles()) {
+		for (File f : getInputFiles()) {
 			InputFile inputFile = ticket.addNewInputFile();
-			String file = params.getFile();
+			String file = f.getName();
 			inputFile.setName(file);
 			//TODO: 
 			//logger.trace("Datei " + file + "hinzugefŸgt");
@@ -150,18 +150,15 @@ public class Ticket extends OCRProcess{
 		imageProcessingParams.setDeskew(false);
 
 		RecognitionParams recognitionParams = ticket.addNewRecognitionParams();
-		//TODO:  Language
-		langMapping.put(Locale.GERMAN, "German");
-		//langMapping.put(Locale.RUSSIAN, "Russian");
-		langMapping.put(Locale.ENGLISH, "English");
 		
-		for (Locale l : langMapping.keySet()) {
+		
+		for (Locale l : langs) {
 
-			if (langMapping.get(l) == null) {
+			if (langs == null) {
 				//TODO
 			//	throw new OCRLanguageException();
 			}
-			recognitionParams.addLanguage(langMapping.get(l));
+			recognitionParams.addLanguage(l.getLanguage());
 		}
 		
 		ExportParams exportParams = ticket.addNewExportParams();
@@ -170,7 +167,7 @@ public class Ticket extends OCRProcess{
 		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[FORMAT_FRAGMENTS.size()-4];
 		Integer i = 0;
 		//TODO: 
-		for (OCRFormat ef : OCRFormat.values()) {
+		for (OCRFormat ef : FORMAT_FRAGMENTS.keySet()) {
 			
 			//OutputFileFormatSettings exportFormat = exportParams.addNewExportFormat();
 			
@@ -182,8 +179,9 @@ public class Ticket extends OCRProcess{
 			exportFormat.setOutputFlowType("SharedFolder");
 			exportFormat.setOutputFileFormat(ef.name());
 		
-			//exportFormat.setNamingRule(TicketHelper.getName(getDefaultParams().getEnums().add(ef));
-			//exportFormat.setOutputLocation(TicketHelper.getLocation(ef.name()));
+			exportFormat.setNamingRule(TicketHelper.getOutputName(getInputFiles().toString())+ "." + ef.name().toLowerCase());
+			//exportFormat.setNamingRule(TicketHelper.getName(ef.name()));
+			exportFormat.setOutputLocation(getOutPutLocation());
 			
 			settings[i] = exportFormat;
 			i++;
@@ -205,6 +203,12 @@ public class Ticket extends OCRProcess{
 		//TODO catch Exceptions
 		
 		static Pattern p = Pattern.compile("(.*)\\\\(.*)");
+		static Pattern n = Pattern.compile("(\\d.\\d*)");
+		static public String getOutputName(String str){
+			Matcher m = n.matcher(str);
+			m.find();
+			return m.group(1);
+		}
 		
 		static public String getName (String str) {
 			Matcher m = p.matcher(str);
@@ -232,8 +236,20 @@ public class Ticket extends OCRProcess{
 			return null;
 		}
 	}
-	public List<OCRProcess> getInputFiles() {
+	public List<File> getInputFiles() {
 		return inputFiles;
+	}
+	
+	
+	
+	public static void setInputFiles(List<File> inputFiles) {
+		Ticket.inputFiles = inputFiles;
+	}
+	public  String getOutPutLocation() {
+		return outPutLocation;
+	}
+	public  void setOutPutLocation(String outPutLocation) {
+		Ticket.outPutLocation = outPutLocation;
 	}
 	
 	
