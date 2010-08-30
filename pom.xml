@@ -17,7 +17,7 @@
 			<roles>
 			</roles>
 		</developer>
-			<developer>
+		<developer>
 			<id>abergna</id>
 			<name>Mohamed Abergna</name>
 			<email>abergna@sub.uni-goettingen.de</email>
@@ -94,6 +94,26 @@
 					<testFailureIgnore>false</testFailureIgnore>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>argouml-maven-plugin</artifactId>
+				<version>1.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>transform</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<inputFiles>
+						<file>${project.basedir}/src/main/resources</file>
+					</inputFiles>
+					<outputDirectory>${project.build.directory}/site/images</outputDirectory>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<distributionManagement>
@@ -112,4 +132,16 @@
 			<url>dav:http://develop.sub.uni-goettingen.de/maven-sites/${project.groupId}/ocr-tools-${project.version}</url>
 		</site>
 	</distributionManagement>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>Codehaus Snapshots</id>
+			<url>http://snapshots.repository.codehaus.org/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>  <!-- Workaround for MNG-2974, see note below -->
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
