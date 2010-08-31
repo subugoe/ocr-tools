@@ -94,7 +94,7 @@
 					<testFailureIgnore>false</testFailureIgnore>
 				</configuration>
 			</plugin>
-
+<!-- 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>argouml-maven-plugin</artifactId>
@@ -114,6 +114,7 @@
 					<outputDirectory>${project.build.directory}/site/images</outputDirectory>
 				</configuration>
 			</plugin>
+-->
 		</plugins>
 	</build>
 	<distributionManagement>
