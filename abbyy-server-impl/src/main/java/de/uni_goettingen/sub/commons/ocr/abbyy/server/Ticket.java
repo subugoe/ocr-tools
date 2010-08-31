@@ -143,7 +143,6 @@ public class Ticket extends OCRProcess{
 			String file = f.getName();
 			inputFile.setName(file);
 			//TODO: 
-			//logger.trace("Datei " + file + "hinzugefügt");
 		}
 
 		ImageProcessingParams imageProcessingParams = ticket.addNewImageProcessingParams();
