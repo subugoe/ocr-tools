@@ -4,8 +4,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 
 
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -22,16 +20,16 @@ public class OCRProcess {
 	private String file;
 	
 	/** The langs. Language */
-	List<Locale> langs = new ArrayList<Locale>();
+	protected List<Locale> langs = new ArrayList<Locale>();
 	
 	/** The enums. */
-	List<OCRFormat> enums = new ArrayList<OCRFormat>();
+	protected List<OCRFormat> enums = new ArrayList<OCRFormat>();
 	
 	/** The ocr image. */
-	List<OCRImage> ocrImage = new ArrayList<OCRImage>();
+	protected List<OCRImage> ocrImage = new ArrayList<OCRImage>();
 	
 	/** The ocr output. */
-	List<OCROutput> ocrOutput = new ArrayList<OCROutput>();
+	protected List<OCROutput> ocrOutput = new ArrayList<OCROutput>();
 	
 	
 	
