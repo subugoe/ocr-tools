@@ -8,38 +8,32 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import java.io.File;
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.XMLConfiguration;
+
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
-
 public class OCRCli {
-	//TODO: Test if languages are handled correctly
+	
 	public final static String version = "0.0.4";
-/*
-	//TODO: Check if this could be static
-	protected HttpClient client;*/
-	protected static Logger logger = LoggerFactory.getLogger(de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli.class);
+	
+	protected static Logger logger = LoggerFactory
+			.getLogger(de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli.class);
 
 	private static Options opts = new Options();
-	
 
 	protected static String localOutputDir = null;
 	protected static String extension = "tif";
@@ -47,23 +41,15 @@ public class OCRCli {
 	protected List<File> directories = new ArrayList<File>();
 	protected List<Locale> langs;
 	protected HierarchicalConfiguration config;
-	public String defaultConfig = "server-config.xml";
-	//Settings for Ticket creation
+	//public String defaultConfig = "server-config.xml";
+	// Settings for Ticket creation
 	protected Boolean recursiveMode = true;
-	//TODO: Try to move this stuff to the OCRProcess
+	String[] args;
 	protected static Boolean writeRemotePrefix = true;
 
-	
-	//Options
-	//TODO: Merge with OCR.java (make OCR.jave the base class for this stuff)
-	//TODO: Check if needed (mostly the output file stuff)
-	//TODO make this static or add a metod for ading this to a aprocess
-	/*protected HashMap<OCRFormat, String> of = new HashMap<OCRFormat, String>();
-	protected HashMap<OCRExportFormat, List<String>> ofo = new HashMap<OCRExportFormat, List<String>>();*/
-	List<OCRFormat> of = new ArrayList<OCRFormat>();
-	
+	private static OCRCli _instance;
 
-	
+	List<OCRFormat> of = new ArrayList<OCRFormat>();
 
 	protected static void initOpts() {
 		// Parameters
@@ -71,27 +57,93 @@ public class OCRCli {
 		opts.addOption("ofn", true, "Output filename / directory");
 		opts.addOption("of", true, "Output format");
 
-		/*Option ofo = OptionBuilder.withArgName("format:option").hasArg().withValueSeparator().withDescription("Output format options").create("ofo");
-
-		opts.addOption(ofo);*/
+		
 		opts.addOption("l", true, "Languages - seperated by \",\"");
 		opts.addOption("h", false, "Help");
 		opts.addOption("v", false, "Version");
-		//opts.addOption("lc", true, "Logger Configuration");
+		// opts.addOption("lc", true, "Logger Configuration");
 		opts.addOption("d", true, "Debuglevel");
-		opts.addOption("c", true, "Configuration file (optional)");
+		//opts.addOption("c", true, "Configuration file (optional)");
 		opts.addOption("e", true, "File extension (default \"tif\")");
 		opts.addOption("o", true, "Output folder");
 	}
 
-	private OCRCli() {
-		initOpts();
+	public static void main(String[] args) throws Exception {
+		logger.info("Creating OCRRunner instance");
+		OCRCli ocr = OCRCli.getInstance();
+		ocr.configureFromArgs(args);
+
+		//System.exit(0);
 	}
 
-	public static List<Locale> parseLangs (String str) {
+	public void configureFromArgs(String[] args) {
+		List<String> files = defaultOpts(args);
+		//loadConfig(config);
+		if (recursiveMode) {
+			List<File> newFiles = new ArrayList<File>();
+			for (String dir : files) {
+				newFiles.addAll(getImageDirectories(new File(dir)));
+			}
+			files = new ArrayList<String>();
+			for (File dir : newFiles) {
+				files.add(dir.getAbsolutePath());
+			}
+		}
+
+		for (String path : files) {
+			File file = new File(path);
+			if (file.isDirectory()) {
+				directories.add(file);
+
+
+			} else {
+				logger.error(path + " is not a directory!");
+			}
+		}
+
+		
+	}
+	public static List<File> getImageDirectories(File dir) {
+		List<File> dirs = new ArrayList<File>();
+
+		if (OCRUtils.makeFileList(dir, extension).size() > 0) {
+			dirs.add(dir);
+		}
+
+		List<File> fileList;
+		if (dir.isDirectory()) {
+			fileList = Arrays.asList(dir.listFiles());
+			for (File file : fileList) {
+				if (file.isDirectory()) {
+					List<File> files = OCRUtils.makeFileList(dir, extension);
+					if (files.size() > 0) {
+						dirs.addAll(files);
+					} else {
+						dirs.addAll(getImageDirectories(file));
+					}
+				}
+			}
+		} else {
+			throw new IllegalStateException(dir.getAbsolutePath() + " is not a directory");
+		}
+		return dirs;
+	}
+	public static OCRCli getInstance() {
+		if (_instance == null) {
+			_instance = new OCRCli();
+		}
+		return _instance;
+	}
+	
+	public OCRCli() {
+		initOpts();
+		
+	}
+
+	public static List<Locale> parseLangs(String str) {
 		List<Locale> langs = new ArrayList<Locale>();
 		if (str.contains(",")) {
-			for (String lang: Arrays.asList(str.split(",")))	{
+			for (String lang : Arrays.asList(str.split(","))) {
 				langs.add(new Locale(lang));
 			}
 		} else {
@@ -99,19 +151,13 @@ public class OCRCli {
 		}
 		return langs;
 	}
-	///////////////////////////////////////////////////////////////
-	/*public static List<OCRFormat> parseOpts(String opt) {
-		List<OCRFormat> hm = new ArrayList<OCRFormat>();
-		String[] opts = StringUtils.split(opt, ",");
-		for(int i=0; i<opts.length; i++ ) {
-			
-			hm.add(OCRFormat.(opts[i]).toString());
-		}
-		return hm;
-	}*/
+
+	
 
 	protected List<String> defaultOpts(String[] args) {
-		//TODO OutputDir konfigurierbar (Kommandozeile)
+	
+	//protected void defaultOpts() {
+		// TODO OutputDir konfigurierbar (Kommandozeile)
 		String cmdName = "OCRRunner [opts] files";
 		CommandLine cmd = null;
 		// Parameter interpretieren
@@ -150,43 +196,16 @@ public class OCRCli {
 			System.out.println("Version " + version);
 			System.exit(0);
 		}
-		//////////////////////////////////////
-		// Logger Configuration
-		/*if (cmd.hasOption("lc")) {
-			if (cmd.getOptionValue("lc") != null && !cmd.getOptionValue("lc").equals("")) {
-				PropertyConfigurator.configure(cmd.getOptionValue("lc"));
-				
-			}
-		}*/
+		
 
 		// Debug
 		if (cmd.hasOption("d")) {
-			//logger.setLevel(Level.toLevel(cmd.getOptionValue("d")));
+			// logger.setLevel(Level.toLevel(cmd.getOptionValue("d")));
 			logger.debug(cmd.getOptionValue("d"));
 			logger.trace("Debuglevel: " + cmd.getOptionValue("d"));
 		}
 
-		// Configuration
-		if (cmd.hasOption("c") && cmd.getOptionValue("c") != null) {
-			try {
-				config = new XMLConfiguration(cmd.getOptionValue("c"));
-			} catch (ConfigurationException e) {
-				logger.error("Could not load configuration", e);
-			}
-		} else {
-			URL cfile;
-			try {
-				cfile = getClass().getResource(defaultConfig);
-				if (cfile != null) {
-					config = new XMLConfiguration(cfile);
-
-				}
-			} catch (ConfigurationException e) {
-				logger.error("Could not load configuration", e);
-				throw new RuntimeException("Could not load configuration");
-			}
-		}
-
+		
 		// Sprache
 		if (cmd.hasOption("l")) {
 			langs = parseLangs(cmd.getOptionValue("l"));
@@ -199,28 +218,16 @@ public class OCRCli {
 		}
 
 		logger.trace("Parsing Options");
+
 		
-		/////////////////////////////////////////////
-		/*if (cmd.hasOption("of")) {
-			of = parseOpts(cmd.getOptionValue("of"));
-		}
-		if (cmd.hasOption("ofn")) {
-			of = parseOpts(cmd.getOptionValue("ofn"));
-		}*/
-
-		/*if (cmd.hasOption("ofo")) {
-			ofo = OCR.parseOptsList(cmd.getOptionValue("ofo"));
-		}*/
-
-		//Directories
-		//recursive mode
 		if (cmd.hasOption("r")) {
 			recursiveMode = true;
 		}
-		
+
 		// Output foler
 		if (cmd.hasOption("o")) {
-			if (cmd.getOptionValue("o") != null && !cmd.getOptionValue("o").equals("")) {
+			if (cmd.getOptionValue("o") != null
+					&& !cmd.getOptionValue("o").equals("")) {
 				localOutputDir = cmd.getOptionValue("o");
 			}
 		}
@@ -228,14 +235,11 @@ public class OCRCli {
 		return cmd.getArgList();
 	}
 
-	
-
 	public Long getFileCount() {
 		throw new NotImplementedException();
 	}
 
-	
-	public void addDirectory (File dir) {
+	public void addDirectory(File dir) {
 		this.directories.add(dir);
 	}
 
@@ -247,7 +251,4 @@ public class OCRCli {
 		this.directories = directories;
 	}
 
-	
-
-	
 }
