@@ -8,7 +8,6 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -156,7 +155,6 @@ public class OCRCli {
 
 	protected List<String> defaultOpts(String[] args) {
 	
-	//protected void defaultOpts() {
 		// TODO OutputDir konfigurierbar (Kommandozeile)
 		String cmdName = "OCRRunner [opts] files";
 		CommandLine cmd = null;
