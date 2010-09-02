@@ -10,7 +10,7 @@ public interface OCREngine {
 
 	
 	  /**
-  	 * Recognize.
+  	 * Recognize. Start
   	 */
   	public void recognize ();
 	

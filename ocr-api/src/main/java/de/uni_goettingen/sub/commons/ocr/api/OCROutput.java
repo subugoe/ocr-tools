@@ -5,6 +5,7 @@ import java.net.URL;
 
 /**
  * The Class OCROutput.
+ * Output Folder
  */
 public class OCROutput {
 

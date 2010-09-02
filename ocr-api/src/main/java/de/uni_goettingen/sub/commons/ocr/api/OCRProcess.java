@@ -11,6 +11,7 @@ import java.util.Locale;
 
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class OCRProcess.
  */
@@ -19,16 +20,16 @@ public class OCRProcess {
 	/** The file. */
 	private String file;
 	
-	/** The langs. Language */
+	/** The langs. The languages which are supported */
 	protected List<Locale> langs = new ArrayList<Locale>();
 	
-	/** The enums. */
+	/** The enums. The issue formats which are supported */
 	protected List<OCRFormat> enums = new ArrayList<OCRFormat>();
 	
-	/** The ocr image. */
+	/** The ocr image. The Images which should be converted*/
 	protected List<OCRImage> ocrImage = new ArrayList<OCRImage>();
 	
-	/** The ocr output. */
+	/** The ocr output. The Images converted are put in this Output Folder */
 	protected List<OCROutput> ocrOutput = new ArrayList<OCROutput>();
 	
 	
@@ -91,12 +92,7 @@ public class OCRProcess {
 	 */
 	public void removeOCRFormat(OCRFormat format) {
 		enums.remove(format);
-		/*
-		int i = enums.indexOf(format);
-		if (i>=0){
-			enums.remove(i);
-		}
-		*/
+		
 	}
 	
 	/**
@@ -112,27 +108,6 @@ public class OCRProcess {
 		}
 	}
 
-	/**
-	 * Sets the file.
-	 *
-	 * @param file the new file
-	 */
-
-	/*public void setFile(File file) {
-		this.file = file.getAbsolutePath();
-	}
-	*/
-	
-	/**
-	 * Sets the file.
-	 *
-	 * @param file the new file
-	 */
-	/*
-	public void setFile(String file) {
-		this.file = file;
-	}
-	*/
 
 	/**
 	 * Gets the langs.
@@ -161,10 +136,20 @@ public class OCRProcess {
 		return ocrImage;
 	}
 
+	/**
+	 * Sets the ocr image.
+	 *
+	 * @param ocrImage the new ocr image
+	 */
 	public void setOcrImage(List<OCRImage> ocrImage) {
 		this.ocrImage = ocrImage;
 	}
 	
+	/**
+	 * Adds the image.
+	 *
+	 * @param ocrImage the ocr image
+	 */
 	public void addImage(OCRImage ocrImage) {
 		this.ocrImage.add(ocrImage);
 	}

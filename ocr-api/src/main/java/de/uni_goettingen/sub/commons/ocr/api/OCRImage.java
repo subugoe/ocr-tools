@@ -5,6 +5,7 @@ import java.net.URL;
 
 /**
  * The Class OCRImage.
+ * The Images which should be converted
  */
 public class OCRImage {
 	protected URL imageUrl = null;
@@ -13,14 +14,14 @@ public class OCRImage {
 		this.imageUrl = imageUrl;
 	}
 	  
-	/** directory of the Pictures. */
+	/** directory of the images. */
 	public URL url;
 	
 	  /** rotation of the image. */
 	public Integer rotation;
 	
 	  /**
-  	 * get an Url for a Picture.
+  	 * get an Url for a image.
   	 *
   	 * @return the url
   	 */  
