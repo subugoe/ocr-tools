@@ -148,40 +148,27 @@ public class OCRCli {
 		return langs;
 	}
 	
+	static int getOrdinal( String name ) 
+	{ 
+	  try { 
+	    return OCRFormat.valueOf( name ).ordinal(); 
+	  } 
+	  catch ( IllegalArgumentException e ) { 
+		  logger.error("This Format ist nicht supported"  );
+		  System.exit(0);
+	    return -1; 
+	  } 
+	}
 	//TODO
 	public static List<OCRFormat> parseOCRFormat(String str) {
 		List<OCRFormat> ocrFormats = new ArrayList<OCRFormat>();
+		//int a ;
+		
 		if (str.contains(",")) {
 			for (String ocrFormat : Arrays.asList(str.split(","))) {
 				
-				if (OCRFormat.TXT.toString().equals(ocrFormat.toUpperCase())){
-					ocrFormats.add(OCRFormat.TXT);
-					
-				}
-				if (OCRFormat.PDF.toString().equals(ocrFormat.toUpperCase())){
-					ocrFormats.add(OCRFormat.PDF);
-					
-				}
-				if (OCRFormat.DOC.toString().equals(ocrFormat.toUpperCase())){
-					ocrFormats.add(OCRFormat.DOC);
-					
-				}
-				if (OCRFormat.HTML.toString().equals(ocrFormat.toUpperCase())){
-					ocrFormats.add(OCRFormat.HTML);
-					
-				}	
-				if (OCRFormat.PDFA.toString().equals(ocrFormat.toUpperCase())){
-					ocrFormats.add(OCRFormat.PDFA);
-					
-				}
-				if (OCRFormat.XHTML.toString().equals(ocrFormat.toUpperCase())){
-					ocrFormats.add(OCRFormat.XHTML);
-					
-				}
-				if (OCRFormat.XML.toString().equals(ocrFormat.toUpperCase())){
-					ocrFormats.add(OCRFormat.XML);
-					
-				}
+				getOrdinal( ocrFormat.toUpperCase() );
+				
 			}
 		} else {
 			if (OCRFormat.TXT.toString() == str)
