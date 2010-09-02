@@ -7,6 +7,8 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +57,7 @@ public class OCRCli {
 		opts.addOption("r", false, "Recursive - scan for subdirectories");
 		opts.addOption("ofn", true, "Output filename / directory");
 		opts.addOption("of", true, "Output format");
-
+		
 		
 		opts.addOption("l", true, "Languages - seperated by \",\"");
 		opts.addOption("h", false, "Help");
@@ -80,6 +82,7 @@ public class OCRCli {
 		//loadConfig(config);
 		if (recursiveMode) {
 			List<File> newFiles = new ArrayList<File>();
+			
 			for (String dir : files) {
 				newFiles.addAll(getImageDirectories(new File(dir)));
 			}
@@ -91,15 +94,18 @@ public class OCRCli {
 
 		for (String path : files) {
 			File file = new File(path);
+			//System.out.println(path + "?????!" );
 			if (file.isDirectory()) {
 				directories.add(file);
 
 
 			} else {
 				logger.error(path + " is not a directory!");
+				//System.out.println(path + " is not a directory!" );
 			}
+			
 		}
-
+		//System.out.println(directories + "directories directory!" );
 		
 	}
 	public static List<File> getImageDirectories(File dir) {
@@ -150,18 +156,68 @@ public class OCRCli {
 		}
 		return langs;
 	}
-
 	
+	//TODO
+	public static List<OCRFormat> parseOCRFormat(String str) {
+		List<OCRFormat> ocrFormats = new ArrayList<OCRFormat>();
+		if (str.contains(",")) {
+			for (String ocrFormat : Arrays.asList(str.split(","))) {
+				
+				if (OCRFormat.TXT.toString().equals(ocrFormat.toUpperCase())){
+					ocrFormats.add(OCRFormat.TXT);
+					//System.out.println("OCRFOrmat string" + OCRFormat.TXT.toString() );
+				}
+				if (OCRFormat.PDF.toString().equals(ocrFormat.toUpperCase())){
+					ocrFormats.add(OCRFormat.PDF);
+					//System.out.println("OCRFOrmat string" + OCRFormat.PDF.toString() );
+				}
+				if (OCRFormat.DOC.toString().equals(ocrFormat.toUpperCase())){
+					ocrFormats.add(OCRFormat.DOC);
+					//System.out.println("OCRFOrmat string" + OCRFormat.DOC.toString() );
+				}
+				if (OCRFormat.HTML.toString().equals(ocrFormat.toUpperCase())){
+					ocrFormats.add(OCRFormat.HTML);
+					//System.out.println("OCRFOrmat string" + OCRFormat.HTML.toString() );
+				}	
+				if (OCRFormat.PDFA.toString().equals(ocrFormat.toUpperCase())){
+					ocrFormats.add(OCRFormat.PDFA);
+					//System.out.println("OCRFOrmat string" + OCRFormat.PDFA.toString() );
+				}
+				if (OCRFormat.XHTML.toString().equals(ocrFormat.toUpperCase())){
+					ocrFormats.add(OCRFormat.XHTML);
+					//System.out.println("OCRFOrmat string" + OCRFormat.XHTML.toString() );	
+				}
+				if (OCRFormat.XML.toString().equals(ocrFormat.toUpperCase())){
+					ocrFormats.add(OCRFormat.XML);
+					//System.out.println("OCRFOrmat string" + OCRFormat.XML.toString() );
+				}
+			}
+		} else {
+			if (OCRFormat.TXT.toString() == str)
+			ocrFormats.add(OCRFormat.TXT);
+			System.out.println("OCRFOrmat" + ocrFormats );
+		}
+		return ocrFormats;
+	}
 
 	protected List<String> defaultOpts(String[] args) {
-	
+		
 		// TODO OutputDir konfigurierbar (Kommandozeile)
 		String cmdName = "OCRRunner [opts] files";
 		CommandLine cmd = null;
 		// Parameter interpretieren
 		CommandLineParser parser = new GnuParser();
+		
 		try {
 			cmd = parser.parse(opts, args);
+			System.out.println("Language        :" + cmd.getOptionValue("l"));
+	        System.out.println("hilfe        :" + cmd.getOptionValue("h"));
+	        System.out.println("Output Format:" + cmd.getOptionValue("of"));
+	        System.out.println("Output File name :" + cmd.getOptionValue("ofn"));
+	        System.out.println("Output folder:" + cmd.getOptionValue("o"));
+	        System.out.println("Version   :" + cmd.getOptionValue("v"));	        
+	        System.out.println(cmd.getArgList());
+	        
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.exit(3);
@@ -177,6 +233,7 @@ public class OCRCli {
 
 		// Hilfe
 		if (cmd.hasOption("h")) {
+			System.out.println("h ist gegeben");
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp(cmdName, opts);
 			System.exit(0);
@@ -191,11 +248,17 @@ public class OCRCli {
 
 		// Version
 		if (cmd.hasOption("v")) {
+			
 			System.out.println("Version " + version);
 			System.exit(0);
 		}
 		
-
+		if (cmd.hasOption("ofn")) {
+			of = parseOCRFormat(cmd.getOptionValue("ofn"));
+		}
+		if (cmd.hasOption("of")) {
+			of = parseOCRFormat(cmd.getOptionValue("of"));
+		}
 		// Debug
 		if (cmd.hasOption("d")) {
 			// logger.setLevel(Level.toLevel(cmd.getOptionValue("d")));
@@ -206,6 +269,7 @@ public class OCRCli {
 		
 		// Sprache
 		if (cmd.hasOption("l")) {
+			//System.out.println("l ist gegeben " );
 			langs = parseLangs(cmd.getOptionValue("l"));
 		} else {
 			langs = new ArrayList<Locale>();
@@ -213,6 +277,7 @@ public class OCRCli {
 		}
 		for (Locale lang : langs) {
 			logger.trace("Language: " + lang.getLanguage());
+			System.out.println("Language: " + lang.getLanguage());
 		}
 
 		logger.trace("Parsing Options");
@@ -221,7 +286,7 @@ public class OCRCli {
 		if (cmd.hasOption("r")) {
 			recursiveMode = true;
 		}
-
+		
 		// Output foler
 		if (cmd.hasOption("o")) {
 			if (cmd.getOptionValue("o") != null
@@ -230,9 +295,11 @@ public class OCRCli {
 			}
 		}
 
-		return cmd.getArgList();
+				
+		return (List<String>)cmd.getArgList();
 	}
 
+		
 	public Long getFileCount() {
 		throw new NotImplementedException();
 	}
