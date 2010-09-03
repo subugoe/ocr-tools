@@ -50,12 +50,12 @@ public class OCRCli {
 
 	private static OCRCli _instance;
 
-	List<OCRFormat> of = new ArrayList<OCRFormat>();
+	List<OCRFormat> f = new ArrayList<OCRFormat>();
 
 	protected static void initOpts() {
 		// Parameters
 		opts.addOption("r", false, "Recursive - scan for subdirectories");
-		opts.addOption("of", true, "Output format");
+		opts.addOption("f", true, "Output format");
 		opts.addOption("l", true, "Languages - seperated by \",\"");
 		opts.addOption("h", false, "Help");
 		opts.addOption("v", false, "Version");
@@ -221,8 +221,8 @@ public class OCRCli {
 			System.exit(0);
 		}
 		
-		if (cmd.hasOption("of")) {
-			of = parseOCRFormat(cmd.getOptionValue("of"));
+		if (cmd.hasOption("f")) {
+			f = parseOCRFormat(cmd.getOptionValue("f"));
 		}
 		// Debug
 		if (cmd.hasOption("d")) {

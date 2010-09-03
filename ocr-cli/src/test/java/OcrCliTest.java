@@ -16,9 +16,8 @@ public class OcrCliTest {
 		String[] args = new String[4];
 		args[0] = "-l Deutsch,English";
 		args[1] = "-o D:/Recognition/GDZ/output";
-		args[2] = "C:/Test/";
-		args[3] = "-of TXT,PDF";
-		
+		args[2] = "-fTXT,PDF";
+		args[3] = "C:/webdav/";
 		ocr.configureFromArgs(args);
 		
 		
