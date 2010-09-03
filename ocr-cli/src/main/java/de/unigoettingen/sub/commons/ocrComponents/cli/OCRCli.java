@@ -148,31 +148,30 @@ public class OCRCli {
 		return langs;
 	}
 	
-	static int getOrdinal( String name ) 
+	static int getOrdinal( String name , String format ) 
 	{ 
 	  try { 
 	    return OCRFormat.valueOf( name ).ordinal(); 
 	  } 
 	  catch ( IllegalArgumentException e ) { 
-		  logger.error("This Format ist nicht supported"  );
+		  logger.error("the process ended, This Format < "+ format +" > is not supported"  );
 		  System.exit(0);
 	    return -1; 
 	  } 
 	}
-	//TODO
+
 	public static List<OCRFormat> parseOCRFormat(String str) {
 		List<OCRFormat> ocrFormats = new ArrayList<OCRFormat>();
-		//int a ;
 		
 		if (str.contains(",")) {
 			for (String ocrFormat : Arrays.asList(str.split(","))) {
 				
-				getOrdinal( ocrFormat.toUpperCase() );
-				
+				getOrdinal( ocrFormat.toUpperCase(), ocrFormat );
+				ocrFormats.add(OCRFormat.valueOf(ocrFormat.toUpperCase()));
 			}
 		} else {
-			if (OCRFormat.TXT.toString() == str)
-			ocrFormats.add(OCRFormat.TXT);
+			getOrdinal( str.toUpperCase() , str );
+			ocrFormats.add(OCRFormat.valueOf(str.toUpperCase()));
 		}
 		return ocrFormats;
 	}
@@ -235,7 +234,6 @@ public class OCRCli {
 		
 		// Sprache
 		if (cmd.hasOption("l")) {
-			//System.out.println("l ist gegeben " );
 			langs = parseLangs(cmd.getOptionValue("l"));
 		} else {
 			langs = new ArrayList<Locale>();
