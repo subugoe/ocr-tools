@@ -1,3 +1,5 @@
+package de.unigoettingen.sub.commons.ocrComponents.cli;
+
 
 
 import org.junit.Test;
@@ -17,7 +19,7 @@ public class OcrCliTest {
 		args[0] = "-l Deutsch,English";
 		args[1] = "-o D:/Recognition/GDZ/output";
 		args[2] = "-fTXT,PDF";
-		args[3] = "C:/webdav/";
+		args[3] = "./src/test/resources";
 		ocr.configureFromArgs(args);
 		
 		
