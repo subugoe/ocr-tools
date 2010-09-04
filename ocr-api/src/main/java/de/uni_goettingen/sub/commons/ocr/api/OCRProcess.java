@@ -5,8 +5,10 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 
 
@@ -21,10 +23,10 @@ public class OCRProcess {
 	private String file;
 	
 	/** The langs. The languages which are supported */
-	protected List<Locale> langs = new ArrayList<Locale>();
+	protected Set<Locale> langs = new HashSet<Locale>();
 	
 	/** The enums. The issue formats which are supported */
-	protected List<OCRFormat> enums = new ArrayList<OCRFormat>();
+	protected Set<OCRFormat> enums = new HashSet<OCRFormat>();
 	
 	/** The ocr image. The Images which should be converted*/
 	protected List<OCRImage> ocrImage = new ArrayList<OCRImage>();
@@ -52,7 +54,7 @@ public class OCRProcess {
 		//Copy Constructor
 		this.file = params.getFile();
 		this.ocrImage = params.getOcrImage();
-		this.enums = params.getEnums();
+		this.enums = params.getFormats();
 		this.langs = params.getLangs();
 		//this.degrees = params.getDegrees();
 		
@@ -114,7 +116,7 @@ public class OCRProcess {
 	 *
 	 * @return the langs
 	 */
-	public List<Locale> getLangs() {
+	public Set<Locale> getLangs() {
 		return langs;
 	}
 
@@ -123,8 +125,8 @@ public class OCRProcess {
 	 *
 	 * @return the enums
 	 */
-	public List<OCRFormat> getEnums() {
-		return new ArrayList<OCRFormat> (enums);
+	public Set<OCRFormat> getFormats() {
+		return new HashSet<OCRFormat> (enums);
 	}
 
 	/**
