@@ -7,6 +7,7 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.unigoettingen.sub.commons.util.file.FileUtils;
 
 
 import java.io.File;
@@ -102,7 +103,7 @@ public class OCRCli {
 	public static List<File> getImageDirectories(File dir) {
 		List<File> dirs = new ArrayList<File>();
 
-		if (OCRUtils.makeFileList(dir, extension).size() > 0) {
+		if (FileUtils.makeFileList(dir, extension).size() > 0) {
 			dirs.add(dir);
 		}
 
@@ -111,7 +112,7 @@ public class OCRCli {
 			fileList = Arrays.asList(dir.listFiles());
 			for (File file : fileList) {
 				if (file.isDirectory()) {
-					List<File> files = OCRUtils.makeFileList(dir, extension);
+					List<File> files = FileUtils.makeFileList(dir, extension);
 					if (files.size() > 0) {
 						dirs.addAll(files);
 					} else {
