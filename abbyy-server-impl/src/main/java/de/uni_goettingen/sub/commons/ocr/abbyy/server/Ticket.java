@@ -44,15 +44,11 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	//protected Integer secondsPerImage = 5;
 	protected Integer millisPerFile = 1200;
 	protected String language;
-	protected static String outPutLocation;
+	protected String outPutLocation;
 
 	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
-	protected static OCRFormat XML = OCRFormat.XML;
-	protected static OCRFormat PDF = OCRFormat.PDF;
-	protected static OCRFormat TXT = OCRFormat.TXT;
 
 	private static List<File> inputFiles = new ArrayList<File>();
-	/** The opts. */
 	protected static XmlOptions opts = new XmlOptions();
 
 	//private OCRProcess defaultParams = new OCRProcess();
@@ -76,30 +72,24 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		XMLExportSettings xmlSettings = XMLExportSettings.Factory.newInstance(opts);
 		xmlSettings.setWriteCharactersFormatting(true);
 		xmlSettings.setWriteCharAttributes(true);
-		FORMAT_FRAGMENTS.put(XML, (OutputFileFormatSettings) xmlSettings.changeType(OutputFileFormatSettings.type));
+		FORMAT_FRAGMENTS.put(OCRFormat.XML, (OutputFileFormatSettings) xmlSettings.changeType(OutputFileFormatSettings.type));
 
 		PDFExportSettings pdfSettings = PDFExportSettings.Factory.newInstance(opts);
 		pdfSettings.setPictureResolution(BigInteger.valueOf(300));
 		pdfSettings.setQuality(BigInteger.valueOf(50));
 		pdfSettings.setUseImprovedCompression(true);
 		pdfSettings.setExportMode("ImageOnText");
-		FORMAT_FRAGMENTS.put(PDF, (OutputFileFormatSettings) pdfSettings.changeType(OutputFileFormatSettings.type));
+		FORMAT_FRAGMENTS.put(OCRFormat.PDF, (OutputFileFormatSettings) pdfSettings.changeType(OutputFileFormatSettings.type));
 
 		TextExportSettings txtSettings = TextExportSettings.Factory.newInstance(opts);
 		//Stupid Abbyy idiots: It's "UTF8" not "UTF-8"
 		txtSettings.setEncodingType("UTF8");
-		FORMAT_FRAGMENTS.put(TXT, (OutputFileFormatSettings) txtSettings.changeType(OutputFileFormatSettings.type));
+		FORMAT_FRAGMENTS.put(OCRFormat.TXT, (OutputFileFormatSettings) txtSettings.changeType(OutputFileFormatSettings.type));
 
 		FORMAT_FRAGMENTS.put(OCRFormat.DOC, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.HTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.PDFA, null);
-
-		/*inputFiles.add(new File("C:/Test/515-00000001.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000002.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000003.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000004.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000005.tif/"));*/
 	}
 
 	public Ticket(OCRProcess params) {
@@ -140,6 +130,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 		RecognitionParams recognitionParams = ticket.addNewRecognitionParams();
 
+		//TODO: this is probably wrong, because the languages aren't named in the Abbyy API aas one would expect.
+		//TODO: there should be some sort of mapping somewere
 		for (Locale l : langs) {
 
 			if (langs == null) {
@@ -223,7 +215,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		return inputFiles;
 	}
 
-	public static void setInputFiles (List<File> inputFiles) {
+	public void setInputFiles (List<File> inputFiles) {
 		Ticket.inputFiles = inputFiles;
 	}
 
@@ -232,7 +224,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	}
 
 	public void setOutPutLocation (String outPutLocation) {
-		Ticket.outPutLocation = outPutLocation;
+		outPutLocation = outPutLocation;
 	}
 
 }
