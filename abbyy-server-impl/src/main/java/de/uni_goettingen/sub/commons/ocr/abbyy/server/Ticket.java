@@ -1,6 +1,8 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
+
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
@@ -15,6 +17,7 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -28,11 +31,11 @@ import java.util.regex.Pattern;
 
 import org.apache.xmlbeans.XmlOptions;
 
-/**
- * @author mabergn
- * 
- */
+
+
+
 public class Ticket extends AbstractOCRProcess implements OCRProcess {
+
 
 	/** The ticket file. */
 	protected File ticketFile;
@@ -41,22 +44,34 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected Boolean validateTicket = false;
 	// Two hours by default
 	protected Long maxOCRTimeout = 3600000l * 2;
-	//protected Integer secondsPerImage = 5;
+	// protected Integer secondsPerImage = 5;
 	protected Integer millisPerFile = 1200;
+	//Language
 	protected String language;
+	private static final String GERMAN_NAME = "de";
+	private static final String ENGLISH_NAME = "en";
+	private static final String RUSSIAN_NAME = "ru";
+	
 	protected String outPutLocation;
 
+
 	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
+
+
 
 	private static List<File> inputFiles = new ArrayList<File>();
 	protected static XmlOptions opts = new XmlOptions();
 
-	//private OCRProcess defaultParams = new OCRProcess();
 
 	static {
-		//Initialize some settings for the XMLBeans
 		opts.setSavePrettyPrint();
-		//Stupid server, doesn't understend it's own namespace
+		opts.setSaveImplicitNamespaces(new HashMap() {
+			{
+				put("",
+						"http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd");
+			}
+		});
+
 		opts.setSaveImplicitNamespaces(new HashMap() {
 			{
 				put("", "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd");
@@ -67,34 +82,38 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	static {
 		FORMAT_FRAGMENTS = new HashMap<OCRFormat, OutputFileFormatSettings>();
-
-		//We need to cast each element, since the stupid server gets confused by "xsi:type"
-		XMLExportSettings xmlSettings = XMLExportSettings.Factory.newInstance(opts);
+		XMLExportSettings xmlSettings = XMLExportSettings.Factory
+				.newInstance(opts);
+		
 		xmlSettings.setWriteCharactersFormatting(true);
 		xmlSettings.setWriteCharAttributes(true);
+
 		FORMAT_FRAGMENTS.put(OCRFormat.XML, (OutputFileFormatSettings) xmlSettings.changeType(OutputFileFormatSettings.type));
 
 		PDFExportSettings pdfSettings = PDFExportSettings.Factory.newInstance(opts);
+
 		pdfSettings.setPictureResolution(BigInteger.valueOf(300));
 		pdfSettings.setQuality(BigInteger.valueOf(50));
 		pdfSettings.setUseImprovedCompression(true);
 		pdfSettings.setExportMode("ImageOnText");
+
 		FORMAT_FRAGMENTS.put(OCRFormat.PDF, (OutputFileFormatSettings) pdfSettings.changeType(OutputFileFormatSettings.type));
 
 		TextExportSettings txtSettings = TextExportSettings.Factory.newInstance(opts);
-		//Stupid Abbyy idiots: It's "UTF8" not "UTF-8"
+		
 		txtSettings.setEncodingType("UTF8");
+
 		FORMAT_FRAGMENTS.put(OCRFormat.TXT, (OutputFileFormatSettings) txtSettings.changeType(OutputFileFormatSettings.type));
 
 		FORMAT_FRAGMENTS.put(OCRFormat.DOC, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.HTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.PDFA, null);
+
 	}
 
 	public Ticket(OCRProcess params) {
 		super(params);
-		// TODO Auto-generated constructor stub
 	}
 
 	public void write (File ticketFile) throws IOException {
@@ -102,83 +121,101 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			throw new IllegalStateException();
 		}
 
-		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.newInstance(opts);
+		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory
+				.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
 
-		//Integer OCRTimeOut = engineConfig.getInputFiles().size() * 1000 * secondsPerImage;
 		Integer OCRTimeOut = getInputFiles().size() * millisPerFile;
-
-		//TODO: this doesn't seem to work
 
 		if (maxOCRTimeout < OCRTimeOut) {
 
-			throw new IllegalStateException("Calculated OCR Timeout to high: " + OCRTimeOut);
+			throw new IllegalStateException("Calculated OCR Timeout to high: "
+					+ OCRTimeOut);
+
 		}
 
 		ticket.setOCRTimeout(BigInteger.valueOf(OCRTimeOut));
 
-		//TODO: The Method doesn't return anything yet
 		for (File f : getInputFiles()) {
 			InputFile inputFile = ticket.addNewInputFile();
 			String file = f.getName();
 			inputFile.setName(file);
-			//TODO: 
+			// TODO:
 		}
 
-		ImageProcessingParams imageProcessingParams = ticket.addNewImageProcessingParams();
+		ImageProcessingParams imageProcessingParams = ticket
+				.addNewImageProcessingParams();
 		imageProcessingParams.setDeskew(false);
 
 		RecognitionParams recognitionParams = ticket.addNewRecognitionParams();
 
-		//TODO: this is probably wrong, because the languages aren't named in the Abbyy API aas one would expect.
-		//TODO: there should be some sort of mapping somewere
+		
 		for (Locale l : langs) {
 
 			if (langs == null) {
+
 				//TODO
 				//	throw new OCRLanguageException();
 			}
-			recognitionParams.addLanguage(l.getLanguage());
+			recognitionParams.addLanguage(toLanguage(l.getLanguage()));
 		}
 
 		ExportParams exportParams = ticket.addNewExportParams();
 		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
+
 		//TODO: REmove hard coded number
 		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[FORMAT_FRAGMENTS.size() - 4];
+
 		Integer i = 0;
-		//TODO: 
+		// TODO:
 		for (OCRFormat ef : FORMAT_FRAGMENTS.keySet()) {
 
-			//OutputFileFormatSettings exportFormat = exportParams.addNewExportFormat();
-
 			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(ef);
-			//TODO Add one of the export fragments here
+			// TODO Add one of the export fragments here
 			if (exportFormat == null) {
 				continue;
 			}
 			exportFormat.setOutputFlowType("SharedFolder");
 			exportFormat.setOutputFileFormat(ef.name());
 
+			exportFormat.setNamingRule(TicketHelper
+					.getOutputName(getInputFiles().toString())
+					+ "."
+					+ ef.name().toLowerCase());
+			
+
 			exportFormat.setNamingRule(TicketHelper.getOutputName(getInputFiles().toString()) + "." + ef.name().toLowerCase());
-			//exportFormat.setNamingRule(TicketHelper.getName(ef.name()));
+			
 			exportFormat.setOutputLocation(getOutPutLocation());
 
 			settings[i] = exportFormat;
 			i++;
 		}
-		//This doesn't work
+
 		exportParams.setExportFormatArray(settings);
-		//TODO: 
-		ticketDoc.save(ticketFile, opts);//opts
+	
+		ticketDoc.save(ticketFile, opts);// opts
 		if (validateTicket && !ticket.validate()) {
+
 			//TODO: 
 			//	logger.error("Ticket not valid!");
+
 			throw new RuntimeException("Ticket not valid!");
 		}
 	}
 
+	public static String toLanguage (String name) {
+	    if (name.toLowerCase().equals(GERMAN_NAME)) {
+	    	return "German";
+	    } else if (name.toLowerCase().equals(ENGLISH_NAME)) {
+	    	return "English";
+	    } else if (name.toLowerCase().equals(RUSSIAN_NAME)) {
+	    	return "Russian";
+	    }
+	    throw new IllegalArgumentException();
+	 }
+
 	public static class TicketHelper {
-		//TODO catch Exceptions
 
 		static Pattern p = Pattern.compile("(.*)\\\\(.*)");
 		static Pattern n = Pattern.compile("(\\d.\\d*)");
@@ -189,11 +226,13 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			return m.group(1);
 		}
 
+
 		static public String getName (String str) {
 			Matcher m = p.matcher(str);
 			m.find();
 			return m.group(2);
 		}
+
 
 		static public String getLocation (String str) {
 			Matcher m = p.matcher(str);
@@ -202,29 +241,27 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		}
 
 	}
-/*
-	public OCRProcess getDefaultParams () {
-		if (defaultParams != null) {
-			return new OCRProcess(defaultParams);
-		} else {
-			return null;
-		}
-	}
-*/
+
+
 	public List<File> getInputFiles () {
+
 		return inputFiles;
 	}
 
 	public void setInputFiles (List<File> inputFiles) {
+
 		Ticket.inputFiles = inputFiles;
 	}
 
 	public String getOutPutLocation () {
+
 		return outPutLocation;
 	}
 
+
 	public void setOutPutLocation (String outPutLocation) {
-		outPutLocation = outPutLocation;
+		this.outPutLocation = outPutLocation;
+
 	}
 
 }

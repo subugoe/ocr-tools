@@ -55,7 +55,7 @@ public class TicketTest {
 		assertTrue(ocrp.getLangs().contains(Locale.GERMAN));
 		ocrp.addOCRFormat(OCRFormat.PDF);
 		ticketFile = new File(basefolderFile.getAbsolutePath() + "ticket.xml");
-
+		
 	}
 
 	@Test
