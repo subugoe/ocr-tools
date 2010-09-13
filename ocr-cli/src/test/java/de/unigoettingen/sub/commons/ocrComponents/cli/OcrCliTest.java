@@ -2,6 +2,7 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 
 
+import org.junit.Before;
 import org.junit.Test;
 
 import de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli;
@@ -9,11 +10,16 @@ import de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli;
 
 
 public class OcrCliTest {
+	OCRCli ocr = null; 
 	
+	@Before
+	public static void init () {
+		OCRCli ocr = TestOCRCli.getInstance();
+	}
 	
 	@Test
 	public void testCli () {
-		OCRCli ocr = OCRCli.getInstance();
+		
 		
 		String[] args = new String[4];
 		args[0] = "-l Deutsch,English";
@@ -24,6 +30,6 @@ public class OcrCliTest {
 		
 		
 	}
-
+ 
 	
 }

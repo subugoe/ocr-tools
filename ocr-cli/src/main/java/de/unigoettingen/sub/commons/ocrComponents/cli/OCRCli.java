@@ -39,7 +39,7 @@ public class OCRCli {
 	protected static Logger logger = LoggerFactory
 			.getLogger(de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli.class);
 
-	private static Options opts = new Options();
+	protected static Options opts = new Options();
 
 	protected static String localOutputDir = null;
 	protected static String extension = "tif";
@@ -53,10 +53,13 @@ public class OCRCli {
 	String[] args;
 	protected static Boolean writeRemotePrefix = true;
 
-	private static OCRCli _instance;
+	protected static OCRCli _instance;
 
 	static List<OCRFormat> f = new ArrayList<OCRFormat>();
 
+	protected OCREngine engine;
+	protected OCRProcess process;
+	
 	protected static void initOpts() {
 		// Parameters
 		opts.addOption("r", false, "Recursive - scan for subdirectories");
@@ -73,9 +76,6 @@ public class OCRCli {
 		logger.info("Creating OCRRunner instance");
 		OCRCli ocr = OCRCli.getInstance();
 		ocr.configureFromArgs(args);
-		OCRProcess ocrp = new AbstractOCRProcess();
-		OCREngine eng = new AbbyyServerEngine(ocrp);
-		eng.recognize();
 		
 	}
 
@@ -132,6 +132,7 @@ public class OCRCli {
 		}
 		return dirs;
 	}
+	
 	public static OCRCli getInstance() {
 		if (_instance == null) {
 			_instance = new OCRCli();
@@ -139,7 +140,7 @@ public class OCRCli {
 		return _instance;
 	}
 	
-	public OCRCli() {
+	protected OCRCli() {
 		initOpts();
 		
 	}
