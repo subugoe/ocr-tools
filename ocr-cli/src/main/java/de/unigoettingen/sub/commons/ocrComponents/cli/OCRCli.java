@@ -6,7 +6,11 @@
 package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 
+import de.uni_goettingen.sub.commons.ocr.api.AbbyyServerEngine;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 
 
@@ -41,7 +45,7 @@ public class OCRCli {
 	protected static String extension = "tif";
 
 	protected List<File> directories = new ArrayList<File>();
-	protected List<Locale> langs;
+	protected static List<Locale> langs;
 	protected HierarchicalConfiguration config;
 	//public String defaultConfig = "server-config.xml";
 	// Settings for Ticket creation
@@ -51,7 +55,7 @@ public class OCRCli {
 
 	private static OCRCli _instance;
 
-	List<OCRFormat> f = new ArrayList<OCRFormat>();
+	static List<OCRFormat> f = new ArrayList<OCRFormat>();
 
 	protected static void initOpts() {
 		// Parameters
@@ -69,7 +73,10 @@ public class OCRCli {
 		logger.info("Creating OCRRunner instance");
 		OCRCli ocr = OCRCli.getInstance();
 		ocr.configureFromArgs(args);
-
+		OCRProcess ocrp = new AbstractOCRProcess();
+		OCREngine eng = new AbbyyServerEngine(ocrp);
+		eng.recognize();
+		
 	}
 
 	public void configureFromArgs(String[] args) {
@@ -91,7 +98,7 @@ public class OCRCli {
 			File file = new File(path);
 			if (file.isDirectory()) {
 				directories.add(file);
-
+				
 
 			} else {
 				logger.error(path + " is not a directory!");
@@ -202,7 +209,6 @@ public class OCRCli {
 
 		// Hilfe
 		if (cmd.hasOption("h")) {
-			System.out.println("h ist gegeben");
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp(cmdName, opts);
 			System.exit(0);
@@ -217,7 +223,6 @@ public class OCRCli {
 
 		// Version
 		if (cmd.hasOption("v")) {
-			
 			System.out.println("Version " + version);
 			System.exit(0);
 		}
@@ -259,7 +264,7 @@ public class OCRCli {
 			}
 		}
 
-				
+			
 		return cmd.getArgList();
 	}
 
