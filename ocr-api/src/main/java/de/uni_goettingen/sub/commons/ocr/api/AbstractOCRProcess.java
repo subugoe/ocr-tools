@@ -27,7 +27,6 @@ public class AbstractOCRProcess implements OCRProcess {
 	 * Instantiates a new oCR process.
 	 */
 	public AbstractOCRProcess() {
-
 	}
 
 	/**
@@ -42,7 +41,6 @@ public class AbstractOCRProcess implements OCRProcess {
 		this.enums = params.getFormats();
 		this.langs = params.getLangs();
 		//this.degrees = params.getDegrees();
-
 	}
 
 	/**

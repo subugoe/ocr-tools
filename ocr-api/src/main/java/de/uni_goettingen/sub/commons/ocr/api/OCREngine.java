@@ -3,6 +3,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
 import java.util.Observer;
 
 
+
 /**
  * The Interface OCREngine.
  */
@@ -41,5 +42,7 @@ public interface OCREngine {
   	 * @param observer the new observer
   	 */
   	public void setObserver(Observer observer);
+
+	
 	  	  
 }
