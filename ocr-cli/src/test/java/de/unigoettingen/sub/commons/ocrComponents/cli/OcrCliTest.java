@@ -21,7 +21,7 @@ public class OcrCliTest {
 	public void testCli () {	
 		OCRProcess process = mock(OCRProcess.class);
 		OCREngine engine = mock(OCREngine.class);
-		OCRCli ocr = TestOCRCli.getInstance(engine, process);
+		OCRCli ocr = MyOCRCli.getInstance(engine, process);
 		
 		String[] args = new String[4];
 		args[0] = "-l Deutsch,English";
