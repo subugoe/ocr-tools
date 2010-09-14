@@ -81,4 +81,7 @@ public interface OCRProcess {
 	 */
 	public void addImage (OCRImage ocrImage);
 
+	public void setOcrOutput(List<OCROutput> ocrOutput);
+	
+	public void setOutputLocation(String outputLocation);
 }

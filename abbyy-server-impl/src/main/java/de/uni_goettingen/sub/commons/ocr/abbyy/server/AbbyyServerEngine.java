@@ -1,10 +1,10 @@
-package de.uni_goettingen.sub.commons.ocr.api;
+package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.util.Observer;
 
-
-
-
+import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
+import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 
 public class AbbyyServerEngine implements OCREngine{
@@ -13,9 +13,6 @@ public class AbbyyServerEngine implements OCREngine{
 	
 	public AbbyyServerEngine(){		
 	}
-	
-		
-
 	
 	@Override
 	public void recognize() {

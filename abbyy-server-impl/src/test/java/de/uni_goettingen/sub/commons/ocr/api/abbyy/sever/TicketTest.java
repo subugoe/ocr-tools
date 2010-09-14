@@ -81,7 +81,6 @@ public class TicketTest {
 		ticket.write(ticketFile);
 
 		assertTrue(ticketFile.exists());
-
 	}
 	
 	@Test

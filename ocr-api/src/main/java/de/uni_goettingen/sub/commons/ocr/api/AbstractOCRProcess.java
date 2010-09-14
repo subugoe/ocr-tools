@@ -10,7 +10,9 @@ public class AbstractOCRProcess implements OCRProcess {
 
 	/** The file. */
 	private String file;
-
+	/** Outputlocation for Abbyy*/
+	private String outputLocation;
+	
 	/** The langs. The languages which are supported */
 	protected Set<Locale> langs = new HashSet<Locale>();
 
@@ -143,5 +145,19 @@ public class AbstractOCRProcess implements OCRProcess {
 	public void addImage (OCRImage ocrImage) {
 		this.ocrImage.add(ocrImage);
 	}
+
+	public void setOcrOutput(List<OCROutput> ocrOutput) {
+		this.ocrOutput = ocrOutput;
+	}
+
+	public String getOutputLocation() {
+		return outputLocation;
+	}
+
+	public void setOutputLocation(String outputLocation) {
+		this.outputLocation = outputLocation;
+	}
+	
+	
 
 }

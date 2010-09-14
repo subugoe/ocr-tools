@@ -6,7 +6,6 @@
 package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 
-import de.uni_goettingen.sub.commons.ocr.api.AbbyyServerEngine;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -35,6 +34,8 @@ import org.slf4j.LoggerFactory;
 public class OCRCli {
 	
 	public final static String version = "0.0.4";
+
+	
 	
 	protected static Logger logger = LoggerFactory
 			.getLogger(de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli.class);
@@ -56,9 +57,13 @@ public class OCRCli {
 	protected static OCRCli _instance;
 
 	static List<OCRFormat> f = new ArrayList<OCRFormat>();
+	private static List<File> inputFiles = new ArrayList<File>();
+	
+	
+	protected static OCREngine engine;
+	protected static OCRProcess process;
 
-	protected OCREngine engine;
-	protected OCRProcess process;
+	
 	
 	protected static void initOpts() {
 		// Parameters
@@ -74,12 +79,13 @@ public class OCRCli {
 
 	public static void main(String[] args) throws Exception {
 		logger.info("Creating OCRRunner instance");
-		OCRCli ocr = OCRCli.getInstance();
+		OCRCli ocr = OCRCli.getInstance();	
 		ocr.configureFromArgs(args);
-		
+		engine.recognize();
 	}
 
 	public void configureFromArgs(String[] args) {
+		
 		List<String> files = defaultOpts(args);
 		
 		if (recursiveMode) {
@@ -101,10 +107,12 @@ public class OCRCli {
 				
 
 			} else {
-				logger.error(path + " is not a directory!");
+				inputFiles.add(file);
+				logger.error(path + " is not a directory!");			
 			}
 			
 		}
+		
 		
 	}
 	public static List<File> getImageDirectories(File dir) {
@@ -150,9 +158,11 @@ public class OCRCli {
 		if (str.contains(",")) {
 			for (String lang : Arrays.asList(str.split(","))) {
 				langs.add(new Locale(lang));
+				process.addLanguage(new Locale(lang));
 			}
 		} else {
 			langs.add(new Locale(str));
+			process.addLanguage(new Locale(str));
 		}
 		return langs;
 	}
@@ -177,10 +187,12 @@ public class OCRCli {
 				
 				getOrdinal( ocrFormat.toUpperCase(), ocrFormat );
 				ocrFormats.add(OCRFormat.valueOf(ocrFormat.toUpperCase()));
+				process.addOCRFormat(OCRFormat.valueOf(ocrFormat.toUpperCase()));
 			}
 		} else {
 			getOrdinal( str.toUpperCase() , str );
 			ocrFormats.add(OCRFormat.valueOf(str.toUpperCase()));
+			process.addOCRFormat(OCRFormat.valueOf(str.toUpperCase()));
 		}
 		return ocrFormats;
 	}
@@ -230,6 +242,7 @@ public class OCRCli {
 		
 		if (cmd.hasOption("f")) {
 			f = parseOCRFormat(cmd.getOptionValue("f"));
+			
 		}
 		// Debug
 		if (cmd.hasOption("d")) {
@@ -262,10 +275,10 @@ public class OCRCli {
 			if (cmd.getOptionValue("o") != null
 					&& !cmd.getOptionValue("o").equals("")) {
 				localOutputDir = cmd.getOptionValue("o");
+				process.setOutputLocation(localOutputDir);
 			}
 		}
-
-			
+		
 		return cmd.getArgList();
 	}
 
@@ -285,5 +298,12 @@ public class OCRCli {
 	public void setDirectories(List<File> directories) {
 		this.directories = directories;
 	}
+
+	public static List<File> getInputFiles() {
+		return inputFiles;
+	}
+
+	
+	
 
 }
