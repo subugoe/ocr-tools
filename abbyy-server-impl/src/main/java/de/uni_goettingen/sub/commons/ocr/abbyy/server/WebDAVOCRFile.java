@@ -4,7 +4,7 @@ import java.net.URL;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 
-public class WebDAVOCRFile extends OCRImage {
+public class WebDAVOCRFile extends AbstractOCRImage implements OCRImage {
 	//This represents the filename that should be written to the ticket.
 	protected String remoteFileName;
 
