@@ -11,12 +11,12 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	//Thhis represents the URL to the remote system
 	protected URL remoteURL;
 
-	public WebDAVOCRFile(URL imageUrl) {
+	public AbbyyOCRFile(URL imageUrl) {
 		super(imageUrl);
 		
 	}
 	
-	public WebDAVOCRFile(URL imageUrl, URL remoteURL, String remoteFileName) {
+	public AbbyyOCRFile(URL imageUrl, URL remoteURL, String remoteFileName) {
 		super(imageUrl);
 		this.remoteURL = remoteURL;
 		this.remoteFileName = remoteFileName;
