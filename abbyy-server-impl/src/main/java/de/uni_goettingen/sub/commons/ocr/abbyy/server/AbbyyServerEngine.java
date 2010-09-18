@@ -8,6 +8,9 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 
 public class AbbyyServerEngine implements OCREngine{
+	
+	protected Integer maxThreads = 5;
+	protected ExecutorService pool = new OCRExecuter(maxThreads);
 
 	
 	
@@ -44,5 +47,14 @@ public class AbbyyServerEngine implements OCREngine{
 		
 	}
 
+	protected finalize () {
+		pool.shutdown();
+		try {
+			//TODO: Calculate the right expected timeout
+			pool.awaitTermination(3600, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			logger.error("Got a problem with thread pool: ", e);
+		}
+	}
 
 }

@@ -20,13 +20,13 @@ public class Hotfolder {
 		 fsManager = VFS.getManager();
 	}
 
-	protected void copyFiles(List<WebDAVOCRFile> files)  {
+	protected void copyFilesToServer(List<WebDAVOCRFile> files)  {
 		// iterate over all Files and put them to webdav-server inputFolder: 
 		for (WebDAVOCRFile info : files) {
 			
 			URL webDavFileName = info.getRemoteURL();
 			FileObject remoteFile = fsManager.resolveFile(webDavFileName.toString());
-			remoteFile.delete()
+			remoteFile.delete();
 			if (webDavFileName.endsWith("/")) {
 				logger.trace("Creating new directory " + webDavFileName + "!");
 				mkCol(webDavFileName);
@@ -38,6 +38,14 @@ public class Hotfolder {
 			
 
 		}
-
+		
 	}
+	
+	abstract protected getResults ();
+
+	protected Long getSize(String path) {
+		return null;
+	}
+	
+
 }
