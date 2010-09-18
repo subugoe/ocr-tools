@@ -61,6 +61,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	private static List<File> inputFiles = new ArrayList<File>();
 	protected static XmlOptions opts = new XmlOptions();
+	
+	private InputStream is;
 
 
 	static {
@@ -115,7 +117,17 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	public Ticket(OCRProcess params) {
 		super(params);
 	}
-
+	
+	public void Ticket (InputStream is) {
+		//TODO: Finish this constructor
+		this.is = is;
+	}
+	
+	public void Ticket (URL url) {
+		this(url.openStream());
+	}
+	
+	//TODO: use a Outputstream for this, the method accepting the file should only be a wrapper.
 	public void write (File ticketFile) throws IOException {
 		if (ticketFile == null) {
 			throw new IllegalStateException();
@@ -204,6 +216,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		}
 	}
 
+	//TODO: Do we need this?
 	public static String toLanguage (String name) {
 	    if (name.toLowerCase().equals(GERMAN_NAME)) {
 	    	return "German";
