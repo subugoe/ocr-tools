@@ -11,6 +11,7 @@ public class AbbyyServerEngine implements OCREngine{
 	
 	protected Integer maxThreads = 5;
 	protected ExecutorService pool = new OCRExecuter(maxThreads);
+	final Logger logger = LoggerFactory.getLogger(AbbyyServerEngine.class);
 
 	
 	
