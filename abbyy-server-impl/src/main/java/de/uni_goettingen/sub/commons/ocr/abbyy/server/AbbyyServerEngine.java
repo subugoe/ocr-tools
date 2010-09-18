@@ -1,6 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.util.Observer;
+import java.util.concurrent.TimeUnit;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
