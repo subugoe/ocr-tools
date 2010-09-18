@@ -4,57 +4,38 @@ import java.net.URL;
 
 
 /**
- * The Class OCRImage.
+ * The Interface OCRImage.
  * The Images which should be converted
  */
-public class OCRImage {
-	protected URL imageUrl = null;
-	
-	public OCRImage (URL imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-	  
-	/** directory of the images. */
-	public URL url;
-	
-	  /** rotation of the image. */
-	public Integer rotation;
+public interface OCRImage {
 	
 	  /**
   	 * get an Url for a image.
   	 *
   	 * @return the url
   	 */  
-	public URL getUrl() {
-		return url;
-	}
+	public URL getUrl();
 	
 	/**
 	 * Sets the url.
 	 *
 	 * @param url the new url
 	 */
-	public void setUrl(URL url) {
-		this.url = url;
-	}
+	public void setUrl(URL url);
 	
 	/**
 	 * Gets the rotation.
 	 *
 	 * @return the rotation
 	 */
-	public Integer getRotation() {
-		return rotation;
-	}
+	public Integer getRotation();
 	
 	/**
 	 * Sets the rotation.
 	 *
 	 * @param rotation the new rotation
 	 */
-	public void setRotation(Integer rotation) {
-		this.rotation = rotation;
-	}
+	public void setRotation(Integer rotation);
 	  
 	  
 }
