@@ -41,7 +41,8 @@ public class Hotfolder {
 		
 	}
 	
-	abstract protected getResults ();
+	//Implement a method to download the files
+	//abstract void protected getResults ();
 
 	protected Long getSize(String path) {
 		return null;

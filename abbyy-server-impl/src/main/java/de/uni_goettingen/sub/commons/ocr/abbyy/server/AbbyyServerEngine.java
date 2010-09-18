@@ -47,7 +47,7 @@ public class AbbyyServerEngine implements OCREngine{
 		
 	}
 
-	protected finalize () {
+	protected void finalize () {
 		pool.shutdown();
 		try {
 			//TODO: Calculate the right expected timeout
