@@ -120,12 +120,12 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		super(params);
 	}
 	
-	public void Ticket (InputStream is) {
+	public Ticket (InputStream is) {
 		//TODO: Finish this constructor
 		this.is = is;
 	}
 	
-	public void Ticket (URL url) {
+	public Ticket (URL url) throws IOException {
 		this(url.openStream());
 	}
 	

@@ -27,9 +27,10 @@ public class Hotfolder {
 			URL AbbyyFileName = info.getRemoteURL();
 			FileObject remoteFile = fsManager.resolveFile(AbbyyFileName.toString());
 			remoteFile.delete();
-			if (AbbyyFileName.endsWith("/")) {
+			if (AbbyyFileName.toString().endsWith("/")) {
 				logger.trace("Creating new directory " + AbbyyFileName + "!");
-				mkCol(AbbyyFileName);
+				//TODO: Create the directory
+				//mkCol(AbbyyFileName);
 			} else {
 				logger.trace("Copy from " + info.getLocalFile().getAbsolutePath() + " to " + AbbyyFileName);
 				put(AbbyyFileName, info.getLocalFile());

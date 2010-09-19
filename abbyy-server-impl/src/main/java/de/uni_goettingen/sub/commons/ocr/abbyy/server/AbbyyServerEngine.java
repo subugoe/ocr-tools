@@ -4,6 +4,9 @@ import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRExecuter;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;

@@ -2,6 +2,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.net.URL;
 
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 
 public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
