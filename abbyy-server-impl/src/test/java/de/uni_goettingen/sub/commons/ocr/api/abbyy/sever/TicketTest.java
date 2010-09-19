@@ -13,6 +13,7 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,7 +42,8 @@ public class TicketTest {
 	private static OCRProcess ocrp = null;
 	private static File ticketFile;
 	private static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
-
+	private static OCRImage ocri = null;
+	
 	@BeforeClass
 	public static void init () {
 		basefolderFile = getBaseFolderAsFile();
@@ -56,6 +58,13 @@ public class TicketTest {
 		ocrp.addOCRFormat(OCRFormat.PDF);
 		ticketFile = new File(basefolderFile.getAbsolutePath() + "ticket.xml");
 		
+		ocri = mock(OCRImage.class);
+		try {
+			when(ocri.getUrl()).thenReturn(new File("/tmp").toURI().toURL());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -71,7 +80,7 @@ public class TicketTest {
 
 		assertNotNull("base path is null", basefolderFile);
 		
-		OCRImage ocri = new OCRImage(new File("/tmp").toURI().toURL());
+		
 
 		ocrp.addImage(ocri);
 
