@@ -1,11 +1,14 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.util.Observer;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRExecuter;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 
 public class AbbyyServerEngine implements OCREngine{
@@ -20,7 +23,7 @@ public class AbbyyServerEngine implements OCREngine{
 	}
 	
 	@Override
-	public void recognize() {
+	public void recognize() throws OCRException {
 		// TODO Auto-generated method stub
 		
 	}
