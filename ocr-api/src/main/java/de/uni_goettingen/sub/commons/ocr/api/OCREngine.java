@@ -2,6 +2,8 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 import java.util.Observer;
 
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+
 
 
 /**
@@ -13,7 +15,7 @@ public interface OCREngine {
 	  /**
   	 * Recognize. Start
   	 */
-  	public void recognize ();
+  	public void recognize () throws OCRException;
 	
 	  /**
   	 * Sets the oCR process.
