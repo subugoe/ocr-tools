@@ -20,7 +20,7 @@ public class Hotfolder {
 		 fsManager = VFS.getManager();
 	}
 
-	protected void copyFilesToServer(List<AbbyyOCRFile> files)  {
+	protected void copyFilesToServer(List<AbbyyOCRFile> files) throws FileSystemException  {
 		// iterate over all Files and put them to Abbyy-server inputFolder: 
 		for (AbbyyOCRFile info : files) {
 			
@@ -32,8 +32,9 @@ public class Hotfolder {
 				//TODO: Create the directory
 				//mkCol(AbbyyFileName);
 			} else {
-				logger.trace("Copy from " + info.getLocalFile().getAbsolutePath() + " to " + AbbyyFileName);
-				put(AbbyyFileName, info.getLocalFile());
+				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteFileName());
+				//TODO: Upload the file
+				//put(AbbyyFileName, info.getLocalFile());
 
 			}
 			
