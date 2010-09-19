@@ -9,7 +9,7 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	//This represents the filename that should be written to the ticket.
 	protected String remoteFileName;
 
-	//Thhis represents the URL to the remote system
+	//This represents the URL to the remote system
 	protected URL remoteURL;
 
 	public AbbyyOCRFile(URL imageUrl) {

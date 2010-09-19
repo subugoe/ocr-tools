@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 
 
@@ -50,12 +52,20 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected Integer millisPerFile = 1200;
 	//Language
 	protected String language;
+	
+	public static Map<Locale, String> languageMapping = null;
+	
+	static {
+		//TODO: Finish this.
+		languageMapping.put(Locale.GERMAN, "");
+	}
 	private static final String GERMAN_NAME = "de";
 	private static final String ENGLISH_NAME = "en";
 	private static final String RUSSIAN_NAME = "ru";
 	
 	protected String outPutLocation;
-
+	
+	public static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 
 	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
 
@@ -71,14 +81,13 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		opts.setSavePrettyPrint();
 		opts.setSaveImplicitNamespaces(new HashMap() {
 			{
-				put("",
-						"http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd");
+				put("",	NAMESPACE);
 			}
 		});
 
 		opts.setSaveImplicitNamespaces(new HashMap() {
 			{
-				put("", "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd");
+				put("", NAMESPACE);
 			}
 		});
 		opts.setUseDefaultNamespace();
@@ -120,9 +129,26 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		super(params);
 	}
 	
-	public Ticket (InputStream is) {
+	public Ticket (InputStream is) throws IOException {
 		//TODO: Finish this constructor
 		this.is = is;
+		XmlOptions options = new XmlOptions(); 
+		// Set the namespace 
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE)); 
+		// Load the Xml 
+		XmlTicketDocument ticketDoc = null;
+		try {
+			ticketDoc = XmlTicketDocument.Factory.parse(is, options);
+		} catch (XmlException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		XmlTicket ticket = ticketDoc.getXmlTicket();
+		ExportParams params = ticket.getExportParams();
+		OutputFileFormatSettings offs = params.getExportFormatArray(0);
+		RecognitionParams rp = ticket.getRecognitionParams();
+
+
 	}
 	
 	public Ticket (URL url) throws IOException {

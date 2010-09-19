@@ -41,7 +41,6 @@ public class TicketTest {
 	private static List<File> inputFiles = new ArrayList<File>();
 	private static OCRProcess ocrp = null;
 	private static File ticketFile;
-	private static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 	private static OCRImage ocri = null;
 	
 	@BeforeClass
@@ -97,7 +96,7 @@ public class TicketTest {
 			
 		XmlOptions options = new XmlOptions(); 
 		// Set the namespace 
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE)); 
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("", Ticket.NAMESPACE)); 
 		// Load the Xml 
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.parse(ticketFile, options);
 			
