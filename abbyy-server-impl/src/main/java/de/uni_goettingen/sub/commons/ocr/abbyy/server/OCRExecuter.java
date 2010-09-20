@@ -26,10 +26,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
+/**
+ * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
+ * execution of tasks on the Recognition Server with respect of the resource
+ * constrains, like total number of files and used storage. 
+ */
 public class OCRExecuter extends ThreadPoolExecutor implements Executor {
-
-
-
+	//TODO: Also document the differences to the overridden methods.
+	
 	public Integer maxThreads;
 
 	private boolean isPaused;
@@ -49,6 +53,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		this.maxThreads = maxThreads;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.concurrent.ThreadPoolExecutor#beforeExecute(java.lang.Thread, java.lang.Runnable)
+	 */
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
@@ -77,6 +84,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.concurrent.ThreadPoolExecutor#afterExecute(java.lang.Runnable, java.lang.Throwable)
+	 */
 	@Override
 	protected void afterExecute(Runnable r, Throwable e) {
 		super.afterExecute(r, e);
@@ -95,6 +105,10 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	}
 
 	//TODO: Check if this stops only the processing of the pool or all threads containt in it
+	//TODO: Check if this needs to be public.
+	/**
+	 * this method pauses the execution.
+	 */
 	public void pause() {
 		pauseLock.lock();
 		try {
@@ -104,6 +118,11 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
+	//TODO: Check if this needs to be public.
+
+	/**
+	 * This Method resumes the execution of the executor.
+	 */
 	public void resume() {
 		pauseLock.lock();
 		try {
@@ -114,7 +133,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
-	//TODO: Check size here
+	//TODO: Check size here, this is just a placeholder for now.
 	protected Integer getFileSize(OCRProcess p) {
 		return 0;
 	}

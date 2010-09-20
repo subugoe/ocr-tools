@@ -22,6 +22,15 @@ import java.net.URL;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 
+/**
+ * The Class AbbyyOCRFile. Is a representation of an OCRImage suitable
+ * for holding references to remote files as used by the Abbyy Recognition
+ * Server. It adds two fields:
+ * - remoteFileName, the file name as used on the remote system, usally a
+ * relative file name and thus represented as a String.
+ * - remoteURL, an URL representing the remote file, it should be resolveable
+ * from the local Server. 
+ */
 public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	//This represents the filename that should be written to the ticket.
 	protected String remoteFileName;
@@ -29,28 +38,62 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	//This represents the URL to the remote system
 	protected URL remoteURL;
 
+	/**
+	 * Instantiates a new abbyy ocr file.
+	 *
+	 * @param imageUrl the image url
+	 */
 	public AbbyyOCRFile(URL imageUrl) {
 		super(imageUrl);
 	}
 	
+	/**
+	 * Instantiates a new abbyy ocr file.
+	 *
+	 * @param imageUrl the image url
+	 * @param remoteURL the remote url
+	 * @param remoteFileName the remote file name
+	 */
 	public AbbyyOCRFile(URL imageUrl, URL remoteURL, String remoteFileName) {
 		super(imageUrl);
 		this.remoteURL = remoteURL;
 		this.remoteFileName = remoteFileName;
 	}
 
+	//TODO: Add a copy contructor for OCRFile.
+	
+	/**
+	 * Gets the remote file name.
+	 *
+	 * @return the remote file name
+	 */
 	public String getRemoteFileName() {
 		return remoteFileName;
 	}
 
+	/**
+	 * Sets the remote file name.
+	 *
+	 * @param remoteFileName the new remote file name
+	 */
 	public void setRemoteFileName(String remoteFileName) {
 		this.remoteFileName = remoteFileName;
 	}
 
+	/**
+	 * Gets the remote url.
+	 *
+	 * @return the remote url
+	 */
 	public URL getRemoteURL() {
 		return remoteURL;
 	}
 
+	/**
+	 * Sets the remote url.
+	 *
+	 * @param remoteURL the new remote url
+	 */
 	public void setRemoteURL(URL remoteURL) {
 		this.remoteURL = remoteURL;
 	}

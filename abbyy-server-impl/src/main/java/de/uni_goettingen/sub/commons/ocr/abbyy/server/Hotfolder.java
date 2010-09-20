@@ -28,8 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * The Class Hotfolder is used to control the hotfolders used by the Abbyy
+ * Recognition Server.
+ */
 public class Hotfolder {
-
+	protected URL inFolder, outFolder, errrorFolder;
+	
+	
 	final Logger logger = LoggerFactory.getLogger(Hotfolder.class);
 	FileSystemManager fsManager = null;
 	

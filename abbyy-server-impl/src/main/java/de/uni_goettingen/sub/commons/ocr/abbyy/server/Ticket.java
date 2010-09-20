@@ -51,16 +51,13 @@ import java.util.regex.Pattern;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 
-
-
-
 public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 
 	/** The ticket file. */
 	protected File ticketFile;
 
-	/** The validate ticket. */
+	// Should the ticket be validated.
 	protected Boolean validateTicket = false;
 	// Two hours by default
 	protected Long maxOCRTimeout = 3600000l * 2;
@@ -69,6 +66,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	//Language
 	protected String language;
 	
+	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
 	public static Map<Locale, String> languageMapping = null;
 	
 	static {
@@ -81,17 +79,16 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	
 	protected String outPutLocation;
 	
+	//The namespace used for the Ticket files.
 	public static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 
 	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
 
-
-
 	private static List<File> inputFiles = new ArrayList<File>();
 	protected static XmlOptions opts = new XmlOptions();
 	
+	// is represents the InputStream for files being read
 	private InputStream is;
-
 
 	static {
 		opts.setSavePrettyPrint();
