@@ -1,4 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.api.abbyy.sever;
+
 /*
 
 © 2010, SUB Göttingen. All rights reserved.
@@ -59,13 +60,14 @@ public class TicketTest {
 	private static OCRProcess ocrp = null;
 	private static File ticketFile;
 	private static OCRImage ocri = null;
-	
+
 	@BeforeClass
 	public static void init () {
 		basefolderFile = getBaseFolderAsFile();
 		ocrp = mock(OCRProcess.class);
 		ocrp.addLanguage(Locale.GERMAN);
-		when(ocrp.getLangs()).thenReturn(new HashSet(){{
+		when(ocrp.getLangs()).thenReturn(new HashSet() {
+			{
 				add(Locale.GERMAN);
 			}
 		});
@@ -73,7 +75,7 @@ public class TicketTest {
 		assertTrue(ocrp.getLangs().contains(Locale.GERMAN));
 		ocrp.addOCRFormat(OCRFormat.PDF);
 		ticketFile = new File(basefolderFile.getAbsolutePath() + "ticket.xml");
-		
+
 		ocri = mock(OCRImage.class);
 		try {
 			when(ocri.getUrl()).thenReturn(new File("/tmp").toURI().toURL());
@@ -95,8 +97,6 @@ public class TicketTest {
 		inputFiles.add(new File("C:/Test/515-00000007.tif/"));
 
 		assertNotNull("base path is null", basefolderFile);
-		
-		
 
 		ocrp.addImage(ocri);
 
@@ -107,24 +107,23 @@ public class TicketTest {
 
 		assertTrue(ticketFile.exists());
 	}
-	
+
 	@Test
 	public void readTicket () throws XmlException, IOException {
-			
-		XmlOptions options = new XmlOptions(); 
+
+		XmlOptions options = new XmlOptions();
 		// Set the namespace 
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("", Ticket.NAMESPACE)); 
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("", Ticket.NAMESPACE));
 		// Load the Xml 
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.parse(ticketFile, options);
-			
+
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
 		OutputFileFormatSettings offs = params.getExportFormatArray(0);
 		RecognitionParams rp = ticket.getRecognitionParams();
 		//TODO: If this fails the ticket writng method has a problem with language mapping
-		assertTrue("Expecting \"German\", got \"" + rp.getLanguageArray(0) +"\"", rp.getLanguageArray(0).equals("German"));
-		
-		
+		assertTrue("Expecting \"German\", got \"" + rp.getLanguageArray(0) + "\"", rp.getLanguageArray(0).equals("German"));
+
 	}
 
 	public static File getBaseFolderAsFile () {
