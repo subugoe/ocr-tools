@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <webdavURL username="gdz" password="Hfwveqo)" base="https://dl380-130.gbv.de/webdav/GDZ/"/>
+    <remotePaths seperator="\" base="D:\Recognition\GDZ\"/>
+    <localPaths base="/tmp/"/>
+    <paths>
+        <input>input</input>
+        <output>output</output>
+        <error>error</error>
+    </paths>
+    <settings>
+    	<!-- 
+        <setting name="maxSize" value="10737418240"/>
+        <setting name="maxFiles" value="5000"/>
+         -->
+         <setting name="maxSize" value="0"/>
+        <setting name="maxFiles" value="0"/>
+        <setting name="maxThreads" value="5"/>
+        
+        <!-- Was 4500  -->
+        <setting name="milisPerFile" value="5500"/>
+      <!-- <setting name="milisPerFile" value="6000"/>  -->
+        <setting name="defaultLockTimeOut" value="60000"/>
+        <setting name="writeRemotePrefix" value="true"/>
+       
+        <setting name="maxOCRTimeout" value="7200000"/>
+        
+        <setting name="checkServerState" value="true"/>
+        <setting name="deleteLocalTicket" value="false"/>
+        <setting name="langs" value="de,en"/>
+        <setting name="maxWaitPerProcess" value="7200000"/>
+        <setting name="checkInterval" value="20000"/>
+    </settings>
+</config>
