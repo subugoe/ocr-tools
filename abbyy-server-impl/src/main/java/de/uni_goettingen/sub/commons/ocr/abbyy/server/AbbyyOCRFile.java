@@ -38,6 +38,8 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	//This represents the URL to the remote system
 	protected URL remoteURL;
 
+	protected URL url = null;
+	
 	/**
 	 * Instantiates a new abbyy ocr file.
 	 *
@@ -56,6 +58,7 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	 */
 	public AbbyyOCRFile(URL imageUrl, URL remoteURL, String remoteFileName) {
 		super(imageUrl);
+		this.url = imageUrl;
 		this.remoteURL = remoteURL;
 		this.remoteFileName = remoteFileName;
 	}
@@ -97,5 +100,9 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	public void setRemoteURL(URL remoteURL) {
 		this.remoteURL = remoteURL;
 	}
-
+	
+	public URL getUrl() {
+		return this.url;
+	}
+	
 }

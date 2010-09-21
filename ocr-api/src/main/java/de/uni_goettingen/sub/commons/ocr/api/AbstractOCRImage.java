@@ -21,7 +21,7 @@ public abstract class AbstractOCRImage implements OCRImage {
   	 * @return the url
   	 */  
 	public URL getUrl() {
-		return url;
+		return this.url;
 	}
 	
 	/**
