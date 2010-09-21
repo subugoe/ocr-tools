@@ -64,10 +64,9 @@ public class Hotfolder {
 		for (AbbyyOCRFile info : files) {
 			/*File f = urlToFile(AbbyyFileName);*/
 			FileObject remoteFile = fsManager.resolveFile(info.getRemoteURL().toString());
-			FileObject imageUrlfile = fsManager.resolveFile(info.imageUrl.toString());
+			FileObject imageUrlfile = fsManager.resolveFile(info.getUrl().toString());
 			//Delete if exists
 			deleteIfExists(info.getRemoteURL());
-			
 			if (info.toString().endsWith("/")) {
 				logger.trace("Creating new directory " + info.getRemoteURL().toString() + "!");
 			//Create the directory
@@ -75,7 +74,7 @@ public class Hotfolder {
 
 			} else {
 
-				logger.trace("Copy from " + info.imageUrl.toString() + " to " + info.getRemoteURL()); 
+				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteURL()); 
 				remoteFile.copyFrom(imageUrlfile, new AllFileSelector()) ;
 			}			
 		}
