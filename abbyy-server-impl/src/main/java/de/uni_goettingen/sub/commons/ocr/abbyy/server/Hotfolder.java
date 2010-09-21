@@ -75,46 +75,58 @@ public class Hotfolder {
 		// iterate over all Files and put them to Abbyy-server inputFolder: 
 		for (AbbyyOCRFile info : files) {
 			/*File f = urlToFile(AbbyyFileName);*/
+			URL input = new URL("file:///C:/Dokumente%20und%20Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/src/test/resources/hotfolder/input/test/");	
 			
 			FileObject remoteFile = fsManager.resolveFile(info.getRemoteURL().toString());
 			
 			FileObject infile = fsManager.resolveFile(info.getUrl().toString());
 			//Delete if exists
-			if (remoteFile.delete()){
-				logger.debug("Deleted " + remoteFile.toString());
-			}
+			deleteIfExists(info.getRemoteURL());
 			
+			fsManager.resolveFile(input.toString()).delete();
 			if (info.toString().endsWith("/")) {
 				logger.trace("Creating new directory " + info.getRemoteURL().toString() + "!");
 				//Create the directory
-				remoteFile.createFolder();
-				//mkCol(AbbyyFileName.toString());
+				//remoteFile.createFolder();
+				mkCol(info.getRemoteURL());
 
 			} else {
 
 				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteURL()); 
 				remoteFile.copyFrom(infile, new AllFileSelector()) ;
-					
-					
-				
 				//put(AbbyyFileName, new File(info.getRemoteFileName()));
 
 			}			
 		}
 	}
+		
+	public void delete (URL url) throws FileSystemException{
+		fsManager.resolveFile(url.toString()).delete();
+	}
 	
-	
-	
-	public void deleteIfExists(String uri) throws IOException {
-	
+	public void deleteIfExists(URL url) throws FileSystemException  {
+			if (fsManager.resolveFile(url.toString()).delete())
+				logger.debug(url.toString() + " Exists already but now deleted");
 	}
 	
 	
-
+	public void mkCol (URL url) throws FileSystemException{
+		fsManager.resolveFile(url.toString()).createFolder();
+	}
 	
 	
+	public boolean exists(URL url) throws FileSystemException{
+		if (fsManager.resolveFile(url.toString()).exists()){
+			logger.debug(url.toString() + " Exists ");
+			return true;
+		}
+		else {
+			logger.debug(url.toString() + " No Exists ");
+			return false;
+		}
+	}
 
-
+	
 	protected Long getSize(String path) {
 		return null;
 	}

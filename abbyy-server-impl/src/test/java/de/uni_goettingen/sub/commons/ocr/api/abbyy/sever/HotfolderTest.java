@@ -32,8 +32,10 @@ public class HotfolderTest {
 		List<AbbyyOCRFile> files = new ArrayList<AbbyyOCRFile>();
 		//AbbyyOCRFile abbyy = new AbbyyOCRFile(new URL("http://localhost/webdav/Test/TestB.tif"));					
 		
-		URL local = new URL("file:///C:/Dokumente%20und%20Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/src/test/resources/local/test.xml");
-		URL input = new URL("file:///C:/Dokumente%20und%20Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/src/test/resources/hotfolder/input/test.xml");											//local																																			//input
+//		URL local = new URL("file:///C:/Dokumente%20und%20Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/src/test/resources/local/test.xml");
+//		URL input = new URL("file:///C:/Dokumente%20und%20Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/src/test/resources/hotfolder/input/test.xml");	
+		URL local = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "local/testfile");
+		URL input = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile");
 		
 		AbbyyOCRFile abbyy = new AbbyyOCRFile(local,input , "");
 		files.add(abbyy);
