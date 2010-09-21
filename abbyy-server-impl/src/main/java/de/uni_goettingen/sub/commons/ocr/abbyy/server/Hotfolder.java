@@ -58,44 +58,25 @@ public class Hotfolder {
 		 fsManager = VFS.getManager();
 	}
 
-	
-	/*static File urlToFile(URL url) {
-        File file = null;
-        try {
-          file = new File(url.toURI());
-        } catch(URISyntaxException e) {
-          file = new File(url.getPath());
-        }
-        System.out.println(file);
-        return file;
-    } */
-	
-	
+		
 	public void copyFilesToServer(List<AbbyyOCRFile> files) throws IOException, InterruptedException  {
 		// iterate over all Files and put them to Abbyy-server inputFolder: 
 		for (AbbyyOCRFile info : files) {
 			/*File f = urlToFile(AbbyyFileName);*/
-			URL input = new URL("file:///C:/Dokumente%20und%20Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/src/test/resources/hotfolder/input/test/");	
-			
 			FileObject remoteFile = fsManager.resolveFile(info.getRemoteURL().toString());
-			
-			FileObject infile = fsManager.resolveFile(info.getUrl().toString());
+			FileObject imageUrlfile = fsManager.resolveFile(info.imageUrl.toString());
 			//Delete if exists
 			deleteIfExists(info.getRemoteURL());
 			
-			fsManager.resolveFile(input.toString()).delete();
 			if (info.toString().endsWith("/")) {
 				logger.trace("Creating new directory " + info.getRemoteURL().toString() + "!");
-				//Create the directory
-				//remoteFile.createFolder();
-				mkCol(info.getRemoteURL());
+			//Create the directory
+			mkCol(info.getRemoteURL());
 
 			} else {
 
-				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteURL()); 
-				remoteFile.copyFrom(infile, new AllFileSelector()) ;
-				//put(AbbyyFileName, new File(info.getRemoteFileName()));
-
+				logger.trace("Copy from " + info.imageUrl.toString() + " to " + info.getRemoteURL()); 
+				remoteFile.copyFrom(imageUrlfile, new AllFileSelector()) ;
 			}			
 		}
 	}
@@ -112,6 +93,7 @@ public class Hotfolder {
 	
 	public void mkCol (URL url) throws FileSystemException{
 		fsManager.resolveFile(url.toString()).createFolder();
+		logger.debug(url.toString() + " created");
 	}
 	
 	
@@ -121,7 +103,7 @@ public class Hotfolder {
 			return true;
 		}
 		else {
-			logger.debug(url.toString() + " No Exists ");
+			logger.debug(url.toString() + " Not Exists ");
 			return false;
 		}
 	}
