@@ -18,27 +18,26 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.List;
-import org.apache.commons.httpclient.methods.FileRequestEntity;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.HeadMethod;
 
+import java.io.IOException;
+
+
+import java.net.URL;
+
+import java.util.List;
+
+import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
+
+
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 
-import org.apache.jackrabbit.webdav.client.methods.DavMethod;
-import org.apache.jackrabbit.webdav.client.methods.DeleteMethod;
-import org.apache.jackrabbit.webdav.client.methods.MkColMethod;
-import org.apache.jackrabbit.webdav.client.methods.PutMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 
 
 /**
@@ -49,7 +48,7 @@ public class Hotfolder {
 	protected URL inFolder, outFolder, errrorFolder;
 	
 	
-	protected HttpClient client = null;
+	
 	
 	
 	final static Logger logger = LoggerFactory.getLogger(Hotfolder.class);
@@ -59,91 +58,96 @@ public class Hotfolder {
 		 fsManager = VFS.getManager();
 	}
 
-	protected void copyFilesToServer(List<AbbyyOCRFile> files) throws HttpException, IOException, InterruptedException  {
+	
+	/*static File urlToFile(URL url) {
+        File file = null;
+        try {
+          file = new File(url.toURI());
+        } catch(URISyntaxException e) {
+          file = new File(url.getPath());
+        }
+        System.out.println(file);
+        return file;
+    } */
+	
+	
+	public void copyFilesToServer(List<AbbyyOCRFile> files) throws IOException, InterruptedException  {
 		// iterate over all Files and put them to Abbyy-server inputFolder: 
 		for (AbbyyOCRFile info : files) {
+			/*File f = urlToFile(AbbyyFileName);*/
 			
-
-			URL AbbyyFileName = info.getRemoteURL();
-			FileObject remoteFile = fsManager.resolveFile(AbbyyFileName.toString());
+			FileObject remoteFile = fsManager.resolveFile(info.getRemoteURL().toString());
+			
+			FileObject infile = fsManager.resolveFile(info.getUrl().toString());
 			//Delete if exists
 			if (remoteFile.delete()){
 				logger.debug("Deleted " + remoteFile.toString());
 			}
-		
-			if (AbbyyFileName.toString().endsWith("/")) {
-				logger.trace("Creating new directory " + AbbyyFileName + "!");
+			
+			if (info.toString().endsWith("/")) {
+				logger.trace("Creating new directory " + info.getRemoteURL().toString() + "!");
 				//Create the directory
-				mkCol(AbbyyFileName.toString());
+				remoteFile.createFolder();
+				//mkCol(AbbyyFileName.toString());
 
 			} else {
-				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteFileName()); 
-				put(AbbyyFileName.toString(), info.getUrl());
+
+				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteURL()); 
+				remoteFile.copyFrom(infile, new AllFileSelector()) ;
+					
+					
+				
+				//put(AbbyyFileName, new File(info.getRemoteFileName()));
 
 			}			
 		}
 	}
 	
-	private void mkCol(String uri) throws HttpException, IOException, InterruptedException {
-		DavMethod mkCol = new MkColMethod(uri);
-		executeMethod(this.client, mkCol);
-
-		//Since we use the multithreaded Connection manager we have to wait until the directory is created
-		//The problem doesn't accoure in debug mode since the main thread is slower there
-		//You get a 403 if you try to PUT something in an non existing COLection
-		while (true) {
-			Integer status = head(uri);
-			if (status == 200) {
-				break;
-			}
-			if (status == 403) {
-				throw new IllegalStateException("Got HTTP Code " + status);
-			}
-		}
-	}
 	
-	protected void delete(String uri) throws HttpException, IOException {
-		DavMethod delete = new DeleteMethod(uri);
-		executeMethod(this.client, delete);
+	
+	public void deleteIfExists(String uri) throws IOException {
+	
 	}
 	
 	
-	protected void put(String uri, URL url) throws HttpException, IOException {
-		File file = new File(url.toString());
-		if (!file.exists()) {
-			throw new IllegalArgumentException("URL " + file + " doesn't exist.");
-		}
-		PutMethod put = new PutMethod(uri);
-		String fileName = file.getPath();
-		String mimeType = URLConnection.guessContentTypeFromName(fileName);
-		put.setRequestEntity(new FileRequestEntity(file, mimeType));
-		executeMethod(this.client, put);
-	}
-	
-		
-	public static void executeMethod(HttpClient client, DavMethod method) throws HttpException, IOException {
-		Integer responseCode = client.executeMethod(method);
-		method.releaseConnection();
-		logger.trace("Response code: " + responseCode);
-		if (responseCode >= 400) {
-			throw new IllegalStateException("Got HTTP Code " + responseCode + " for " + method.getURI());
-		}
-	}
 
 	
-	protected int head(String uri) throws HttpException, IOException {
-		HeadMethod head = new HeadMethod(uri);
-		Integer status = this.client.executeMethod(head);
-		head.releaseConnection();
-		return status;
-	}
-	//Implement a method to download the files
-	//abstract void protected getResults ();
+	
 
 
 	protected Long getSize(String path) {
 		return null;
 	}
-	
 
+
+	public URL getInFolder() {
+		return inFolder;
+	}
+
+
+	public void setInFolder(URL inFolder) {
+		this.inFolder = inFolder;
+	}
+
+
+	public URL getOutFolder() {
+		return outFolder;
+	}
+
+
+	public void setOutFolder(URL outFolder) {
+		this.outFolder = outFolder;
+	}
+
+
+	public URL getErrrorFolder() {
+		return errrorFolder;
+	}
+
+
+	public void setErrrorFolder(URL errrorFolder) {
+		this.errrorFolder = errrorFolder;
+	}
+	
+	
 }
