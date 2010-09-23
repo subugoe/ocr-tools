@@ -18,20 +18,28 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-
-import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import java.util.List;
 import java.util.Locale;
+
 import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.naming.ConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.vfs.FileSystemException;
+
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,51 +53,46 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 public class AbbyyServerEngine implements OCREngine{
 	
-	protected Integer maxThreads = 5;
+	protected static Integer maxThreads = 5;
 	protected ExecutorService pool = new OCRExecuter(maxThreads);
-	final Logger logger = LoggerFactory.getLogger(AbbyyServerEngine.class);
+	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngine.class);
 
 	
 	protected HierarchicalConfiguration config;
-
+	protected Hotfolder hotfolder;
 	//Server information
 	protected static String webdavURL = null;
 	protected static String webdavUsername = null;
 	protected static String webdavPassword = null;
 
-	//PaAth related stuff
-	protected static String localPathSeparator = File.separator;
-	protected static String remotePathSeperator = null;
-	protected static String remoteBasePath = null;
-	protected static String localBasePath = null;
-	protected static String localOutputDir = null;
-
 	protected static List<Locale> langs;
 	
+	//State variables 
+	protected static Long totalFileCount = 0l;
+	protected static Long totalFileSize = 0l;
 	//Folders
 	protected static String inputFolder = null;
 	protected static String outputFolder = null;
 	protected static String errorFolder = null;
 
-	public String defaultConfig = "server-config.xml";
+	//public String defaultConfig = "config-properties";
 	
 	//internal tweaking variables
 	//Variables used for process management
 	protected static Long maxSize = 5368709120l;
 	protected static Long maxFiles = 5000l;
 	
-	protected Boolean checkServerState = true;
+	protected static Boolean checkServerState = true;
 	
 	//TODO: Try to move this stuff to the OCRProcess
 	protected static Boolean writeRemotePrefix = true;
 	
-	//Settings for Ticket creation
-	protected Boolean recursiveMode = true;
 	
 	
 	
 	
-	public AbbyyServerEngine(){		
+	public AbbyyServerEngine() throws FileSystemException{		
+		hotfolder = new Hotfolder();
 	}
 	
 	@Override
@@ -97,72 +100,52 @@ public class AbbyyServerEngine implements OCREngine{
 		// TODO Auto-generated method stub
 		
 	}
+	
 
-	
-	
-	public void loadConfig(HierarchicalConfiguration config) throws ConfigurationException {
+	public void loadConfig(PropertiesConfiguration config) throws ConfigurationException  {
 		// do something with config
-		config.setExpressionEngine(new XPathExpressionEngine());
-		webdavURL = config.getString("//webdavURL/@base");
+		config = new PropertiesConfiguration("config-properties");
+
+		webdavURL = config.getString("base");
 		webdavURL = webdavURL.endsWith("/") ? webdavURL : webdavURL + "/";
-		webdavUsername = config.getString("//webdavURL/@username");
-		webdavPassword = config.getString("//webdavURL/@password");
-		remotePathSeperator = config.getString("//remotePaths/@seperator");
-		remoteBasePath = config.getString("//remotePaths/@base");
-
-		if (config.getString("//localPaths/@base") != null && !config.getString("//localPaths/@base").equals("")) {
-			localBasePath = config.getString("//localPaths/@base");
-		} else {
-			localBasePath = System.getProperty("user.dir");
-		}
-
-		if (!remoteBasePath.endsWith(remotePathSeperator)) {
-			remoteBasePath = remoteBasePath + remotePathSeperator;
-		}
-
-		inputFolder = config.getString("//paths/input");
-		outputFolder = config.getString("//paths/output");
-		errorFolder = config.getString("//paths/error");
+		webdavUsername = config.getString("username");
+		webdavPassword = config.getString("password");
+		inputFolder = config.getString("input");
+		outputFolder = config.getString("output");
+		errorFolder = config.getString("error");
 
 		//TODO: Simplify this stuff, maybe use a Map for the variables
 
-		if (config.getString("//setting[@name='langs']/@value") != null && !config.getString("//setting[@name='langs']/@value").equals("")) {
-			langs = parseLangs(config.getString("//setting[@name='langs']/@value"));
+		if (config.getString("langs") != null && !config.getString("langs").equals("")) {
+			langs = parseLangs(config.getString("langs"));
 		}
 
-		if (config.getString("//setting[@name='checkServerState']/@value") != null && !config.getString("//setting[@name='checkServerState']/@value").equals("")) {
-			checkServerState = Boolean.parseBoolean(config.getString("//setting[@name='checkServerState']/@value"));
+		if (config.getString("checkServerState") != null && !config.getString("checkServerState").equals("")) {
+			checkServerState = Boolean.parseBoolean(config.getString("checkServerState"));
 		}
 
-		if (config.getString("//setting[@name='maxTreads']/@value") != null && !config.getString("//setting[@name='maxTreads']/@value").equals("")) {
-			maxThreads = Integer.parseInt(config.getString("//setting[@name='maxTreads']/@value"));
+		if (config.getString("maxTreads") != null && !config.getString("maxTreads").equals("")) {
+			maxThreads = Integer.parseInt(config.getString("maxTreads"));
 		}
 
 
-		if (config.getString("//setting[@name='writeRemotePrefix']/@value") != null && !config.getString("//setting[@name='writeRemotePrefix']/@value").equals("")) {
-			writeRemotePrefix = Boolean.parseBoolean(config.getString("//setting[@name='writeRemotePrefix']/@value"));
+		if (config.getString("writeRemotePrefix") != null && !config.getString("writeRemotePrefix").equals("")) {
+			writeRemotePrefix = Boolean.parseBoolean(config.getString("writeRemotePrefix"));
 		}
 
-		if (config.getString("//setting[@name='maxSize']/@value") != null && !config.getString("//setting[@name='maxSize']/@value").equals("")) {
-			maxSize = Long.parseLong(config.getString("//setting[@name='maxSize']/@value"));
+		if (config.getString("maxSize") != null && !config.getString("maxSize").equals("")) {
+			maxSize = Long.parseLong(config.getString("maxSize"));
 		}
 
-		if (config.getString("//setting[@name='maxFiles']/@value") != null && !config.getString("//setting[@name='maxFiles']/@value").equals("")) {
-			maxFiles = Long.parseLong(config.getString("//setting[@name='maxFiles']/@value"));
-		}
-
-		if (config.getString("//setting[@name='recursiveMode']/@value") != null && !config.getString("//setting[@name='recursiveMode']/@value").equals("")) {
-			recursiveMode = Boolean.parseBoolean(config.getString("//setting[@name='recursiveMode']/@value"));
+		if (config.getString("maxFiles") != null && !config.getString("maxFiles").equals("")) {
+			maxFiles = Long.parseLong(config.getString("maxFiles"));
 		}
 
 		//Add a preconfigured local output folder
-		
 		logger.debug("URL: " + webdavURL);
 		logger.debug("User: " + webdavUsername);
 		logger.debug("Password: " + webdavPassword);
-		logger.debug("Remote Path Seperator: " + remotePathSeperator);
-		logger.debug("Remote base path: " + remoteBasePath);
-		logger.debug("Local base path: " + localBasePath);
+		
 		logger.debug("Input folder: " + inputFolder);
 		logger.debug("Output Folder: " + outputFolder);
 		logger.debug("Error Folder: " + errorFolder);
@@ -170,12 +153,49 @@ public class AbbyyServerEngine implements OCREngine{
 		logger.debug("Max size: " + maxSize);
 		logger.debug("Max files: " + maxFiles);
 		logger.debug("Max treads: " + maxThreads);
-
 	
 		logger.debug("Write Remoe Prefix: " + writeRemotePrefix);
 		logger.debug("Check server state: " + checkServerState);
 
 	}
+	
+	public void checkServerState() throws IOException {
+		if (maxSize != 0 && maxFiles != 0) {
+			List<URL> urls = new ArrayList<URL>();
+			//TODO: check if a slash is already appended
+			String input_uri = webdavURL + inputFolder + "/";
+			String output_uri = webdavURL + outputFolder + "/";
+			String error_uri = webdavURL + errorFolder + "/";
+			//We need to check all three folders since the limits are for the whole system, not just input
+			urls.add(hotfolder.stringToUrl(input_uri));
+			urls.add(hotfolder.stringToUrl(output_uri));
+			urls.add(hotfolder.stringToUrl(error_uri));
+			
+			Map<URL, Long> infoMap = new LinkedHashMap<URL, Long>();
+			for (URL uri : urls) {
+				infoMap.put(uri , hotfolder.getTotalSize(uri));
+			}
+			totalFileCount = new Integer(infoMap.size()).longValue();
+			for (Long size : infoMap.values()) {
+				if (size != null) {
+					totalFileSize += size;
+				}
+			}
+			System.out.print("TotalFileSize = " + totalFileSize);
+			logger.trace("TotalFileSize = " + totalFileSize );
+			if (maxFiles != 0 && totalFileCount > maxFiles) {
+				logger.error("Too much files. Max number of files is " + maxFiles + ". Number of files on server: " + totalFileCount + ".\nExit program.");
+				throw new IllegalStateException("Max number of files exeded");
+			}
+			if (maxSize != 0 && totalFileSize > maxSize) {
+				logger.error("Size of files is too much files. Max size of all files is " + maxSize + ". Size of files on server: " + totalFileSize + ".\nExit program.");
+				throw new IllegalStateException("Max size of files exeded");
+			}
+		} else {
+			logger.warn("Server state checking is disabled.");
+		}
+	}
+		
 	
 	public static List<Locale> parseLangs(String str) {
 		List<Locale> langs = new ArrayList<Locale>();
@@ -188,8 +208,6 @@ public class AbbyyServerEngine implements OCREngine{
 		}
 		return langs;
 	}
-	
-	
 	
 	
 	@Override
