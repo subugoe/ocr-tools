@@ -1,0 +1,17 @@
+username: gdz
+password: Hfwveqo)
+base: C:/hot/
+input: input
+output: output
+error: error
+maxSize: 567103
+maxFiles: 567103
+maxThreads: 5
+milisPerFile: 5500
+milisPerFile: 6000       
+writeRemotePrefix: true       
+maxOCRTimeout: 7200000       
+checkServerState: true   
+langs: de,en
+maxWaitPerProcess: 7200000
+checkInterval: 20000
