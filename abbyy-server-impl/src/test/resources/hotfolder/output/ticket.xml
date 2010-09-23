@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XmlTicket OCRTimeout="8400">
+  <InputFile Name="515-00000001.tif"/>
+  <InputFile Name="515-00000002.tif"/>
+  <InputFile Name="515-00000003.tif"/>
+  <InputFile Name="515-00000004.tif"/>
+  <InputFile Name="515-00000005.tif"/>
+  <InputFile Name="515-00000006.tif"/>
+  <InputFile Name="515-00000007.tif"/>
+  <ImageProcessingParams Deskew="false"/>
+  <RecognitionParams>
+    <Language>German</Language>
+  </RecognitionParams>
+  <ExportParams DocumentSeparationMethod="MergeIntoSingleFile">
+    <ExportFormat EncodingType="UTF8" OutputFlowType="SharedFolder" OutputFileFormat="TXT">
+      <NamingRule>515.txt</NamingRule>
+      <OutputLocation>D:/Recognition/GDZ/output</OutputLocation>
+    </ExportFormat>
+    <ExportFormat WriteCharactersFormatting="true" WriteCharAttributes="true" OutputFlowType="SharedFolder" OutputFileFormat="XML">
+      <NamingRule>515.xml</NamingRule>
+      <OutputLocation>D:/Recognition/GDZ/output</OutputLocation>
+    </ExportFormat>
+    <ExportFormat PictureResolution="300" Quality="50" UseImprovedCompression="true" ExportMode="ImageOnText" OutputFlowType="SharedFolder" OutputFileFormat="PDF">
+      <NamingRule>515.pdf</NamingRule>
+      <OutputLocation>D:/Recognition/GDZ/output</OutputLocation>
+    </ExportFormat>
+  </ExportParams>
+</XmlTicket>
