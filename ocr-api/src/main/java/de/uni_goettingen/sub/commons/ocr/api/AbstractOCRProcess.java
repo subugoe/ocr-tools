@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class AbstractOCRProcess implements OCRProcess {
+public abstract class AbstractOCRProcess implements OCRProcess {
 
 	/** The file. */
 	private String file;
