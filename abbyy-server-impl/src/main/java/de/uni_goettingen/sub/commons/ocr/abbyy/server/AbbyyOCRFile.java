@@ -42,7 +42,7 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	
 	/**
 	 * Instantiates a new abbyy ocr file.
-	 *
+	 * 
 	 * @param imageUrl the image url
 	 */
 	public AbbyyOCRFile(URL imageUrl) {
