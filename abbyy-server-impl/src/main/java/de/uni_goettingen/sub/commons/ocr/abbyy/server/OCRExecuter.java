@@ -59,8 +59,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
-		if (r instanceof OCRProcess) {
-			OCRProcess process = (OCRProcess) r;
+		if (r instanceof Process) {
+			Process process = (Process) r;
 			//TODO: Refresh server state here
 			if (maxFiles != 0 && maxSize != 0) {
 				if (process.getOcrImages().size() + totalFileCount > maxFiles || getFileSize(process) + totalFileSize > maxSize) {
@@ -90,8 +90,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void afterExecute(Runnable r, Throwable e) {
 		super.afterExecute(r, e);
-		if (r instanceof OCRProcess) {
-			OCRProcess process = (OCRProcess) r;
+		if (r instanceof Process) {
+			Process process = (Process) r;
 			//TODO: Refresh server state here
 			if (maxFiles != 0 && maxSize != 0) {
 				if (process.getOcrImages().size() + totalFileCount < maxFiles || getFileSize(process) + totalFileSize < maxSize) {
@@ -100,7 +100,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			}
 
 		} else {
-			throw new IllegalStateException("Not a OCRProcess object");
+			throw new IllegalStateException("Not a Process object");
 		}
 	}
 
@@ -133,8 +133,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
-	//TODO: Check size here, this is just a placeholder for now.
-	protected Integer getFileSize(OCRProcess p) {
+	//TODO: Check size here, this is just a place holder for now.
+	protected Integer getFileSize(Process p) {
 		return 0;
 	}
 
