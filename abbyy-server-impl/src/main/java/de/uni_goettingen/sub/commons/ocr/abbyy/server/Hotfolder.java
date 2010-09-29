@@ -18,11 +18,23 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
+
+
+
+
+
+import java.io.File;
 import java.io.IOException;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
@@ -35,15 +47,34 @@ import org.apache.commons.vfs.VFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+
 /**
  * The Class Hotfolder is used to control the hotfolders used by the Abbyy
  * Recognition Server.
  */
-public class Hotfolder {
+public class Hotfolder extends Thread{
+
 	protected URL inFolder, outFolder, errrorFolder;
 	FileObject urlFile = null;
 	FileObject urlFileStringToUrl = null;
+	FileObject getUrlImage = null;
+	
 	Long totalSize = 0l;
+	protected String imageDirectory;
+	protected String identifier;
+	//protected HierarchicalConfiguration configu;
+	protected static List<Locale> langs;
+	
+	protected static String localOutputDir = null;
+	protected List<AbbyyOCRFile> fileInfos = null;
+	
+	
+	protected static Boolean writeRemotePrefix = true;
+	//TODO mal sehen ob das brauche
+
+	
+	
 	
 
 	final static Logger logger = LoggerFactory.getLogger(Hotfolder.class);
@@ -52,7 +83,9 @@ public class Hotfolder {
 	public Hotfolder() throws FileSystemException {
 		fsManager = VFS.getManager();
 	}
-
+	
+	
+	
 	public void copyFilesToServer(List<AbbyyOCRFile> files) throws IOException,
 			InterruptedException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
@@ -130,6 +163,40 @@ public class Hotfolder {
 		return urlFileStringToUrl.getURL();
 		
 	}
+	
+	List<AbbyyOCRFile> getUrlList(String imageDirectory) throws FileSystemException, MalformedURLException {
+		List<AbbyyOCRFile> imageList = new ArrayList<AbbyyOCRFile>();
+		getUrlImage = fsManager.resolveFile(imageDirectory);
+		FileObject[] children = getUrlImage.getChildren();
+		 for ( int i = 0; i < children.length; i++ )
+	        {
+			 imageList.add(new AbbyyOCRFile(new URL(children[ i ].getName().toString())));
+	        }
+		return imageList;
+	}
+	
+	public URL fileToURL(File file){
+        URL url = null;
+        try {
+            url = new URL("file://" + file.getPath());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return url;
+    } 
+	
+	public File urlToFile(URL url) {
+        File file = null;
+        try {
+          file = new File(url.toURI());
+        } catch(URISyntaxException e) {
+          file = new File(url.getPath());
+        }
+        return file;
+    } 
+	
+	
+	
 	
 	public URL getInFolder() {
 		return inFolder;
