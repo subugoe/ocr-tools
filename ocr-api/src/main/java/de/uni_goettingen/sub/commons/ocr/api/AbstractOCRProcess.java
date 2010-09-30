@@ -1,5 +1,6 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,10 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	/** The ocr output. The Images converted are put in this Output Folder */
 	protected List<OCROutput> ocrOutput = new ArrayList<OCROutput>();
 
+	
+	
+	
+	
 	/**
 	 * Instantiates a new oCR process.
 	 */

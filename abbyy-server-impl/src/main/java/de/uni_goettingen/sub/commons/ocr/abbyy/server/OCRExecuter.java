@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+
 
 /**
  * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
