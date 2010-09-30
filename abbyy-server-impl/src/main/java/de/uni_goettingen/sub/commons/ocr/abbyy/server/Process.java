@@ -1,32 +1,38 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
-
-
-
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.naming.ConfigurationException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.vfs.FileObject;
+
 import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 
@@ -44,7 +50,7 @@ public class Process extends Ticket implements Runnable {
 	protected static String webdavURL = null;
 	protected static String inputFolder = null;
 	protected static String outputFolder = null;
-
+	protected static String errorFolder = null;
 	private static List<File> inputFiles = new ArrayList<File>();
 
 	protected static List<Locale> langs;
@@ -57,15 +63,15 @@ public class Process extends Ticket implements Runnable {
 	protected Boolean done = false;
 	Date doneDate = null;
 
-
-	
+	protected String reportSuffix = "xml.result.xml";
 	protected static String extension = "tif";
 	protected Hotfolder hotfolder;
 	protected String imageDirectory;
 	protected String identifier;
 
+	Set<String> ocrErrorFormatFile = new LinkedHashSet<String>();
+	Set<String> ocrOutFormatFile = new LinkedHashSet<String>();
 	protected List<AbbyyOCRFile> fileInfos = null;
-	protected Map<String, String> remoteFiles = null;
 
 	PropertiesConfiguration config;
 
@@ -99,57 +105,114 @@ public class Process extends Ticket implements Runnable {
 			fileInfos = addTicketFile(new LinkedList<AbbyyOCRFile>(fileInfos),
 					identifier);
 
-			if (!dryRun) {
-				hotfolder.copyFilesToServer(fileInfos);
-				// everything uploaded, release the locks
+			hotfolder.copyFilesToServer(fileInfos);
 
-				//lockManager.unlockGroup(identifier);
+			// lockManager.unlockGroup(identifier);
+			wait = fileInfos.size() * millisPerFile;
+			logger.info("Waiting " + wait + " milli seconds");
 
-				/*if (!copyOnly) {
-					wait = fileInfos.size() * millisPerFile;
-					logger.info("Waiting " + wait + " milli seconds");
+			Thread.sleep(wait);
 
-					Thread.sleep(wait);
+			// remoteFiles = getResults();
+			
+				while (!failed) {
+					// for Output folder
+					if (checkOutXmlResults()) {
+						String resultOutURLPrefix = webdavURL + outputFolder
+								+ "/" + identifier;
+						// TODO Erkennungsrat muss noch ausgelesen werden(ich
+						// weiß das eigentlich nicht deswegen ist noch offen)
+						ocrOutFormatFile = xmlresultOutputparse(new File(
+								resultOutURLPrefix + reportSuffix));
+						// TODO muss ich diese locale URL wissen, wo die Dateien
+						// veschieben werden sollen
+						String local = null;
+						// for Output folder
+						if (checkIfAllFilssExists(ocrOutFormatFile,
+								resultOutURLPrefix)) {
+							copyAllFiles(ocrOutFormatFile, resultOutURLPrefix,
+									local);
+							deleteAllFiles(ocrOutFormatFile, resultOutURLPrefix);
+							failed = true;
+							logger.info("Move Processing successfully to "
+									+ resultOutURLPrefix);
+						} else {
+							// es soll nochmal gewartet werden um zu prüfen ob
+							// alles da ist
+							Thread.sleep(wait / 20);
+							if (checkIfAllFilssExists(ocrOutFormatFile,
+									resultOutURLPrefix)) {
+								copyAllFiles(ocrOutFormatFile,
+										resultOutURLPrefix, local);
+								deleteAllFiles(ocrOutFormatFile,
+										resultOutURLPrefix);
+								failed = true;
+								logger.info("Move Processing is successfull to "
+										+ resultOutURLPrefix);
 
-					remoteFiles = getResults();
-					try {
-						if (waitForResults(remoteFiles)) {
-							copyServerFiles(remoteFiles);
+							} else {
+								failed = true;
+								logger.error("failed!!TimeoutExcetion for Move Processing, All files Not exists in "
+										+ resultOutURLPrefix);
+							}
 						}
-					} catch (TimeoutExcetion e) {
-						failed = true;
+					} else {
+						// for Error folder
+						if (checkErrorXmlResults()) {
+							String resultErrorURLPrefix = webdavURL
+									+ errorFolder + "/" + identifier;
+							// TODO bericht wird von hier angeholt
+							ocrErrorFormatFile = xmlresultErrorparse(new File(
+									resultErrorURLPrefix + reportSuffix));
+							if (checkIfAllFilssExists(ocrErrorFormatFile,
+									resultErrorURLPrefix)) {
+								deleteAllFiles(ocrErrorFormatFile,
+										resultErrorURLPrefix);
+								failed = true;
+								logger.info("delete All Files Processing is successfull ");
+							} else {
+								// es soll nochmal gewartet werden um zu prüfen
+								// ob alles da ist
+								Thread.sleep(wait / 20);
+								if (checkIfAllFilssExists(ocrErrorFormatFile,
+										resultErrorURLPrefix)) {
+									deleteAllFiles(ocrErrorFormatFile,
+											resultErrorURLPrefix);
+									failed = true;
+									logger.info("delete All Files Processing is successfull ");
+								} else {
+									failed = true;
+									logger.error("failed!! TimeoutExcetion for delete All Files Processing, All files Not exists in!! "
+											+ resultErrorURLPrefix);
+								}
+							}
+						}
 					}
-				} else {
-					logger.info("We don't wait for the Server, copy mode.");
-				}*/
+				}
 
+			} catch (Exception e) {
+				logger.error("Processing failed", e);
+				failed = true;
+				throw new RuntimeException(e);
+
+			} finally {
+				fileInfos = null;
+				ocrErrorFormatFile = null;
+				ocrOutFormatFile = null;
 			}
-		} catch (Exception e) {
-			logger.error("Processing failed", e);
-			failed = true;
-			throw new RuntimeException(e);
-
-		} /*
-		 * finally { //clean localCleanUp(); if (!dryRun) {
-		 * 
-		 * //Set state vars done = true; doneDate = new Date(); try { //This
-		 * methos should remove any remote file if (!copyOnly) {
-		 * removeRemoteFiles(); } else {
-		 * logger.info("Don't delete anything, copy mode."); } } catch
-		 * (IOException e) { logger.error("Unable to clean up!", e); } //Safe
-		 * this stuff
-		 * 
-		 * //TODO: We have a memory leak here //Dirty hack - empty a few
-		 * collections fileInfos = null; remoteFiles = null; of = null;
-		 * engineConfig = null; } }
-		 */
-
-		// TODO: deal with errors, remove error files
-		// TODO: Parse result statistics or pass them to caller
-		// TODO: delete empty folder (if exists), delete error files
 
 	}
 
+	public class TimeoutExcetion extends Exception {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3002142265497735648L;
+
+		public TimeoutExcetion() {
+			super();
+		}
+	}
 	protected LinkedList<AbbyyOCRFile> getFileList(File dir) {
 		List<File> files = makeFileList(dir, extension);
 
@@ -203,7 +266,7 @@ public class Process extends Ticket implements Runnable {
 
 			String outputFile = uriPrefix
 					+ windows2unixFileSeparator(localFile.getName());
-			
+
 			URL imageUrlNew = hotfolder.fileToURL(localFile);
 			URL remoteURL = null;
 			try {
@@ -211,8 +274,8 @@ public class Process extends Ticket implements Runnable {
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
-			AbbyyOCRFile fileInfo = new AbbyyOCRFile(imageUrlNew,
-					remoteURL, outputFile);
+			AbbyyOCRFile fileInfo = new AbbyyOCRFile(imageUrlNew, remoteURL,
+					outputFile);
 			fileInfoList.add(fileInfo);
 		}
 		return fileInfoList;
@@ -260,7 +323,7 @@ public class Process extends Ticket implements Runnable {
 					String newRemoteName = name + "-" + mr.group(1);
 					logger.trace("Rewiting " + info.getRemoteURL().toString()
 							+ " to " + newRemoteName);
-					
+
 					try {
 						info.setRemoteURL(new URL(newRemoteName));
 					} catch (MalformedURLException e) {
@@ -320,7 +383,8 @@ public class Process extends Ticket implements Runnable {
 		write(ticketFile);
 
 		String outputFile = webdavURL + inputFolder + "/" + ticketFileName;
-		fileInfos.addFirst(new AbbyyOCRFile(hotfolder.fileToURL(ticketFile), null, outputFile));
+		fileInfos.addFirst(new AbbyyOCRFile(hotfolder.fileToURL(ticketFile),
+				null, outputFile));
 		logger.trace("Copy from " + ticketFile.getAbsolutePath() + " to "
 				+ outputFile);
 		return fileInfos;
@@ -340,7 +404,7 @@ public class Process extends Ticket implements Runnable {
 		webdavURL = webdavURL.endsWith("/") ? webdavURL : webdavURL + "/";
 		inputFolder = config.getString("input");
 		outputFolder = config.getString("output");
-		// errorFolder = config.getString("error");
+		errorFolder = config.getString("error");
 
 		/*
 		 * if (config.getString("//setting[@name='langs']/@value") != null &&
@@ -368,39 +432,128 @@ public class Process extends Ticket implements Runnable {
 
 	}
 
-	//copy files back
-	/*public Map<String, String> getResults() {
-		Map<String, String> copyFiles = new HashMap<String, String>();
-		String resultURLPrefix = webdavURL + outputFolder + "/";
-		
-		if (!imageDirectory.endsWith(localPathSeparator)) {
-			imageDirectory = imageDirectory + localPathSeparator;
-		}
-		
-		OCRExportFormat f = null;
-		for (OCRExportFormat ef : engineConfig.getDefaultParams().getFormats().keySet()) {
-			String fileName = TicketHelper.getName(engineConfig.getDefaultParams().getFormats().get(ef));
-			String resultFileURL = resultURLPrefix + fileName;
-			//results.put("reportFileURL", results.get("resultFileURL") + reportSuffix);
-			copyFiles.put(resultFileURL, imageDirectory + fileName);
-			f = ef;
-		}
-		//Get the last Format 
+	// copy files back
+	protected Boolean checkOutXmlResults() throws FileSystemException {
+		String resultURLPrefix = webdavURL + outputFolder + "/" + identifier
+				+ reportSuffix;
+		return hotfolder.fileIfexists(resultURLPrefix);
+	}
 
-		if (getReport) {
-			String fileName = TicketHelper.getName(engineConfig.getDefaultParams().getFormats().get(f));
-			// Change result to .xml.result.xml
-			Pattern pattern = Pattern.compile("(.+)\\..+$");
-			Matcher matcher = pattern.matcher(fileName);
-			// rename file to xml, because of OCR malfunction:
-			fileName = matcher.replaceAll("$1" + ".xml");
+	protected Boolean checkErrorXmlResults() throws FileSystemException {
+		String resultURLPrefix = webdavURL + errorFolder + "/" + identifier
+				+ reportSuffix;
+		return hotfolder.fileIfexists(resultURLPrefix);
+	}
 
-			String reportFileURL = resultURLPrefix + fileName + reportSuffix;
-			copyFiles.put(reportFileURL, imageDirectory + fileName + reportSuffix);
+	protected Set<String> xmlresultOutputparse(File file)
+			throws FileNotFoundException, XMLStreamException {
+		Set<String> ocrFormatFile = new LinkedHashSet<String>();
+		String filename = null;
+		final InputStream osmHamburgInStream = new FileInputStream(file);
+		XMLInputFactory factory = XMLInputFactory.newInstance();
+		XMLStreamReader xmlStreamReader = factory
+				.createXMLStreamReader(osmHamburgInStream);
+		try {
+			while (xmlStreamReader.hasNext()) {
+				int event = xmlStreamReader.next();
+				if (event == XMLStreamConstants.START_ELEMENT) {
+					// wenn das Element 'osm' gefunden wurde
+					if (xmlStreamReader.getName().toString()
+							.equals("NamingRule")) {
+						filename = xmlStreamReader.getElementText().toString();
+						ocrFormatFile.add(filename);
+					}
+				}
+			}
+			logger.debug("the files which should be in output folder: "
+					+ ocrFormatFile);
+		} finally {
+			xmlStreamReader.close();
 		}
+		return ocrFormatFile;
+	}
 
-		return copyFiles;
-	}*/
-	
+	protected Set<String> xmlresultErrorparse(File file)
+			throws FileNotFoundException, XMLStreamException {
+		Set<String> ocrErrorFile = new LinkedHashSet<String>();
+		String error = null;
+
+		final InputStream osmHamburgInStream = new FileInputStream(file);
+		XMLInputFactory factory = XMLInputFactory.newInstance();
+		XMLStreamReader xmlStreamReader = factory
+				.createXMLStreamReader(osmHamburgInStream);
+		try {
+			while (xmlStreamReader.hasNext()) {
+				int event = xmlStreamReader.next();
+				if (event == XMLStreamConstants.START_ELEMENT) {
+					// Error Beschreibung
+					if (xmlStreamReader.getName().toString().equals("Error")) {
+						error = xmlStreamReader.getElementText();
+					}
+					// bilder die in verzeichnis befinden
+					if (xmlStreamReader.getName().toString()
+							.equals("InputFile")) {
+						// über alle Attribute
+						for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++) {
+							String attributeName = xmlStreamReader
+									.getAttributeName(i).toString();
+							// wenn version gefunden wurde
+							if (attributeName.equals("Name")) {
+								String str = xmlStreamReader
+										.getAttributeValue(i);
+								String[] results = str.split("_");
+								Boolean image = true;
+								for (int j = 0; j < results.length; j++) {
+									if (image) {
+										image = false;
+									} else {
+										ocrErrorFile.add(results[j]);
+										image = true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		} finally {
+			xmlStreamReader.close();
+		}
+		logger.debug("Band Name " + identifier + " Error :" + error);
+		return ocrErrorFile;
+	}
+
+	protected Boolean checkIfAllFilssExists(Set<String> checkfile, String url)
+			throws FileSystemException {
+		for (String fileName : checkfile) {
+			if (hotfolder.fileIfexists(url + fileName))
+				logger.debug("File " + fileName + " exists already");
+			else {
+				logger.debug("File " + fileName + " Not exists");
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected void copyAllFiles(Set<String> checkfile, String url,
+			String localfile) throws FileSystemException {
+		URL folder = hotfolder.stringToUrl(url);
+		hotfolder.deleteIfExists(folder);
+		hotfolder.mkCol(folder);
+		for (String fileName : checkfile) {
+			hotfolder.copyAllFiles(url + fileName, localfile);
+			logger.debug("Copy File From " + url + fileName + " To" + localfile);
+		}
+	}
+
+	protected void deleteAllFiles(Set<String> checkfile, String url)
+			throws FileSystemException {
+		hotfolder.deleteIfExists(url + reportSuffix);
+		for (String fileName : checkfile) {
+			hotfolder.deleteIfExists(url + fileName);
+		}
+		hotfolder.deleteIfExists(url);
+	}
 
 }
