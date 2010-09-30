@@ -111,6 +111,12 @@ public class Hotfolder extends Thread{
 			}
 		}
 	}
+	
+	public void copyAllFiles(String remotefile, String localfile) throws FileSystemException{
+		FileObject remoteFile = fsManager.resolveFile(remotefile);
+		FileObject localFile = fsManager.resolveFile(localfile);
+		localFile.copyFrom(remoteFile, new AllFileSelector());
+	}
 
 	public void delete(URL url) throws FileSystemException {
 		fsManager.resolveFile(url.toString()).delete();
@@ -121,17 +127,20 @@ public class Hotfolder extends Thread{
 			logger.debug(url.toString() + " Exists already but now deleted");
 	}
 
+	public void deleteIfExists(String url) throws FileSystemException {
+		if (fsManager.resolveFile(url).delete())
+			logger.debug(url + " Exists already but now deleted");
+	}
+	
 	public void mkCol(URL url) throws FileSystemException {
 		fsManager.resolveFile(url.toString()).createFolder();
 		logger.debug(url.toString() + " created");
 	}
 
-	public boolean exists(URL url) throws FileSystemException {
-		if (fsManager.resolveFile(url.toString()).exists()) {
-			logger.debug(url.toString() + " Exists ");
+	public boolean fileIfexists(String url) throws FileSystemException {
+		if (fsManager.resolveFile(url).exists()) {
 			return true;
 		} else {
-			logger.debug(url.toString() + " Not Exists ");
 			return false;
 		}
 	}
