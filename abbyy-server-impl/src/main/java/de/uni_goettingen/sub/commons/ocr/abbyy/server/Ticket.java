@@ -67,11 +67,12 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected String language;
 	
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
-	public static Map<Locale, String> languageMapping = null;
+	public static Map<Locale, String> languageMapping = new HashMap<Locale, String>();
 	
 	static {
 		//TODO: Finish this.
 		languageMapping.put(Locale.GERMAN, "");
+		languageMapping.put(Locale.ENGLISH, "");
 	}
 	private static final String GERMAN_NAME = "de";
 	private static final String ENGLISH_NAME = "en";
