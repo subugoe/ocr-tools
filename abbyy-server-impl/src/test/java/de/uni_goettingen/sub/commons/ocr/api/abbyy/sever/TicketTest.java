@@ -23,12 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.ExportParams;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -36,7 +30,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +39,12 @@ import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.ExportParams;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -67,11 +66,16 @@ public class TicketTest {
 		ocrp = mock(OCRProcess.class);
 		ocrp.addLanguage(Locale.GERMAN);
 		when(ocrp.getLangs()).thenReturn(new HashSet() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 5384097471130557653L;
+
 			{
 				add(Locale.GERMAN);
 			}
 		});
-		//This s just here to diplay the works of the mocking framework
+		//This s just here to display the works of the mocking framework
 		assertTrue(ocrp.getLangs().contains(Locale.GERMAN));
 		ocrp.addOCRFormat(OCRFormat.PDF);
 		ticketFile = new File(basefolderFile.getAbsolutePath() + "ticket.xml");
