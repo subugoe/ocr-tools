@@ -49,43 +49,72 @@ import org.slf4j.LoggerFactory;
 
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Hotfolder is used to control the hotfolders used by the Abbyy
  * Recognition Server.
  */
 public class Hotfolder extends Thread{
 
+	/** The errror, input, output folder. */
 	protected URL inFolder, outFolder, errrorFolder;
+	
+	/** The url file. */
 	FileObject urlFile = null;
+	
+	/** The url file string to url. */
 	FileObject urlFileStringToUrl = null;
+	
+	/** The get url image. */
 	FileObject getUrlImage = null;
 	
+	/** The total size. */
 	Long totalSize = 0l;
+	
+	/** The image directory. */
 	protected String imageDirectory;
+	
+	/** The identifier. */
 	protected String identifier;
 	//protected HierarchicalConfiguration configu;
+	/** The language. */
 	protected static List<Locale> langs;
 	
+	/** The local output dir. */
 	protected static String localOutputDir = null;
+	
+	/** The fileinfos. */
 	protected List<AbbyyOCRFile> fileInfos = null;
 	
 	
-	protected static Boolean writeRemotePrefix = true;
-	//TODO mal sehen ob das brauche
+	//protected static Boolean writeRemotePrefix = true;
 
-	
-	
-	
-
+	/** The Constant logger. */
 	final static Logger logger = LoggerFactory.getLogger(Hotfolder.class);
+	
+	/** The fsmanager. */
 	FileSystemManager fsManager = null;
 
+	/**
+	 * Instantiates a new hotfolder.
+	 *
+	 * @throws FileSystemException the file system exception
+	 */
 	public Hotfolder() throws FileSystemException {
 		fsManager = VFS.getManager();
 	}
 	
 	
 	
+	/**
+	 * Copy a url from source to destination. Assumes overwrite.
+	 *
+	 * @param files is a List of The Class AbbyyOCRFile. Is a representation of an 
+	 * OCRImage suitable for holding references to remote files as used by the Abbyy 
+	 * Recognition Server
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public void copyFilesToServer(List<AbbyyOCRFile> files) throws IOException,
 			InterruptedException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
@@ -112,31 +141,71 @@ public class Hotfolder extends Thread{
 		}
 	}
 	
+	/**
+	 * Copy a files from remotefile to localfile. Assumes overwrite.
+	 * 
+	 * @param remotefile, the url of the file name as used on the remote system, usally a
+	 * relative file name and thus represented as a String
+	 * @param localfile, an URL representing the local file, it should be resolveable
+	 * from the local Server.
+	 * @throws FileSystemException the file system exception
+	 */
 	public void copyAllFiles(String remotefile, String localfile) throws FileSystemException{
 		FileObject remoteFile = fsManager.resolveFile(remotefile);
 		FileObject localFile = fsManager.resolveFile(localfile);
 		localFile.copyFrom(remoteFile, new AllFileSelector());
 	}
 
+	/**
+	 * Delete a resource at the specified url
+	 *
+	 * @param url the url
+	 * @throws FileSystemException the file system exception
+	 */
 	public void delete(URL url) throws FileSystemException {
 		fsManager.resolveFile(url.toString()).delete();
 	}
 
+	/**
+	 * Delete a resource at the specified url if exists.
+	 *
+	 * @param url the url
+	 * @throws FileSystemException the file system exception
+	 */
 	public void deleteIfExists(URL url) throws FileSystemException {
 		if (fsManager.resolveFile(url.toString()).delete())
 			logger.debug(url.toString() + " Exists already but now deleted");
 	}
 
+	/**
+	 * Delete a resource at the specified url(String) if exists.
+	 *
+	 * @param url the url
+	 * @throws FileSystemException the file system exception
+	 */
 	public void deleteIfExists(String url) throws FileSystemException {
 		if (fsManager.resolveFile(url).delete())
 			logger.debug(url + " Exists already but now deleted");
 	}
 	
+	/**
+	 * to create a directory at the specified url
+	 *
+	 * @param url the url
+	 * @throws FileSystemException the file system exception
+	 */
 	public void mkCol(URL url) throws FileSystemException {
 		fsManager.resolveFile(url.toString()).createFolder();
 		logger.debug(url.toString() + " created");
 	}
 
+	/**
+	 * a resource at the specified url if exists.
+	 *
+	 * @param url the url
+	 * @return true, if successful
+	 * @throws FileSystemException the file system exception
+	 */
 	public boolean fileIfexists(String url) throws FileSystemException {
 		if (fsManager.resolveFile(url).exists()) {
 			return true;
@@ -145,6 +214,13 @@ public class Hotfolder extends Thread{
 		}
 	}
 
+	/**
+	 * Gets the total size for a url.
+	 *
+	 * @param url the url
+	 * @return the total size
+	 * @throws FileSystemException the file system exception
+	 */
 	public Long getTotalSize(URL url) throws FileSystemException {
 		totalSize++;
 		urlFile = fsManager.resolveFile(url.toString());
@@ -167,12 +243,27 @@ public class Hotfolder extends Thread{
 		}
 	}
 
+	/**
+	 * String to url.
+	 *
+	 * @param uri the uri
+	 * @return the uRL
+	 * @throws FileSystemException the file system exception
+	 */
 	public URL stringToUrl (String uri) throws FileSystemException{
 		urlFileStringToUrl = fsManager.resolveFile(uri);
 		return urlFileStringToUrl.getURL();
 		
 	}
 	
+	/**
+	 * Gets the url list.
+	 *
+	 * @param imageDirectory the image directory
+	 * @return the url list
+	 * @throws FileSystemException the file system exception
+	 * @throws MalformedURLException the malformed url exception
+	 */
 	List<AbbyyOCRFile> getUrlList(String imageDirectory) throws FileSystemException, MalformedURLException {
 		List<AbbyyOCRFile> imageList = new ArrayList<AbbyyOCRFile>();
 		getUrlImage = fsManager.resolveFile(imageDirectory);
@@ -184,6 +275,12 @@ public class Hotfolder extends Thread{
 		return imageList;
 	}
 	
+	/**
+	 * File to url.
+	 *
+	 * @param file the file
+	 * @return the uRL
+	 */
 	public URL fileToURL(File file){
         URL url = null;
         try {
@@ -194,6 +291,12 @@ public class Hotfolder extends Thread{
         return url;
     } 
 	
+	/**
+	 * Url to file.
+	 *
+	 * @param url the url
+	 * @return the file
+	 */
 	public File urlToFile(URL url) {
         File file = null;
         try {
@@ -207,26 +310,56 @@ public class Hotfolder extends Thread{
 	
 	
 	
+	/**
+	 * Gets the in folder.
+	 *
+	 * @return the in folder
+	 */
 	public URL getInFolder() {
 		return inFolder;
 	}
 
+	/**
+	 * Sets the in folder.
+	 *
+	 * @param inFolder the new in folder
+	 */
 	public void setInFolder(URL inFolder) {
 		this.inFolder = inFolder;
 	}
 
+	/**
+	 * Gets the out folder.
+	 *
+	 * @return the out folder
+	 */
 	public URL getOutFolder() {
 		return outFolder;
 	}
 
+	/**
+	 * Sets the out folder.
+	 *
+	 * @param outFolder the new out folder
+	 */
 	public void setOutFolder(URL outFolder) {
 		this.outFolder = outFolder;
 	}
 
+	/**
+	 * Gets the errror folder.
+	 *
+	 * @return the errror folder
+	 */
 	public URL getErrrorFolder() {
 		return errrorFolder;
 	}
 
+	/**
+	 * Sets the errror folder.
+	 *
+	 * @param errrorFolder the new errror folder
+	 */
 	public void setErrrorFolder(URL errrorFolder) {
 		this.errrorFolder = errrorFolder;
 	}
