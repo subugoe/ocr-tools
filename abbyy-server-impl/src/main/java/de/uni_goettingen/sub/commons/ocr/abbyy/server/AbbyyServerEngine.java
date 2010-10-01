@@ -34,8 +34,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.naming.ConfigurationException;
-
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.vfs.FileSystemException;
 
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRExecuter;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
@@ -108,11 +106,7 @@ public class AbbyyServerEngine implements OCREngine {
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (org.apache.commons.configuration.ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
 	}
 
 	public void start() throws RuntimeException, FileSystemException {
@@ -153,9 +147,7 @@ public class AbbyyServerEngine implements OCREngine {
 
 	}
 
-	public static AbbyyServerEngine getInstance() throws FileSystemException,
-			ConfigurationException,
-			org.apache.commons.configuration.ConfigurationException {
+	public static AbbyyServerEngine getInstance() throws FileSystemException, ConfigurationException {
 		if (_instance == null) {
 			_instance = new AbbyyServerEngine();
 		}

@@ -1,5 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.api.abbyy.sever;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -16,8 +18,9 @@ public class AbbyyServerEngineTest {
 	public Hotfolder hotfolder;
 
 	@Before
-	public void init () throws ConfigurationException, FileSystemException, ConfigurationException {
+	public void init () throws FileSystemException, ConfigurationException {
 		PropertiesConfiguration config = new PropertiesConfiguration("config-properties");
+		abbyy = AbbyyServerEngine.getInstance();
 		//abbyy = mock(AbbyyServerEngine.class);
 		/*
 		abbyy = new AbbyyServerEngine();
@@ -28,7 +31,7 @@ public class AbbyyServerEngineTest {
 	@Test
 	public void testCli () throws IOException {
 
-		abbyy.checkServerState();
+		assertNotNull(abbyy);
 	}
 
 }
