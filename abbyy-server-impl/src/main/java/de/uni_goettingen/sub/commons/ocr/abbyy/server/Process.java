@@ -121,7 +121,7 @@ public class Process extends Ticket implements Runnable {
 						String resultOutURLPrefix = webdavURL + outputFolder
 								+ "/" + identifier;
 						// TODO Erkennungsrat muss noch ausgelesen werden(ich
-						// weiß das eigentlich nicht deswegen ist noch offen)
+						// wei das eigentlich nicht deswegen ist noch offen)
 						ocrOutFormatFile = xmlresultOutputparse(new File(
 								resultOutURLPrefix + reportSuffix));
 						// TODO muss ich diese locale URL wissen, wo die Dateien
@@ -137,7 +137,7 @@ public class Process extends Ticket implements Runnable {
 							logger.info("Move Processing successfully to "
 									+ resultOutURLPrefix);
 						} else {
-							// es soll nochmal gewartet werden um zu prüfen ob
+							// es soll nochmal gewartet werden um zu prfen ob
 							// alles da ist
 							Thread.sleep(wait / 20);
 							if (checkIfAllFilssExists(ocrOutFormatFile,
@@ -171,7 +171,7 @@ public class Process extends Ticket implements Runnable {
 								failed = true;
 								logger.info("delete All Files Processing is successfull ");
 							} else {
-								// es soll nochmal gewartet werden um zu prüfen
+								// es soll nochmal gewartet werden um zu prfen
 								// ob alles da ist
 								Thread.sleep(wait / 20);
 								if (checkIfAllFilssExists(ocrErrorFormatFile,
@@ -493,7 +493,7 @@ public class Process extends Ticket implements Runnable {
 					// bilder die in verzeichnis befinden
 					if (xmlStreamReader.getName().toString()
 							.equals("InputFile")) {
-						// über alle Attribute
+						// ber alle Attribute
 						for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++) {
 							String attributeName = xmlStreamReader
 									.getAttributeName(i).toString();
