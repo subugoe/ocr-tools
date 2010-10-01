@@ -35,9 +35,10 @@ import org.slf4j.LoggerFactory;
 
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
-public class Process extends Ticket implements Runnable {
+public class Process extends Ticket implements OCRProcess, Runnable {
 	final static Logger logger = LoggerFactory.getLogger(Process.class);
 
 	protected static String localPathSeparator = File.separator;
