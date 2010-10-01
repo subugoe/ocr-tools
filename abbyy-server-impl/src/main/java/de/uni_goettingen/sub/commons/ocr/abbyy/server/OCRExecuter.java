@@ -24,8 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-
 
 
 /**
@@ -61,8 +59,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
-		if (r instanceof OCRProcess) {
-			OCRProcess process = (OCRProcess) r;
+		if (r instanceof Process) {
+			Process process = (Process) r;
 			//TODO: Refresh server state here
 			if (maxFiles != 0 && maxSize != 0) {
 				if (process.getOcrImages().size() + totalFileCount > maxFiles || getFileSize(process) + totalFileSize > maxSize) {
@@ -92,8 +90,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void afterExecute(Runnable r, Throwable e) {
 		super.afterExecute(r, e);
-		if (r instanceof OCRProcess) {
-			OCRProcess process = (OCRProcess) r;
+		if (r instanceof Process) {
+			Process process = (Process) r;
 			//TODO: Refresh server state here
 			if (maxFiles != 0 && maxSize != 0) {
 				if (process.getOcrImages().size() + totalFileCount < maxFiles || getFileSize(process) + totalFileSize < maxSize) {
@@ -136,7 +134,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	}
 
 	//TODO: Check size here, this is just a place holder for now.
-	protected Integer getFileSize(OCRProcess p) {
+	protected Integer getFileSize(Process p) {
 		return 0;
 	}
 

@@ -21,11 +21,13 @@ public class AbbyyServerEngineTest {
 	public Hotfolder hotfolder;
 	
 	@Before
-	public  void init () throws ConfigurationException, FileSystemException {
+	public  void init () throws ConfigurationException, FileSystemException, ConfigurationException {
 		PropertiesConfiguration config = new PropertiesConfiguration("config-properties");
 		//abbyy = mock(AbbyyServerEngine.class);
+		/*
 		abbyy = new AbbyyServerEngine();
 		abbyy.loadConfig(config);
+		*/
 	}
 	
 	@Test
