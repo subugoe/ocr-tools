@@ -88,6 +88,7 @@ public class Process extends Ticket implements Runnable {
 
 		try {
 			loadConfig(config);
+		//TODO: Don't catch raw Exceptions
 		} catch (Exception e) {
 			logger.error(e.toString());
 		}
@@ -378,8 +379,10 @@ public class Process extends Ticket implements Runnable {
 		addLanguage(Locale.GERMAN);
 		addOCRFormat(OCRFormat.PDF);
 		setOutPutLocation(webdavURL + outputFolder);
-		setMillisPerFile(millisPerFile);
-		setMaxOCRTimeout(maxOCRTimeout);
+		
+		//TODO: Commented these out, these methods aren't found
+		//setMillisPerFile(millisPerFile);
+		//setMaxOCRTimeout(maxOCRTimeout);
 		write(ticketFile);
 
 		String outputFile = webdavURL + inputFolder + "/" + ticketFileName;

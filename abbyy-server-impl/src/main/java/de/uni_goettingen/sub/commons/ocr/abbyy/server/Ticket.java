@@ -142,6 +142,10 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		super(params);
 	}
 	
+	protected Ticket () {
+		super();
+	}
+	
 	public Ticket (InputStream is) throws IOException {
 		//TODO: Finish this constructor
 		this.is = is;
