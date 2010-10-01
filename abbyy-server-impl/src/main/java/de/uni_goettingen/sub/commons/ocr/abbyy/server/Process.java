@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
 public class Process extends Ticket implements Runnable {
 	final static Logger logger = LoggerFactory.getLogger(Process.class);
@@ -299,7 +300,7 @@ public class Process extends Ticket implements Runnable {
 		if (inputFile.isDirectory()) {
 			// OCR.logger.trace(inputFile + " is a directory");
 
-			File files[] = inputFile.listFiles(new FileExtensionFilter(filter));
+			File files[] = inputFile.listFiles(new FileExtensionsFilter(filter));
 			fileList = Arrays.asList(files);
 			Collections.sort(fileList);
 
