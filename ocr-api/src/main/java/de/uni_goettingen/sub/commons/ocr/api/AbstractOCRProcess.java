@@ -1,6 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,9 +10,9 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 
 	/** The file. */
 	private String file;
-	/** Outputlocation for Abbyy*/
+	/** Outputlocation for Abbyy */
 	private String outputLocation;
-	
+
 	/** The langs. The languages which are supported */
 	protected Set<Locale> langs = new HashSet<Locale>();
 
@@ -26,10 +25,6 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	/** The ocr output. The Images converted are put in this Output Folder */
 	protected List<OCROutput> ocrOutput = new ArrayList<OCROutput>();
 
-	
-	
-	
-	
 	/**
 	 * Instantiates a new oCR process.
 	 */
@@ -151,18 +146,16 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 		this.ocrImage.add(ocrImage);
 	}
 
-	public void setOcrOutput(List<OCROutput> ocrOutput) {
+	public void setOcrOutput (List<OCROutput> ocrOutput) {
 		this.ocrOutput = ocrOutput;
 	}
 
-	public String getOutputLocation() {
+	public String getOutputLocation () {
 		return outputLocation;
 	}
 
-	public void setOutputLocation(String outputLocation) {
+	public void setOutputLocation (String outputLocation) {
 		this.outputLocation = outputLocation;
 	}
-	
-	
 
 }

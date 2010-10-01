@@ -42,8 +42,6 @@ public interface OCRProcess {
 	 */
 	public void removeOCRFormat (OCRFormat format);
 
-
-
 	/**
 	 * Gets the langs.
 	 * 
@@ -71,7 +69,7 @@ public interface OCRProcess {
 	 * @param ocrImages
 	 *            the new ocr images
 	 */
-	public void setOcrImages (List<OCRImage> ocrImages) ;
+	public void setOcrImages (List<OCRImage> ocrImages);
 
 	/**
 	 * Adds the image.
@@ -81,7 +79,7 @@ public interface OCRProcess {
 	 */
 	public void addImage (OCRImage ocrImage);
 
-	public void setOcrOutput(List<OCROutput> ocrOutput);
-	
-	public void setOutputLocation(String outputLocation);
+	public void setOcrOutput (List<OCROutput> ocrOutput);
+
+	public void setOutputLocation (String outputLocation);
 }
