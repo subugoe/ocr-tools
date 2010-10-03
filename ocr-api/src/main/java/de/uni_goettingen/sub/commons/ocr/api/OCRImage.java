@@ -35,6 +35,17 @@ public interface OCRImage {
 	 * @param rotation
 	 *            the new rotation
 	 */
-	public void setRotation (Integer rotation);
+	public void setRotation (Orientation orientation);
 
+	public enum Orientation {
+		PORTRAIT(0), LANDSCAPE (90), COUNTER_PORTRAIT(180), COUNTER_LANDSCAPE(270);
+		
+		public final Integer DEGREE;
+		
+		Orientation (Integer degree) {
+			this.DEGREE = degree;
+		}
+		
+	}
+	
 }
