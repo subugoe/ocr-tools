@@ -46,6 +46,10 @@ public interface OCRImage {
 			this.DEGREE = degree;
 		}
 		
+		public Integer getDegree () {
+			return DEGREE;
+		}
+		
 	}
 	
 }
