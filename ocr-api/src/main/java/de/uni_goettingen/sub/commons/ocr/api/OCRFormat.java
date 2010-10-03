@@ -1,5 +1,8 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The Enum OCRFormat. The formats which are supported.
  */
@@ -8,6 +11,17 @@ public enum OCRFormat {
 
 	private final String name;
 
+	protected static Map<String, OCRFormat> formats = new HashMap<String, OCRFormat>();
+	
+	static {
+		formats.put("TXT", OCRFormat.TXT);
+		formats.put("PDF", OCRFormat.PDF);
+		formats.put("PDFA", OCRFormat.PDFA);
+		formats.put("DOC", OCRFormat.DOC);
+		formats.put("HTML", OCRFormat.HTML);
+		formats.put("XHTML", OCRFormat.XHTML);
+	}
+	
 	OCRFormat(String format) {
 		this.name = format;
 	}
@@ -20,6 +34,12 @@ public enum OCRFormat {
 		return name;
 	}
 
-	//TODO: add utility methods to create an enum from a string
-
+	public static OCRFormat parseOCRFormat (String format) {
+		if (formats.containsKey(format.toUpperCase())) {
+			return formats.get(format.toUpperCase());
+		} else {
+			return null;
+		}
+	}
+	
 }
