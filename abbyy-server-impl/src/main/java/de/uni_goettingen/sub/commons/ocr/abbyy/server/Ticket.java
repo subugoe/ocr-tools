@@ -21,6 +21,7 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.ExportParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.ImageProcessingParams;
@@ -67,16 +68,18 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected String language;
 	
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
-	public static Map<Locale, String> languageMapping = new HashMap<Locale, String>();
+	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
 	
 	static {
-		//TODO: Finish this.
-		languageMapping.put(Locale.GERMAN, "");
-		languageMapping.put(Locale.ENGLISH, "");
+		// See http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt for additional mappings
+		LANGUAGE_MAP.put(Locale.GERMAN, "German");
+		LANGUAGE_MAP.put(Locale.ENGLISH, "English");
+		LANGUAGE_MAP.put(new Locale("la"), "Latin");
+		LANGUAGE_MAP.put(new Locale("ru"), "Russian");
 	}
-	private static final String GERMAN_NAME = "de";
-	private static final String ENGLISH_NAME = "en";
-	private static final String RUSSIAN_NAME = "ru";
+	//private static final String GERMAN_NAME = "de";
+	//private static final String ENGLISH_NAME = "en";
+	//private static final String RUSSIAN_NAME = "ru";
 	
 	protected String outPutLocation;
 	
@@ -96,12 +99,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		opts.setSaveImplicitNamespaces(new HashMap() {
 			{
 				put("",	NAMESPACE);
-			}
-		});
-
-		opts.setSaveImplicitNamespaces(new HashMap() {
-			{
-				put("", NAMESPACE);
 			}
 		});
 		opts.setUseDefaultNamespace();
@@ -158,7 +155,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		try {
 			ticketDoc = XmlTicketDocument.Factory.parse(is, options);
 		} catch (XmlException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch block (log this)
 			e.printStackTrace();
 		}
 		XmlTicket ticket = ticketDoc.getXmlTicket();
@@ -182,14 +179,10 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory
 				.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
-
 		Integer OCRTimeOut = getInputFiles().size() * millisPerFile;
-
 		if (maxOCRTimeout < OCRTimeOut) {
-
 			throw new IllegalStateException("Calculated OCR Timeout to high: "
 					+ OCRTimeOut);
-
 		}
 
 		ticket.setOCRTimeout(BigInteger.valueOf(OCRTimeOut));
@@ -209,13 +202,10 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 		
 		for (Locale l : langs) {
-
 			if (langs == null) {
-
-				//TODO
-				//	throw new OCRLanguageException();
+				throw new OCRException("No language given!");
 			}
-			recognitionParams.addLanguage(toLanguage(l.getLanguage()));
+			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
 		}
 
 		ExportParams exportParams = ticket.addNewExportParams();
@@ -262,18 +252,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		}
 	}
 
-	//TODO: Do we need this?
-	public static String toLanguage (String name) {
-	    if (name.toLowerCase().equals(GERMAN_NAME)) {
-	    	return "German";
-	    } else if (name.toLowerCase().equals(ENGLISH_NAME)) {
-	    	return "English";
-	    } else if (name.toLowerCase().equals(RUSSIAN_NAME)) {
-	    	return "Russian";
-	    }
-	    throw new IllegalArgumentException();
-	 }
-
 	public static class TicketHelper {
 
 		static Pattern p = Pattern.compile("(.*)\\\\(.*)");
@@ -285,13 +263,11 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			return m.group(1);
 		}
 
-
 		static public String getName (String str) {
 			Matcher m = p.matcher(str);
 			m.find();
 			return m.group(2);
 		}
-
 
 		static public String getLocation (String str) {
 			Matcher m = p.matcher(str);
@@ -303,24 +279,19 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 
 	public List<File> getInputFiles () {
-
 		return inputFiles;
 	}
 
 	public void setInputFiles (List<File> inputFiles) {
-
 		Ticket.inputFiles = inputFiles;
 	}
 
 	public String getOutPutLocation () {
-
 		return outPutLocation;
 	}
 
-
 	public void setOutPutLocation (String outPutLocation) {
 		this.outPutLocation = outPutLocation;
-
 	}
 
 }
