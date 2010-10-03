@@ -27,7 +27,7 @@ public interface OCRImage {
 	 * 
 	 * @return the rotation
 	 */
-	public Integer getRotation ();
+	public Orientation getOrientation ();
 
 	/**
 	 * Sets the rotation.
@@ -35,7 +35,7 @@ public interface OCRImage {
 	 * @param rotation
 	 *            the new rotation
 	 */
-	public void setRotation (Orientation orientation);
+	public void setOrientation (Orientation orientation);
 
 	public enum Orientation {
 		PORTRAIT(0), LANDSCAPE (90), COUNTER_PORTRAIT(180), COUNTER_LANDSCAPE(270);

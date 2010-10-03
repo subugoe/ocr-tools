@@ -13,7 +13,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 	public URL url;
 
 	/** rotation of the image. */
-	public Integer rotation;
+	public Orientation orientation;
 
 	/**
 	 * get an Url for a image.
@@ -39,8 +39,8 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * 
 	 * @return the rotation
 	 */
-	public Integer getRotation () {
-		return rotation;
+	public Orientation getOrientation () {
+		return orientation;
 	}
 
 	/**
@@ -49,8 +49,8 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * @param rotation
 	 *            the new rotation
 	 */
-	public void setRotation (Integer rotation) {
-		this.rotation = rotation;
+	public void setOrientation (Orientation orientation) {
+		this.orientation = orientation;
 	}
 
 }
