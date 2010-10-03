@@ -4,7 +4,7 @@ package de.uni_goettingen.sub.commons.ocr.api.exceptions;
 /**
  * The Class OCRException.
  */
-public class OCRException extends Exception {
+public class OCRException extends RuntimeException {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -8431331102096561551L;
