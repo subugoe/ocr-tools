@@ -77,9 +77,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		LANGUAGE_MAP.put(new Locale("la"), "Latin");
 		LANGUAGE_MAP.put(new Locale("ru"), "Russian");
 	}
-	//private static final String GERMAN_NAME = "de";
-	//private static final String ENGLISH_NAME = "en";
-	//private static final String RUSSIAN_NAME = "ru";
 	
 	protected String outPutLocation;
 	
@@ -89,11 +86,11 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
 
 	private static List<File> inputFiles = new ArrayList<File>();
-	protected static XmlOptions opts = new XmlOptions();
-	
+
 	// is represents the InputStream for files being read
 	private InputStream is;
 
+	protected static XmlOptions opts = new XmlOptions();
 	static {
 		opts.setSavePrettyPrint();
 		opts.setSaveImplicitNamespaces(new HashMap() {
