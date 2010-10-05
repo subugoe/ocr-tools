@@ -38,45 +38,102 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
+
+/**
+ * The Class Process.
+ */
 public class Process extends Ticket implements OCRProcess, Runnable {
+	
+	/** The Constant logger. */
 	final static Logger logger = LoggerFactory.getLogger(Process.class);
 
+	/** The local path separator. */
 	protected static String localPathSeparator = File.separator;
 	// Variables used for process management
+	/** The max size. */
 	protected static Long maxSize = 5368709120l;
+	
+	/** The max files. */
 	protected static Long maxFiles = 5000l;
 
+	/** The file count. */
 	protected Integer fileCount = 0;
+	
+	/** The file size. */
 	protected Long fileSize = 0l;
 
+	/** The webdav url. */
 	protected static String webdavURL = null;
+	
+	/** The input folder. */
 	protected static String inputFolder = null;
+	
+	/** The output folder. */
 	protected static String outputFolder = null;
+	
+	/** The error folder. */
 	protected static String errorFolder = null;
+	
+	/** The list of the inputfiles. */
 	private static List<File> inputFiles = new ArrayList<File>();
 
+	/** The list of the language. */
 	protected static List<Locale> langs;
 
+	/** The write remote prefix. */
 	protected static Boolean writeRemotePrefix = true;
+	
+	/** The copy only. */
 	protected Boolean copyOnly = true;
+	
+	/** The dry run. */
 	protected Boolean dryRun = false;
+	
+	/** The fix remote path. */
 	protected Boolean fixRemotePath = true;
+	
+	/** The failed. */
 	protected Boolean failed = false;
+	
+	/** The done. */
 	protected Boolean done = false;
+	
+	/** The done date. */
 	Date doneDate = null;
 
+	/** The report suffix. */
 	protected String reportSuffix = "xml.result.xml";
+	
+	/** The extension. */
 	protected static String extension = "tif";
+	
+	/** The hotfolder. */
 	protected Hotfolder hotfolder;
+	
+	/** The image directory. */
 	protected String imageDirectory;
+	
+	/** The identifier. */
 	protected String identifier;
 
+	/** The ocr error format file. */
 	Set<String> ocrErrorFormatFile = new LinkedHashSet<String>();
+	
+	/** The ocr out format file. */
 	Set<String> ocrOutFormatFile = new LinkedHashSet<String>();
+	
+	/** The file infos. */
 	protected List<AbbyyOCRFile> fileInfos = null;
 
+	/** The config. */
 	PropertiesConfiguration config;
 
+	/**
+	 * Instantiates a new process.
+	 *
+	 * @param dir the file system
+	 * @throws FileSystemException the file system exception
+	 */
 	public Process(File dir) throws FileSystemException {
 		super();
 		hotfolder = new Hotfolder();
@@ -85,6 +142,9 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
 
@@ -132,7 +192,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						// veschieben werden (local erstmal genannt)
 						String local = null;
 						// for Output folder
-						if (checkIfAllFilssExists(ocrOutFormatFile,
+						if (checkIfAllFilesExists(ocrOutFormatFile,
 								resultOutURLPrefix)) {
 							copyAllFiles(ocrOutFormatFile, resultOutURLPrefix,
 									local);
@@ -142,9 +202,9 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 									+ resultOutURLPrefix);
 						} else {
 							
-							wait = resultAllFilssNotExists(ocrOutFormatFile, resultOutURLPrefix)* millisPerFile;
+							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix)* millisPerFile;
 							Thread.sleep(wait);
-							if (checkIfAllFilssExists(ocrOutFormatFile,
+							if (checkIfAllFilesExists(ocrOutFormatFile,
 									resultOutURLPrefix)) {
 								copyAllFiles(ocrOutFormatFile,
 										resultOutURLPrefix, local);
@@ -167,16 +227,16 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 							// TODO bericht wird von hier angeholt
 							ocrErrorFormatFile = xmlresultErrorparse(new File(
 									resultErrorURLPrefix + reportSuffix));
-							if (checkIfAllFilssExists(ocrErrorFormatFile,
+							if (checkIfAllFilesExists(ocrErrorFormatFile,
 									resultErrorURLPrefix)) {
 								deleteAllFiles(ocrErrorFormatFile,
 										resultErrorURLPrefix);
 								failed = true;
 								logger.info("delete All Files Processing is successfull ");
 							} else {
-								wait = resultAllFilssNotExists(ocrErrorFormatFile, resultErrorURLPrefix)* millisPerFile;
+								wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix)* millisPerFile;
 								Thread.sleep(wait);
-								if (checkIfAllFilssExists(ocrErrorFormatFile,
+								if (checkIfAllFilesExists(ocrErrorFormatFile,
 										resultErrorURLPrefix)) {
 									deleteAllFiles(ocrErrorFormatFile,
 											resultErrorURLPrefix);
@@ -205,21 +265,35 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 
 	}
 
+	/**
+	 * The Class TimeoutExcetion.
+	 */
 	public class TimeoutExcetion extends Exception {
-		/**
-		 * 
-		 */
+		
+		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = -3002142265497735648L;
 
+		/**
+		 * Instantiates a new timeout excetion.
+		 */
 		public TimeoutExcetion() {
 			super();
 		}
 	}
+	
+	/**
+	 * proof if number of files is in limit as defined in config-properties file,
+	 * param maxFiles and proof overall filesize-limit as defined in config-properties file, 
+	 * param maxSize.
+	 *
+	 * @param dir the file system, where are all images
+	 * @return the file list of the AbbyyOCRFile.
+	 */
 	protected LinkedList<AbbyyOCRFile> getFileList(File dir) {
 		List<File> files = makeFileList(dir, extension);
 
-		/*
-		 * proof if number of files is in limit as defined in xml-configfile,
+		/**
+		 * proof if number of files is in limit as defined in xml-config file,
 		 * param maxFiles
 		 */
 
@@ -230,7 +304,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			throw new RuntimeException("To much files!");
 		}
 
-		/*
+		/**
 		 * proof overall filesize-limit as defined in xml-configfile, param
 		 * maxSize
 		 */
@@ -283,10 +357,22 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		return fileInfoList;
 	}
 
+	/**
+	 * Windows2unix file separator.
+	 *
+	 * @param url the url
+	 * @return the string
+	 */
 	public String windows2unixFileSeparator(String url) {
 		return url.replace("\\", "/");
 	}
 
+	/**
+	 * Calculate size.
+	 *
+	 * @param files is the List of files
+	 * @return the long, size of all files
+	 */
 	public static Long calculateSize(List<File> files) {
 		Long size = 0l;
 		for (File file : files) {
@@ -295,6 +381,14 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		return size;
 	}
 
+	/**
+	 * very easy file filters, get all files which in the topical list, 
+	 * have "filter"  as ending
+	 *
+	 * @param inputFile the input file, where are all images  
+	 * @param filter or Extension
+	 * @return the list of all files have "filter" as ending
+	 */
 	public static List<File> makeFileList(File inputFile, String filter) {
 		List<File> fileList;
 		if (inputFile.isDirectory()) {
@@ -312,6 +406,13 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		return fileList;
 	}
 
+	/**
+	 * Fix remote path.
+	 *
+	 * @param infoList, is a List of AbbyyOCRFile
+	 * @param name for identifier
+	 * @return the list of AbbyyOCRFile
+	 */
 	protected List<AbbyyOCRFile> fixRemotePath(List<AbbyyOCRFile> infoList,
 			String name) {
 		LinkedList<AbbyyOCRFile> newList = new LinkedList<AbbyyOCRFile>();
@@ -355,6 +456,14 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		return newList;
 	}
 
+	/**
+	 * Adds the ticket file.
+	 *
+	 * @param fileInfos the list of the AbbyyOCRFile
+	 * @param ticketName the ticket name
+	 * @return the list of the AbbyyOCRFile
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private LinkedList<AbbyyOCRFile> addTicketFile(
 			LinkedList<AbbyyOCRFile> fileInfos, String ticketName)
 			throws IOException {
@@ -394,6 +503,12 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		return fileInfos;
 	}
 
+	/**
+	 * Load config.
+	 *
+	 * @param config the config
+	 * @throws ConfigurationException the configuration exception
+	 */
 	public void loadConfig(PropertiesConfiguration config)
 			throws ConfigurationException {
 		// do something with config
@@ -436,19 +551,39 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 
 	}
 
-	// copy files back
+
+	/**
+	 * Check xml results in output folder  If exists.
+	 *
+	 * @return the boolean, true If exists
+	 * @throws FileSystemException the file system exception
+	 */
 	protected Boolean checkOutXmlResults() throws FileSystemException {
 		String resultURLPrefix = webdavURL + outputFolder + "/" + identifier
 				+ reportSuffix;
 		return hotfolder.fileIfexists(resultURLPrefix);
 	}
 
+	/**
+	 * Check xml results in error folder  If exists.
+	 *
+	 * @return the boolean, true If exists.
+	 * @throws FileSystemException the file system exception
+	 */
 	protected Boolean checkErrorXmlResults() throws FileSystemException {
 		String resultURLPrefix = webdavURL + errorFolder + "/" + identifier
 				+ reportSuffix;
 		return hotfolder.fileIfexists(resultURLPrefix);
 	}
 
+	/**
+	 * parse Xml result in output folder.
+	 *
+	 * @param file xml result in output folder
+	 * @return the sets of all files Name, wich are in the xml file
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws XMLStreamException the xML stream exception
+	 */
 	protected Set<String> xmlresultOutputparse(File file)
 			throws FileNotFoundException, XMLStreamException {
 		Set<String> ocrFormatFile = new LinkedHashSet<String>();
@@ -461,7 +596,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			while (xmlStreamReader.hasNext()) {
 				int event = xmlStreamReader.next();
 				if (event == XMLStreamConstants.START_ELEMENT) {
-					// wenn das Element 'NamingRule' gefunden wurde
+					// if the element 'NamingRule' found
 					if (xmlStreamReader.getName().toString()
 							.equals("NamingRule")) {
 						filename = xmlStreamReader.getElementText().toString();
@@ -477,6 +612,14 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		return ocrFormatFile;
 	}
 
+	/**
+	 * parse Xml result in error folder and get Error description
+	 * 
+	 * @param file xml result in error folder
+	 * @return the sets of all files Name, wich are in the xml file
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws XMLStreamException the xML stream exception
+	 */
 	protected Set<String> xmlresultErrorparse(File file)
 			throws FileNotFoundException, XMLStreamException {
 		Set<String> ocrErrorFile = new LinkedHashSet<String>();
@@ -490,7 +633,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			while (xmlStreamReader.hasNext()) {
 				int event = xmlStreamReader.next();
 				if (event == XMLStreamConstants.START_ELEMENT) {
-					// Error Beschreibung
+					// Error description
 					if (xmlStreamReader.getName().toString().equals("Error")) {
 						error = xmlStreamReader.getElementText();
 					}
@@ -527,7 +670,15 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		return ocrErrorFile;
 	}
 
-	protected Boolean checkIfAllFilssExists(Set<String> checkfile, String url)
+	/**
+	 * Check if all files exists in url.
+	 *
+	 * @param checkfile is list of the name all images
+	 * @param url the url
+	 * @return the boolean, true if all files exists
+	 * @throws FileSystemException the file system exception
+	 */
+	protected Boolean checkIfAllFilesExists(Set<String> checkfile, String url)
 			throws FileSystemException {
 		for (String fileName : checkfile) {
 			if (hotfolder.fileIfexists(url + fileName))
@@ -540,7 +691,15 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		return true;
 	}
 
-	protected int resultAllFilssNotExists(Set<String> checkfile, String url)
+	/**
+	 * Result, number of all files not exists.
+	 *
+	 * @param checkfile is list of the name all images
+	 * @param url the url
+	 * @return the int result
+	 * @throws FileSystemException the file system exception
+	 */
+	protected int resultAllFilesNotExists(Set<String> checkfile, String url)
 			throws FileSystemException {
 		int result = 0;
 		for (String fileName : checkfile) {
@@ -553,6 +712,15 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		}
 		return result;
 	}
+	
+	/**
+	 * Copy a files from url+fileName to localfile. Assumes overwrite.
+	 *
+	 * @param checkfile is list of the name all images
+	 * @param url the url, wich are all images
+	 * @param localfile the localfile
+	 * @throws FileSystemException the file system exception
+	 */
 	protected void copyAllFiles(Set<String> checkfile, String url,
 			String localfile) throws FileSystemException {
 		URL folder = hotfolder.stringToUrl(url);
@@ -564,6 +732,13 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		}
 	}
 
+	/**
+	 * Delete all files.
+	 *
+	 * @param checkfile is list of the name all images
+	 * @param url the url, wich are all images
+	 * @throws FileSystemException the file system exception
+	 */
 	protected void deleteAllFiles(Set<String> checkfile, String url)
 			throws FileSystemException {
 		hotfolder.deleteIfExists(url + reportSuffix);
