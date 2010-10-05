@@ -119,16 +119,17 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			// remoteFiles = getResults();
 			
 				while (!failed) {
+					
 					// for Output folder
 					if (checkOutXmlResults()) {
 						String resultOutURLPrefix = webdavURL + outputFolder
 								+ "/" + identifier;
 						// TODO Erkennungsrat muss noch ausgelesen werden(ich
-						// wei das eigentlich nicht deswegen ist noch offen)
+						// weiﬂ das eigentlich nicht deswegen ist noch offen)
 						ocrOutFormatFile = xmlresultOutputparse(new File(
 								resultOutURLPrefix + reportSuffix));
-						// TODO muss ich diese locale URL wissen, wo die Dateien
-						// veschieben werden sollen
+						// TODO CH!?  wohin sollen die Dateien
+						// veschieben werden (local erstmal genannt)
 						String local = null;
 						// for Output folder
 						if (checkIfAllFilssExists(ocrOutFormatFile,
@@ -140,9 +141,9 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 							logger.info("Move Processing successfully to "
 									+ resultOutURLPrefix);
 						} else {
-							// es soll nochmal gewartet werden um zu prfen ob
-							// alles da ist
-							Thread.sleep(wait / 20);
+							
+							wait = resultAllFilssNotExists(ocrOutFormatFile, resultOutURLPrefix)* millisPerFile;
+							Thread.sleep(wait);
 							if (checkIfAllFilssExists(ocrOutFormatFile,
 									resultOutURLPrefix)) {
 								copyAllFiles(ocrOutFormatFile,
@@ -150,8 +151,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 								deleteAllFiles(ocrOutFormatFile,
 										resultOutURLPrefix);
 								failed = true;
-								logger.info("Move Processing is successfull to "
-										+ resultOutURLPrefix);
+							//	logger.info("Move Processing is successfull to " + resultOutURLPrefix);
 
 							} else {
 								failed = true;
@@ -174,9 +174,8 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 								failed = true;
 								logger.info("delete All Files Processing is successfull ");
 							} else {
-								// es soll nochmal gewartet werden um zu prfen
-								// ob alles da ist
-								Thread.sleep(wait / 20);
+								wait = resultAllFilssNotExists(ocrErrorFormatFile, resultErrorURLPrefix)* millisPerFile;
+								Thread.sleep(wait);
 								if (checkIfAllFilssExists(ocrErrorFormatFile,
 										resultErrorURLPrefix)) {
 									deleteAllFiles(ocrErrorFormatFile,
@@ -462,7 +461,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			while (xmlStreamReader.hasNext()) {
 				int event = xmlStreamReader.next();
 				if (event == XMLStreamConstants.START_ELEMENT) {
-					// wenn das Element 'osm' gefunden wurde
+					// wenn das Element 'NamingRule' gefunden wurde
 					if (xmlStreamReader.getName().toString()
 							.equals("NamingRule")) {
 						filename = xmlStreamReader.getElementText().toString();
@@ -541,6 +540,19 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		return true;
 	}
 
+	protected int resultAllFilssNotExists(Set<String> checkfile, String url)
+			throws FileSystemException {
+		int result = 0;
+		for (String fileName : checkfile) {
+			if (hotfolder.fileIfexists(url + fileName))
+				logger.debug("File " + fileName + " exists already");
+			else {
+				logger.debug("File " + fileName + " Not exists");
+				++result;
+			}
+		}
+		return result;
+	}
 	protected void copyAllFiles(Set<String> checkfile, String url,
 			String localfile) throws FileSystemException {
 		URL folder = hotfolder.stringToUrl(url);
