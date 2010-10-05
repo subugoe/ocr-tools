@@ -185,7 +185,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						String resultOutURLPrefix = webdavURL + outputFolder
 								+ "/" + identifier;
 						// TODO Erkennungsrat muss noch ausgelesen werden(ich
-						// weiﬂ das eigentlich nicht deswegen ist noch offen)
+						// wei das eigentlich nicht deswegen ist noch offen)
 						ocrOutFormatFile = xmlresultOutputparse(new File(
 								resultOutURLPrefix + reportSuffix));
 						// TODO CH!?  wohin sollen die Dateien
