@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.vfs.FileSystemException;
@@ -47,55 +48,112 @@ import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
+
+/**
+ * The Class AbbyyServerEngine.
+ */
 public class AbbyyServerEngine implements OCREngine {
 
+	/** The max threads. */
 	protected static Integer maxThreads = 5;
 	// protected ExecutorService pool = new OCRExecuter(maxThreads);
+	/** The Constant logger. */
 	final static Logger logger = LoggerFactory
 			.getLogger(AbbyyServerEngine.class);
 
-	PropertiesConfiguration config;
-
-	protected Process process;
+	/** The config. */
+	//Configuration config ;
+	ConfigParser c;
+	
+	/** The process. */
+	//protected Process process;
+	
+	/** The hotfolder. */
 	protected Hotfolder hotfolder;
 
+	/** single instance of AbbyyServerEngine. */
 	private static AbbyyServerEngine _instance;
+	
+	/** The extension. */
 	protected static String extension = "tif";
 	// Server information
+	/** The webdav url. */
 	protected static String webdavURL = null;
+	
+	/** The webdav username. */
 	protected static String webdavUsername = null;
+	
+	/** The webdav password. */
 	protected static String webdavPassword = null;
 	// public String defaultConfig = "config-properties";
 	// State variables
+	/** The total file count. */
 	protected static Long totalFileCount = 0l;
+	
+	/** The total file size. */
 	protected static Long totalFileSize = 0l;
 	// Folders
+	/** The input folder. */
 	protected static String inputFolder = null;
+	
+	/** The output folder. */
 	protected static String outputFolder = null;
+	
+	/** The error folder. */
 	protected static String errorFolder = null;
 
 	// internal tweaking variables
 	// Variables used for process management
+	/** The max size. */
 	protected static Long maxSize = 5368709120l;
+	
+	/** The max files. */
 	protected static Long maxFiles = 5000l;
 
+	/** The check server state. */
 	protected static Boolean checkServerState = true;
 
+	/** The local output dir. */
 	protected static String localOutputDir = null;
 
+	/** The directories. */
 	protected List<File> directories = new ArrayList<File>();
 
 	// OCR Processes
+	/** The processes. */
 	Queue<Process> processes = new ConcurrentLinkedQueue<Process>();
 
+	/**
+	 * Instantiates a new abbyy server engine.
+	 *
+	 * @throws FileSystemException the file system exception
+	 * @throws ConfigurationException the configuration exception
+	 */
 	public AbbyyServerEngine() throws FileSystemException,
 			ConfigurationException {
 		hotfolder = new Hotfolder();
-		loadConfig(config);
-		Thread thread = new Thread(process);
-		thread.start();
+		c = new ConfigParser();
+		c.loadConfig();
+		//protected Configuration config;
+		webdavURL = c.webdavURL;
+		webdavUsername = c.webdavUsername;
+		webdavPassword = c.webdavPassword;
+		inputFolder = c.inputFolder;
+		outputFolder = c.outputFolder;
+		errorFolder = c.errorFolder;
+		
+		maxSize = c.maxSize;
+		maxFiles = c.maxFiles;
+		maxThreads = c.maxThreads;
+		checkServerState = c.checkServerState;
+		
+		/*Thread thread = new Thread(process);
+		thread.start();*/
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize()
+	 */
 	@Override
 	public void recognize() {
 		try {
@@ -109,6 +167,12 @@ public class AbbyyServerEngine implements OCREngine {
 		}
 	}
 
+	/**
+	 * Start.
+	 *
+	 * @throws RuntimeException the runtime exception
+	 * @throws FileSystemException the file system exception
+	 */
 	public void start() throws RuntimeException, FileSystemException {
 		if (checkServerState) {
 			try {
@@ -125,16 +189,16 @@ public class AbbyyServerEngine implements OCREngine {
 				localOutputDir = dir.getParent();
 			}
 
-			process = new Process(dir);
+			Process process = new Process(dir);
 
 			process.setOutputLocation(localOutputDir);
 
 			// process.addOCRFormat(enums);
-
+			processes.add(process);
 		}
 
-		for (Process process : processes) {
-			pool.execute(process);
+		for (Process proces : processes) {
+			pool.execute(proces);
 		}
 
 		pool.shutdown();
@@ -147,69 +211,31 @@ public class AbbyyServerEngine implements OCREngine {
 
 	}
 
+
+	/**
+	 * Gets the single instance of AbbyyServerEngine.
+	 *
+	 * @return single instance of AbbyyServerEngine
+	 * @throws FileSystemException the file system exception
+	 * @throws ConfigurationException the configuration exception
+	 * 
+	 */
+
 	public static AbbyyServerEngine getInstance() throws FileSystemException, ConfigurationException {
+
 		if (_instance == null) {
 			_instance = new AbbyyServerEngine();
 		}
 		return _instance;
 	}
 
-	public void loadConfig(PropertiesConfiguration config)
-			throws ConfigurationException {
-		// do something with config
-		try {
-			config = new PropertiesConfiguration("config-properties");
-		} catch (org.apache.commons.configuration.ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		webdavURL = config.getString("base");
-		webdavURL = webdavURL.endsWith("/") ? webdavURL : webdavURL + "/";
-		webdavUsername = config.getString("username");
-		webdavPassword = config.getString("password");
-		inputFolder = config.getString("input");
-		outputFolder = config.getString("output");
-		errorFolder = config.getString("error");
 
-		if (config.getString("checkServerState") != null
-				&& !config.getString("checkServerState").equals("")) {
-			checkServerState = Boolean.parseBoolean(config
-					.getString("checkServerState"));
-		}
-
-		if (config.getString("maxTreads") != null
-				&& !config.getString("maxTreads").equals("")) {
-			maxThreads = Integer.parseInt(config.getString("maxTreads"));
-		}
-
-		if (config.getString("maxSize") != null
-				&& !config.getString("maxSize").equals("")) {
-			maxSize = Long.parseLong(config.getString("maxSize"));
-		}
-
-		if (config.getString("maxFiles") != null
-				&& !config.getString("maxFiles").equals("")) {
-			maxFiles = Long.parseLong(config.getString("maxFiles"));
-		}
-
-		// Add a preconfigred local output folder
-		logger.debug("URL: " + webdavURL);
-		logger.debug("User: " + webdavUsername);
-		logger.debug("Password: " + webdavPassword);
-
-		logger.debug("Input folder: " + inputFolder);
-		logger.debug("Output Folder: " + outputFolder);
-		logger.debug("Error Folder: " + errorFolder);
-
-		logger.debug("Max size: " + maxSize);
-		logger.debug("Max files: " + maxFiles);
-		logger.debug("Max treads: " + maxThreads);
-
-		logger.debug("Check server state: " + checkServerState);
-
-	}
-
+	/**
+	 * Check server state.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public void checkServerState() throws IOException {
 		if (maxSize != 0 && maxFiles != 0) {
 			List<URL> urls = new ArrayList<URL>();
@@ -233,7 +259,7 @@ public class AbbyyServerEngine implements OCREngine {
 					totalFileSize += size;
 				}
 			}
-			System.out.print("TotalFileSize = " + totalFileSize);
+			System.out.println("TotalFileSize = " + totalFileSize);
 			logger.trace("TotalFileSize = " + totalFileSize);
 			if (maxFiles != 0 && totalFileCount > maxFiles) {
 				logger.error("Too much files. Max number of files is "
@@ -253,28 +279,41 @@ public class AbbyyServerEngine implements OCREngine {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#setOCRProcess(de.uni_goettingen.sub.commons.ocr.api.OCRProcess)
+	 */
 	@Override
 	public void setOCRProcess(OCRProcess ocrp) {
 		// TODO Auto-generated method stub
 		// this.ocrp = ocrp;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#getOCRProcess()
+	 */
 	@Override
 	public OCRProcess getOCRProcess() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#getResult()
+	 */
 	@Override
 	public OCROutput getResult() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#setObserver(java.util.Observer)
+	 */
 	@Override
 	public void setObserver(Observer observer) {
 		// TODO Auto-generated method stub
 
 	}
+
 
 }

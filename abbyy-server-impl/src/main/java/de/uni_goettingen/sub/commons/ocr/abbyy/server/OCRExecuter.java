@@ -69,7 +69,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			}
 
 		} else {
-			throw new IllegalStateException("Not a OCRProcess object");
+			throw new IllegalStateException("Not a Process object");
 		}
 
 		pauseLock.lock();

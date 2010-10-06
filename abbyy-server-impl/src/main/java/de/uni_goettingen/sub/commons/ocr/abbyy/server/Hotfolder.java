@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 
 
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class Hotfolder is used to control the hotfolders used by the Abbyy
  * Recognition Server.

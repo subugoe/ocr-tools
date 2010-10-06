@@ -1,10 +1,10 @@
 username: gdz
 password: Hfwveqo)
-base: file:/C:/Dokumente%20und%20Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/target/test-classes/hotfolder/
+remoteURL: file://.
 input: input
 output: output
 error: error
-maxSize: 597189
+maxSize: 6597189
 maxFiles: 567103
 maxThreads: 5
 milisPerFile: 5500
