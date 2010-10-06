@@ -141,6 +141,10 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		this.identifier = dir.getName();
 
 	}
+	
+	public Process (OCRProcess p) {
+		super(p);
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
