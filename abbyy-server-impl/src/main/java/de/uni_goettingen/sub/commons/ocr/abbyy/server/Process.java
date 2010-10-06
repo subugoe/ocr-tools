@@ -102,7 +102,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	Date doneDate = null;
 
 	/** The report suffix. */
-	protected String reportSuffix = "xml.result.xml";
+	protected String reportSuffix = ".xml.result.xml";
 	
 	/** The extension. */
 	protected static String extension = "tif";
@@ -199,10 +199,10 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 							deleteAllFiles(ocrOutFormatFile, resultOutURLPrefix);
 							failed = true;
 							logger.info("Move Processing successfully to "
-									+ resultOutURLPrefix);
+									+ local);
 						} else {
 							
-							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix)* millisPerFile;
+							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix)* millisPerFile + millisPerFile;
 							Thread.sleep(wait);
 							if (checkIfAllFilesExists(ocrOutFormatFile,
 									resultOutURLPrefix)) {
@@ -211,7 +211,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 								deleteAllFiles(ocrOutFormatFile,
 										resultOutURLPrefix);
 								failed = true;
-							//	logger.info("Move Processing is successfull to " + resultOutURLPrefix);
+								logger.info("Move Processing is successfull to " + local);
 
 							} else {
 								failed = true;
@@ -234,7 +234,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 								failed = true;
 								logger.info("delete All Files Processing is successfull ");
 							} else {
-								wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix)* millisPerFile;
+								wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix)* millisPerFile + millisPerFile;
 								Thread.sleep(wait);
 								if (checkIfAllFilesExists(ocrErrorFormatFile,
 										resultErrorURLPrefix)) {
@@ -293,7 +293,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		List<File> files = makeFileList(dir, extension);
 
 		/**
-		 * proof if number of files is in limit as defined in xml-config file,
+		 * proof if number of files is in limit as defined in config-properties file,
 		 * param maxFiles
 		 */
 
@@ -305,7 +305,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		}
 
 		/**
-		 * proof overall filesize-limit as defined in xml-configfile, param
+		 * proof overall filesize-limit as defined in config-properties, param
 		 * maxSize
 		 */
 		Long size = calculateSize(files);
@@ -326,7 +326,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 
 		String uriPrefix = webdavURL + inputFolder + "/" + dirName + "/";
 		URL imageUrl = hotfolder.fileToURL(dir);
-		fileInfoList.add(new AbbyyOCRFile(imageUrl, null, uriPrefix));
+		//fileInfoList.add(new AbbyyOCRFile(imageUrl, null, uriPrefix));
 
 		for (File localFile : files) {
 			StringBuffer remoteFile = new StringBuffer("");
@@ -417,7 +417,9 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			String name) {
 		LinkedList<AbbyyOCRFile> newList = new LinkedList<AbbyyOCRFile>();
 		for (AbbyyOCRFile info : infoList) {
+			System.out.println("passt nicht "+ info.getRemoteURL().toString() );
 			if (info.getRemoteURL().toString() != null) {
+				System.out.println("passt " + info.getRemoteURL().toString());
 				try {
 					// Rewrite remote name
 					Pattern pr = Pattern.compile(".*\\\\(.*)");
@@ -476,12 +478,15 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 				inputFiles.add(hotfolder.urlToFile(fileInfo.getRemoteURL()));
 			}
 			if (ticketTempDir == null) {
-				ticketTempDir = fileInfo.getRemoteFileName();
+				//ticketTempDir = fileInfo.getRemoteFileName();
+				//ticketTempDir = webdavURL + inputFolder + "/" +identifier + "/" + ticketFileName;
+				//System.out.print("waw " + ticketTempDir);
+				ticketTempDir = "C:/hot/" + ticketFileName;
 			}
 		}
 		setInputFiles(inputFiles);
 		// put XML-Ticket to webdav-server, inputFolder
-		ticketFile = new File(ticketTempDir + ticketFileName);
+		ticketFile = new File(ticketTempDir );
 		// Writing Ticket
 		// Ticket ticket = new Ticket(ticketFile);
 		// ticket.setEngineConfig(engineConfig);
@@ -493,13 +498,13 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		//TODO: Commented these out, these methods aren't found
 		//setMillisPerFile(millisPerFile);
 		//setMaxOCRTimeout(maxOCRTimeout);
-		write(ticketFile);
+		write(ticketFile, identifier);
 
 		String outputFile = webdavURL + inputFolder + "/" + ticketFileName;
-		fileInfos.addFirst(new AbbyyOCRFile(hotfolder.fileToURL(ticketFile),
-				null, outputFile));
+		/*fileInfos.addFirst(new AbbyyOCRFile(hotfolder.fileToURL(ticketFile),
+				null, outputFile));*/
 		logger.trace("Copy from " + ticketFile.getAbsolutePath() + " to "
-				+ outputFile);
+				+ ticketTempDir);
 		return fileInfos;
 	}
 
@@ -561,6 +566,8 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	protected Boolean checkOutXmlResults() throws FileSystemException {
 		String resultURLPrefix = webdavURL + outputFolder + "/" + identifier
 				+ reportSuffix;
+		System.out.println(resultURLPrefix);
+		
 		return hotfolder.fileIfexists(resultURLPrefix);
 	}
 

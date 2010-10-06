@@ -36,7 +36,7 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	protected String remoteFileName;
 
 	//This represents the URL to the remote system
-	protected URL remoteURL;
+	protected URL remoteURL = null;
 
 	protected URL url = null;
 	
@@ -89,7 +89,7 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	 * @return the remote url
 	 */
 	public URL getRemoteURL() {
-		return remoteURL;
+		return this.remoteURL;
 	}
 
 	/**

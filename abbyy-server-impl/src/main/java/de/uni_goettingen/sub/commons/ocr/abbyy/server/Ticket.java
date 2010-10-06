@@ -85,7 +85,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
 
-	private static List<File> inputFiles = new ArrayList<File>();
+	protected static List<File> inputFiles = new ArrayList<File>();
 
 	// is represents the InputStream for files being read
 	private InputStream is;
@@ -133,13 +133,15 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
+	public Ticket (){
+	}
 	public Ticket(OCRProcess params) {
 		super(params);
 	}
 	
-	protected Ticket () {
+	/*protected Ticket () {
 		super();
-	}
+	}*/
 	
 	public Ticket (InputStream is) throws IOException {
 		//TODO: Finish this constructor
@@ -168,7 +170,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	}
 	
 	//TODO: use a Outputstream for this, the method accepting the file should only be a wrapper.
-	public void write (File ticketFile) throws IOException {
+	public void write (File ticketFile, String identifier) throws IOException {
 		if (ticketFile == null) {
 			throw new IllegalStateException();
 		}
@@ -188,7 +190,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			InputFile inputFile = ticket.addNewInputFile();
 			String file = f.getName();
 			inputFile.setName(file);
-			// TODO:
+		
 		}
 
 		ImageProcessingParams imageProcessingParams = ticket
@@ -223,13 +225,13 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			exportFormat.setOutputFlowType("SharedFolder");
 			exportFormat.setOutputFileFormat(ef.name());
 
-			exportFormat.setNamingRule(TicketHelper
+			/*exportFormat.setNamingRule(TicketHelper
 					.getOutputName(getInputFiles().toString())
 					+ "."
 					+ ef.name().toLowerCase());
-			
+			*/
 
-			exportFormat.setNamingRule(TicketHelper.getOutputName(getInputFiles().toString()) + "." + ef.name().toLowerCase());
+			exportFormat.setNamingRule(identifier + "." + ef.name().toLowerCase());
 			
 			exportFormat.setOutputLocation(getOutPutLocation());
 
@@ -290,5 +292,23 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	public void setOutPutLocation (String outPutLocation) {
 		this.outPutLocation = outPutLocation;
 	}
+	
+	public Long getMaxOCRTimeout() {
+		return maxOCRTimeout;
+	}
+	
+	public void setMaxOCRTimeout(Long maxOCRTimeout) {
+		this.maxOCRTimeout = maxOCRTimeout;
+	}
+	
+	public Integer getMillisPerFile() {
+		return millisPerFile;
+	}
+	
+	public void setMillisPerFile(Integer millisPerFile) {
+		this.millisPerFile = millisPerFile;
+	}
+	
+	
 
 }
