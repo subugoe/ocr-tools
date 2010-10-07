@@ -1,6 +1,6 @@
 username: gdz
 password: Hfwveqo)
-remoteURL: file://.
+remoteURL: file://target/test-classes/hotfolder/
 input: input
 output: output
 error: error
