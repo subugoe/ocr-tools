@@ -31,40 +31,73 @@ import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * The Class OCRCli.
+ * command line is special for the input parametres 
+ * which the API abbyy-server-impl needs. these parametres are
+ * language, format , directories and outputlocation
+ */
 public class OCRCli {
 	
+	/** The Constant version. */
 	public final static String version = "0.0.4";
 
 	
 	
+	/** The logger. */
 	protected static Logger logger = LoggerFactory
 			.getLogger(de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli.class);
 
+	/** The opts. */
 	protected static Options opts = new Options();
 
+	/** The local output dir. */
 	protected static String localOutputDir = null;
+	
+	/** The extension. */
 	protected static String extension = "tif";
 
+	/** The directories wich are images */
 	protected List<File> directories = new ArrayList<File>();
+	
+	/** The language. */
 	protected static List<Locale> langs;
+	
+	/** The config. */
 	protected HierarchicalConfiguration config;
 	//public String defaultConfig = "server-config.xml";
 	// Settings for Ticket creation
+	/** The recursive mode. */
 	protected Boolean recursiveMode = true;
+	
+	/** The args. */
 	String[] args;
+	
+	/** The write remote prefix. */
 	protected static Boolean writeRemotePrefix = true;
 
+	/** The _instance. */
 	protected static OCRCli _instance;
 
+	/** The foramt. as example TXT, XML or PDF.. */
 	static List<OCRFormat> f = new ArrayList<OCRFormat>();
+	
+	/** The inputfiles. list of the images */
 	private static List<File> inputFiles = new ArrayList<File>();
 	
 	
+	/** The engine. */
 	protected static OCREngine engine;
+	
+	/** The process. */
 	protected static OCRProcess process;
 
 	
 	
+	/**
+	 * Inits the opts.
+	 */
 	protected static void initOpts() {
 		// Parameters
 		opts.addOption("r", false, "Recursive - scan for subdirectories");
@@ -77,6 +110,12 @@ public class OCRCli {
 		opts.addOption("o", true, "Output folder");
 	}
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String[] args) throws Exception {
 		logger.info("Creating OCRRunner instance");
 		OCRCli ocr = OCRCli.getInstance();	
@@ -84,8 +123,13 @@ public class OCRCli {
 		engine.recognize();
 	}
 
+	/**
+	 * Configure from args.
+	 *
+	 * @param args the arguments
+	 */
 	public void configureFromArgs(String[] args) {
-		
+		//list of the directory
 		List<String> files = defaultOpts(args);
 		
 		if (recursiveMode) {
@@ -107,6 +151,7 @@ public class OCRCli {
 				
 
 			} else {
+				//list of the images with extension
 				inputFiles.add(file);
 				logger.error(path + " is not a directory!");			
 			}
@@ -115,6 +160,13 @@ public class OCRCli {
 		
 		
 	}
+	
+	/**
+	 * Gets the image directories wich are in File dir
+	 *
+	 * @param dir the File wich are images
+	 * @return the image directories
+	 */
 	public static List<File> getImageDirectories(File dir) {
 		List<File> dirs = new ArrayList<File>();
 
@@ -141,6 +193,11 @@ public class OCRCli {
 		return dirs;
 	}
 	
+	/**
+	 * Gets the single instance of OCRCli.
+	 *
+	 * @return single instance of OCRCli
+	 */
 	public static OCRCli getInstance() {
 		if (_instance == null) {
 			_instance = new OCRCli();
@@ -148,17 +205,26 @@ public class OCRCli {
 		return _instance;
 	}
 	
+	/**
+	 * Instantiates a new oCR cli.
+	 */
 	protected OCRCli() {
 		initOpts();
 		
 	}
 
+	/**
+	 * Parses the language.
+	 *
+	 * @param str the str
+	 * @return the list of language
+	 */
 	public static List<Locale> parseLangs(String str) {
 		List<Locale> langs = new ArrayList<Locale>();
 		if (str.contains(",")) {
 			for (String lang : Arrays.asList(str.split(","))) {
 				langs.add(new Locale(lang));
-				process.addLanguage(new Locale(lang));
+			    process.addLanguage(new Locale(lang));
 			}
 		} else {
 			langs.add(new Locale(str));
@@ -167,6 +233,13 @@ public class OCRCli {
 		return langs;
 	}
 	
+	/**
+	 * getordinal. checks whether format already gives in enum OCRFormat Class
+	 *
+	 * @param name is the format from arguments, big converted withUpperCase
+	 * @param format from arguments
+	 * @return the ordinal
+	 */
 	static int getOrdinal( String name , String format ) 
 	{ 
 	  try { 
@@ -179,6 +252,12 @@ public class OCRCli {
 	  } 
 	}
 
+	/**
+	 * Parses the format from the arguments.
+	 *
+	 * @param str is the format
+	 * @return the list of the OCRFormat
+	 */
 	public static List<OCRFormat> parseOCRFormat(String str) {
 		List<OCRFormat> ocrFormats = new ArrayList<OCRFormat>();
 		
@@ -187,7 +266,7 @@ public class OCRCli {
 				
 				getOrdinal( ocrFormat.toUpperCase(), ocrFormat );
 				ocrFormats.add(OCRFormat.valueOf(ocrFormat.toUpperCase()));
-				process.addOCRFormat(OCRFormat.valueOf(ocrFormat.toUpperCase()));
+				//process.addOCRFormat(OCRFormat.valueOf(ocrFormat.toUpperCase()));
 			}
 		} else {
 			getOrdinal( str.toUpperCase() , str );
@@ -197,6 +276,12 @@ public class OCRCli {
 		return ocrFormats;
 	}
 
+	/**
+	 * Default opts.
+	 *
+	 * @param args the args
+	 * @return the list
+	 */
 	protected List<String> defaultOpts(String[] args) {
 		
 		String cmdName = "OCRRunner [opts] files";
@@ -278,27 +363,52 @@ public class OCRCli {
 				process.setOutputLocation(localOutputDir);
 			}
 		}
-		
+		//Lise of the directory wich are images
 		return cmd.getArgList();
 	}
 
 		
+	/**
+	 * Gets the file count.
+	 *
+	 * @return the file count
+	 */
 	public Long getFileCount() {
 		throw new NotImplementedException();
 	}
 
+	/**
+	 * Adds the directory.
+	 *
+	 * @param dir the dir
+	 */
 	public void addDirectory(File dir) {
 		this.directories.add(dir);
 	}
 
+	/**
+	 * Gets the directories.
+	 *
+	 * @return the directories
+	 */
 	public List<File> getDirectories() {
 		return directories;
 	}
 
+	/**
+	 * Sets the directories.
+	 *
+	 * @param directories the new directories
+	 */
 	public void setDirectories(List<File> directories) {
 		this.directories = directories;
 	}
 
+	/**
+	 * Gets the input files.
+	 *
+	 * @return the input files
+	 */
 	public static List<File> getInputFiles() {
 		return inputFiles;
 	}
