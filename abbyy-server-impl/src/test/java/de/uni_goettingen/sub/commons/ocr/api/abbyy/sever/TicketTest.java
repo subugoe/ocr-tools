@@ -59,7 +59,7 @@ public class TicketTest {
 	private static OCRProcess ocrp = null;
 	private static File ticketFile;
 	private static OCRImage ocri = null;
-
+	String name = "515";
 	@BeforeClass
 	public static void init () {
 		basefolderFile = getBaseFolderAsFile();
@@ -107,7 +107,7 @@ public class TicketTest {
 		ticket = new Ticket(ocrp);
 		ticket.setOutPutLocation("D:/Recognition/GDZ/output");
 		ticket.setInputFiles(inputFiles);
-		ticket.write(ticketFile);
+		ticket.write(ticketFile, name);
 
 		assertTrue(ticketFile.exists());
 	}
