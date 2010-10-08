@@ -44,4 +44,8 @@ public interface OCREngine {
 	 */
 	public void setObserver (Observer observer);
 
+	public OCRImage newImage ();
+	
+	public OCRProcess newProcess ();
+	
 }

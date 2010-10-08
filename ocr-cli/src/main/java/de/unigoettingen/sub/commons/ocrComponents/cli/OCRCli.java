@@ -9,11 +9,13 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -127,8 +129,9 @@ public class OCRCli {
 	 * Configure from args.
 	 *
 	 * @param args the arguments
+	 * @throws MalformedURLException 
 	 */
-	public void configureFromArgs(String[] args) {
+	public void configureFromArgs(String[] args) throws MalformedURLException {
 		//list of the directory
 		List<String> files = defaultOpts(args);
 		
@@ -139,9 +142,15 @@ public class OCRCli {
 				newFiles.addAll(getImageDirectories(new File(dir)));
 			}
 			files = new ArrayList<String>();
+			OCRImage img = null;
 			for (File dir : newFiles) {
 				files.add(dir.getAbsolutePath());
+				img = engine.newImage();
+				img.setUrl(dir.toURI().toURL());
 			}
+			OCRProcess p = engine.getOCRProcess();
+			p.addImage(img);
+			
 		}
 
 		for (String path : files) {
@@ -156,7 +165,9 @@ public class OCRCli {
 			}
 			
 		}
-		process.setDirectories(directories);
+		//process.setDirectories(directories);
+		
+		
 		
 	}
 	

@@ -9,6 +9,16 @@ public abstract class AbstractOCRImage implements OCRImage {
 		this.imageUrl = imageUrl;
 	}
 
+	protected AbstractOCRImage () {
+		
+	}
+	
+	public AbstractOCRImage(OCRImage i) {
+		this.imageUrl = i.getUrl();
+		this.orientation = getOrientation();
+	}
+
+	
 	/** directory of the images. */
 	public URL url;
 
