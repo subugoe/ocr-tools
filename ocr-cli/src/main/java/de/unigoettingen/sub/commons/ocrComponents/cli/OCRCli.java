@@ -11,6 +11,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 
 
@@ -18,6 +19,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -136,39 +138,32 @@ public class OCRCli {
 		List<String> files = defaultOpts(args);
 		
 		if (recursiveMode) {
-			List<File> newFiles = new ArrayList<File>();
+			
 			
 			for (String dir : files) {
+				List<File> newFiles = new ArrayList<File>();
 				newFiles.addAll(getImageDirectories(new File(dir)));
+				files = new ArrayList<String>();
+				for (File file : newFiles) {
+					files.add(file.getAbsolutePath());
+				//	img = engine.newImage();
+				//	img.setUrl(dir.toURI().toURL());
+					System.out.println(file.getAbsolutePath());
+				}
+				System.out.println(dir);
 			}
-			files = new ArrayList<String>();
-			OCRImage img = null;
-			for (File dir : newFiles) {
-				files.add(dir.getAbsolutePath());
-				img = engine.newImage();
-				img.setUrl(dir.toURI().toURL());
-			}
-			OCRProcess p = engine.getOCRProcess();
-			p.addImage(img);
+			
+			//OCRImage img = null;
+			
+			
+			//OCRProcess p = engine.newProcess();
+			//p.addImage(img);
 			
 		}
 
-		for (String path : files) {
-			File file = new File(path);
-			if (file.isDirectory()) {
-				directories.add(file);
-
-
-			} else {
-				inputFiles.add(file);
-				logger.error(path + " is not a directory!");
-			}
-			
-		}
+		
 		//process.setDirectories(directories);
-		
-		
-		
+
 	}
 	
 	/**
@@ -178,31 +173,37 @@ public class OCRCli {
 	 * @return the image directories
 	 */
 	public static List<File> getImageDirectories(File dir) {
-		List<File> dirs = new ArrayList<File>();
-
-		if (FileUtils.makeFileList(dir, extension).size() > 0) {
-			dirs.add(dir);
-		}
-
-		List<File> fileList;
-		if (dir.isDirectory()) {
-			fileList = Arrays.asList(dir.listFiles());
-			for (File file : fileList) {
-				if (file.isDirectory()) {
-					//get all files which in the topical list, have "extension"  as ending
-					List<File> files = FileUtils.makeFileList(dir, extension);
-					if (files.size() > 0) {
-						dirs.addAll(files);
-					} else {
-						dirs.addAll(getImageDirectories(file));
-					}
-				}
-			}
+		List<File> files = new ArrayList<File>();
+		if (dir.isDirectory()) {				
+			//get all files which in the topical list, have "extension"  as ending
+			files = makeFileList(dir, extension);
+			
 		} else {
 			throw new IllegalStateException(dir.getAbsolutePath() + " is not a directory");
 		}
-		return dirs;
+		
+		return files;
 	}
+	
+	
+	public static List<File> makeFileList(File dir, String filter) {
+		List<File> fileList;
+		if (dir.isDirectory()) {
+			// OCR.logger.trace(inputFile + " is a directory");
+
+			File files[] = dir.listFiles(new FileExtensionsFilter(filter));
+			fileList = Arrays.asList(files);
+			Collections.sort(fileList);
+
+		} else {
+			fileList = new ArrayList<File>();
+			fileList.add(dir);
+			// OCR.logger.trace("Input file: " + inputFile);
+		}
+		return fileList;
+	}
+	
+	
 	
 	/**
 	 * Gets the single instance of OCRCli.
