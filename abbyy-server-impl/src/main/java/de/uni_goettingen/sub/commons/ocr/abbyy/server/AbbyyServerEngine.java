@@ -20,6 +20,8 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRExecuter;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
@@ -291,7 +294,7 @@ public class AbbyyServerEngine implements OCREngine {
 	 */
 	@Override
 	public OCRProcess getOCRProcess() {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
@@ -311,6 +314,16 @@ public class AbbyyServerEngine implements OCREngine {
 	public void setObserver(Observer observer) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public OCRImage newImage() {
+		return new AbbyyOCRFile();
+	}
+
+	@Override
+	public OCRProcess newProcess() {
+		return new Process();
 	}
 
 

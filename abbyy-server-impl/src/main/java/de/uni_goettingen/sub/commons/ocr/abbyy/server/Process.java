@@ -145,6 +145,9 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	public Process (OCRProcess p) {
 		super(p);
 	}
+	
+	protected Process () {
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
@@ -228,7 +231,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						if (checkErrorXmlResults()) {
 							String resultErrorURLPrefix = webdavURL
 									+ errorFolder + "/" + identifier;
-							// TODO bericht wird von hier angeholt
+							// TODO bericht wird von hier abgeholt
 							ocrErrorFormatFile = xmlresultErrorparse(new File(
 									resultErrorURLPrefix + reportSuffix));
 							if (checkIfAllFilesExists(ocrErrorFormatFile,

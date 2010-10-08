@@ -1,5 +1,6 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -82,4 +83,10 @@ public interface OCRProcess {
 	public void setOcrOutput (List<OCROutput> ocrOutput);
 
 	public void setOutputLocation (String outputLocation);
+	
+	/*
+	public List<File> getDirectories() ;
+
+	public void setDirectories(List<File> directories);
+	*/
 }
