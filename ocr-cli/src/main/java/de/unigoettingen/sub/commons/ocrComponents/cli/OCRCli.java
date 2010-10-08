@@ -148,22 +148,21 @@ public class OCRCli {
 			File file = new File(path);
 			if (file.isDirectory()) {
 				directories.add(file);
-				
+
 
 			} else {
-				//list of the images with extension
 				inputFiles.add(file);
-				logger.error(path + " is not a directory!");			
+				logger.error(path + " is not a directory!");
 			}
 			
 		}
-		
+		process.setDirectories(directories);
 		
 	}
 	
 	/**
 	 * Gets the image directories wich are in File dir
-	 *
+	 * 
 	 * @param dir the File wich are images
 	 * @return the image directories
 	 */
@@ -179,6 +178,7 @@ public class OCRCli {
 			fileList = Arrays.asList(dir.listFiles());
 			for (File file : fileList) {
 				if (file.isDirectory()) {
+					//get all files which in the topical list, have "extension"  as ending
 					List<File> files = FileUtils.makeFileList(dir, extension);
 					if (files.size() > 0) {
 						dirs.addAll(files);
@@ -266,7 +266,7 @@ public class OCRCli {
 				
 				getOrdinal( ocrFormat.toUpperCase(), ocrFormat );
 				ocrFormats.add(OCRFormat.valueOf(ocrFormat.toUpperCase()));
-				//process.addOCRFormat(OCRFormat.valueOf(ocrFormat.toUpperCase()));
+				process.addOCRFormat(OCRFormat.valueOf(ocrFormat.toUpperCase()));
 			}
 		} else {
 			getOrdinal( str.toUpperCase() , str );
