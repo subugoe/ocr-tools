@@ -2,7 +2,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 /*
 
- Â© 2010, SUB GÃ¶ttingen. All rights reserved.
+ © 2010, SUB Göttingen. All rights reserved.
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as
  published by the Free Software Foundation, either version 3 of the
@@ -34,9 +34,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.vfs.FileSystemException;
 
 import org.slf4j.Logger;
@@ -117,8 +115,9 @@ public class AbbyyServerEngine implements OCREngine {
 	protected static String localOutputDir = null;
 
 	/** The directories. */
-	protected List<File> directories = new ArrayList<File>();
-
+	//protected List<File> directories = new ArrayList<File>();
+	OCRProcess p ;
+	
 	// OCR Processes
 	/** The processes. */
 	Queue<Process> processes = new ConcurrentLinkedQueue<Process>();
@@ -127,7 +126,7 @@ public class AbbyyServerEngine implements OCREngine {
 	 * Instantiates a new abbyy server engine.
 	 *
 	 * @throws FileSystemException the file system exception
-	 * @throws ConfigurationException the configuration exception
+	 * 
 	 */
 	public AbbyyServerEngine() throws FileSystemException,
 			ConfigurationException {
@@ -151,24 +150,24 @@ public class AbbyyServerEngine implements OCREngine {
 		thread.start();*/
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize()
+	/**
+	 * API Start
 	 */
 	@Override
 	public void recognize() {
 		try {
-			AbbyyServerEngine.getInstance();
+			start();
 		} catch (FileSystemException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ConfigurationException e) {
+		} catch (RuntimeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Start.
+	 * Start the threadPooling
 	 *
 	 * @throws RuntimeException the runtime exception
 	 * @throws FileSystemException the file system exception
@@ -183,15 +182,15 @@ public class AbbyyServerEngine implements OCREngine {
 		}
 
 		ExecutorService pool = new OCRExecuter(maxThreads);
-
-		for (File dir : directories) {
-			if (localOutputDir == null) {
+		 
+		for (File dir : p.getDirectories()) {
+			/*if (localOutputDir == null) {
 				localOutputDir = dir.getParent();
-			}
+			}*/
 
 			Process process = new Process(dir);
 
-			process.setOutputLocation(localOutputDir);
+			//process.setOutputLocation(localOutputDir);
 
 			// process.addOCRFormat(enums);
 			processes.add(process);
@@ -233,7 +232,7 @@ public class AbbyyServerEngine implements OCREngine {
 
 	/**
 	 * Check server state.
-	 *
+	 * check all three folders since the limits are for the whole system.
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void checkServerState() throws IOException {
@@ -243,8 +242,7 @@ public class AbbyyServerEngine implements OCREngine {
 			String input_uri = webdavURL + inputFolder + "/";
 			String output_uri = webdavURL + outputFolder + "/";
 			String error_uri = webdavURL + errorFolder + "/";
-			// We need to check all three folders since the limits are for the
-			// whole system, not just input
+			
 			urls.add(hotfolder.stringToUrl(input_uri));
 			urls.add(hotfolder.stringToUrl(output_uri));
 			urls.add(hotfolder.stringToUrl(error_uri));
