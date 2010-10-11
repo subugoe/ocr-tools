@@ -117,9 +117,10 @@ public class AbbyyServerEngine implements OCREngine {
 	/** The local output dir. */
 	protected static String localOutputDir = null;
 
-	/** The directories. */
-	//protected List<File> directories = new ArrayList<File>();
-	OCRProcess p ;
+	/** The directories as process */
+	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
+	
+	//Process ocrp ;
 	
 	// OCR Processes
 	/** The processes. */
@@ -186,12 +187,12 @@ public class AbbyyServerEngine implements OCREngine {
 
 		ExecutorService pool = new OCRExecuter(maxThreads);
 		 
-		for (File dir : p.getDirectories()) {
+		for (OCRProcess process : getOcrProcess()) {
 			/*if (localOutputDir == null) {
 				localOutputDir = dir.getParent();
 			}*/
 
-			Process process = new Process(dir);
+		//	Process process = new Process(dir);
 
 			//process.setOutputLocation(localOutputDir);
 
@@ -280,23 +281,20 @@ public class AbbyyServerEngine implements OCREngine {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#setOCRProcess(de.uni_goettingen.sub.commons.ocr.api.OCRProcess)
-	 */
-	@Override
-	public void setOCRProcess(OCRProcess ocrp) {
-		// TODO Auto-generated method stub
-		// this.ocrp = ocrp;
-	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#getOCRProcess()
-	 */
-	@Override
-	public OCRProcess getOCRProcess() {
 
-		return null;
+	public List<OCRProcess> getOcrProcess() {
+		return ocrProcess;
 	}
+	
+	public void addOcrProcess(OCRProcess ocrp){
+		this.ocrProcess.add(ocrp);
+	}
+	
+	/*public void setOcrProcess(List<OCRProcess> ocrProcess) {
+		this.ocrProcess = ocrProcess;
+	}*/
+
 
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#getResult()

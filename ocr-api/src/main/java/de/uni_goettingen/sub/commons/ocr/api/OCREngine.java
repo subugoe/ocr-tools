@@ -1,6 +1,9 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
+import java.util.List;
 import java.util.Observer;
+
+
 
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
@@ -20,14 +23,14 @@ public interface OCREngine {
 	 * @param process
 	 *            the new oCR process
 	 */
-	public void setOCRProcess (OCRProcess process);
-
+	//public void setOCRProcess (OCRProcess process);
+	public void addOcrProcess(OCRProcess ocrp);
 	/**
 	 * Gets the oCR process.
 	 * 
 	 * @return the oCR process
 	 */
-	public OCRProcess getOCRProcess ();
+	public List<OCRProcess> getOcrProcess();
 
 	/**
 	 * Gets the result.
