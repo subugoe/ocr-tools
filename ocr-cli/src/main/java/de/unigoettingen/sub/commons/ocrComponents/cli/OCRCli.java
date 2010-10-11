@@ -17,6 +17,7 @@ import de.unigoettingen.sub.commons.util.file.FileUtils;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -144,26 +145,21 @@ public class OCRCli {
 				List<File> newFiles = new ArrayList<File>();
 				newFiles.addAll(getImageDirectories(new File(dir)));
 				files = new ArrayList<String>();
+				OCRProcess p = engine.newProcess();
+				OCRImage img = null;
 				for (File file : newFiles) {
 					files.add(file.getAbsolutePath());
-				//	img = engine.newImage();
-				//	img.setUrl(dir.toURI().toURL());
-					System.out.println(file.getAbsolutePath());
+					img = engine.newImage();
+				    img.setUrl(new URL(file.getAbsolutePath()));
+					//System.out.println(file.getAbsolutePath());
+					p.addImage(img);
 				}
-				System.out.println(dir);
-			}
-			
-			//OCRImage img = null;
-			
-			
-			//OCRProcess p = engine.newProcess();
-			//p.addImage(img);
-			
+				//list of the directory as process
+				engine.addOcrProcess(p);
+				//System.out.println(dir);
+			}	
 		}
-
-		
 		//process.setDirectories(directories);
-
 	}
 	
 	/**
