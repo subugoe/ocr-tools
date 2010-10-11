@@ -188,20 +188,12 @@ public class AbbyyServerEngine implements OCREngine {
 		ExecutorService pool = new OCRExecuter(maxThreads);
 		 
 		for (OCRProcess process : getOcrProcess()) {
-			/*if (localOutputDir == null) {
-				localOutputDir = dir.getParent();
-			}*/
-
-		//	Process process = new Process(dir);
-
-			//process.setOutputLocation(localOutputDir);
-
-			// process.addOCRFormat(enums);
-			processes.add(process);
+			//	Process process = new Process(dir);
+			processes.add((Process) process);
 		}
 
-		for (Process proces : processes) {
-			pool.execute(proces);
+		for (OCRProcess proces : processes) {
+			pool.execute((Runnable) proces);
 		}
 
 		pool.shutdown();

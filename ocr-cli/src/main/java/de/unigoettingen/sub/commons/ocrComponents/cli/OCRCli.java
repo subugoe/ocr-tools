@@ -144,22 +144,17 @@ public class OCRCli {
 			for (String dir : files) {
 				List<File> newFiles = new ArrayList<File>();
 				newFiles.addAll(getImageDirectories(new File(dir)));
-				files = new ArrayList<String>();
 				OCRProcess p = engine.newProcess();
 				OCRImage img = null;
 				for (File file : newFiles) {
-					files.add(file.getAbsolutePath());
 					img = engine.newImage();
-				    img.setUrl(new URL(file.getAbsolutePath()));
-					//System.out.println(file.getAbsolutePath());
+					img.setUrl(new URL(file.getAbsolutePath().toString()));
 					p.addImage(img);
 				}
 				//list of the directory as process
 				engine.addOcrProcess(p);
-				//System.out.println(dir);
 			}	
 		}
-		//process.setDirectories(directories);
 	}
 	
 	/**
