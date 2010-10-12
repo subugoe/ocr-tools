@@ -86,6 +86,10 @@ public class Hotfolder extends Thread{
 	/** The fileinfos. */
 	protected List<AbbyyOCRFile> fileInfos = null;
 	
+	protected String webdavURL;
+	protected String inputFolder ;
+	protected String outputFolder ;
+	protected String errorFolder;
 	
 	//protected static Boolean writeRemotePrefix = true;
 
@@ -364,4 +368,53 @@ public class Hotfolder extends Thread{
 		this.errrorFolder = errrorFolder;
 	}
 
+
+
+	public String getWebdavURL() {
+		return webdavURL;
+	}
+
+
+
+	public void setWebdavURL(String webdavURL) {
+		this.webdavURL = webdavURL;
+	}
+
+
+
+	public String getInputFolder() {
+		return inputFolder;
+	}
+
+
+
+	public void setInputFolder(String inputFolder) {
+		this.inputFolder = inputFolder;
+	}
+
+
+
+	public String getOutputFolder() {
+		return outputFolder;
+	}
+
+
+
+	public void setOutputFolder(String outputFolder) {
+		this.outputFolder = outputFolder;
+	}
+
+
+
+	public String getErrorFolder() {
+		return errorFolder;
+	}
+
+
+
+	public void setErrorFolder(String errorFolder) {
+		this.errorFolder = errorFolder;
+	}
+
+	
 }

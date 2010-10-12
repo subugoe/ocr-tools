@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	//TODO: Also document the differences to the overridden methods.
 	
-	public Integer maxThreads;
+	public Integer maxThreads ;
 
 	private boolean isPaused;
 	private ReentrantLock pauseLock = new ReentrantLock();
