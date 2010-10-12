@@ -162,7 +162,12 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			logger.error(e.toString());
 		}
 
-		fileInfos = getFileList(new File(imageDirectory));
+		try {
+			fileInfos = getFileList(new File(imageDirectory));
+		} catch (FileSystemException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		Integer wait;
 		try {
@@ -171,6 +176,12 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			if (fixRemotePath) {
 				fileInfos = fixRemotePath(fileInfos, identifier);
 
+			}
+			String inputDerectory = webdavURL + inputFolder + "/" + identifier;
+			File inputDerectoryFile = new File(inputDerectory);
+			if (!hotfolder.fileIfexists(inputDerectoryFile.getAbsolutePath())){
+				hotfolder.mkCol(hotfolder.stringToUrl(inputDerectoryFile.getAbsolutePath()));
+				
 			}
 			fileInfos = addTicketFile(new LinkedList<AbbyyOCRFile>(fileInfos),
 					identifier);
@@ -190,14 +201,17 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 					// for Output folder
 					if (checkOutXmlResults()) {
 						String resultOutURLPrefix = webdavURL + outputFolder
-								+ "/" + identifier;
+								+ "/" + identifier ;
+						
+						File resultOutURLPrefixpath = new File(resultOutURLPrefix + "/" + identifier + reportSuffix);
+						String resultOutURLPrefixAbsolutePath = resultOutURLPrefixpath.getAbsolutePath();
 						// TODO Erkennungsrat muss noch ausgelesen werden(ich
 						// wei das eigentlich nicht deswegen ist noch offen)
 						ocrOutFormatFile = xmlresultOutputparse(new File(
-								resultOutURLPrefix + reportSuffix));
+								resultOutURLPrefixAbsolutePath));
 						// TODO CH!?  wohin sollen die Dateien
 						// veschieben werden (local erstmal genannt)
-						String local = null;
+						String local = "C:/Dokumente und Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/src/test/resources/move";
 						// for Output folder
 						if (checkIfAllFilesExists(ocrOutFormatFile,
 								resultOutURLPrefix)) {
@@ -231,9 +245,11 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						if (checkErrorXmlResults()) {
 							String resultErrorURLPrefix = webdavURL
 									+ errorFolder + "/" + identifier;
+							File resultErrorURLPrefixpath = new File(resultErrorURLPrefix + "/" + identifier + reportSuffix);
+							String resultErrorURLPrefixAbsolutePath = resultErrorURLPrefixpath.getAbsolutePath();
 							// TODO bericht wird von hier abgeholt
 							ocrErrorFormatFile = xmlresultErrorparse(new File(
-									resultErrorURLPrefix + reportSuffix));
+									resultErrorURLPrefixAbsolutePath));
 							if (checkIfAllFilesExists(ocrErrorFormatFile,
 									resultErrorURLPrefix)) {
 								deleteAllFiles(ocrErrorFormatFile,
@@ -295,8 +311,9 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 *
 	 * @param dir the file system, where are all images
 	 * @return the file list of the AbbyyOCRFile.
+	 * @throws FileSystemException 
 	 */
-	protected LinkedList<AbbyyOCRFile> getFileList(File dir) {
+	protected LinkedList<AbbyyOCRFile> getFileList(File dir) throws FileSystemException {
 		List<File> files = makeFileList(dir, extension);
 
 		/**
@@ -352,11 +369,11 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 
 			URL imageUrlNew = hotfolder.fileToURL(localFile);
 			URL remoteURL = null;
-			try {
-				remoteURL = new URL(remoteFile.toString());
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
+		
+				File remoteFilepath = new File(remoteFile.toString());
+				
+				remoteURL = hotfolder.stringToUrl(remoteFilepath.getAbsolutePath());
+			
 			AbbyyOCRFile fileInfo = new AbbyyOCRFile(imageUrlNew, remoteURL,
 					outputFile);
 			fileInfoList.add(fileInfo);
@@ -424,9 +441,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			String name) {
 		LinkedList<AbbyyOCRFile> newList = new LinkedList<AbbyyOCRFile>();
 		for (AbbyyOCRFile info : infoList) {
-			System.out.println("passt nicht "+ info.getRemoteURL().toString() );
 			if (info.getRemoteURL().toString() != null) {
-				System.out.println("passt " + info.getRemoteURL().toString());
 				try {
 					// Rewrite remote name
 					Pattern pr = Pattern.compile(".*\\\\(.*)");
@@ -486,9 +501,9 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			}
 			if (ticketTempDir == null) {
 				//ticketTempDir = fileInfo.getRemoteFileName();
-				//ticketTempDir = webdavURL + inputFolder + "/" +identifier + "/" + ticketFileName;
+				ticketTempDir = webdavURL + inputFolder + "/" +identifier + "/" + ticketFileName;
 				//System.out.print("waw " + ticketTempDir);
-				ticketTempDir = "C:/hot/" + ticketFileName;
+				
 			}
 		}
 		setInputFiles(inputFiles);
@@ -505,7 +520,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		//TODO: Commented these out, these methods aren't found
 		//setMillisPerFile(millisPerFile);
 		//setMaxOCRTimeout(maxOCRTimeout);
-		write(ticketFile, identifier);
+		write(ticketFile.getAbsoluteFile(), identifier);
 
 		String outputFile = webdavURL + inputFolder + "/" + ticketFileName;
 		/*fileInfos.addFirst(new AbbyyOCRFile(hotfolder.fileToURL(ticketFile),
@@ -531,8 +546,12 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			e.printStackTrace();
 		}
 
-		webdavURL = config.getString("base");
+		webdavURL = config.getString("remoteURL");
 		webdavURL = webdavURL.endsWith("/") ? webdavURL : webdavURL + "/";
+		if(webdavURL != null){
+			webdavURL = parseString(webdavURL);
+		}
+		
 		inputFolder = config.getString("input");
 		outputFolder = config.getString("output");
 		errorFolder = config.getString("error");
@@ -563,6 +582,21 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 
 	}
 
+	public static String parseString(String str){
+		String remoteFile = null;
+		if (str.contains("/./")) {
+			int i = 0;
+			for (String lang : Arrays.asList(str.split("/./"))) {
+				if (i == 0){
+					i++;
+				}else{
+					remoteFile = lang;
+				}
+			}
+		}
+		return remoteFile;
+		
+	}
 
 	/**
 	 * Check xml results in output folder  If exists.
@@ -571,11 +605,11 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 * @throws FileSystemException the file system exception
 	 */
 	protected Boolean checkOutXmlResults() throws FileSystemException {
-		String resultURLPrefix = webdavURL + outputFolder + "/" + identifier
-				+ reportSuffix;
-		System.out.println(resultURLPrefix);
+		String resultURLPrefix = webdavURL + outputFolder + "/" + identifier + "/" + identifier
+				+ reportSuffix ;
+		File resultURLPrefixpath  = new File(resultURLPrefix);
 		
-		return hotfolder.fileIfexists(resultURLPrefix);
+		return hotfolder.fileIfexists(resultURLPrefixpath.getAbsolutePath());
 	}
 
 	/**
@@ -585,9 +619,10 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 * @throws FileSystemException the file system exception
 	 */
 	protected Boolean checkErrorXmlResults() throws FileSystemException {
-		String resultURLPrefix = webdavURL + errorFolder + "/" + identifier
+		String resultURLPrefix = webdavURL + errorFolder + "/" + identifier + "/" + identifier
 				+ reportSuffix;
-		return hotfolder.fileIfexists(resultURLPrefix);
+		File resultURLPrefixpath = new File(resultURLPrefix);
+		return hotfolder.fileIfexists(resultURLPrefixpath.getAbsolutePath());
 	}
 
 	/**
@@ -662,7 +697,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 							if (attributeName.equals("Name")) {
 								String str = xmlStreamReader
 										.getAttributeValue(i);
-								String[] results = str.split("_");
+								String[] results = str.split("}_");
 								Boolean image = true;
 								for (int j = 0; j < results.length; j++) {
 									if (image) {
@@ -694,8 +729,10 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 */
 	protected Boolean checkIfAllFilesExists(Set<String> checkfile, String url)
 			throws FileSystemException {
+		File urlpath = new File(url);
 		for (String fileName : checkfile) {
-			if (hotfolder.fileIfexists(url + fileName))
+			System.out.println(urlpath.getAbsolutePath() + fileName + "wawww");
+			if (hotfolder.fileIfexists(urlpath.getAbsolutePath() +"/"+ fileName))
 				logger.debug("File " + fileName + " exists already");
 			else {
 				logger.debug("File " + fileName + " Not exists");
@@ -737,13 +774,17 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 */
 	protected void copyAllFiles(Set<String> checkfile, String url,
 			String localfile) throws FileSystemException {
-		URL folder = hotfolder.stringToUrl(url);
-		hotfolder.deleteIfExists(folder);
-		hotfolder.mkCol(folder);
+		File urlpath = new File(url);
+		//URL folder = hotfolder.stringToUrl(urlpath.getAbsolutePath());
+		URL localFolder = hotfolder.stringToUrl(localfile + "/" + identifier);
+		hotfolder.mkCol(localFolder );
+		hotfolder.copyAllFiles(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix, localfile + "/" + identifier + "/" + identifier + reportSuffix);
 		for (String fileName : checkfile) {
-			hotfolder.copyAllFiles(url + fileName, localfile);
-			logger.debug("Copy File From " + url + fileName + " To" + localfile);
+			System.out.println(localfile + "/" + identifier + "/" + fileName);
+			hotfolder.copyAllFiles(urlpath.getAbsolutePath() + "/" + fileName, localfile + "/" + identifier + "/" + fileName);
+			logger.debug("Copy File From " + urlpath.getAbsolutePath() + "/" + fileName + " To" + localfile);
 		}
+		//hotfolder.deleteIfExists(folder);
 	}
 
 	/**
@@ -755,11 +796,12 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 */
 	protected void deleteAllFiles(Set<String> checkfile, String url)
 			throws FileSystemException {
-		hotfolder.deleteIfExists(url + reportSuffix);
+		File urlpath = new File(url);
+		hotfolder.deleteIfExists(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix);
 		for (String fileName : checkfile) {
-			hotfolder.deleteIfExists(url + fileName);
+			hotfolder.deleteIfExists(urlpath.getAbsolutePath() + "/" + fileName);
 		}
-		hotfolder.deleteIfExists(url);
+		hotfolder.deleteIfExists(urlpath.getAbsolutePath());
 	}
 
 }

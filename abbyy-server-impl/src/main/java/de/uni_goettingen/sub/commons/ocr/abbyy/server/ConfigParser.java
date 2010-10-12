@@ -1,5 +1,9 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -58,21 +62,28 @@ public class ConfigParser {
 
 		webdavURL = config.getString("remoteURL");
 		webdavURL = webdavURL.endsWith("/") ? webdavURL : webdavURL + "/";
+		if(webdavURL != null){
+			webdavURL = parseString(webdavURL);
+			System.out.println(webdavURL);
+		}
+		
+		
 		webdavUsername = config.getString("username");
 		webdavPassword = config.getString("password");
 		inputFolder = config.getString("input");
 		outputFolder = config.getString("output");
 		errorFolder = config.getString("error");
 
+		
 		if (config.getString("checkServerState") != null
 				&& !config.getString("checkServerState").equals("")) {
 			checkServerState = Boolean.parseBoolean(config
 					.getString("checkServerState"));
 		}
 
-		if (config.getString("maxTreads") != null
-				&& !config.getString("maxTreads").equals("")) {
-			maxThreads = Integer.parseInt(config.getString("maxTreads"));
+		if (config.getString("maxThreads") != null
+				&& !config.getString("maxThreads").equals("")) {
+			maxThreads = Integer.parseInt(config.getString("maxThreads"));
 		}
 
 		if (config.getString("maxSize") != null
@@ -100,6 +111,22 @@ public class ConfigParser {
 
 		logger.debug("Check server state: " + checkServerState);
 
+	}
+	
+	public static String parseString(String str){
+		String remoteFile = null;
+		if (str.contains("/./")) {
+			int i = 0;
+			for (String lang : Arrays.asList(str.split("/./"))) {
+				if (i == 0){
+					i++;
+				}else{
+					remoteFile = lang;
+				}
+			}
+		}
+		return remoteFile;
+		
 	}
 	
 	public String getWebdavURL() {

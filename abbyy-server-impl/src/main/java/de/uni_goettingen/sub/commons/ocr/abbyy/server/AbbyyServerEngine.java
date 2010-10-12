@@ -61,6 +61,7 @@ public class AbbyyServerEngine implements OCREngine {
 	/** The Constant logger. */
 	final static Logger logger = LoggerFactory
 			.getLogger(AbbyyServerEngine.class);
+	
 
 	/** The config. */
 	//Configuration config ;
@@ -150,6 +151,10 @@ public class AbbyyServerEngine implements OCREngine {
 		maxThreads = c.maxThreads;
 		checkServerState = c.checkServerState;
 		
+		hotfolder.setErrorFolder(errorFolder);
+		hotfolder.setInputFolder(inputFolder);
+		hotfolder.setOutputFolder(outputFolder);
+		hotfolder.setWebdavURL(webdavURL);
 		/*Thread thread = new Thread(process);
 		thread.start();*/
 	}
@@ -239,10 +244,21 @@ public class AbbyyServerEngine implements OCREngine {
 			String output_uri = webdavURL + outputFolder + "/";
 			String error_uri = webdavURL + errorFolder + "/";
 			
+			File inputfile = new File(input_uri);
+			input_uri = inputfile.getAbsolutePath();
+			
+			File outputfile = new File(output_uri);
+			output_uri = outputfile.getAbsolutePath();
+			
+			
+			File errorfile = new File(error_uri);
+			error_uri = errorfile.getAbsolutePath();
+			
+			
 			urls.add(hotfolder.stringToUrl(input_uri));
 			urls.add(hotfolder.stringToUrl(output_uri));
 			urls.add(hotfolder.stringToUrl(error_uri));
-
+			
 			Map<URL, Long> infoMap = new LinkedHashMap<URL, Long>();
 			for (URL uri : urls) {
 				infoMap.put(uri, hotfolder.getTotalSize(uri));
@@ -311,10 +327,10 @@ public class AbbyyServerEngine implements OCREngine {
 		return new AbbyyOCRFile();
 	}
 
-	@Override
-	public OCRProcess newProcess() {
-		return new Process();
+	public OCRProcess newProcess(File file) throws IOException{
+				return new Process(file);
 	}
 
 
+	
 }
