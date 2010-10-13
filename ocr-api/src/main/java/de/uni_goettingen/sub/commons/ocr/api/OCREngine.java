@@ -1,7 +1,18 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Observer;
+
+
+
+
+
+
+
+
 
 
 
@@ -49,6 +60,8 @@ public interface OCREngine {
 
 	public OCRImage newImage ();
 	
-	public OCRProcess newProcess ();
+	public OCRProcess newProcess();
+
+
 	
 }

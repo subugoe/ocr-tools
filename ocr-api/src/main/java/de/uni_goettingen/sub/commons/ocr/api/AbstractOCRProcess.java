@@ -14,6 +14,9 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	/** Outputlocation for Abbyy */
 	private String outputLocation;
 
+	private String name;
+		
+
 	/** The langs. The languages which are supported */
 	protected Set<Locale> langs = new HashSet<Locale>();
 
@@ -169,6 +172,14 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 
 	public void setDirectories(List<File> directories) {
 		this.directories = directories;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	
