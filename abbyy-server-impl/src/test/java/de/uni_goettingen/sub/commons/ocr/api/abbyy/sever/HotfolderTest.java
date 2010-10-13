@@ -27,7 +27,6 @@ public class HotfolderTest {
 
 	@Test
 	public void testHotfolder () throws IOException, InterruptedException {
-		Long zahl = (long) 284.551;
 		List<AbbyyOCRFile> files = new ArrayList<AbbyyOCRFile>();
 		//AbbyyOCRFile abbyy = new AbbyyOCRFile(new URL("http://localhost/webdav/Test/TestB.tif"));					
 
@@ -55,7 +54,7 @@ public class HotfolderTest {
 		hot.deleteIfExists(localfile);
 		//hot.deleteIfExists(url)
 		
-		zahl = hot.getTotalSize(hotfol);
+		//zahl = hot.getTotalSize(hotfol);
 		//assertTrue(zahl == 38l);
 		
 	}

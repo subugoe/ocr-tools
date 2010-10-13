@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 public class AbbyyServerEngineTest {
@@ -50,27 +52,43 @@ public class AbbyyServerEngineTest {
 	@Test
 	public void testCli () throws IOException, ConfigurationException {	
 		List <String> inputFile = new ArrayList<String>();
+		//TODO: This is just an example, it doesm't work!
 		
+		//Look for folders containing tiff files in ./src/test/resources/local/ as listFolders
+		//Add a static method for this.
+		
+		
+		//Remove this.
 		String inputfile = "file://./src/test/resources/local/PPN129323640_0010";
 		String inputfile1 = "file://./src/test/resources/local/PPN31311157X_0102";
 		String inputfile2 = "file://./src/test/resources/local/PPN514401303_1890";
 		inputFile.add(inputfile);
 		inputFile.add(inputfile1);
 		inputFile.add(inputfile2);
+		
+		//Loop over listFolder to get the files, create OCR Images and add them to the process
+		
+		//This isn't supposed to work!
+		OCRProcess p = abbyy.newProcess();
 		for (String str : inputFile){
 			str = parseString(str);
 			System.out.println("waw " + str);
 			//OCRProcess p = abbyy.newProcess(new File(str));
-			OCRProcess p = abbyy.newProcess();
 			
+			OCRImage i = abbyy.newImage();
+			i.setUrl(new URL(str));
+			p.addImage(i);
 			
-		    abbyy.addOcrProcess(p);
+		    
 		}
+		abbyy.addOcrProcess(p);
 		/*inputfile = parseString(inputfile);
 		OCRProcess p = abbyy.newProcess(new File(inputfile));
 	    abbyy.addOcrProcess(p);*/
 		
 		abbyy.recognize();
+		
+		//check for results
 		assertNotNull(abbyy);
 
 	}

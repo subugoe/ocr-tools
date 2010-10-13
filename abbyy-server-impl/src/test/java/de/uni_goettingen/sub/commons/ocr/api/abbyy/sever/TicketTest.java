@@ -60,17 +60,17 @@ public class TicketTest {
 	private static File ticketFile;
 	private static OCRImage ocri = null;
 	String name = "515";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5384097471130557653L;
+	
 	@BeforeClass
 	public static void init () {
 		basefolderFile = getBaseFolderAsFile();
 		ocrp = mock(OCRProcess.class);
 		ocrp.addLanguage(Locale.GERMAN);
 		when(ocrp.getLangs()).thenReturn(new HashSet() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 5384097471130557653L;
-
 			{
 				add(Locale.GERMAN);
 			}
@@ -92,6 +92,7 @@ public class TicketTest {
 	@Test
 	public void writeTicket () throws Exception {
 		//TODO: Remove hard coded paths
+		/*
 		inputFiles.add(new File("C:/Test/515-00000001.tif/"));
 		inputFiles.add(new File("C:/Test/515-00000002.tif/"));
 		inputFiles.add(new File("C:/Test/515-00000003.tif/"));
@@ -99,12 +100,13 @@ public class TicketTest {
 		inputFiles.add(new File("C:/Test/515-00000005.tif/"));
 		inputFiles.add(new File("C:/Test/515-00000006.tif/"));
 		inputFiles.add(new File("C:/Test/515-00000007.tif/"));
-
+		*/
 		assertNotNull("base path is null", basefolderFile);
 
 		ocrp.addImage(ocri);
 
 		ticket = new Ticket(ocrp);
+		//TODO: Check this.
 		ticket.setOutPutLocation("D:/Recognition/GDZ/output");
 		ticket.setInputFiles(inputFiles);
 		ticket.write(ticketFile, name);
