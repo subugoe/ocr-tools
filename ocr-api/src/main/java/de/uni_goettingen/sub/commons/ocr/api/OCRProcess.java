@@ -89,4 +89,8 @@ public interface OCRProcess {
 
 	public void setDirectories(List<File> directories);
 	*/
+	
+	public void setName (String name);
+
+	public String getName () ;
 }
