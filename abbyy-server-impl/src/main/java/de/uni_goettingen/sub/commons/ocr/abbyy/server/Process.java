@@ -150,6 +150,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	}
 	
 	protected Process () {
+		identifier = getName();
 	}
 
 	/* (non-Javadoc)
@@ -164,7 +165,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		} catch (Exception e) {
 			logger.error(e.toString());
 		}
-
+		
 		//TODO: This is a bad hack.
 		if (imageDirectory == null) {
 			throw new RuntimeException("No directory given!");

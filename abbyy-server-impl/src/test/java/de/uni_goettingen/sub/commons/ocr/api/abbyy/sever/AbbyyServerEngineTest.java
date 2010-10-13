@@ -57,6 +57,7 @@ public class AbbyyServerEngineTest {
 	//	List <String> inputFile = new ArrayList<String>();
 		String inputfile= "file://./src/test/resources/local";
 		List<File> listFolders = new ArrayList<File>();
+		hotfolder = new Hotfolder();
 		//TODO: This is just an example, it doesn't work!
 		
 		//Look for folders containing tif files in ./src/test/resources/local/ as listFolders
@@ -77,12 +78,15 @@ public class AbbyyServerEngineTest {
 		System.out.println(directories);
 		List<File> fileListimage;
 		for (File files : directories){
-			fileListimage = Arrays.asList(files.listFiles());
+			fileListimage = makeFileList(files, extension);
 			System.out.println(fileListimage);
 			OCRProcess p = abbyy.newProcess();
+			p.setName(files.getName());
 			for (File fileImage : fileListimage){
 				OCRImage image = abbyy.newImage();
-				image.setUrl(new URL(fileImage.getAbsolutePath()));
+				System.out.println("fehler "+ fileImage.getAbsolutePath());
+				
+				image.setUrl(hotfolder.fileToURL(fileImage));
 				p.addImage(image);
 			}
 			abbyy.addOcrProcess(p);
