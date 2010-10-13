@@ -65,6 +65,9 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	/** The webdav url. */
 	protected static String webdavURL = null;
 	
+	/** local Url wich are moved a result */
+	protected static String moveToLocal = null;
+	
 	/** The input folder. */
 	protected static String inputFolder = null;
 	
@@ -185,17 +188,33 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			}
 			fileInfos = addTicketFile(new LinkedList<AbbyyOCRFile>(fileInfos),
 					identifier);
-
-			hotfolder.copyFilesToServer(fileInfos);
-
-			// lockManager.unlockGroup(identifier);
+			//bei fehler muss behandelt werden
+			int k = 0 ;
+			while (copyOnly){
+				try {
+					copyOnly = false;
+					if (k == 0 || k ==1){
+					hotfolder.copyFilesToServer(fileInfos);
+					k++;
+					}else{
+						logger.error("failed!!can not copy images from " + identifier);
+						failed = true;
+						System.out.println("failed!!can not copy images from  " + identifier);
+					}
+				}catch (Exception e) {
+					copyOnly = true;
+					for (AbbyyOCRFile info : fileInfos) {
+					hotfolder.deleteIfExists(info.getRemoteURL());
+					logger.trace("Second try!! copy images from " + identifier);
+					System.out.println("Second try!! copy images from " + identifier);
+					}
+				}
+			}
 			wait = fileInfos.size() * millisPerFile;
 			logger.info("Waiting " + wait + " milli seconds");
 
 			Thread.sleep(wait);
 
-			// remoteFiles = getResults();
-			
 				while (!failed) {
 					
 					// for Output folder
@@ -209,18 +228,19 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						// wei das eigentlich nicht deswegen ist noch offen)
 						ocrOutFormatFile = xmlresultOutputparse(new File(
 								resultOutURLPrefixAbsolutePath));
-						// TODO CH!?  wohin sollen die Dateien
-						// veschieben werden (local erstmal genannt)
-						String local = "C:/Dokumente und Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/src/test/resources/move";
+						
+						File moveToLocalpath = new File(moveToLocal);
+						String moveToLocalAbsolutePath = moveToLocalpath.getAbsolutePath();
+						
 						// for Output folder
 						if (checkIfAllFilesExists(ocrOutFormatFile,
 								resultOutURLPrefix)) {
 							copyAllFiles(ocrOutFormatFile, resultOutURLPrefix,
-									local);
+									moveToLocalAbsolutePath);
 							deleteAllFiles(ocrOutFormatFile, resultOutURLPrefix);
 							failed = true;
 							logger.info("Move Processing successfully to "
-									+ local);
+									+ moveToLocalAbsolutePath);
 						} else {
 							
 							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix)* millisPerFile + millisPerFile;
@@ -228,11 +248,11 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 							if (checkIfAllFilesExists(ocrOutFormatFile,
 									resultOutURLPrefix)) {
 								copyAllFiles(ocrOutFormatFile,
-										resultOutURLPrefix, local);
+										resultOutURLPrefix, moveToLocalAbsolutePath);
 								deleteAllFiles(ocrOutFormatFile,
 										resultOutURLPrefix);
 								failed = true;
-								logger.info("Move Processing is successfull to " + local);
+								logger.info("Move Processing is successfull to " + moveToLocalAbsolutePath);
 
 							} else {
 								failed = true;
@@ -551,6 +571,11 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		if(webdavURL != null){
 			webdavURL = parseString(webdavURL);
 		}
+		moveToLocal = config.getString("moveToLocal");
+		moveToLocal = moveToLocal.endsWith("/") ? moveToLocal : moveToLocal + "/";
+		if(moveToLocal != null){
+			moveToLocal = parseString(moveToLocal);
+		}
 		
 		inputFolder = config.getString("input");
 		outputFolder = config.getString("output");
@@ -731,7 +756,6 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			throws FileSystemException {
 		File urlpath = new File(url);
 		for (String fileName : checkfile) {
-			System.out.println(urlpath.getAbsolutePath() + fileName + "wawww");
 			if (hotfolder.fileIfexists(urlpath.getAbsolutePath() +"/"+ fileName))
 				logger.debug("File " + fileName + " exists already");
 			else {
@@ -753,8 +777,9 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	protected int resultAllFilesNotExists(Set<String> checkfile, String url)
 			throws FileSystemException {
 		int result = 0;
+		File urlpath = new File(url);
 		for (String fileName : checkfile) {
-			if (hotfolder.fileIfexists(url + fileName))
+			if (hotfolder.fileIfexists(urlpath.getAbsolutePath()+"/"+ fileName))
 				logger.debug("File " + fileName + " exists already");
 			else {
 				logger.debug("File " + fileName + " Not exists");
@@ -780,7 +805,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		hotfolder.mkCol(localFolder );
 		hotfolder.copyAllFiles(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix, localfile + "/" + identifier + "/" + identifier + reportSuffix);
 		for (String fileName : checkfile) {
-			System.out.println(localfile + "/" + identifier + "/" + fileName);
+			//System.out.println(localfile + "/" + identifier + "/" + fileName);
 			hotfolder.copyAllFiles(urlpath.getAbsolutePath() + "/" + fileName, localfile + "/" + identifier + "/" + fileName);
 			logger.debug("Copy File From " + urlpath.getAbsolutePath() + "/" + fileName + " To" + localfile);
 		}

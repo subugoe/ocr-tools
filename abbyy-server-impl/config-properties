@@ -1,6 +1,7 @@
 username: gdz
 password: Hfwveqo)
-remoteURL: file://target/test-classes/hotfolder/
+remoteURL: file://./src/test/resources/hotfolder/
+moveToLocal: file://./src/test/resources/move/
 input: input
 output: output
 error: error

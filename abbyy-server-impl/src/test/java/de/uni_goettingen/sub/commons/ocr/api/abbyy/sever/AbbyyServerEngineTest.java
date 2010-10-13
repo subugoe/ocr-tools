@@ -53,8 +53,10 @@ public class AbbyyServerEngineTest {
 		
 		String inputfile = "file://./src/test/resources/local/PPN129323640_0010";
 		String inputfile1 = "file://./src/test/resources/local/PPN31311157X_0102";
+		String inputfile2 = "file://./src/test/resources/local/PPN514401303_1890";
 		inputFile.add(inputfile);
 		inputFile.add(inputfile1);
+		inputFile.add(inputfile2);
 		for (String str : inputFile){
 			str = parseString(str);
 			System.out.println("waw " + str);
