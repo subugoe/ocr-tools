@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -29,11 +30,13 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
 public class AbbyyServerEngineTest {
 	public static OCREngine abbyy;
 	public Hotfolder hotfolder;
-
+	protected static String extension = "tif";
+	protected List<File> directories = new ArrayList<File>();
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngineTest.class);
 	
 	@Before
@@ -51,40 +54,40 @@ public class AbbyyServerEngineTest {
 
 	@Test
 	public void testCli () throws IOException, ConfigurationException {	
-		List <String> inputFile = new ArrayList<String>();
-		//TODO: This is just an example, it doesm't work!
+	//	List <String> inputFile = new ArrayList<String>();
+		String inputfile= "file://./src/test/resources/local";
+		List<File> listFolders = new ArrayList<File>();
+		//TODO: This is just an example, it doesn't work!
 		
-		//Look for folders containing tiff files in ./src/test/resources/local/ as listFolders
+		//Look for folders containing tif files in ./src/test/resources/local/ as listFolders
 		//Add a static method for this.
 		
-		
-		//Remove this.
-		String inputfile = "file://./src/test/resources/local/PPN129323640_0010";
-		String inputfile1 = "file://./src/test/resources/local/PPN31311157X_0102";
-		String inputfile2 = "file://./src/test/resources/local/PPN514401303_1890";
-		inputFile.add(inputfile);
-		inputFile.add(inputfile1);
-		inputFile.add(inputfile2);
-		
+		inputfile = parseString(inputfile);
+		File inputfilepath = new File(inputfile);
+		listFolders = getImageDirectories(new File(inputfilepath.getAbsolutePath()));
 		//Loop over listFolder to get the files, create OCR Images and add them to the process
 		
-		//This isn't supposed to work!
-		OCRProcess p = abbyy.newProcess();
-		for (String str : inputFile){
-			str = parseString(str);
-			System.out.println("waw " + str);
-			//OCRProcess p = abbyy.newProcess(new File(str));
-			
-			OCRImage i = abbyy.newImage();
-			i.setUrl(new URL(str));
-			p.addImage(i);
-			
-		    
+		for (File file : listFolders) {
+			if (file.isDirectory()) {
+				directories.add(file);
+			} else {
+				logger.trace(file.getAbsolutePath() + " is not a directory!");
+			}
 		}
-		abbyy.addOcrProcess(p);
-		/*inputfile = parseString(inputfile);
-		OCRProcess p = abbyy.newProcess(new File(inputfile));
-	    abbyy.addOcrProcess(p);*/
+		System.out.println(directories);
+		List<File> fileListimage;
+		for (File files : directories){
+			fileListimage = Arrays.asList(files.listFiles());
+			System.out.println(fileListimage);
+			OCRProcess p = abbyy.newProcess();
+			for (File fileImage : fileListimage){
+				OCRImage image = abbyy.newImage();
+				image.setUrl(new URL(fileImage.getAbsolutePath()));
+				p.addImage(image);
+			}
+			abbyy.addOcrProcess(p);
+			fileListimage = null;
+		}
 		
 		abbyy.recognize();
 		
@@ -106,5 +109,48 @@ public class AbbyyServerEngineTest {
 			}
 		}
 		return remoteFile;	
+	}
+	
+	public static List<File> getImageDirectories(File dir) {
+		List<File> dirs = new ArrayList<File>();
+
+		if (makeFileList(dir, extension).size() > 0) {
+			dirs.add(dir);
+		}
+
+		List<File> fileList;
+		if (dir.isDirectory()) {
+			fileList = Arrays.asList(dir.listFiles());
+			for (File file : fileList) {
+				if (file.isDirectory()) {
+					List<File> files = makeFileList(dir, extension);
+					if (files.size() > 0) {
+						dirs.addAll(files);
+					} else {
+						dirs.addAll(getImageDirectories(file));
+					}
+				}
+			}
+		} else {
+			throw new IllegalStateException(dir.getAbsolutePath() + " is not a directory");
+		}
+		return dirs;
+	}
+	
+	public static List<File> makeFileList(File dir, String filter) {
+		List<File> fileList;
+		if (dir.isDirectory()) {
+			// OCR.logger.trace(inputFile + " is a directory");
+
+			File files[] = dir.listFiles(new FileExtensionsFilter(filter));
+			fileList = Arrays.asList(files);
+			Collections.sort(fileList);
+
+		} else {
+			fileList = new ArrayList<File>();
+			fileList.add(dir);
+			// OCR.logger.trace("Input file: " + inputFile);
+		}
+		return fileList;
 	}
 }
