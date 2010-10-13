@@ -60,7 +60,10 @@ public class AbbyyServerEngineTest {
 		for (String str : inputFile){
 			str = parseString(str);
 			System.out.println("waw " + str);
-			OCRProcess p = abbyy.newProcess(new File(str));
+			//OCRProcess p = abbyy.newProcess(new File(str));
+			OCRProcess p = abbyy.newProcess();
+			
+			
 		    abbyy.addOcrProcess(p);
 		}
 		/*inputfile = parseString(inputfile);
