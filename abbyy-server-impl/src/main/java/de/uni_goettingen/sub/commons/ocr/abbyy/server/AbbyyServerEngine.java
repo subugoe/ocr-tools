@@ -328,8 +328,8 @@ public class AbbyyServerEngine implements OCREngine {
 	}
 	
 	@Override
-	public OCRProcess newProcess(File file) throws IOException{
-				return new Process(file);
+	public OCRProcess newProcess() {
+				return new Process();
 	}
 
 
