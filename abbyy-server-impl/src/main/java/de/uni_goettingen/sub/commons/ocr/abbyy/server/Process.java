@@ -165,6 +165,10 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			logger.error(e.toString());
 		}
 
+		//TODO: This is a bad hack.
+		if (imageDirectory == null) {
+			throw new RuntimeException("No directory given!");
+		}
 		try {
 			fileInfos = getFileList(new File(imageDirectory));
 		} catch (FileSystemException e1) {
