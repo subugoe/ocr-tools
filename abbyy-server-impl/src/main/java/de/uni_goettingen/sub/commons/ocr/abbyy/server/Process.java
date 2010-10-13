@@ -188,26 +188,29 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			}
 			fileInfos = addTicketFile(new LinkedList<AbbyyOCRFile>(fileInfos),
 					identifier);
-			//bei fehler muss behandelt werden
+			//copy must be treated here
 			int k = 0 ;
 			while (copyOnly){
 				try {
 					copyOnly = false;
-					if (k == 0 || k ==1){
-					hotfolder.copyFilesToServer(fileInfos);
-					k++;
+					hotfolder.copyFilesToServer(fileInfos);				
+				
+				}catch (Exception e) {
+					if (k == 0){
+						copyOnly = true;	
+						for (AbbyyOCRFile info : fileInfos) {
+						hotfolder.deleteIfExists(info.getRemoteURL());
+						logger.trace("Second try!! copy images from " + identifier);
+					//	System.out.println("Second try!! copy images from " + identifier);
+						}
+						k++;
 					}else{
 						logger.error("failed!!can not copy images from " + identifier);
+						copyOnly = false;
 						failed = true;
-						System.out.println("failed!!can not copy images from  " + identifier);
+					//	System.out.println("failed!!can not copy images from  " + identifier);
 					}
-				}catch (Exception e) {
-					copyOnly = true;
-					for (AbbyyOCRFile info : fileInfos) {
-					hotfolder.deleteIfExists(info.getRemoteURL());
-					logger.trace("Second try!! copy images from " + identifier);
-					System.out.println("Second try!! copy images from " + identifier);
-					}
+					
 				}
 			}
 			wait = fileInfos.size() * millisPerFile;
