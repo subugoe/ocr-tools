@@ -16,7 +16,8 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 
 	private String name;
 		
-
+	/** The image directory. */
+	protected String imageDirectory;
 	/** The langs. The languages which are supported */
 	protected Set<Locale> langs = new HashSet<Locale>();
 
@@ -182,6 +183,13 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 		this.name = name;
 	}
 
-	
+	//TODO: Try to remove this
+	public String getImageDirectory() {
+		return imageDirectory;
+	}
+
+	public void setImageDirectory(String imageDirectory) {
+		this.imageDirectory = imageDirectory;
+	}
 	
 }

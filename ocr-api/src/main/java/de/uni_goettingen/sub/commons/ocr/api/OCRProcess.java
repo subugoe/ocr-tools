@@ -93,4 +93,11 @@ public interface OCRProcess {
 	public void setName (String name);
 
 	public String getName () ;
+	
+	//TODO: Remove this.
+	
+	public String getImageDirectory() ;
+
+	public void setImageDirectory(String imageDirectory);
+	
 }
