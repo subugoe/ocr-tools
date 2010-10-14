@@ -190,6 +190,7 @@ public class Hotfolder extends Thread{
 	public void deleteIfExists(String url) throws FileSystemException {
 		if (fsManager.resolveFile(url).delete())
 			logger.debug(url + " Exists already but now deleted");
+
 	}
 	
 	/**

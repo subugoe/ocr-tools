@@ -150,7 +150,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	}
 	
 	protected Process () {
-		identifier = getName();
+		super();
 	}
 
 	/* (non-Javadoc)
@@ -165,7 +165,14 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		} catch (Exception e) {
 			logger.error(e.toString());
 		}
-		
+		try {
+			hotfolder = new Hotfolder();
+		} catch (FileSystemException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		identifier = getName();
+		imageDirectory = getImageDirectory();
 		//TODO: This is a bad hack.
 		if (imageDirectory == null) {
 			throw new RuntimeException("No directory given!");
@@ -206,7 +213,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						for (AbbyyOCRFile info : fileInfos) {
 						hotfolder.deleteIfExists(info.getRemoteURL());
 						logger.trace("Second try!! copy images from " + identifier);
-					//	System.out.println("Second try!! copy images from " + identifier);
+						System.out.println("Second try!! copy images from " + identifier);
 						}
 						k++;
 					}else{
@@ -242,7 +249,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						
 						// for Output folder
 						if (checkIfAllFilesExists(ocrOutFormatFile,
-								resultOutURLPrefix)) {
+								resultOutURLPrefix+ "/")) {
 							copyAllFiles(ocrOutFormatFile, resultOutURLPrefix,
 									moveToLocalAbsolutePath);
 							deleteAllFiles(ocrOutFormatFile, resultOutURLPrefix);
@@ -254,7 +261,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix)* millisPerFile + millisPerFile;
 							Thread.sleep(wait);
 							if (checkIfAllFilesExists(ocrOutFormatFile,
-									resultOutURLPrefix)) {
+									resultOutURLPrefix+ "/")) {
 								copyAllFiles(ocrOutFormatFile,
 										resultOutURLPrefix, moveToLocalAbsolutePath);
 								deleteAllFiles(ocrOutFormatFile,
@@ -279,7 +286,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 							ocrErrorFormatFile = xmlresultErrorparse(new File(
 									resultErrorURLPrefixAbsolutePath));
 							if (checkIfAllFilesExists(ocrErrorFormatFile,
-									resultErrorURLPrefix)) {
+									resultErrorURLPrefix+ "/")) {
 								deleteAllFiles(ocrErrorFormatFile,
 										resultErrorURLPrefix);
 								failed = true;
@@ -288,7 +295,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 								wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix)* millisPerFile + millisPerFile;
 								Thread.sleep(wait);
 								if (checkIfAllFilesExists(ocrErrorFormatFile,
-										resultErrorURLPrefix)) {
+										resultErrorURLPrefix+ "/")) {
 									deleteAllFiles(ocrErrorFormatFile,
 											resultErrorURLPrefix);
 									failed = true;
@@ -762,9 +769,10 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 */
 	protected Boolean checkIfAllFilesExists(Set<String> checkfile, String url)
 			throws FileSystemException {
-		File urlpath = new File(url);
+		
 		for (String fileName : checkfile) {
-			if (hotfolder.fileIfexists(urlpath.getAbsolutePath() +"/"+ fileName))
+			File urlpath = new File(url+"/"+ fileName);
+			if (hotfolder.fileIfexists(urlpath.getAbsolutePath()))
 				logger.debug("File " + fileName + " exists already");
 			else {
 				logger.debug("File " + fileName + " Not exists");

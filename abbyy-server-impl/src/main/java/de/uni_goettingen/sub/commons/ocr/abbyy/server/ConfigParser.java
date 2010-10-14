@@ -64,7 +64,7 @@ public class ConfigParser {
 		webdavURL = webdavURL.endsWith("/") ? webdavURL : webdavURL + "/";
 		if(webdavURL != null){
 			webdavURL = parseString(webdavURL);
-			System.out.println(webdavURL);
+
 		}
 		
 		
