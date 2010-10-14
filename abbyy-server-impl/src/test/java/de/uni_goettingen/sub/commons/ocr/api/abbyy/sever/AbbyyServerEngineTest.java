@@ -75,7 +75,7 @@ public class AbbyyServerEngineTest {
 				logger.trace(file.getAbsolutePath() + " is not a directory!");
 			}
 		}
-		System.out.println(directories);
+		//System.out.println(directories);
 		List<File> fileListimage;
 		for (File files : directories){
 			fileListimage = makeFileList(files, extension);
