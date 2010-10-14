@@ -179,6 +179,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 				.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
 		Integer OCRTimeOut = getInputFiles().size() * millisPerFile;
+		
 		if (maxOCRTimeout < OCRTimeOut) {
 			throw new IllegalStateException("Calculated OCR Timeout to high: "
 					+ OCRTimeOut);

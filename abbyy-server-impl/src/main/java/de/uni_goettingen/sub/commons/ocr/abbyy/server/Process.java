@@ -99,7 +99,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	protected Boolean failed = false;
 	
 	/** The done. */
-	protected Boolean done = false;
+	protected Boolean done = true;
 	
 	/** The done date. */
 	Date doneDate = null;
@@ -127,7 +127,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	
 	/** The file infos. */
 	protected List<AbbyyOCRFile> fileInfos = null;
-
+	protected List<AbbyyOCRFile> fileInfosreplacement = null;
 	/** The config. */
 	PropertiesConfiguration config;
 
@@ -150,7 +150,6 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	}
 	
 	protected Process () {
-		super();
 	}
 
 	/* (non-Javadoc)
@@ -198,8 +197,22 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 				hotfolder.mkCol(hotfolder.stringToUrl(inputDerectoryFile.getAbsolutePath()));
 				
 			}
-			fileInfos = addTicketFile(new LinkedList<AbbyyOCRFile>(fileInfos),
-					identifier);
+			//XMLTicket must be treated here
+			while(done){
+				try{
+					done = false;
+					fileInfos = addTicketFile(new LinkedList<AbbyyOCRFile>(fileInfos),
+							identifier);
+				}catch (Exception e){
+					
+						done = false;
+						failed = true;
+						copyOnly = false;
+						logger.trace(" Failed!! XMLTicket can not created for " + identifier);
+						System.out.println(" Failed!! XMLTicket can not created for " + identifier);
+			
+				}
+			}
 			//copy must be treated here
 			int k = 0 ;
 			while (copyOnly){
@@ -213,7 +226,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						for (AbbyyOCRFile info : fileInfos) {
 						hotfolder.deleteIfExists(info.getRemoteURL());
 						logger.trace("Second try!! copy images from " + identifier);
-						System.out.println("Second try!! copy images from " + identifier);
+					//	System.out.println("Second try!! copy images from " + identifier);
 						}
 						k++;
 					}else{
@@ -316,9 +329,13 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 				throw new RuntimeException(e);
 
 			} finally {
+				fileInfosreplacement = null;
 				fileInfos = null;
 				ocrErrorFormatFile = null;
 				ocrOutFormatFile = null;
+				inputFiles = null;
+				logger.trace("Process "+ identifier + " ended ");
+				System.out.println("Process "+ identifier + " ended ");
 			}
 
 	}
@@ -527,6 +544,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			LinkedList<AbbyyOCRFile> fileInfos, String ticketName)
 			throws IOException {
 		/* write Ticket-File over all Files: */
+
 		String ticketFileName = ticketName + ".xml";
 		String ticketTempDir = null;
 		for (AbbyyOCRFile fileInfo : fileInfos) {
@@ -845,4 +863,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		hotfolder.deleteIfExists(urlpath.getAbsolutePath());
 	}
 
+	
+
+	
 }
