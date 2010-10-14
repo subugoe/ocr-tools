@@ -84,12 +84,14 @@ public class AbbyyServerEngineTest {
 			p.setName(files.getName());
 			for (File fileImage : fileListimage){
 				OCRImage image = abbyy.newImage();
-				System.out.println("fehler "+ fileImage.getAbsolutePath());
+				//System.out.println("fehler "+ fileImage.getAbsolutePath());
 				
 				image.setUrl(hotfolder.fileToURL(fileImage));
 				p.addImage(image);
 			}
+			p.setImageDirectory(files.getAbsolutePath());
 			abbyy.addOcrProcess(p);
+			
 			fileListimage = null;
 		}
 		
