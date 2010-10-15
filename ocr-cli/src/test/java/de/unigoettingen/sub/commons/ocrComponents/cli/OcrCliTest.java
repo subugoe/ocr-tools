@@ -2,6 +2,7 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 import static org.mockito.Mockito.mock;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.junit.Before;
@@ -20,7 +21,7 @@ public class OcrCliTest {
 	}
 	
 	@Test
-	public void testCli () throws MalformedURLException {	
+	public void testCli () throws IOException {	
 		OCRProcess process = mock(OCRProcess.class);
 		OCREngine engine = mock(OCREngine.class);
 		OCRCli ocr = MyOCRCli.getInstance(engine, process);

@@ -55,12 +55,12 @@ public class AbbyyServerEngineTest {
 	@Test
 	public void testCli () throws IOException, ConfigurationException {	
 	//	List <String> inputFile = new ArrayList<String>();
-		String inputfile= "file://./src/test/resources/local";
+		String inputfile= "file://./src/test/resources/input";
 		
-		String errorfolderResult = "file://./src/test/resources/folderForErrortest/PPN129323640_0010";
+		String errorfolderResult = "file://./src/test/resources/error/PPN129323640_0010";
 		String hotfolderError = "file://./src/test/resources/hotfolder/error/";
 		
-		String moveFolder = "file://./src/test/resources/move";
+		String resultFolder = "file://./src/test/resources/result";
 		String hotfolderOutput = "file://./src/test/resources/hotfolder/output";
 		
 		List<File> listFolders = new ArrayList<File>();
@@ -84,13 +84,13 @@ public class AbbyyServerEngineTest {
 			}
 			
 		// copy all files from  folder move to hotfolder output 	
-			moveFolder = parseString(moveFolder);
+			resultFolder = parseString(resultFolder);
 			hotfolderOutput= parseString(hotfolderOutput);
-			File moveFolderpath = new File(moveFolder);
+			File moveFolderpath = new File(resultFolder);
 			File hotfolderOutputpath = new File(hotfolderOutput);
-			moveFolder = moveFolderpath.getAbsolutePath();
+			resultFolder = moveFolderpath.getAbsolutePath();
 					
-			moveFolderpath = new File(moveFolder);
+			moveFolderpath = new File(resultFolder);
 			hotfolderOutput =  hotfolderOutputpath.getAbsolutePath()+ "/";
 					File [] folder = moveFolderpath.listFiles();
 					for(File currentFiles: folder )
@@ -133,8 +133,9 @@ public class AbbyyServerEngineTest {
 			
 			fileListimage = null;
 		}
-		
+		logger.info("Strating recognize method");
 		abbyy.recognize();
+		
 		
 		//check for results
 		assertNotNull(abbyy);
@@ -169,6 +170,9 @@ public class AbbyyServerEngineTest {
 			for (File file : fileList) {
 				if (file.isDirectory()) {
 					List<File> files = makeFileList(dir, extension);
+					for (File f: files) {
+						logger.debug("File: " + f.getAbsolutePath());
+					}
 					if (files.size() > 0) {
 						dirs.addAll(files);
 					} else {
