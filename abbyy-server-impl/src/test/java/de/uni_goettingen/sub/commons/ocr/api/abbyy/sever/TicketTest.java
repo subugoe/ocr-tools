@@ -34,25 +34,33 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.helpers.Loader;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.ExportParams;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.InputFile;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
+import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 public class TicketTest {
-
+	final static Logger logger = LoggerFactory.getLogger(TicketTest.class);
+	public static OCREngine abbyy;
+	protected static String extension = "tif";
 	private Ticket ticket;
 	private static File basefolderFile = null;
 	private static List<File> inputFiles = new ArrayList<File>();
@@ -60,6 +68,9 @@ public class TicketTest {
 	private static File ticketFile;
 	private static OCRImage ocri = null;
 	String name = "515";
+	
+	public Hotfolder hotfolder;
+	
 	/**
 	 * 
 	 */
@@ -92,15 +103,7 @@ public class TicketTest {
 	@Test
 	public void writeTicket () throws Exception {
 		//TODO: Remove hard coded paths
-		/*
-		inputFiles.add(new File("C:/Test/515-00000001.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000002.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000003.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000004.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000005.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000006.tif/"));
-		inputFiles.add(new File("C:/Test/515-00000007.tif/"));
-		*/
+
 		assertNotNull("base path is null", basefolderFile);
 
 		ocrp.addImage(ocri);
@@ -131,6 +134,23 @@ public class TicketTest {
 		assertTrue("Expecting \"German\", got \"" + rp.getLanguageArray(0) + "\"", rp.getLanguageArray(0).equals("German"));
 
 	}
+	
+	public static List<String> parseFilesFromTicket (File ticketFile) throws XmlException, IOException {
+		List<String> files = new ArrayList<String>();
+		XmlOptions options = new XmlOptions();
+		// Set the namespace 
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("", Ticket.NAMESPACE));
+		// Load the Xml 
+		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.parse(ticketFile, options);
+
+		XmlTicket ticket = ticketDoc.getXmlTicket();
+		List<InputFile> fl = ticket.getInputFileList();
+		for (InputFile i: fl) {
+			files.add(i.getName());
+		}
+		
+		return files;
+	}
 
 	public static File getBaseFolderAsFile () {
 		File basefolder;
@@ -143,4 +163,54 @@ public class TicketTest {
 		}
 		return basefolder;
 	}
+	
+	@Test
+	public void testMultipleTickets () throws IOException, ConfigurationException {	
+	//	List <String> inputFile = new ArrayList<String>();
+		String inputfile= "file://./src/test/resources/input";
+		
+		
+		List<File> listFolders = new ArrayList<File>();
+		hotfolder = new Hotfolder();
+	
+		inputfile = AbbyyServerEngineTest.parseString(inputfile);
+		File inputfilepath = new File(inputfile);
+		listFolders = AbbyyServerEngineTest.getImageDirectories(new File(inputfilepath.getAbsolutePath()));
+		//Loop over listFolder to get the files, create OCR Images and add them to the process
+		List<File> directories = new ArrayList<File>();
+		
+		for (File file : listFolders) {
+			if (file.isDirectory()) {
+				directories.add(file);
+			} else {
+				logger.trace(file.getAbsolutePath() + " is not a directory!");
+			}
+		}
+	
+		List<File> fileListimage;
+		for (File files : directories){
+			fileListimage = AbbyyServerEngineTest.makeFileList(files, extension);
+		//	System.out.println(fileListimage);
+			OCRProcess p = abbyy.newProcess();
+			p.setName(files.getName());
+			for (File fileImage : fileListimage){
+				OCRImage image = abbyy.newImage();
+				//System.out.println("fehler "+ fileImage.getAbsolutePath());
+				
+				image.setUrl(hotfolder.fileToURL(fileImage));
+				p.addImage(image);
+			}
+			p.setImageDirectory(files.getAbsolutePath());
+			abbyy.addOcrProcess(p);
+			
+			fileListimage = null;
+		}
+		
+		abbyy.recognize();
+		
+		//check for results
+		assertNotNull(abbyy);
+
+	}
+	
 }
