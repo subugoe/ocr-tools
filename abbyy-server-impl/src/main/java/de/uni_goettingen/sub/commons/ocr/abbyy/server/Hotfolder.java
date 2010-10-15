@@ -118,9 +118,10 @@ public class Hotfolder extends Thread{
 	 * Recognition Server
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
+	 * @throws FileSystemException 
 	 */
-	public void copyFilesToServer(List<AbbyyOCRFile> files) throws IOException,
-			InterruptedException {
+	public void copyFilesToServer(List<AbbyyOCRFile> files) throws
+			InterruptedException, FileSystemException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (AbbyyOCRFile info : files) {
 			/* File f = urlToFile(AbbyyFileName); */

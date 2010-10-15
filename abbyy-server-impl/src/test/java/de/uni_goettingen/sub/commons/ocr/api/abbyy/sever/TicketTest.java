@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -35,9 +36,11 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.helpers.Loader;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -50,6 +53,8 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -77,7 +82,7 @@ public class TicketTest {
 	private static final long serialVersionUID = 5384097471130557653L;
 	
 	@BeforeClass
-	public static void init () {
+	public static void init () throws FileSystemException, ConfigurationException {
 		basefolderFile = getBaseFolderAsFile();
 		ocrp = mock(OCRProcess.class);
 		ocrp.addLanguage(Locale.GERMAN);
@@ -98,6 +103,13 @@ public class TicketTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+
+			abbyy = AbbyyServerEngine.getInstance();
+			assertNotNull(abbyy);
+			
+
+
 	}
 
 	@Test
@@ -111,6 +123,7 @@ public class TicketTest {
 		ticket = new Ticket(ocrp);
 		//TODO: Check this.
 		ticket.setOutPutLocation("D:/Recognition/GDZ/output");
+		
 		ticket.setInputFiles(inputFiles);
 		ticket.write(ticketFile, name);
 
@@ -165,10 +178,12 @@ public class TicketTest {
 	}
 	
 	@Test
-	public void testMultipleTickets () throws IOException, ConfigurationException {	
-	//	List <String> inputFile = new ArrayList<String>();
+	public void testMultipleTickets () throws IOException, ConfigurationException, XmlException {	
+		List <String> inputFile = new ArrayList<String>();
+		List<String> imageInput = new ArrayList<String>();
 		String inputfile= "file://./src/test/resources/input";
-		
+		String inputhotfolder = "file://./src/test/resources/hotfolder/input";
+		String reportSuffix = ".xml";
 		
 		List<File> listFolders = new ArrayList<File>();
 		hotfolder = new Hotfolder();
@@ -187,7 +202,7 @@ public class TicketTest {
 			}
 		}
 	
-		List<File> fileListimage;
+		List<File> fileListimage = null;
 		for (File files : directories){
 			fileListimage = AbbyyServerEngineTest.makeFileList(files, extension);
 		//	System.out.println(fileListimage);
@@ -203,14 +218,34 @@ public class TicketTest {
 			p.setImageDirectory(files.getAbsolutePath());
 			abbyy.addOcrProcess(p);
 			
-			fileListimage = null;
+			
 		}
 		
 		abbyy.recognize();
-		
+		for(File filelist : fileListimage){
+			String folderName = filelist.getName();
+			folderName = inputhotfolder + "/" + folderName + "/" + folderName + reportSuffix;
+			inputFile = parseFilesFromTicket(new File(folderName));	
+			File folder = new File(inputfile);
+			File [] inputfiles = folder.listFiles();
+			for(File currentFile: inputfiles )
+			{			
+				imageInput.add(currentFile.getName());
+			}
+			
+			assertTrue(inputFile==imageInput);
+		}
 		//check for results
 		assertNotNull(abbyy);
 
+	}
+
+	public static List<File> getInputFiles() {
+		return inputFiles;
+	}
+
+	public static void setInputFiles(List<File> inputFiles) {
+		TicketTest.inputFiles = inputFiles;
 	}
 	
 }

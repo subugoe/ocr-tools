@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
@@ -131,6 +132,8 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	protected List<AbbyyOCRFile> fileInfosreplacement = null;
 	/** The config. */
 	PropertiesConfiguration config;
+	
+	
 
 	/**
 	 * Instantiates a new process.
@@ -173,17 +176,20 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		}
 		identifier = getName();
 		imageDirectory = getImageDirectory();
+		
 		//TODO: This is a bad hack.
 		if (imageDirectory == null) {
 			throw new RuntimeException("No directory given!");
 		}
 		try {
-			fileInfos = getFileList(new File(imageDirectory));
+			fileInfos = getFileList(imageDirectory);
 		} catch (FileSystemException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		 
 
+		
 		Integer wait;
 		try {
 			// engineConfig = createConfig(identifier);
@@ -198,12 +204,13 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 				hotfolder.mkCol(hotfolder.stringToUrl(inputDerectoryFile.getAbsolutePath()));
 				
 			}
+	
 			//XMLTicket must be treated here
 			while(done){
 				try{
 					done = false;
 					fileInfos = addTicketFile(new LinkedList<AbbyyOCRFile>(fileInfos),
-							identifier);
+							identifier);				
 				}catch (Exception e){
 					
 						done = false;
@@ -216,21 +223,22 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 				}
 			}
 			//copy must be treated here
-			int k = 0 , z =1;
+			int k = 0;
 			while (copyOnly){
 				try {
 					copyOnly = false;
 					hotfolder.copyFilesToServer(fileInfos);				
 				
-				}catch (Exception e) {
-					if (k == 0 || z == 1){
+				}catch (FileSystemException e) {
+					logger.error("Got FileSystemException ", e);
+					if (k == 0 || k == 1){
 						copyOnly = true;	
 						for (AbbyyOCRFile info : fileInfos) {
 						hotfolder.deleteIfExists(info.getRemoteURL());
 						logger.error("Second try!! copy images from " + identifier);
 						System.out.println("Second try!! copy images from " + identifier);
 						}
-						k++; z++;
+						k++;
 					}else{
 						for (AbbyyOCRFile info : fileInfos) {
 							hotfolder.deleteIfExists(info.getRemoteURL());
@@ -244,9 +252,13 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						logger.error("failed!!can not copy images from " + identifier);
 						copyOnly = false;
 						failed = true;
-					//	System.out.println("failed!!can not copy images from  " + identifier);
+					
 					}
 					
+				}
+				catch (Exception e1) {
+					logger.error("Got Exception", e1);
+					throw new RuntimeException(e1);
 				}
 			}
 			wait = fileInfos.size() * millisPerFile;
@@ -338,11 +350,17 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 					}else failed = true;
 				}
 
-			} catch (Exception e) {
+			} catch (FileSystemException e) {
 				logger.error("Processing failed", e);
 				failed = true;
 				throw new RuntimeException(e);
 
+			} catch (FileNotFoundException e) {
+				logger.error("Processing failed", e);
+			} catch (XMLStreamException e) {
+				logger.error("Processing failed", e);
+			} catch (InterruptedException e) {
+				logger.error("Processing failed", e);
 			} finally {
 				fileInfosreplacement = null;
 				fileInfos = null;
@@ -380,16 +398,33 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 * @return the file list of the AbbyyOCRFile.
 	 * @throws FileSystemException 
 	 */
-	protected LinkedList<AbbyyOCRFile> getFileList(File dir) throws FileSystemException {
-		List<File> files = makeFileList(dir, extension);
+	protected List<AbbyyOCRFile> getFileList(String imageDirectory) throws FileSystemException {
+	//	List<File> files = makeFileList(dir, extension);
+
+		Long size = 0l;
+		fileInfos = new ArrayList<AbbyyOCRFile> ();
+		for (OCRImage i: getOcrImages()) {
+			String imageName = i.getUrl().getPath();
+			File imageNameFile = new File(imageName);
+			size += imageNameFile.length();
+			String remoteImageNamePath = webdavURL + inputFolder + "/" + imageDirectory + "/" + imageNameFile.getName() + "/";
+			File remoteFilepath = new File(remoteImageNamePath);
+			URL remoteURL = hotfolder.stringToUrl(remoteFilepath.getAbsolutePath());
+			
+			AbbyyOCRFile aof = new  AbbyyOCRFile(i.getUrl(), remoteURL, imageNameFile.getName());
+			hotfolder.urlToFile(i.getUrl());		
+			aof.setRemoteURL(null);
+			fileInfos.add(aof);
+		}
+		
 
 		/**
 		 * proof if number of files is in limit as defined in config-properties file,
 		 * param maxFiles
 		 */
 
-		if (maxFiles != 0 && files.size() > maxFiles) {
-			logger.error("To much files (" + files.size()
+		if (maxFiles != 0 && fileInfos.size() > maxFiles) {
+			logger.error("To much files (" + fileInfos.size()
 					+ "). The max amount of files is " + maxFiles
 					+ ". Stop processing!");
 			throw new RuntimeException("To much files!");
@@ -399,7 +434,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		 * proof overall filesize-limit as defined in config-properties, param
 		 * maxSize
 		 */
-		Long size = calculateSize(files);
+		
 
 		if (maxSize != 0 && size > maxSize) {
 			logger.error("Filesize to much (" + size
@@ -408,44 +443,11 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			throw new RuntimeException("Filesize to much!");
 		}
 
-		LinkedList<AbbyyOCRFile> fileInfoList = new LinkedList<AbbyyOCRFile>();
-
-		this.fileCount = files.size();
+		this.fileCount = getOcrImages().size();
 		this.fileSize = size;
 
-		String dirName = dir.getName();
-
-		String uriPrefix = webdavURL + inputFolder + "/" + dirName + "/";
-		URL imageUrl = hotfolder.fileToURL(dir);
-		//fileInfoList.add(new AbbyyOCRFile(imageUrl, null, uriPrefix));
-
-		for (File localFile : files) {
-			StringBuffer remoteFile = new StringBuffer("");
-			if (writeRemotePrefix) {
-				remoteFile.append(webdavURL);
-				remoteFile.append(inputFolder).append("/");
-			}
-			remoteFile.append(dirName).append("/");
-			remoteFile.append(localFile.getName());
-
-			logger.trace(localFile.getAbsolutePath() + " -> "
-					+ remoteFile.toString());
-
-			String outputFile = uriPrefix
-					+ windows2unixFileSeparator(localFile.getName());
-
-			URL imageUrlNew = hotfolder.fileToURL(localFile);
-			URL remoteURL = null;
 		
-				File remoteFilepath = new File(remoteFile.toString());
-				
-				remoteURL = hotfolder.stringToUrl(remoteFilepath.getAbsolutePath());
-			
-			AbbyyOCRFile fileInfo = new AbbyyOCRFile(imageUrlNew, remoteURL,
-					outputFile);
-			fileInfoList.add(fileInfo);
-		}
-		return fileInfoList;
+		return fileInfos;
 	}
 
 	/**
@@ -876,6 +878,8 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		hotfolder.deleteIfExists(urlpath.getAbsolutePath());
 	}
 
+	
+	
 	
 
 	
