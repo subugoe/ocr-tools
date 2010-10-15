@@ -107,6 +107,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	/** The report suffix. */
 	protected String reportSuffix = ".xml.result.xml";
 	
+	protected String reportSuffixforXml = ".xml";
 	/** The extension. */
 	protected static String extension = "tif";
 	
@@ -208,28 +209,38 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 						done = false;
 						failed = true;
 						copyOnly = false;
+						hotfolder.deleteIfExists(inputDerectoryFile.getAbsolutePath());
 						logger.trace(" Failed!! XMLTicket can not created for " + identifier);
 						System.out.println(" Failed!! XMLTicket can not created for " + identifier);
 			
 				}
 			}
 			//copy must be treated here
-			int k = 0 ;
+			int k = 0 , z =1;
 			while (copyOnly){
 				try {
 					copyOnly = false;
 					hotfolder.copyFilesToServer(fileInfos);				
 				
 				}catch (Exception e) {
-					if (k == 0){
+					if (k == 0 || z == 1){
 						copyOnly = true;	
 						for (AbbyyOCRFile info : fileInfos) {
 						hotfolder.deleteIfExists(info.getRemoteURL());
-						logger.trace("Second try!! copy images from " + identifier);
-					//	System.out.println("Second try!! copy images from " + identifier);
+						logger.error("Second try!! copy images from " + identifier);
+						System.out.println("Second try!! copy images from " + identifier);
 						}
-						k++;
+						k++; z++;
 					}else{
+						for (AbbyyOCRFile info : fileInfos) {
+							hotfolder.deleteIfExists(info.getRemoteURL());
+							logger.error("Second try!! copy images from " + identifier);
+							System.out.println("images deleted from " + identifier);
+							}
+						File xmlTicket = new File(inputDerectoryFile.getAbsolutePath() + "/" + identifier + "/" + reportSuffixforXml);
+						hotfolder.deleteIfExists(xmlTicket.getAbsolutePath());
+						
+						hotfolder.deleteIfExists(inputDerectoryFile.getAbsolutePath());
 						logger.error("failed!!can not copy images from " + identifier);
 						copyOnly = false;
 						failed = true;
