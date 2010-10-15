@@ -38,12 +38,7 @@ public class HotfolderTest {
 		files.add(abbyy);
 
 		Hotfolder hot = new Hotfolder();
-/*
 
-		//Credentials defaultcreds = new UsernamePasswordCredentials("gdz", "***REMOVED***");
-		
-	  */
-///		hot.copyFilesToServer(files);
 
 		String remotefile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile";
 		String localfile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/error/testfile1";
@@ -51,13 +46,7 @@ public class HotfolderTest {
 ///		hot.copyAllFiles(remotefile, localfile);
 		System.out.println(localfile);
 		hot.delete(input);
-		String test ="C:/Dokumente und Einstellungen/mabergn.UG-SUB/workspace/ocr-tools/abbyy-server-impl/src/test/resources/hotfolder/input/PPN129323640_0010";
-		//hot.deleteIfExists("test");
-		//hot.deleteIfExists(url)
-		if (!hot.fileIfexists(test)){
-			hot.mkCol(hot.stringToUrl(test));
-			System.out.println("created");
-		}
+		
 		//zahl = hot.getTotalSize(hotfol);
 		//assertTrue(zahl == 38l);
 		
