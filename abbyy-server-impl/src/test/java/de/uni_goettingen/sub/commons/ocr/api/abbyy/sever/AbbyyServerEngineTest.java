@@ -56,13 +56,52 @@ public class AbbyyServerEngineTest {
 	public void testCli () throws IOException, ConfigurationException {	
 	//	List <String> inputFile = new ArrayList<String>();
 		String inputfile= "file://./src/test/resources/local";
+		
+		String errorfolderResult = "file://./src/test/resources/folderForErrortest/PPN129323640_0010";
+		String hotfolderError = "file://./src/test/resources/hotfolder/error/";
+		
+		String moveFolder = "file://./src/test/resources/move";
+		String hotfolderOutput = "file://./src/test/resources/hotfolder/output";
+		
 		List<File> listFolders = new ArrayList<File>();
 		hotfolder = new Hotfolder();
-		//TODO: This is just an example, it doesn't work!
+		
+		// copy all files from  errorfolderResult to hotfolderError 
+		errorfolderResult = parseString(errorfolderResult);
+		hotfolderError= parseString(hotfolderError);
+		File errorfolderResultpath = new File(errorfolderResult);
+		File hotfolderErrorpath = new File(hotfolderError);
+		errorfolderResult = errorfolderResultpath.getAbsolutePath();
+				
+		errorfolderResultpath = new File(errorfolderResult);
+		hotfolderError =  hotfolderErrorpath.getAbsolutePath()+ "/"+ errorfolderResultpath.getName();
+			File [] filess = errorfolderResultpath.listFiles();
+			hotfolder.mkCol(hotfolder.fileToURL(new File(hotfolderError)));
+			for(File currentFile: filess )
+			{
+				hotfolder.copyAllFiles(currentFile.getAbsolutePath(), hotfolderError + "/"+ currentFile.getName());
+				System.out.println("meine liste file " + currentFile.getName());
+			}
+			
+		// copy all files from  folder move to hotfolder output 	
+			moveFolder = parseString(moveFolder);
+			hotfolderOutput= parseString(hotfolderOutput);
+			File moveFolderpath = new File(moveFolder);
+			File hotfolderOutputpath = new File(hotfolderOutput);
+			moveFolder = moveFolderpath.getAbsolutePath();
+					
+			moveFolderpath = new File(moveFolder);
+			hotfolderOutput =  hotfolderOutputpath.getAbsolutePath()+ "/";
+					File [] folder = moveFolderpath.listFiles();
+					for(File currentFiles: folder )
+					{
+						hotfolder.copyAllFiles(currentFiles.getAbsolutePath(), hotfolderOutput + "/"+ currentFiles.getName());
+						
+					}	
+
 		
 		//Look for folders containing tif files in ./src/test/resources/local/ as listFolders
 		//Add a static method for this.
-		
 		inputfile = parseString(inputfile);
 		File inputfilepath = new File(inputfile);
 		listFolders = getImageDirectories(new File(inputfilepath.getAbsolutePath()));
@@ -75,11 +114,11 @@ public class AbbyyServerEngineTest {
 				logger.trace(file.getAbsolutePath() + " is not a directory!");
 			}
 		}
-		//System.out.println(directories);
+	
 		List<File> fileListimage;
 		for (File files : directories){
 			fileListimage = makeFileList(files, extension);
-			System.out.println(fileListimage);
+		//	System.out.println(fileListimage);
 			OCRProcess p = abbyy.newProcess();
 			p.setName(files.getName());
 			for (File fileImage : fileListimage){

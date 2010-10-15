@@ -170,7 +170,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	}
 	
 	//TODO: use a Outputstream for this, the method accepting the file should only be a wrapper.
-	public void write (File ticketFile, String identifier) throws IOException {
+	public void write (File ticketFile,  String identifier) throws IOException {
 		if (ticketFile == null) {
 			throw new IllegalStateException();
 		}
@@ -179,7 +179,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 				.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
 		Integer OCRTimeOut = getInputFiles().size() * millisPerFile;
-		
 		if (maxOCRTimeout < OCRTimeOut) {
 			throw new IllegalStateException("Calculated OCR Timeout to high: "
 					+ OCRTimeOut);
