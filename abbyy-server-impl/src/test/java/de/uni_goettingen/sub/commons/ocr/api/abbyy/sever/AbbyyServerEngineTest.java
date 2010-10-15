@@ -80,7 +80,7 @@ public class AbbyyServerEngineTest {
 			for(File currentFile: filess )
 			{
 				hotfolder.copyAllFiles(currentFile.getAbsolutePath(), hotfolderError + "/"+ currentFile.getName());
-				System.out.println("meine liste file " + currentFile.getName());
+			//	System.out.println("meine liste file " + currentFile.getName());
 			}
 			
 		// copy all files from  folder move to hotfolder output 	
