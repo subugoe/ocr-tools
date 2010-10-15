@@ -78,7 +78,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	protected static String errorFolder = null;
 	
 	/** The list of the inputfiles. */
-	private static List<File> inputFiles = new ArrayList<File>();
+	private static List<File> inputFiles = null;
 
 	/** The list of the language. */
 	protected static List<Locale> langs;
@@ -244,7 +244,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			Thread.sleep(wait);
 
 				while (!failed) {
-					
+					int firstwait = 0;
 					// for Output folder
 					if (checkOutXmlResults()) {
 						String resultOutURLPrefix = webdavURL + outputFolder
@@ -321,6 +321,10 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 							}
 						}
 					}
+					if(firstwait == 0){
+						Thread.sleep(wait/2);
+						firstwait++;
+					}else failed = true;
 				}
 
 			} catch (Exception e) {
@@ -547,16 +551,14 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 
 		String ticketFileName = ticketName + ".xml";
 		String ticketTempDir = null;
+		inputFiles = null;
+		inputFiles = new ArrayList<File>();
 		for (AbbyyOCRFile fileInfo : fileInfos) {
 			if (fileInfo.getRemoteURL().toString() != null) {
-				// engineConfig.addFile(fileInfo.getRemoteFileName());
 				inputFiles.add(hotfolder.urlToFile(fileInfo.getRemoteURL()));
 			}
 			if (ticketTempDir == null) {
-				//ticketTempDir = fileInfo.getRemoteFileName();
-				ticketTempDir = webdavURL + inputFolder + "/" +identifier + "/" + ticketFileName;
-				//System.out.print("waw " + ticketTempDir);
-				
+				ticketTempDir = webdavURL + inputFolder + "/" +identifier + "/" + ticketFileName;	
 			}
 		}
 		setInputFiles(inputFiles);
@@ -574,7 +576,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		//setMillisPerFile(millisPerFile);
 		//setMaxOCRTimeout(maxOCRTimeout);
 		write(ticketFile.getAbsoluteFile(), identifier);
-
+		inputFiles = null;
 		String outputFile = webdavURL + inputFolder + "/" + ticketFileName;
 		/*fileInfos.addFirst(new AbbyyOCRFile(hotfolder.fileToURL(ticketFile),
 				null, outputFile));*/

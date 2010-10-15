@@ -155,8 +155,7 @@ public class AbbyyServerEngine implements OCREngine {
 		hotfolder.setInputFolder(inputFolder);
 		hotfolder.setOutputFolder(outputFolder);
 		hotfolder.setWebdavURL(webdavURL);
-		/*Thread thread = new Thread(process);
-		thread.start();*/
+		
 	}
 
 	/**
