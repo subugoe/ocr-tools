@@ -21,9 +21,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,8 @@ import java.util.regex.Pattern;
 
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.ExportParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.ImageProcessingParams;
@@ -48,13 +51,12 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 public class Ticket extends AbstractOCRProcess implements OCRProcess {
-
-	/** The ticket file. */
-	protected File ticketFile;
+	final static Logger logger = LoggerFactory.getLogger(Ticket.class);
 
 	// Should the ticket be validated.
 	protected Boolean validateTicket = false;
@@ -63,8 +65,9 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	// protected Integer secondsPerImage = 5;
 	protected Integer millisPerFile = 1200;
 	//Language
+	//TODO: Remove this
 	protected String language;
-
+	
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
 
@@ -83,7 +86,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
 
-	protected static List<File> inputFiles = new ArrayList<File>();
+	//protected static List<File> inputFiles = new ArrayList<File>();
 
 	// is represents the InputStream for files being read
 	private InputStream is;
@@ -141,9 +144,18 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		super();
 	}*/
 
-	public Ticket(InputStream is) throws IOException {
-		//TODO: Finish this constructor
+	public Ticket(InputStream is) {
 		this.is = is;
+
+
+	}
+
+	public Ticket(URL url) throws IOException {
+		this(url.openStream());
+	}
+	
+	protected void parseTicket () throws MalformedURLException {
+		//TODO: Finish this method
 		XmlOptions options = new XmlOptions();
 		// Set the namespace 
 		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE));
@@ -154,20 +166,30 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		} catch (XmlException e) {
 			// TODO Auto-generated catch block (log this)
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
-		OutputFileFormatSettings offs = params.getExportFormatArray(0);
+
 		RecognitionParams rp = ticket.getRecognitionParams();
 		List<InputFile> fl = ticket.getInputFileList();
 		for (InputFile i: fl) {
 			addImage(new AbbyyOCRImage(new URL(i.getName())));
 		}
-
+		for (OutputFileFormatSettings offs: params.getExportFormatList()) {
+			if (offs.isSetOutputFileFormat()) {
+				String format = offs.getOutputFileFormat();
+				String location = offs.getOutputLocation();
+			}
+			
+		}
+			
 	}
-
-	public Ticket(URL url) throws IOException {
-		this(url.openStream());
+	
+	public void write (OutputStream out, String identifier) throws IOException {
+		
 	}
 
 	//TODO: use a Outputstream for this, the method accepting the file should only be a wrapper.
@@ -178,16 +200,19 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
-		Integer OCRTimeOut = getInputFiles().size() * millisPerFile;
+		
+		
+		
+		Integer OCRTimeOut = getOcrImages().size() * millisPerFile;
 		if (maxOCRTimeout < OCRTimeOut) {
 			throw new IllegalStateException("Calculated OCR Timeout to high: " + OCRTimeOut);
 		}
 
 		ticket.setOCRTimeout(BigInteger.valueOf(OCRTimeOut));
 
-		for (File f : getInputFiles()) {
+		for (OCRImage aoi : getOcrImages()) {
 			InputFile inputFile = ticket.addNewInputFile();
-			String file = f.getName();
+			String file = ((AbbyyOCRImage) aoi).getRemoteFileName();
 			inputFile.setName(file);
 
 		}
@@ -242,7 +267,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		if (validateTicket && !ticket.validate()) {
 
 			//TODO: 
-			//	logger.error("Ticket not valid!");
+			logger.error("Ticket not valid!");
 
 			throw new RuntimeException("Ticket not valid!");
 		}
@@ -273,14 +298,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
-	public List<File> getInputFiles () {
-		return inputFiles;
-	}
-
-	public void setInputFiles (List<File> inputFiles) {
-		Ticket.inputFiles = inputFiles;
-	}
-
 	public String getOutPutLocation () {
 		return outPutLocation;
 	}
@@ -304,5 +321,10 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	public void setMillisPerFile (Integer millisPerFile) {
 		this.millisPerFile = millisPerFile;
 	}
-
+	
+	/*
+	public List<AbbyyOCRImage> getOcrImages() {
+		return null;
+	}
+	*/
 }
