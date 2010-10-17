@@ -1,4 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
+
 /*
 
 © 2010, SUB Göttingen. All rights reserved.
@@ -17,27 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
-
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
-
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.ExportParams;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.ImageProcessingParams;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.InputFile;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.PDFExportSettings;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.TextExportSettings;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.XMLExportSettings;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
-
-
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,8 +35,23 @@ import java.util.regex.Pattern;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 
-public class Ticket extends AbstractOCRProcess implements OCRProcess {
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.ExportParams;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.ImageProcessingParams;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.InputFile;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.PDFExportSettings;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.TextExportSettings;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.XMLExportSettings;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+
+public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	/** The ticket file. */
 	protected File ticketFile;
@@ -66,10 +64,10 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected Integer millisPerFile = 1200;
 	//Language
 	protected String language;
-	
+
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
-	
+
 	static {
 		// See http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt for additional mappings
 		LANGUAGE_MAP.put(Locale.GERMAN, "German");
@@ -77,9 +75,9 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		LANGUAGE_MAP.put(new Locale("la"), "Latin");
 		LANGUAGE_MAP.put(new Locale("ru"), "Russian");
 	}
-	
+
 	protected String outPutLocation;
-	
+
 	//The namespace used for the Ticket files.
 	public static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 
@@ -95,7 +93,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		opts.setSavePrettyPrint();
 		opts.setSaveImplicitNamespaces(new HashMap() {
 			{
-				put("",	NAMESPACE);
+				put("", NAMESPACE);
 			}
 		});
 		opts.setUseDefaultNamespace();
@@ -103,9 +101,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	static {
 		FORMAT_FRAGMENTS = new HashMap<OCRFormat, OutputFileFormatSettings>();
-		XMLExportSettings xmlSettings = XMLExportSettings.Factory
-				.newInstance(opts);
-		
+		XMLExportSettings xmlSettings = XMLExportSettings.Factory.newInstance(opts);
+
 		xmlSettings.setWriteCharactersFormatting(true);
 		xmlSettings.setWriteCharAttributes(true);
 
@@ -121,7 +118,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		FORMAT_FRAGMENTS.put(OCRFormat.PDF, (OutputFileFormatSettings) pdfSettings.changeType(OutputFileFormatSettings.type));
 
 		TextExportSettings txtSettings = TextExportSettings.Factory.newInstance(opts);
-		
+
 		txtSettings.setEncodingType("UTF8");
 
 		FORMAT_FRAGMENTS.put(OCRFormat.TXT, (OutputFileFormatSettings) txtSettings.changeType(OutputFileFormatSettings.type));
@@ -133,22 +130,23 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
-	public Ticket (){
+	public Ticket() {
 	}
+
 	public Ticket(OCRProcess params) {
 		super(params);
 	}
-	
+
 	/*protected Ticket () {
 		super();
 	}*/
-	
-	public Ticket (InputStream is) throws IOException {
+
+	public Ticket(InputStream is) throws IOException {
 		//TODO: Finish this constructor
 		this.is = is;
-		XmlOptions options = new XmlOptions(); 
+		XmlOptions options = new XmlOptions();
 		// Set the namespace 
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE)); 
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE));
 		// Load the Xml 
 		XmlTicketDocument ticketDoc = null;
 		try {
@@ -162,26 +160,23 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		OutputFileFormatSettings offs = params.getExportFormatArray(0);
 		RecognitionParams rp = ticket.getRecognitionParams();
 
-
 	}
-	
-	public Ticket (URL url) throws IOException {
+
+	public Ticket(URL url) throws IOException {
 		this(url.openStream());
 	}
-	
+
 	//TODO: use a Outputstream for this, the method accepting the file should only be a wrapper.
-	public void write (File ticketFile,  String identifier) throws IOException {
+	public void write (File ticketFile, String identifier) throws IOException {
 		if (ticketFile == null) {
 			throw new IllegalStateException();
 		}
 
-		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory
-				.newInstance(opts);
+		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
 		Integer OCRTimeOut = getInputFiles().size() * millisPerFile;
 		if (maxOCRTimeout < OCRTimeOut) {
-			throw new IllegalStateException("Calculated OCR Timeout to high: "
-					+ OCRTimeOut);
+			throw new IllegalStateException("Calculated OCR Timeout to high: " + OCRTimeOut);
 		}
 
 		ticket.setOCRTimeout(BigInteger.valueOf(OCRTimeOut));
@@ -190,16 +185,14 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			InputFile inputFile = ticket.addNewInputFile();
 			String file = f.getName();
 			inputFile.setName(file);
-		
+
 		}
 
-		ImageProcessingParams imageProcessingParams = ticket
-				.addNewImageProcessingParams();
+		ImageProcessingParams imageProcessingParams = ticket.addNewImageProcessingParams();
 		imageProcessingParams.setDeskew(false);
 
 		RecognitionParams recognitionParams = ticket.addNewRecognitionParams();
 
-		
 		for (Locale l : langs) {
 			if (langs == null) {
 				throw new OCRException("No language given!");
@@ -232,7 +225,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			*/
 
 			exportFormat.setNamingRule(identifier + "." + ef.name().toLowerCase());
-			
+
 			exportFormat.setOutputLocation(getOutPutLocation());
 
 			settings[i] = exportFormat;
@@ -240,7 +233,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		}
 
 		exportParams.setExportFormatArray(settings);
-	
+
 		ticketDoc.save(ticketFile, opts);// opts
 		if (validateTicket && !ticket.validate()) {
 
@@ -276,7 +269,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
-
 	public List<File> getInputFiles () {
 		return inputFiles;
 	}
@@ -292,23 +284,21 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	public void setOutPutLocation (String outPutLocation) {
 		this.outPutLocation = outPutLocation;
 	}
-	
-	public Long getMaxOCRTimeout() {
+
+	public Long getMaxOCRTimeout () {
 		return maxOCRTimeout;
 	}
-	
-	public void setMaxOCRTimeout(Long maxOCRTimeout) {
+
+	public void setMaxOCRTimeout (Long maxOCRTimeout) {
 		this.maxOCRTimeout = maxOCRTimeout;
 	}
-	
-	public Integer getMillisPerFile() {
+
+	public Integer getMillisPerFile () {
 		return millisPerFile;
 	}
-	
-	public void setMillisPerFile(Integer millisPerFile) {
+
+	public void setMillisPerFile (Integer millisPerFile) {
 		this.millisPerFile = millisPerFile;
 	}
-	
-	
 
 }

@@ -1,8 +1,6 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
-import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -18,24 +16,23 @@ public class ConfigParser {
 	protected String inputFolder;
 	protected String outputFolder;
 	protected String errorFolder;
-	
+
 	protected Long maxSize;
 	protected Long maxFiles;
 	protected Integer maxThreads;
 	protected Boolean checkServerState;
-	
-	final static Logger logger = LoggerFactory
-	.getLogger(ConfigParser.class);
-	
-	public ConfigParser () {
+
+	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
+
+	public ConfigParser() {
 		try {
 			loadConfig();
 		} catch (ConfigurationException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public ConfigParser (Configuration config) {
+
+	public ConfigParser(Configuration config) {
 		this.config = config;
 		try {
 			loadConfig();
@@ -43,15 +40,16 @@ public class ConfigParser {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Load config.
-	 *
-	 * @param config the config
-	 * @throws ConfigurationException the configuration exception
+	 * 
+	 * @param config
+	 *            the config
+	 * @throws ConfigurationException
+	 *             the configuration exception
 	 */
-	public void loadConfig()
-			throws ConfigurationException {
+	public void loadConfig () throws ConfigurationException {
 		// do something with config
 		try {
 			config = new PropertiesConfiguration("config-properties");
@@ -62,37 +60,30 @@ public class ConfigParser {
 
 		webdavURL = config.getString("remoteURL");
 		webdavURL = webdavURL.endsWith("/") ? webdavURL : webdavURL + "/";
-		if(webdavURL != null){
+		if (webdavURL != null) {
 			webdavURL = parseString(webdavURL);
 
 		}
-		
-		
+
 		webdavUsername = config.getString("username");
 		webdavPassword = config.getString("password");
 		inputFolder = config.getString("input");
 		outputFolder = config.getString("output");
 		errorFolder = config.getString("error");
 
-		
-		if (config.getString("checkServerState") != null
-				&& !config.getString("checkServerState").equals("")) {
-			checkServerState = Boolean.parseBoolean(config
-					.getString("checkServerState"));
+		if (config.getString("checkServerState") != null && !config.getString("checkServerState").equals("")) {
+			checkServerState = Boolean.parseBoolean(config.getString("checkServerState"));
 		}
 
-		if (config.getString("maxThreads") != null
-				&& !config.getString("maxThreads").equals("")) {
+		if (config.getString("maxThreads") != null && !config.getString("maxThreads").equals("")) {
 			maxThreads = Integer.parseInt(config.getString("maxThreads"));
 		}
 
-		if (config.getString("maxSize") != null
-				&& !config.getString("maxSize").equals("")) {
+		if (config.getString("maxSize") != null && !config.getString("maxSize").equals("")) {
 			maxSize = Long.parseLong(config.getString("maxSize"));
 		}
 
-		if (config.getString("maxFiles") != null
-				&& !config.getString("maxFiles").equals("")) {
+		if (config.getString("maxFiles") != null && !config.getString("maxFiles").equals("")) {
 			maxFiles = Long.parseLong(config.getString("maxFiles"));
 		}
 
@@ -112,28 +103,28 @@ public class ConfigParser {
 		logger.debug("Check server state: " + checkServerState);
 
 	}
-	
-	public static String parseString(String str){
+
+	public static String parseString (String str) {
 		String remoteFile = null;
 		if (str.contains("/./")) {
 			int i = 0;
 			for (String lang : Arrays.asList(str.split("/./"))) {
-				if (i == 0){
+				if (i == 0) {
 					i++;
-				}else{
+				} else {
 					remoteFile = lang;
 				}
 			}
 		}
 		return remoteFile;
-		
+
 	}
-	
-	public String getWebdavURL() {
+
+	public String getWebdavURL () {
 		return webdavURL;
 	}
 
-	public  void setWebdavURL(String webdavURL) {
-		this.webdavURL = webdavURL;
+	public void setWebdavURL (String webdavURL) {
+		ConfigParser.webdavURL = webdavURL;
 	}
 }
