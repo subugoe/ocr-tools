@@ -184,6 +184,7 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	}
 
 	//TODO: Try to remove this
+	/*
 	public String getImageDirectory() {
 		return imageDirectory;
 	}
@@ -191,5 +192,5 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	public void setImageDirectory(String imageDirectory) {
 		this.imageDirectory = imageDirectory;
 	}
-	
+	*/
 }
