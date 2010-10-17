@@ -2,6 +2,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 // TODO: Auto-generated Javadoc
@@ -79,11 +80,9 @@ public interface OCRProcess {
 	 */
 	public void addImage (OCRImage ocrImage);
 
-	public void setOcrOutput (List<OCROutput> ocrOutput);
-
-	/*
-	public void setOutputLocation (String outputLocation);
-	*/
+	public void setOcrOutput (Map<OCRFormat, OCROutput> ocrOutput);
+	
+	public Map<OCRFormat, OCROutput> getOcrOutput ();
 	
 	public void setName (String name);
 

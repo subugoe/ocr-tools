@@ -4,14 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractOCRProcess implements OCRProcess {
-
-	/** The file. */
-	//private String file;
-	/** Outputlocation for Abbyy */
-	//private String outputLocation;
 
 	protected String name;
 		
@@ -27,10 +23,7 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	protected List<OCRImage> ocrImages = new ArrayList<OCRImage>();
 
 	/** The ocr output. The Images converted are put in this Output Folder */
-	protected List<OCROutput> ocrOutput = new ArrayList<OCROutput>();
-
-
-	
+	protected Map<OCRFormat, OCROutput> ocrOutput;
 	
 	/**
 	 * Instantiates a new oCR process.
@@ -156,21 +149,6 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 		this.ocrImages.add(ocrImage);
 	}
 
-	public void setOcrOutput (List<OCROutput> ocrOutput) {
-		this.ocrOutput = ocrOutput;
-	}
-
-	//TODO: Remove this
-	/*
-	public String getOutputLocation () {
-		return outputLocation;
-	}
-
-	public void setOutputLocation (String outputLocation) {
-		this.outputLocation = outputLocation;
-	}
-	*/
-
 	public String getName() {
 		return name;
 	}
@@ -179,4 +157,13 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 		this.name = name;
 	}
 
+	public void setOcrOutput (Map<OCRFormat, OCROutput> ocrOutput) {
+		this.ocrOutput = ocrOutput;
+		
+	}
+
+	public Map<OCRFormat, OCROutput> getOcrOutput () {
+		return this.ocrOutput;
+	}
+	
 }
