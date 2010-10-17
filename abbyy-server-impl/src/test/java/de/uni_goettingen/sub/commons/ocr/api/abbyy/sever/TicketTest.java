@@ -23,8 +23,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -45,7 +54,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.ExportParams;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.InputFile;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
@@ -68,6 +76,7 @@ public class TicketTest {
 	private static List<File> inputFiles = new ArrayList<File>();
 	private static OCRProcess ocrp = null;
 	private static File ticketFile;
+	private static FileOutputStream ticketStream;
 	private static OCRImage ocri = null;
 	String name = "515";
 
@@ -79,7 +88,7 @@ public class TicketTest {
 	private static final long serialVersionUID = 5384097471130557653L;
 
 	@BeforeClass
-	public static void init () throws FileSystemException, ConfigurationException {
+	public static void init () throws FileSystemException, ConfigurationException, FileNotFoundException, MalformedURLException {
 		basefolderFile = getBaseFolderAsFile();
 		ocrp = mock(OCRProcess.class);
 		ocrp.addLanguage(Locale.GERMAN);
@@ -90,15 +99,22 @@ public class TicketTest {
 		});
 		//This s just here to display the works of the mocking framework
 		assertTrue(ocrp.getLangs().contains(Locale.GERMAN));
+
 		ocrp.addOCRFormat(OCRFormat.PDF);
+
 		ticketFile = new File(basefolderFile.getAbsolutePath() + "ticket.xml");
 
-		ocri = mock(OCRImage.class);
+		//Create some mock images
+		for (int i = 0; i < 10; i++) {
+			ocri = mock(OCRImage.class);
+			when(ocri.getUrl()).thenReturn(new URL(basefolderFile.toURI().toURL().toString() + i));
+			ocrp.addImage(ocri);
+		}
+
 		try {
 			when(ocri.getUrl()).thenReturn(new File("/tmp").toURI().toURL());
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug("This should never happen", e);
 		}
 
 		abbyy = AbbyyServerEngine.getInstance();
@@ -107,17 +123,16 @@ public class TicketTest {
 	}
 
 	@Test
-	public void writeTicket () throws Exception {
-		//TODO: Remove hard coded paths
-
+	public void writeTicket () throws IOException {
 		assertNotNull("base path is null", basefolderFile);
 
-		ocrp.addImage(ocri);
-
 		ticket = new Ticket(ocrp);
-		//TODO: Check this.
 
-		ticket.write(ticketFile, name);
+		ticketStream = new FileOutputStream(ticketFile);
+		ticket.write(ticketStream, name);
+		
+		String ticket = dumpTicket(new FileInputStream(ticketFile));
+		logger.debug("This is the ticket\n" + ticket);
 
 		assertTrue(ticketFile.exists());
 	}
@@ -135,12 +150,21 @@ public class TicketTest {
 		ExportParams params = ticket.getExportParams();
 		OutputFileFormatSettings offs = params.getExportFormatArray(0);
 		RecognitionParams rp = ticket.getRecognitionParams();
-		//TODO: If this fails the ticket writing method has a problem with language mapping
+		//TODO: Use ticket.java to read the ticket.
+
+		//If this fails the ticket writing method has a problem with language mapping
 		assertTrue("Expecting \"German\", got \"" + rp.getLanguageArray(0) + "\"", rp.getLanguageArray(0).equals("German"));
 
+		//Compare the files from the ticket with the mock object
+		List<String> ticketFiles = parseFilesFromTicket(ticketFile);
+		for (int i = 0; i < ticketFiles.size(); i++) {
+			assertTrue(ticketFiles.get(i).equals(ocrp.getOcrImages().get(i).toString()));
+		}
 	}
 
 	public static List<String> parseFilesFromTicket (File ticketFile) throws XmlException, IOException {
+		//TODO: Use ticket.java to read the ticket.
+		/*
 		List<String> files = new ArrayList<String>();
 		XmlOptions options = new XmlOptions();
 		// Set the namespace 
@@ -152,6 +176,12 @@ public class TicketTest {
 		List<InputFile> fl = ticket.getInputFileList();
 		for (InputFile i : fl) {
 			files.add(i.getName());
+		}
+		*/
+		List<String> files = new ArrayList<String>();
+		Ticket t = new Ticket(new FileInputStream(ticketFile));
+		for (OCRImage oi: t.getOcrImages()) {
+			files.add(oi.getUrl().toString());
 		}
 
 		return files;
@@ -197,13 +227,11 @@ public class TicketTest {
 		List<File> fileListimage = null;
 		for (File files : directories) {
 			fileListimage = AbbyyServerEngineTest.makeFileList(files, extension);
-			//	System.out.println(fileListimage);
 			OCRProcess p = abbyy.newProcess();
 			p.setName(files.getName());
 			for (File fileImage : fileListimage) {
 				OCRImage image = abbyy.newImage();
-				//System.out.println("fehler "+ fileImage.getAbsolutePath());
-
+				logger.debug("File list contains " + fileImage.getAbsolutePath());
 				image.setUrl(hotfolder.fileToURL(fileImage));
 				p.addImage(image);
 			}
@@ -236,6 +264,26 @@ public class TicketTest {
 
 	public static void setInputFiles (List<File> inputFiles) {
 		TicketTest.inputFiles = inputFiles;
+	}
+
+	public static String dumpTicket (InputStream in) throws IOException {
+		if (in != null) {
+			Writer writer = new StringWriter();
+
+			char[] buffer = new char[1024];
+			try {
+				Reader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+				int n;
+				while ((n = reader.read(buffer)) != -1) {
+					writer.write(buffer, 0, n);
+				}
+			} finally {
+				in.close();
+			}
+			return writer.toString();
+		} else {
+			return "";
+		}
 	}
 
 }
