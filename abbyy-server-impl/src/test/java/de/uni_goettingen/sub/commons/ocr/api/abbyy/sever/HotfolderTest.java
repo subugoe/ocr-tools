@@ -1,7 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.api.abbyy.sever;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,7 +18,7 @@ public class HotfolderTest {
 
 	@BeforeClass
 	public static void init () throws MalformedURLException {
-		
+
 		testfile = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "local/testfile");
 		//hot = mock(Hotfolder.class);
 	}
@@ -39,19 +37,16 @@ public class HotfolderTest {
 
 		Hotfolder hot = new Hotfolder();
 
-
 		String remotefile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile";
 		String localfile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/error/testfile1";
 		//assertTrue(new File(TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile").exists());
-///		hot.copyAllFiles(remotefile, localfile);
+		///		hot.copyAllFiles(remotefile, localfile);
 		System.out.println(localfile);
 		hot.delete(input);
-		
+
 		//zahl = hot.getTotalSize(hotfol);
 		//assertTrue(zahl == 38l);
-		
-	}
 
-	
+	}
 
 }
