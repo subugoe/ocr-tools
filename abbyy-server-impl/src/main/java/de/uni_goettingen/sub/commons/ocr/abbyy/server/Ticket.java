@@ -91,7 +91,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected static XmlOptions opts = new XmlOptions();
 	static {
 		opts.setSavePrettyPrint();
-		opts.setSaveImplicitNamespaces(new HashMap() {
+		opts.setSaveImplicitNamespaces(new HashMap<String, String>() {
 			{
 				put("", NAMESPACE);
 			}
