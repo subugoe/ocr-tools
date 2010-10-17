@@ -37,6 +37,8 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 
 	//This represents the URL to the remote system
 	protected URL remoteURL = null;
+	
+	protected Long size = 0l;
 
 //	protected URL url = null;
 	
@@ -113,4 +115,7 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 		return this.url;
 	}*/
 	
+	public Long getsize() {
+		return size;
+	}
 }

@@ -61,14 +61,9 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	// Should the ticket be validated.
 	protected Boolean validateTicket = false;
-	// Two hours by default
-	protected Long maxOCRTimeout = 3600000l * 2;
-	// protected Integer secondsPerImage = 5;
-	protected Integer millisPerFile = 1200;
-	//Language
-	//TODO: Remove this
-	protected String language;
-	
+	//The timeout for the ticket
+	protected Integer oCRTimeOut = null;
+
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
 
@@ -86,8 +81,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	public static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 
 	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
-
-	//protected static List<File> inputFiles = new ArrayList<File>();
 
 	// is represents the InputStream for files being read
 	private InputStream is;
@@ -137,8 +130,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	public Ticket() {
 	}
 
-	public Ticket(OCRProcess params) {
-		super(params);
+	public Ticket(OCRProcess process) {
+		super(process);
 	}
 
 	/*protected Ticket () {
@@ -195,11 +188,15 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
 		
+		/*
 		Integer OCRTimeOut = getOcrImages().size() * millisPerFile;
 		if (maxOCRTimeout < OCRTimeOut) {
 			throw new IllegalStateException("Calculated OCR Timeout to high: " + OCRTimeOut);
 		}
-		ticket.setOCRTimeout(BigInteger.valueOf(OCRTimeOut));
+		*/
+		if (oCRTimeOut != null) {
+			ticket.setOCRTimeout(BigInteger.valueOf(oCRTimeOut));
+		}
 
 		for (OCRImage aoi : getOcrImages()) {
 			InputFile inputFile = ticket.addNewInputFile();
@@ -220,7 +217,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		ExportParams exportParams = ticket.addNewExportParams();
 		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
 
-		//TODO: REmove hard coded number
+		//TODO: Remove hard coded number
 		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[FORMAT_FRAGMENTS.size() - 4];
 
 		Integer i = 0;
@@ -292,21 +289,21 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		this.outPutLocation = outPutLocation;
 	}
 
-	public Long getMaxOCRTimeout () {
-		return maxOCRTimeout;
+	/**
+	 * @return the oCRTimeOut
+	 */
+	public Integer getoCRTimeOut () {
+		return oCRTimeOut;
 	}
 
-	public void setMaxOCRTimeout (Long maxOCRTimeout) {
-		this.maxOCRTimeout = maxOCRTimeout;
+	/**
+	 * @param oCRTimeOut the oCRTimeOut to set
+	 */
+	public void setoCRTimeOut (Integer oCRTimeOut) {
+		this.oCRTimeOut = oCRTimeOut;
 	}
 
-	public Integer getMillisPerFile () {
-		return millisPerFile;
-	}
 
-	public void setMillisPerFile (Integer millisPerFile) {
-		this.millisPerFile = millisPerFile;
-	}
 	
 	/*
 	public List<AbbyyOCRImage> getOcrImages() {

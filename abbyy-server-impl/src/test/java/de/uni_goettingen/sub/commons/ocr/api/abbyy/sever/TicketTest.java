@@ -95,6 +95,7 @@ public class TicketTest {
 		when(ocrp.getLangs()).thenReturn(new HashSet<Locale>() {
 			{
 				add(Locale.GERMAN);
+				add(new Locale("la"));
 			}
 		});
 		//This s just here to display the works of the mocking framework
@@ -153,11 +154,17 @@ public class TicketTest {
 		//TODO: Use ticket.java to read the ticket.
 
 		//If this fails the ticket writing method has a problem with language mapping
-		assertTrue("Expecting \"German\", got \"" + rp.getLanguageArray(0) + "\"", rp.getLanguageArray(0).equals("German"));
 
+		for (String lang: rp.getLanguageList()) {
+			logger.debug("found language:" + lang);
+			assertTrue(Ticket.LANGUAGE_MAP.containsValue(lang));
+		}
+		
 		//Compare the files from the ticket with the mock object
 		List<String> ticketFiles = parseFilesFromTicket(ticketFile);
 		for (int i = 0; i < ticketFiles.size(); i++) {
+			logger.debug("File from mock object: " + ocrp.getOcrImages().get(i).toString());
+			logger.debug("File from ticket file: " + ticketFiles.get(i));
 			assertTrue(ticketFiles.get(i).equals(ocrp.getOcrImages().get(i).toString()));
 		}
 	}
