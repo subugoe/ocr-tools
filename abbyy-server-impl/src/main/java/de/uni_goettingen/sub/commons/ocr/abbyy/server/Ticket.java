@@ -53,9 +53,11 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
+@SuppressWarnings("serial")
 public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	final static Logger logger = LoggerFactory.getLogger(Ticket.class);
 
@@ -63,7 +65,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected Boolean validateTicket = false;
 	//The timeout for the ticket
 	protected Integer oCRTimeOut = null;
-
+	
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
 
@@ -284,16 +286,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
-	/*
-	public String getOutPutLocation () {
-		return outPutLocation;
-	}
-
-	public void setOutPutLocation (String outPutLocation) {
-		this.outPutLocation = outPutLocation;
-	}
-	 */
-
 	/**
 	 * @return the oCRTimeOut
 	 */
@@ -308,11 +300,4 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		this.oCRTimeOut = oCRTimeOut;
 	}
 
-
-	
-	/*
-	public List<AbbyyOCRImage> getOcrImages() {
-		return null;
-	}
-	*/
 }

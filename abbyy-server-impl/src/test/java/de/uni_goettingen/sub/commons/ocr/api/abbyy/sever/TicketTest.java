@@ -74,7 +74,7 @@ public class TicketTest {
 	protected static String extension = "tif";
 	private Ticket ticket;
 	private static File basefolderFile = null;
-	private static List<File> inputFiles = new ArrayList<File>();
+
 	private static OCRProcess ocrp = null;
 	private static File ticketFile;
 	private static FileOutputStream ticketStream;
@@ -88,6 +88,7 @@ public class TicketTest {
 	 */
 	private static final long serialVersionUID = 5384097471130557653L;
 
+	@SuppressWarnings("serial")
 	@BeforeClass
 	public static void init () throws FileSystemException, ConfigurationException, FileNotFoundException, MalformedURLException {
 		basefolderFile = getBaseFolderAsFile();
@@ -158,9 +159,10 @@ public class TicketTest {
 
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
+		
+		//TODO: Test the settings
 		OutputFileFormatSettings offs = params.getExportFormatArray(0);
 		RecognitionParams rp = ticket.getRecognitionParams();
-		//TODO: Use ticket.java to read the ticket.
 
 		//If this fails the ticket writing method has a problem with language mapping
 		logger.debug("Checking languages");
@@ -207,73 +209,6 @@ public class TicketTest {
 			basefolder = new File(url.getPath());
 		}
 		return basefolder;
-	}
-
-	@Test
-	public void testMultipleTickets () throws IOException, ConfigurationException, XmlException {
-		List<String> inputFile = new ArrayList<String>();
-		List<String> imageInput = new ArrayList<String>();
-		String inputfile = "file://./src/test/resources/input";
-		String inputhotfolder = "file://./src/test/resources/hotfolder/input";
-		String reportSuffix = ".xml";
-
-		List<File> listFolders = new ArrayList<File>();
-		hotfolder = new Hotfolder();
-
-		inputfile = AbbyyServerEngineTest.parseString(inputfile);
-		File inputfilepath = new File(inputfile);
-		listFolders = AbbyyServerEngineTest.getImageDirectories(new File(inputfilepath.getAbsolutePath()));
-		//Loop over listFolder to get the files, create OCR Images and add them to the process
-		List<File> directories = new ArrayList<File>();
-
-		for (File file : listFolders) {
-			if (file.isDirectory()) {
-				directories.add(file);
-			} else {
-				logger.trace(file.getAbsolutePath() + " is not a directory!");
-			}
-		}
-
-		List<File> fileListimage = null;
-		for (File files : directories) {
-			fileListimage = AbbyyServerEngineTest.makeFileList(files, extension);
-			OCRProcess p = abbyy.newProcess();
-			p.setName(files.getName());
-			for (File fileImage : fileListimage) {
-				OCRImage image = abbyy.newImage();
-				logger.debug("File list contains " + fileImage.getAbsolutePath());
-				image.setUrl(hotfolder.fileToURL(fileImage));
-				p.addImage(image);
-			}
-			//p.setImageDirectory(files.getAbsolutePath());
-			abbyy.addOcrProcess(p);
-
-		}
-
-		abbyy.recognize();
-		for (File filelist : fileListimage) {
-			String folderName = filelist.getName();
-			folderName = inputhotfolder + "/" + folderName + "/" + folderName + reportSuffix;
-			inputFile = parseFilesFromTicket(new File(folderName));
-			File folder = new File(inputfile);
-			File[] inputfiles = folder.listFiles();
-			for (File currentFile : inputfiles) {
-				imageInput.add(currentFile.getName());
-			}
-
-			assertTrue(inputFile == imageInput);
-		}
-		//check for results
-		assertNotNull(abbyy);
-
-	}
-
-	public static List<File> getInputFiles () {
-		return inputFiles;
-	}
-
-	public static void setInputFiles (List<File> inputFiles) {
-		TicketTest.inputFiles = inputFiles;
 	}
 
 	public static String dumpTicket (InputStream in) throws IOException {
