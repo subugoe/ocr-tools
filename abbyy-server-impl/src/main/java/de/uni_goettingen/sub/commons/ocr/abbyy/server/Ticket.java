@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -146,8 +147,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	public Ticket(InputStream is) {
 		this.is = is;
-
-
 	}
 
 	public Ticket(URL url) throws IOException {
@@ -189,37 +188,27 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	}
 	
 	public void write (OutputStream out, String identifier) throws IOException {
-		
-	}
-
-	//TODO: use a Outputstream for this, the method accepting the file should only be a wrapper.
-	public void write (File ticketFile, String identifier) throws IOException {
-		if (ticketFile == null) {
+		if (out == null) {
 			throw new IllegalStateException();
 		}
-
+		
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
-		
-		
 		
 		Integer OCRTimeOut = getOcrImages().size() * millisPerFile;
 		if (maxOCRTimeout < OCRTimeOut) {
 			throw new IllegalStateException("Calculated OCR Timeout to high: " + OCRTimeOut);
 		}
-
 		ticket.setOCRTimeout(BigInteger.valueOf(OCRTimeOut));
 
 		for (OCRImage aoi : getOcrImages()) {
 			InputFile inputFile = ticket.addNewInputFile();
 			String file = ((AbbyyOCRImage) aoi).getRemoteFileName();
 			inputFile.setName(file);
-
 		}
 
 		ImageProcessingParams imageProcessingParams = ticket.addNewImageProcessingParams();
 		imageProcessingParams.setDeskew(false);
-
 		RecognitionParams recognitionParams = ticket.addNewRecognitionParams();
 
 		for (Locale l : langs) {
@@ -228,7 +217,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			}
 			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
 		}
-
 		ExportParams exportParams = ticket.addNewExportParams();
 		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
 
@@ -238,7 +226,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		Integer i = 0;
 		// TODO:
 		for (OCRFormat ef : FORMAT_FRAGMENTS.keySet()) {
-
 			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(ef);
 			// TODO Add one of the export fragments here
 			if (exportFormat == null) {
@@ -254,23 +241,22 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			*/
 
 			exportFormat.setNamingRule(identifier + "." + ef.name().toLowerCase());
-
 			exportFormat.setOutputLocation(getOutPutLocation());
-
 			settings[i] = exportFormat;
 			i++;
 		}
 
 		exportParams.setExportFormatArray(settings);
-
-		ticketDoc.save(ticketFile, opts);// opts
+		ticketDoc.save(out, opts);
 		if (validateTicket && !ticket.validate()) {
-
-			//TODO: 
 			logger.error("Ticket not valid!");
-
 			throw new RuntimeException("Ticket not valid!");
 		}
+		
+	}
+
+	public void write (File ticketFile, String identifier) throws IOException {
+		write(new FileOutputStream(ticketFile), identifier);
 	}
 
 	public static class TicketHelper {
