@@ -9,6 +9,10 @@ public abstract class AbstractOCROutput implements OCROutput {
 	
 	protected URL outputUrl;
 	
+	public AbstractOCROutput () {
+		
+	}
+	
 	public AbstractOCROutput (OCROutput ocrOutput) {
 		this.outputUrl = ocrOutput.getUrl();
 		this.params = ocrOutput.getParams();
