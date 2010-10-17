@@ -119,7 +119,7 @@ public class TicketTest {
 			aoi.setRemoteFileName("remoteName" + i);
 			imgList.add(aoi);
 		}
-		
+
 		assertTrue(imgList.size() == 10);
 		when(ocrp.getOcrImages()).thenReturn(imgList);
 		assertTrue(ocrp.getOcrImages().size() == 10);
@@ -142,7 +142,7 @@ public class TicketTest {
 
 		ticketStream = new FileOutputStream(ticketFile);
 		ticket.write(ticketStream, name);
-		
+
 		String ticket = dumpTicket(new FileInputStream(ticketFile));
 		logger.debug("This is the ticket\n" + ticket);
 
@@ -159,18 +159,18 @@ public class TicketTest {
 
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
-		
+
 		//TODO: Test the settings
 		OutputFileFormatSettings offs = params.getExportFormatArray(0);
 		RecognitionParams rp = ticket.getRecognitionParams();
 
 		//If this fails the ticket writing method has a problem with language mapping
 		logger.debug("Checking languages");
-		for (String lang: rp.getLanguageList()) {
+		for (String lang : rp.getLanguageList()) {
 			logger.debug("found language:" + lang);
 			assertTrue(Ticket.LANGUAGE_MAP.containsValue(lang));
 		}
-		
+
 		//Compare the files from the ticket with the mock object
 		Integer numFiles = ocrp.getOcrImages().size();
 		logger.debug("Checking " + numFiles + " files");
@@ -179,7 +179,7 @@ public class TicketTest {
 			String mFilename = ((AbbyyOCRImage) ocrp.getOcrImages().get(i)).getRemoteFileName();
 			String tFilename = ticketFiles.get(i);
 			logger.debug("File from mock object: " + mFilename);
-			
+
 			logger.debug("File from ticket file: " + tFilename);
 			assertTrue(mFilename.equals(tFilename));
 		}
@@ -190,7 +190,7 @@ public class TicketTest {
 		Ticket t = new Ticket(new FileInputStream(ticketFile));
 		t.parseTicket();
 		assertTrue(t.getOcrImages().size() == 10);
-		for (OCRImage oi: t.getOcrImages()) {
+		for (OCRImage oi : t.getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) oi;
 			logger.debug("Found reference to " + aoi.getRemoteFileName() + " in ticket.");
 			files.add(aoi.getRemoteFileName());
