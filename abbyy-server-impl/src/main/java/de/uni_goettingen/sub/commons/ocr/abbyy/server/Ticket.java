@@ -226,6 +226,26 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		ExportParams exportParams = ticket.addNewExportParams();
 		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
 
+		Integer i = 0;
+		if (getOcrOutput() == null || getOcrOutput().size() < 1) {
+			throw new OCRException("No export options given!");
+		}
+		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[getOcrOutput().size()];
+		for (OCRFormat of: getOcrOutput().keySet()) {
+			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(of);
+			if (exportFormat == null) {
+				continue;
+			}
+			exportFormat.setOutputFlowType("SharedFolder");
+			exportFormat.setOutputFileFormat(of.name());
+			exportFormat.setNamingRule(identifier + "." + of.name().toLowerCase());
+			AbbyyOCROutput aoo = (AbbyyOCROutput) getOcrOutput().get(of);
+			exportFormat.setOutputLocation(aoo.getRemoteLocation());
+			settings[i] = exportFormat;
+			i++;
+		}
+		
+		/*
 		//TODO: Remove hard coded number
 		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[FORMAT_FRAGMENTS.size() - 4];
 
@@ -240,11 +260,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			exportFormat.setOutputFlowType("SharedFolder");
 			exportFormat.setOutputFileFormat(ef.name());
 
-			/*exportFormat.setNamingRule(TicketHelper
-					.getOutputName(getInputFiles().toString())
-					+ "."
-					+ ef.name().toLowerCase());
-			*/
+			//exportFormat.setNamingRule(TicketHelper.getOutputName(getInputFiles().toString()) + "." + ef.name().toLowerCase());
 
 			exportFormat.setNamingRule(identifier + "." + ef.name().toLowerCase());
 			//TODO: Fix this
@@ -252,8 +268,10 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			settings[i] = exportFormat;
 			i++;
 		}
-
+		*/
+		
 		exportParams.setExportFormatArray(settings);
+		
 		ticketDoc.save(out, opts);
 		if (validateTicket && !ticket.validate()) {
 			logger.error("Ticket not valid!");

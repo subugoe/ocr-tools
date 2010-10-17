@@ -12,16 +12,7 @@ public enum OCRFormat {
 	private final String name;
 
 	protected static Map<String, OCRFormat> formats = new HashMap<String, OCRFormat>();
-	
-	static {
-		formats.put("TXT", OCRFormat.TXT);
-		formats.put("PDF", OCRFormat.PDF);
-		formats.put("PDFA", OCRFormat.PDFA);
-		formats.put("DOC", OCRFormat.DOC);
-		formats.put("HTML", OCRFormat.HTML);
-		formats.put("XHTML", OCRFormat.XHTML);
-	}
-	
+
 	OCRFormat(String format) {
 		this.name = format;
 	}
@@ -35,11 +26,7 @@ public enum OCRFormat {
 	}
 
 	public static OCRFormat parseOCRFormat (String format) {
-		if (formats.containsKey(format.toUpperCase())) {
-			return formats.get(format.toUpperCase());
-		} else {
-			return null;
-		}
+		return Enum.valueOf(OCRFormat.class, format.toUpperCase());
 	}
 	
 }
