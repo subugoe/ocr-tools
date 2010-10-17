@@ -215,7 +215,7 @@ public class TicketTest {
 				image.setUrl(hotfolder.fileToURL(fileImage));
 				p.addImage(image);
 			}
-			p.setImageDirectory(files.getAbsolutePath());
+			//p.setImageDirectory(files.getAbsolutePath());
 			abbyy.addOcrProcess(p);
 			
 			

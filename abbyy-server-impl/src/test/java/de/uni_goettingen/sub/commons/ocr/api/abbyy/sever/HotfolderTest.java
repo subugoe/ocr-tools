@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRFile;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 
 public class HotfolderTest {
@@ -27,14 +27,14 @@ public class HotfolderTest {
 
 	@Test
 	public void testHotfolder () throws IOException, InterruptedException {
-		List<AbbyyOCRFile> files = new ArrayList<AbbyyOCRFile>();
-		//AbbyyOCRFile abbyy = new AbbyyOCRFile(new URL("http://localhost/webdav/Test/TestB.tif"));					
+		List<AbbyyOCRImage> files = new ArrayList<AbbyyOCRImage>();
+		//AbbyyOCRImage abbyy = new AbbyyOCRImage(new URL("http://localhost/webdav/Test/TestB.tif"));					
 
 		System.out.println(TicketTest.getBaseFolderAsFile().getAbsolutePath().toString());
 		URL local = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "local/testfile");
 		URL input = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile");
 		URL hotfol = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "local/");
-		AbbyyOCRFile abbyy = new AbbyyOCRFile(local, input, "");
+		AbbyyOCRImage abbyy = new AbbyyOCRImage(local, input, "");
 		files.add(abbyy);
 
 		Hotfolder hot = new Hotfolder();

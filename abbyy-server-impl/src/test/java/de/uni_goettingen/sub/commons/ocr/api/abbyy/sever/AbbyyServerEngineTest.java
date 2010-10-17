@@ -1,6 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.api.abbyy.sever;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 
@@ -54,6 +55,10 @@ public class AbbyyServerEngineTest {
 
 	@Test
 	public void testCli () throws IOException, ConfigurationException {	
+		//TODO: Move this to a @Before class, start a thread for the hotfolder
+		//and just use recognize as test
+		
+		//TODO: Extract the variables to be reused in other tests as well.
 	//	List <String> inputFile = new ArrayList<String>();
 		String inputfile= "file://./src/test/resources/input";
 		
@@ -76,6 +81,7 @@ public class AbbyyServerEngineTest {
 		errorfolderResultpath = new File(errorfolderResult);
 		hotfolderError =  hotfolderErrorpath.getAbsolutePath()+ "/"+ errorfolderResultpath.getName();
 			File [] filess = errorfolderResultpath.listFiles();
+			assertNotNull(filess);
 			hotfolder.mkCol(hotfolder.fileToURL(new File(hotfolderError)));
 			for(File currentFile: filess )
 			{
@@ -132,7 +138,7 @@ public class AbbyyServerEngineTest {
 				image.setUrl(hotfolder.fileToURL(fileImage));
 				p.addImage(image);
 			}
-			p.setImageDirectory(files.getAbsolutePath());
+			//p.setImageDirectory(files.getAbsolutePath());
 			abbyy.addOcrProcess(p);
 			
 			fileListimage = null;
@@ -206,5 +212,18 @@ public class AbbyyServerEngineTest {
 			// OCR.logger.trace("Input file: " + inputFile);
 		}
 		return fileList;
+	}
+	
+	@Test
+	public void checkDirectories () {
+		String inputfile= "file://./src/test/resources/input";
+		File inputDir = new File(inputfile);
+		for (File f: Arrays.asList(inputDir.listFiles())) {
+			if (f.isDirectory()) {
+				//There shouldn't be any directories inside the hotfolder
+				assertTrue(false);
+			}
+		}
+		
 	}
 }
