@@ -9,11 +9,11 @@ import java.util.Set;
 public abstract class AbstractOCRProcess implements OCRProcess {
 
 	/** The file. */
-	private String file;
+	//private String file;
 	/** Outputlocation for Abbyy */
-	private String outputLocation;
+	//private String outputLocation;
 
-	private String name;
+	protected String name;
 		
 	/** The image directory. */
 	protected String imageDirectory;
@@ -98,6 +98,8 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	 * 
 	 * @return the file
 	 */
+	//TODO: Remove this
+	/*
 	public String getFile () {
 		if (file != null) {
 			return new String(file);
@@ -105,7 +107,8 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 			return null;
 		}
 	}
-
+	 */
+	
 	/**
 	 * Gets the langs.
 	 * 
@@ -157,6 +160,8 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 		this.ocrOutput = ocrOutput;
 	}
 
+	//TODO: Remove this
+	/*
 	public String getOutputLocation () {
 		return outputLocation;
 	}
@@ -164,6 +169,7 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	public void setOutputLocation (String outputLocation) {
 		this.outputLocation = outputLocation;
 	}
+	*/
 
 	public String getName() {
 		return name;
