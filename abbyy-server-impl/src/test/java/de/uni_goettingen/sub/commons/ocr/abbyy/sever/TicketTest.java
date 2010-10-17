@@ -61,38 +61,32 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCROutput;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
+@SuppressWarnings("serial")
 public class TicketTest {
 	final static Logger logger = LoggerFactory.getLogger(TicketTest.class);
-	protected static String extension = "tif";
-	private Ticket ticket;
-	private static File basefolderFile = null;
+	public static String EXTENSION = "tif";
+	public static File BASEFOLDER_FILE;
+	public static String OUTPUT_LOCATION = "D:\\Recognition\\GDZ\\output";
+	public static File TICKET_FILE;
+	public static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 
 	private static OCRProcess ocrp = null;
-	private static File ticketFile;
+	
 	private static FileOutputStream ticketStream;
 	private static OCRImage ocri = null;
-	public static String OUTPUT_LOCATION = "D:\\Recognition\\GDZ\\output";
-	protected String name = "515";
-	protected static HashMap<OCRFormat, OCROutput> outputDefinitions;
-
-	//public Hotfolder hotfolder;
-
-	static {
-		
-	}
 	
-
-	@SuppressWarnings("serial")
-	@BeforeClass
-	public static void init () throws FileNotFoundException, MalformedURLException {
-		basefolderFile = getBaseFolderAsFile();
+	protected String name = "515";
+	
+	private Ticket ticket;
+	
+	static {
+		BASEFOLDER_FILE = getBaseFolderAsFile();
 		ocrp = mock(OCRProcess.class);
 		ocrp.addLanguage(Locale.GERMAN);
 		when(ocrp.getLangs()).thenReturn(new HashSet<Locale>() {
@@ -101,18 +95,32 @@ public class TicketTest {
 				add(new Locale("la"));
 			}
 		});
+		TICKET_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + "ticket.xml");
+		
+		final AbbyyOCROutput aoo = new AbbyyOCROutput();
+		aoo.setRemoteLocation(OUTPUT_LOCATION);
+
+		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>() {
+			{
+				put(OCRFormat.PDF, aoo);
+				put(OCRFormat.XML, aoo);
+			}
+		};
+	}
+	
+	@BeforeClass
+	public static void init () throws FileNotFoundException, MalformedURLException {
+
 		//This s just here to display the works of the mocking framework
 		assertTrue(ocrp.getLangs().contains(Locale.GERMAN));
 
-		//ocrp.addOCRFormat(OCRFormat.PDF);
-
-		ticketFile = new File(basefolderFile.getAbsolutePath() + "ticket.xml");
+		
 
 		//Create some mock images
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
 			ocri = mock(OCRImage.class);
-			String imageUrl = basefolderFile.toURI().toURL().toString() + i;
+			String imageUrl = BASEFOLDER_FILE.toURI().toURL().toString() + i;
 			when(ocri.getUrl()).thenReturn(new URL(imageUrl));
 			logger.debug("Added url to list: " + imageUrl);
 			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
@@ -131,32 +139,24 @@ public class TicketTest {
 			logger.debug("This should never happen", e);
 		}
 
-		final AbbyyOCROutput aoo = new AbbyyOCROutput();
-		aoo.setRemoteLocation(OUTPUT_LOCATION);
 
-		outputDefinitions = new HashMap<OCRFormat, OCROutput>() {
-			{
-				put(OCRFormat.PDF, aoo);
-				put(OCRFormat.XML, aoo);
-			}
-		};
 
-		when(ocrp.getOcrOutput()).thenReturn(outputDefinitions);
+		when(ocrp.getOcrOutput()).thenReturn(OUTPUT_DEFINITIONS);
 
 	}
 
 	@Test
 	public void writeTicket () throws IOException {
-		assertNotNull("base path is null", basefolderFile);
+		assertNotNull("base path is null", BASEFOLDER_FILE);
 		ticket = new Ticket(ocrp);
 
-		ticketStream = new FileOutputStream(ticketFile);
+		ticketStream = new FileOutputStream(TICKET_FILE);
 		ticket.write(ticketStream, name);
 
-		String ticket = dumpTicket(new FileInputStream(ticketFile));
+		String ticket = dumpTicket(new FileInputStream(TICKET_FILE));
 		logger.debug("This is the ticket\n" + ticket);
 
-		assertTrue(ticketFile.exists());
+		assertTrue(TICKET_FILE.exists());
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class TicketTest {
 		// Set the namespace 
 		options.setLoadSubstituteNamespaces(Collections.singletonMap("", Ticket.NAMESPACE));
 		// Load the Xml 
-		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.parse(ticketFile, options);
+		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.parse(TICKET_FILE, options);
 
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
@@ -182,7 +182,7 @@ public class TicketTest {
 		//Compare the files from the ticket with the mock object
 		Integer numFiles = ocrp.getOcrImages().size();
 		logger.debug("Checking " + numFiles + " files");
-		List<String> ticketFiles = parseFilesFromTicket(ticketFile);
+		List<String> ticketFiles = parseFilesFromTicket(TICKET_FILE);
 		for (int i = 0; i < numFiles; i++) {
 			String mFilename = ((AbbyyOCRImage) ocrp.getOcrImages().get(i)).getRemoteFileName();
 			String tFilename = ticketFiles.get(i);
@@ -198,8 +198,8 @@ public class TicketTest {
 				OCRFormat format = OCRFormat.parseOCRFormat(offs.getOutputFileFormat());
 				String location = offs.getOutputLocation();
 				logger.debug("Output location for format " + format.name() + " is " + location);
-				assertTrue(outputDefinitions.containsKey(format));
-				assertTrue(((AbbyyOCROutput) outputDefinitions.get(format)).getRemoteLocation().equals(location));
+				assertTrue(OUTPUT_DEFINITIONS.containsKey(format));
+				assertTrue(((AbbyyOCROutput) OUTPUT_DEFINITIONS.get(format)).getRemoteLocation().equals(location));
 			}
 
 		}
@@ -254,8 +254,8 @@ public class TicketTest {
 	@AfterClass
 	public static void cleanup () {
 		logger.debug("Cleaning up");
-		ticketFile.delete();
-		assertTrue(!ticketFile.exists());
+		TICKET_FILE.delete();
+		assertTrue(!TICKET_FILE.exists());
 	}
 
 }
