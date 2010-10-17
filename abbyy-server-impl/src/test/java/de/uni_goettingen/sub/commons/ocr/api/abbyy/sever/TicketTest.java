@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.helpers.Loader;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -86,7 +84,7 @@ public class TicketTest {
 		basefolderFile = getBaseFolderAsFile();
 		ocrp = mock(OCRProcess.class);
 		ocrp.addLanguage(Locale.GERMAN);
-		when(ocrp.getLangs()).thenReturn(new HashSet() {
+		when(ocrp.getLangs()).thenReturn(new HashSet<Locale>() {
 			{
 				add(Locale.GERMAN);
 			}
@@ -122,9 +120,9 @@ public class TicketTest {
 
 		ticket = new Ticket(ocrp);
 		//TODO: Check this.
-		ticket.setOutPutLocation("D:/Recognition/GDZ/output");
+	
 		
-		ticket.setInputFiles(inputFiles);
+		
 		ticket.write(ticketFile, name);
 
 		assertTrue(ticketFile.exists());
