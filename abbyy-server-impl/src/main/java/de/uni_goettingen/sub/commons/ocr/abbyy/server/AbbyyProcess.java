@@ -128,6 +128,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The config. */
 	PropertiesConfiguration config;
 
+	
+	//TODO: Add calculation of timeout, set it in the ticket.
+	// Two hours by default
+	protected Long maxOCRTimeout = 3600000l * 2;
+	// protected Integer secondsPerImage = 5;
+	protected Integer millisPerFile = 1200;
+	
 	/**
 	 * Instantiates a new process.
 	 * 
