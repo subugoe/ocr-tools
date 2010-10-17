@@ -1,6 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,13 +24,12 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	protected Set<OCRFormat> enums = new HashSet<OCRFormat>();
 
 	/** The ocr image. The Images which should be converted */
-	protected List<OCRImage> ocrImage = new ArrayList<OCRImage>();
+	protected List<OCRImage> ocrImages = new ArrayList<OCRImage>();
 
 	/** The ocr output. The Images converted are put in this Output Folder */
 	protected List<OCROutput> ocrOutput = new ArrayList<OCROutput>();
 
-	/** The directories wich are images */
-	protected List<File> directories = new ArrayList<File>();
+
 	
 	
 	/**
@@ -48,7 +46,7 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	 */
 	public AbstractOCRProcess(OCRProcess params) {
 		//Copy Constructor
-		this.ocrImage = params.getOcrImages();
+		this.ocrImages = params.getOcrImages();
 		this.enums = params.getFormats();
 		this.langs = params.getLangs();
 		//this.degrees = params.getDegrees();
@@ -132,27 +130,27 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	 * @return the ocr image
 	 */
 	public List<OCRImage> getOcrImages () {
-		return ocrImage;
+		return ocrImages;
 	}
 
 	/**
 	 * Sets the ocr image.
 	 * 
-	 * @param ocrImage
+	 * @param ocrImages
 	 *            the new ocr image
 	 */
 	public void setOcrImages (List<OCRImage> ocrImage) {
-		this.ocrImage = ocrImage;
+		this.ocrImages = ocrImage;
 	}
 
 	/**
 	 * Adds the image.
 	 * 
-	 * @param ocrImage
+	 * @param ocrImages
 	 *            the ocr image
 	 */
 	public void addImage (OCRImage ocrImage) {
-		this.ocrImage.add(ocrImage);
+		this.ocrImages.add(ocrImage);
 	}
 
 	public void setOcrOutput (List<OCROutput> ocrOutput) {
@@ -167,14 +165,6 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 		this.outputLocation = outputLocation;
 	}
 
-	public List<File> getDirectories() {
-		return directories;
-	}
-
-	public void setDirectories(List<File> directories) {
-		this.directories = directories;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -183,14 +173,4 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 		this.name = name;
 	}
 
-	//TODO: Try to remove this
-	/*
-	public String getImageDirectory() {
-		return imageDirectory;
-	}
-
-	public void setImageDirectory(String imageDirectory) {
-		this.imageDirectory = imageDirectory;
-	}
-	*/
 }

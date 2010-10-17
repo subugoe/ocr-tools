@@ -1,22 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 import java.util.Observer;
-
-
-
-
-
-
-
-
-
-
-
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 /**
  * The Interface OCREngine.
@@ -26,7 +11,7 @@ public interface OCREngine {
 	/**
 	 * Recognize. Start
 	 */
-	public void recognize () throws OCRException;
+	public void recognize ();
 
 	/**
 	 * Sets the oCR process.
