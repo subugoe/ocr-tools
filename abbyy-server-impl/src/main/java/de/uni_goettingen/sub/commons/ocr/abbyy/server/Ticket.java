@@ -159,6 +159,10 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		ExportParams params = ticket.getExportParams();
 		OutputFileFormatSettings offs = params.getExportFormatArray(0);
 		RecognitionParams rp = ticket.getRecognitionParams();
+		List<InputFile> fl = ticket.getInputFileList();
+		for (InputFile i: fl) {
+			addImage(new AbbyyOCRImage(new URL(i.getName())));
+		}
 
 	}
 
