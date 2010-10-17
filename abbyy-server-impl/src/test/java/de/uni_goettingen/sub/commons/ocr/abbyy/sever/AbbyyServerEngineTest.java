@@ -223,7 +223,7 @@ public class AbbyyServerEngineTest {
 		}
 
 	}
-	
+
 	@Test
 	public void testMultipleTickets () throws IOException, ConfigurationException, XmlException {
 		List<String> inputFile = new ArrayList<String>();
