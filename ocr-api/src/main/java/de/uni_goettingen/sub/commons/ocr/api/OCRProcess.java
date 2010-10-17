@@ -28,34 +28,11 @@ public interface OCRProcess {
 	public void removeLanguage (Locale locale);
 
 	/**
-	 * add Format in the list.
-	 * 
-	 * @param format
-	 *            the format
-	 */
-	public void addOCRFormat (OCRFormat format);
-
-	/**
-	 * remove Format from the list.
-	 * 
-	 * @param format
-	 *            the format
-	 */
-	public void removeOCRFormat (OCRFormat format);
-
-	/**
 	 * Gets the langs.
 	 * 
 	 * @return the langs
 	 */
 	public Set<Locale> getLangs ();
-
-	/**
-	 * Gets the formats.
-	 * 
-	 * @return the formats
-	 */
-	public Set<OCRFormat> getFormats ();
 
 	/**
 	 * Gets the ocr image.

@@ -82,12 +82,12 @@ public class TicketTest {
 	protected String name = "515";
 	protected static HashMap<OCRFormat, OCROutput> outputDefinitions;
 
-	public Hotfolder hotfolder;
+	//public Hotfolder hotfolder;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5384097471130557653L;
+	static {
+		
+	}
+	
 
 	@SuppressWarnings("serial")
 	@BeforeClass
@@ -104,7 +104,7 @@ public class TicketTest {
 		//This s just here to display the works of the mocking framework
 		assertTrue(ocrp.getLangs().contains(Locale.GERMAN));
 
-		ocrp.addOCRFormat(OCRFormat.PDF);
+		//ocrp.addOCRFormat(OCRFormat.PDF);
 
 		ticketFile = new File(basefolderFile.getAbsolutePath() + "ticket.xml");
 

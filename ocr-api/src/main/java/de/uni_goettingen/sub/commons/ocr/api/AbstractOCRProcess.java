@@ -12,12 +12,10 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	protected String name;
 		
 	/** The image directory. */
-	protected String imageDirectory;
+	//protected String imageDirectory;
 	/** The langs. The languages which are supported */
 	protected Set<Locale> langs = new HashSet<Locale>();
 
-	/** The enums. The issue formats which are supported */
-	protected Set<OCRFormat> enums = new HashSet<OCRFormat>();
 
 	/** The ocr image. The Images which should be converted */
 	protected List<OCRImage> ocrImages = new ArrayList<OCRImage>();
@@ -40,7 +38,6 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	public AbstractOCRProcess(OCRProcess process) {
 		//Copy Constructor
 		this.ocrImages = process.getOcrImages();
-		this.enums = process.getFormats();
 		this.langs = process.getLangs();
 		this.ocrOutput = process.getOcrOutput();
 	}
@@ -64,43 +61,6 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	public void removeLanguage (Locale locale) {
 		langs.remove(locale);
 	}
-
-	/**
-	 * add Format in the list.
-	 * 
-	 * @param format
-	 *            the format
-	 */
-	public void addOCRFormat (OCRFormat format) {
-		enums.add(format);
-	}
-
-	/**
-	 * remove Format from the list.
-	 * 
-	 * @param format
-	 *            the format
-	 */
-	public void removeOCRFormat (OCRFormat format) {
-		enums.remove(format);
-
-	}
-
-	/**
-	 * Gets the file.
-	 * 
-	 * @return the file
-	 */
-	//TODO: Remove this
-	/*
-	public String getFile () {
-		if (file != null) {
-			return new String(file);
-		} else {
-			return null;
-		}
-	}
-	 */
 	
 	/**
 	 * Gets the langs.
@@ -109,15 +69,6 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	 */
 	public Set<Locale> getLangs () {
 		return langs;
-	}
-
-	/**
-	 * Gets the enums.
-	 * 
-	 * @return the enums
-	 */
-	public Set<OCRFormat> getFormats () {
-		return new HashSet<OCRFormat>(enums);
 	}
 
 	/**
