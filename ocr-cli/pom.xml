@@ -9,6 +9,7 @@
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>ocr-cli</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>SUB Commons OCR CLI interface</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
