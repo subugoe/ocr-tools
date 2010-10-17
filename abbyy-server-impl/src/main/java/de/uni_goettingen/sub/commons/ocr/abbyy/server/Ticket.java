@@ -146,7 +146,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		this(url.openStream());
 	}
 	
-	protected void parseTicket () throws MalformedURLException {
+	public void parseTicket () throws MalformedURLException {
 		//TODO: Finish this method
 		XmlOptions options = new XmlOptions();
 		// Set the namespace 
@@ -168,7 +168,9 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		RecognitionParams rp = ticket.getRecognitionParams();
 		List<InputFile> fl = ticket.getInputFileList();
 		for (InputFile i: fl) {
-			addImage(new AbbyyOCRImage(new URL(i.getName())));
+			AbbyyOCRImage aoi = new AbbyyOCRImage();
+			aoi.setRemoteFileName(i.getName());
+			addImage(aoi);
 		}
 		for (OutputFileFormatSettings offs: params.getExportFormatList()) {
 			if (offs.isSetOutputFileFormat()) {
@@ -238,7 +240,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			*/
 
 			exportFormat.setNamingRule(identifier + "." + ef.name().toLowerCase());
-			exportFormat.setOutputLocation(getOutPutLocation());
+			//TODO: Fix this
+			//exportFormat.setOutputLocation(getOutPutLocation());
 			settings[i] = exportFormat;
 			i++;
 		}
@@ -281,6 +284,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
+	/*
 	public String getOutPutLocation () {
 		return outPutLocation;
 	}
@@ -288,6 +292,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	public void setOutPutLocation (String outPutLocation) {
 		this.outPutLocation = outPutLocation;
 	}
+	 */
 
 	/**
 	 * @return the oCRTimeOut
