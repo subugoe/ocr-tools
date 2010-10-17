@@ -175,7 +175,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			e2.printStackTrace();
 		}
 		identifier = getName();
-		imageDirectory = getImageDirectory();
+		//imageDirectory = getImageDirectory();
 		
 		//TODO: This is a bad hack.
 		if (imageDirectory == null) {
