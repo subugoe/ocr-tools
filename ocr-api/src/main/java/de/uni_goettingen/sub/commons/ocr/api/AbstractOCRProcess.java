@@ -42,7 +42,7 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 		this.ocrImages = process.getOcrImages();
 		this.enums = process.getFormats();
 		this.langs = process.getLangs();
-		//this.degrees = params.getDegrees();
+		this.ocrOutput = process.getOcrOutput();
 	}
 
 	/**
