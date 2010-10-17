@@ -38,7 +38,7 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	//This represents the URL to the remote system
 	protected URL remoteURL = null;
 
-	protected URL url = null;
+//	protected URL url = null;
 	
 	/**
 	 * Instantiates a new abbyy ocr file.
@@ -109,8 +109,8 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 		this.remoteURL = remoteURL;
 	}
 	
-	public URL getUrl() {
+	/*public URL getUrl() {
 		return this.url;
-	}
+	}*/
 	
 }

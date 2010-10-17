@@ -407,13 +407,13 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			String imageName = i.getUrl().getPath();
 			File imageNameFile = new File(imageName);
 			size += imageNameFile.length();
-			String remoteImageNamePath = webdavURL + inputFolder + "/" + imageDirectory + "/" + imageNameFile.getName() + "/";
+			String remoteImageNamePath = webdavURL + inputFolder + "/" + identifier + "/" + imageNameFile.getName() + "/";
 			File remoteFilepath = new File(remoteImageNamePath);
 			URL remoteURL = hotfolder.stringToUrl(remoteFilepath.getAbsolutePath());
 			
 			AbbyyOCRFile aof = new  AbbyyOCRFile(i.getUrl(), remoteURL, imageNameFile.getName());
-			hotfolder.urlToFile(i.getUrl());		
-			aof.setRemoteURL(null);
+			//hotfolder.urlToFile(i.getUrl());		
+			//aof.setRemoteURL(null);
 			fileInfos.add(aof);
 		}
 		

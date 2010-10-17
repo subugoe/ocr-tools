@@ -79,8 +79,10 @@ public class AbbyyServerEngineTest {
 			hotfolder.mkCol(hotfolder.fileToURL(new File(hotfolderError)));
 			for(File currentFile: filess )
 			{
+				String currentFileString = currentFile.getName();
+				if (!currentFileString.startsWith(".")){
 				hotfolder.copyAllFiles(currentFile.getAbsolutePath(), hotfolderError + "/"+ currentFile.getName());
-			//	System.out.println("meine liste file " + currentFile.getName());
+				}else System.out.println("meine liste file start with " + currentFile.getName());
 			}
 			
 		// copy all files from  folder move to hotfolder output 	
@@ -95,8 +97,10 @@ public class AbbyyServerEngineTest {
 					File [] folder = moveFolderpath.listFiles();
 					for(File currentFiles: folder )
 					{
+						String currentFilesString = currentFiles.getName();
+						if (!currentFilesString.startsWith(".")){
 						hotfolder.copyAllFiles(currentFiles.getAbsolutePath(), hotfolderOutput + "/"+ currentFiles.getName());
-						
+						}else System.out.println("meine liste file start with " + currentFiles.getName());
 					}	
 
 		
@@ -118,12 +122,12 @@ public class AbbyyServerEngineTest {
 		List<File> fileListimage;
 		for (File files : directories){
 			fileListimage = makeFileList(files, extension);
-		//	System.out.println(fileListimage);
+			System.out.println(fileListimage);
 			OCRProcess p = abbyy.newProcess();
 			p.setName(files.getName());
 			for (File fileImage : fileListimage){
 				OCRImage image = abbyy.newImage();
-				//System.out.println("fehler "+ fileImage.getAbsolutePath());
+			//	System.out.println("fehler "+ fileImage.getAbsolutePath());
 				
 				image.setUrl(hotfolder.fileToURL(fileImage));
 				p.addImage(image);
@@ -154,6 +158,7 @@ public class AbbyyServerEngineTest {
 				}
 			}
 		}
+		
 		return remoteFile;	
 	}
 	

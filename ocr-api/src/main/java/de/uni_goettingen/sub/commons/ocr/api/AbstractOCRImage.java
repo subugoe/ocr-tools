@@ -20,7 +20,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 
 	
 	/** directory of the images. */
-	public URL url;
+	public URL url = null;
 
 	/** rotation of the image. */
 	public Orientation orientation;
@@ -40,8 +40,8 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * @param url
 	 *            the new url
 	 */
-	public void setUrl (URL url) {
-		this.url = url;
+	public void setUrl (URL urll) {
+		this.url = urll;
 	}
 
 	/**
