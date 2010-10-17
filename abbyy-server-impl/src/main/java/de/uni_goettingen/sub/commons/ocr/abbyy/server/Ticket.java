@@ -158,16 +158,18 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		try {
 			ticketDoc = XmlTicketDocument.Factory.parse(is, options);
 		} catch (XmlException e) {
+			//TODO: Use a logger
 			// TODO Auto-generated catch block (log this)
 			e.printStackTrace();
 		} catch (IOException e) {
+			//TODO: Use a logger
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
 
-		RecognitionParams rp = ticket.getRecognitionParams();
+		//RecognitionParams rp = ticket.getRecognitionParams();
 		List<InputFile> fl = ticket.getInputFileList();
 		for (InputFile i: fl) {
 			AbbyyOCRImage aoi = new AbbyyOCRImage();
@@ -244,31 +246,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			settings[i] = exportFormat;
 			i++;
 		}
-		
-		/*
-		//TODO: Remove hard coded number
-		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[FORMAT_FRAGMENTS.size() - 4];
-
-		Integer i = 0;
-		// TODO:
-		for (OCRFormat ef : FORMAT_FRAGMENTS.keySet()) {
-			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(ef);
-			// TODO Add one of the export fragments here
-			if (exportFormat == null) {
-				continue;
-			}
-			exportFormat.setOutputFlowType("SharedFolder");
-			exportFormat.setOutputFileFormat(ef.name());
-
-			//exportFormat.setNamingRule(TicketHelper.getOutputName(getInputFiles().toString()) + "." + ef.name().toLowerCase());
-
-			exportFormat.setNamingRule(identifier + "." + ef.name().toLowerCase());
-			//TODO: Fix this
-			//exportFormat.setOutputLocation(getOutPutLocation());
-			settings[i] = exportFormat;
-			i++;
-		}
-		*/
 		
 		exportParams.setExportFormatArray(settings);
 		
