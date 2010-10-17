@@ -1,4 +1,4 @@
-package de.uni_goettingen.sub.commons.ocr.api.abbyy.sever;
+package de.uni_goettingen.sub.commons.ocr.abbyy.sever;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
