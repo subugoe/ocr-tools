@@ -52,7 +52,6 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -71,14 +70,14 @@ public class TicketTest {
 	private static File ticketFile;
 	private static OCRImage ocri = null;
 	String name = "515";
-	
+
 	public Hotfolder hotfolder;
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5384097471130557653L;
-	
+
 	@BeforeClass
 	public static void init () throws FileSystemException, ConfigurationException {
 		basefolderFile = getBaseFolderAsFile();
@@ -101,12 +100,9 @@ public class TicketTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
-			abbyy = AbbyyServerEngine.getInstance();
-			assertNotNull(abbyy);
-			
-
+		abbyy = AbbyyServerEngine.getInstance();
+		assertNotNull(abbyy);
 
 	}
 
@@ -120,9 +116,7 @@ public class TicketTest {
 
 		ticket = new Ticket(ocrp);
 		//TODO: Check this.
-	
-		
-		
+
 		ticket.write(ticketFile, name);
 
 		assertTrue(ticketFile.exists());
@@ -145,7 +139,7 @@ public class TicketTest {
 		assertTrue("Expecting \"German\", got \"" + rp.getLanguageArray(0) + "\"", rp.getLanguageArray(0).equals("German"));
 
 	}
-	
+
 	public static List<String> parseFilesFromTicket (File ticketFile) throws XmlException, IOException {
 		List<String> files = new ArrayList<String>();
 		XmlOptions options = new XmlOptions();
@@ -156,10 +150,10 @@ public class TicketTest {
 
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		List<InputFile> fl = ticket.getInputFileList();
-		for (InputFile i: fl) {
+		for (InputFile i : fl) {
 			files.add(i.getName());
 		}
-		
+
 		return files;
 	}
 
@@ -174,24 +168,24 @@ public class TicketTest {
 		}
 		return basefolder;
 	}
-	
+
 	@Test
-	public void testMultipleTickets () throws IOException, ConfigurationException, XmlException {	
-		List <String> inputFile = new ArrayList<String>();
+	public void testMultipleTickets () throws IOException, ConfigurationException, XmlException {
+		List<String> inputFile = new ArrayList<String>();
 		List<String> imageInput = new ArrayList<String>();
-		String inputfile= "file://./src/test/resources/input";
+		String inputfile = "file://./src/test/resources/input";
 		String inputhotfolder = "file://./src/test/resources/hotfolder/input";
 		String reportSuffix = ".xml";
-		
+
 		List<File> listFolders = new ArrayList<File>();
 		hotfolder = new Hotfolder();
-	
+
 		inputfile = AbbyyServerEngineTest.parseString(inputfile);
 		File inputfilepath = new File(inputfile);
 		listFolders = AbbyyServerEngineTest.getImageDirectories(new File(inputfilepath.getAbsolutePath()));
 		//Loop over listFolder to get the files, create OCR Images and add them to the process
 		List<File> directories = new ArrayList<File>();
-		
+
 		for (File file : listFolders) {
 			if (file.isDirectory()) {
 				directories.add(file);
@@ -199,51 +193,49 @@ public class TicketTest {
 				logger.trace(file.getAbsolutePath() + " is not a directory!");
 			}
 		}
-	
+
 		List<File> fileListimage = null;
-		for (File files : directories){
+		for (File files : directories) {
 			fileListimage = AbbyyServerEngineTest.makeFileList(files, extension);
-		//	System.out.println(fileListimage);
+			//	System.out.println(fileListimage);
 			OCRProcess p = abbyy.newProcess();
 			p.setName(files.getName());
-			for (File fileImage : fileListimage){
+			for (File fileImage : fileListimage) {
 				OCRImage image = abbyy.newImage();
 				//System.out.println("fehler "+ fileImage.getAbsolutePath());
-				
+
 				image.setUrl(hotfolder.fileToURL(fileImage));
 				p.addImage(image);
 			}
 			//p.setImageDirectory(files.getAbsolutePath());
 			abbyy.addOcrProcess(p);
-			
-			
+
 		}
-		
+
 		abbyy.recognize();
-		for(File filelist : fileListimage){
+		for (File filelist : fileListimage) {
 			String folderName = filelist.getName();
 			folderName = inputhotfolder + "/" + folderName + "/" + folderName + reportSuffix;
-			inputFile = parseFilesFromTicket(new File(folderName));	
+			inputFile = parseFilesFromTicket(new File(folderName));
 			File folder = new File(inputfile);
-			File [] inputfiles = folder.listFiles();
-			for(File currentFile: inputfiles )
-			{			
+			File[] inputfiles = folder.listFiles();
+			for (File currentFile : inputfiles) {
 				imageInput.add(currentFile.getName());
 			}
-			
-			assertTrue(inputFile==imageInput);
+
+			assertTrue(inputFile == imageInput);
 		}
 		//check for results
 		assertNotNull(abbyy);
 
 	}
 
-	public static List<File> getInputFiles() {
+	public static List<File> getInputFiles () {
 		return inputFiles;
 	}
 
-	public static void setInputFiles(List<File> inputFiles) {
+	public static void setInputFiles (List<File> inputFiles) {
 		TicketTest.inputFiles = inputFiles;
 	}
-	
+
 }

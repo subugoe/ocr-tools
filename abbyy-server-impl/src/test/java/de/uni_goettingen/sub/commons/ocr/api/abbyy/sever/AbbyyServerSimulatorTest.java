@@ -11,13 +11,13 @@ public class AbbyyServerSimulatorTest {
 
 	@BeforeClass
 	public static void init () {
-		
+
 	}
-	
-	public AbbyyServerSimulatorTest () {
-		
+
+	public AbbyyServerSimulatorTest() {
+
 	}
-	
+
 	@Test
 	public void testSimulator () {
 		AbbyyServerSimulator sim = new AbbyyServerSimulator(new File("./src/test/resources/hotfolder"), new File("./src/test/resources/expected"));
@@ -25,5 +25,5 @@ public class AbbyyServerSimulatorTest {
 		assertTrue(sim.output.isDirectory());
 		assertTrue(sim.error.isDirectory());
 	}
-	
+
 }
