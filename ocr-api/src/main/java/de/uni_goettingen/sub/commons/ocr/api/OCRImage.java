@@ -3,19 +3,20 @@ package de.uni_goettingen.sub.commons.ocr.api;
 import java.net.URL;
 
 /**
- * The Interface OCRImage. The Images which should be converted
+ * The Interface OCRImage. This Interface represents the a single image file to be recognized.
+ * Images are referenced by URL.
  */
 public interface OCRImage {
 
 	/**
-	 * get an Url for a image.
+	 * Get an URL of an image.
 	 * 
 	 * @return the url
 	 */
 	public URL getUrl ();
 
 	/**
-	 * Sets the url.
+	 * Sets the URL of an image.
 	 * 
 	 * @param url
 	 *            the new url
@@ -37,6 +38,9 @@ public interface OCRImage {
 	 */
 	public void setOrientation (Orientation orientation);
 
+	/**
+	 * The Enum Orientation.
+	 */
 	public enum Orientation {
 		PORTRAIT(0), LANDSCAPE (90), COUNTER_PORTRAIT(180), COUNTER_LANDSCAPE(270);
 		
