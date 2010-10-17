@@ -91,7 +91,7 @@ public class AbbyyServerSimulator extends Thread {
 		
 		if (containsTicket(dir)) {
 			
-			//Extravct the job name
+			//Extract the job name
 			String name = null;
 			
 			//calculate wait time

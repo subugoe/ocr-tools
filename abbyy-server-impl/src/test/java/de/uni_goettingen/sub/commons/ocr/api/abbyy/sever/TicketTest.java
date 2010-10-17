@@ -143,7 +143,7 @@ public class TicketTest {
 		ExportParams params = ticket.getExportParams();
 		OutputFileFormatSettings offs = params.getExportFormatArray(0);
 		RecognitionParams rp = ticket.getRecognitionParams();
-		//TODO: If this fails the ticket writng method has a problem with language mapping
+		//TODO: If this fails the ticket writing method has a problem with language mapping
 		assertTrue("Expecting \"German\", got \"" + rp.getLanguageArray(0) + "\"", rp.getLanguageArray(0).equals("German"));
 
 	}
