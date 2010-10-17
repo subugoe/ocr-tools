@@ -4,6 +4,9 @@ import java.net.URL;
 
 public abstract class AbstractOCRImage implements OCRImage {
 	protected URL imageUrl = null;
+	
+	/** rotation of the image. */
+	protected Orientation orientation;
 
 	public AbstractOCRImage(URL imageUrl) {
 		this.imageUrl = imageUrl;
@@ -15,15 +18,8 @@ public abstract class AbstractOCRImage implements OCRImage {
 	
 	public AbstractOCRImage(OCRImage i) {
 		this.imageUrl = i.getUrl();
-		this.orientation = getOrientation();
+		this.orientation = i.getOrientation();
 	}
-
-	
-	/** directory of the images. */
-	public URL url = null;
-
-	/** rotation of the image. */
-	public Orientation orientation;
 
 	/**
 	 * get an Url for a image.
@@ -31,7 +27,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * @return the url
 	 */
 	public URL getUrl () {
-		return this.url;
+		return this.imageUrl;
 	}
 
 	/**
@@ -40,8 +36,8 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * @param url
 	 *            the new url
 	 */
-	public void setUrl (URL urll) {
-		this.url = urll;
+	public void setUrl (URL url) {
+		this.imageUrl= url;
 	}
 
 	/**

@@ -44,11 +44,11 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	 * @param params
 	 *            the params
 	 */
-	public AbstractOCRProcess(OCRProcess params) {
+	public AbstractOCRProcess(OCRProcess process) {
 		//Copy Constructor
-		this.ocrImages = params.getOcrImages();
-		this.enums = params.getFormats();
-		this.langs = params.getLangs();
+		this.ocrImages = process.getOcrImages();
+		this.enums = process.getFormats();
+		this.langs = process.getLangs();
 		//this.degrees = params.getDegrees();
 	}
 
