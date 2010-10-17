@@ -14,11 +14,13 @@ import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.vfs.FileSystemException;
+import org.apache.xmlbeans.XmlException;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
@@ -32,6 +34,7 @@ public class AbbyyServerEngineTest {
 	public Hotfolder hotfolder;
 	protected static String extension = "tif";
 	protected List<File> directories = new ArrayList<File>();
+	private static List<File> inputFiles = new ArrayList<File>();
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngineTest.class);
 
 	@Before
@@ -218,6 +221,65 @@ public class AbbyyServerEngineTest {
 				assertTrue(false);
 			}
 		}
+
+	}
+	
+	@Test
+	public void testMultipleTickets () throws IOException, ConfigurationException, XmlException {
+		List<String> inputFile = new ArrayList<String>();
+		List<String> imageInput = new ArrayList<String>();
+		String inputfile = "file://./src/test/resources/input";
+		String inputhotfolder = "file://./src/test/resources/hotfolder/input";
+		String reportSuffix = ".xml";
+
+		List<File> listFolders = new ArrayList<File>();
+		hotfolder = new Hotfolder();
+
+		inputfile = AbbyyServerEngineTest.parseString(inputfile);
+		File inputfilepath = new File(inputfile);
+		listFolders = AbbyyServerEngineTest.getImageDirectories(new File(inputfilepath.getAbsolutePath()));
+		//Loop over listFolder to get the files, create OCR Images and add them to the process
+		List<File> directories = new ArrayList<File>();
+
+		for (File file : listFolders) {
+			if (file.isDirectory()) {
+				directories.add(file);
+			} else {
+				logger.trace(file.getAbsolutePath() + " is not a directory!");
+			}
+		}
+
+		List<File> fileListimage = null;
+		for (File files : directories) {
+			fileListimage = AbbyyServerEngineTest.makeFileList(files, extension);
+			OCRProcess p = abbyy.newProcess();
+			p.setName(files.getName());
+			for (File fileImage : fileListimage) {
+				AbbyyOCRImage image = (AbbyyOCRImage) abbyy.newImage();
+				logger.debug("File list contains " + fileImage.getAbsolutePath());
+				image.setUrl(hotfolder.fileToURL(fileImage));
+				p.addImage(image);
+			}
+			//p.setImageDirectory(files.getAbsolutePath());
+			abbyy.addOcrProcess(p);
+
+		}
+
+		abbyy.recognize();
+		for (File filelist : fileListimage) {
+			String folderName = filelist.getName();
+			folderName = inputhotfolder + "/" + folderName + "/" + folderName + reportSuffix;
+			inputFile = TicketTest.parseFilesFromTicket(new File(folderName));
+			File folder = new File(inputfile);
+			File[] inputfiles = folder.listFiles();
+			for (File currentFile : inputfiles) {
+				imageInput.add(currentFile.getName());
+			}
+
+			assertTrue(inputFile == imageInput);
+		}
+		//check for results
+		assertNotNull(abbyy);
 
 	}
 }
