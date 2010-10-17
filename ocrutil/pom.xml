@@ -8,6 +8,7 @@
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>ocrutil</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>SUB Commons OCR Utilities</name>
 	<dependencies>
 		<dependency>
 			<groupId>com.lowagie</groupId>
