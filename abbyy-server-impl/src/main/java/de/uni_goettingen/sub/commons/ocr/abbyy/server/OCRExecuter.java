@@ -59,17 +59,17 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
-		if (r instanceof Process) {
-			Process process = (Process) r;
+		if (r instanceof AbbyyProcess) {
+			AbbyyProcess abbyyProcess = (AbbyyProcess) r;
 			//TODO: Refresh server state here
 			if (maxFiles != 0 && maxSize != 0) {
-				if (process.getOcrImages().size() + totalFileCount > maxFiles || getFileSize(process) + totalFileSize > maxSize) {
+				if (abbyyProcess.getOcrImages().size() + totalFileCount > maxFiles || getFileSize(abbyyProcess) + totalFileSize > maxSize) {
 					pause();
 				}
 			}
 
 		} else {
-			throw new IllegalStateException("Not a Process object");
+			throw new IllegalStateException("Not a AbbyyProcess object");
 		}
 
 		pauseLock.lock();
@@ -90,17 +90,17 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void afterExecute(Runnable r, Throwable e) {
 		super.afterExecute(r, e);
-		if (r instanceof Process) {
-			Process process = (Process) r;
+		if (r instanceof AbbyyProcess) {
+			AbbyyProcess abbyyProcess = (AbbyyProcess) r;
 			//TODO: Refresh server state here
 			if (maxFiles != 0 && maxSize != 0) {
-				if (process.getOcrImages().size() + totalFileCount < maxFiles || getFileSize(process) + totalFileSize < maxSize) {
+				if (abbyyProcess.getOcrImages().size() + totalFileCount < maxFiles || getFileSize(abbyyProcess) + totalFileSize < maxSize) {
 					pause();
 				}
 			}
 
 		} else {
-			throw new IllegalStateException("Not a Process object");
+			throw new IllegalStateException("Not a AbbyyProcess object");
 		}
 	}
 
@@ -134,7 +134,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	}
 
 	//TODO: Check size here, this is just a place holder for now.
-	protected Integer getFileSize(Process p) {
+	protected Integer getFileSize(AbbyyProcess p) {
 		return 0;
 	}
 

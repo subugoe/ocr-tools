@@ -41,12 +41,12 @@ import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
 
 /**
- * The Class Process.
+ * The Class AbbyyProcess.
  */
-public class Process extends Ticket implements OCRProcess, Runnable {
+public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	
 	/** The Constant logger. */
-	final static Logger logger = LoggerFactory.getLogger(Process.class);
+	final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
 
 	/** The local path separator. */
 	protected static String localPathSeparator = File.separator;
@@ -141,7 +141,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 * @param dir the file system
 	 * @throws FileSystemException the file system exception
 	 */
-	public Process(File dir) throws FileSystemException {
+	public AbbyyProcess(File dir) throws FileSystemException {
 		super();
 		hotfolder = new Hotfolder();
 		this.imageDirectory = dir.getAbsolutePath();
@@ -149,11 +149,11 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 
 	}
 	
-	public Process (OCRProcess p) {
+	public AbbyyProcess (OCRProcess p) {
 		super(p);
 	}
 	
-	protected Process () {
+	protected AbbyyProcess () {
 	}
 
 	/* (non-Javadoc)
@@ -367,8 +367,8 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 				ocrErrorFormatFile = null;
 				ocrOutFormatFile = null;
 				inputFiles = null;
-				logger.trace("Process "+ identifier + " ended ");
-				System.out.println("Process "+ identifier + " ended ");
+				logger.trace("AbbyyProcess "+ identifier + " ended ");
+				System.out.println("AbbyyProcess "+ identifier + " ended ");
 			}
 
 	}
