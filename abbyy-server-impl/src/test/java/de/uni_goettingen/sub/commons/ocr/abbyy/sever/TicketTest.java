@@ -62,10 +62,8 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCROutput;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -73,7 +71,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 public class TicketTest {
 	final static Logger logger = LoggerFactory.getLogger(TicketTest.class);
-	public static OCREngine abbyy;
 	protected static String extension = "tif";
 	private Ticket ticket;
 	private static File basefolderFile = null;
@@ -82,7 +79,7 @@ public class TicketTest {
 	private static File ticketFile;
 	private static FileOutputStream ticketStream;
 	private static OCRImage ocri = null;
-	protected static String OUTPUT_LOCATION = "D:\\Recognition\\GDZ\\output";
+	public static String OUTPUT_LOCATION = "D:\\Recognition\\GDZ\\output";
 	protected String name = "515";
 	protected static HashMap<OCRFormat, OCROutput> outputDefinitions;
 
@@ -134,21 +131,18 @@ public class TicketTest {
 		} catch (MalformedURLException e) {
 			logger.debug("This should never happen", e);
 		}
-		
+
 		final AbbyyOCROutput aoo = new AbbyyOCROutput();
 		aoo.setRemoteLocation(OUTPUT_LOCATION);
-		
+
 		outputDefinitions = new HashMap<OCRFormat, OCROutput>() {
 			{
 				put(OCRFormat.PDF, aoo);
 				put(OCRFormat.XML, aoo);
 			}
 		};
-		
-		when(ocrp.getOcrOutput()).thenReturn(outputDefinitions);
 
-		abbyy = AbbyyServerEngine.getInstance();
-		assertNotNull(abbyy);
+		when(ocrp.getOcrOutput()).thenReturn(outputDefinitions);
 
 	}
 
@@ -177,8 +171,6 @@ public class TicketTest {
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
 
-		//TODO: Test the settings
-		
 		RecognitionParams rp = ticket.getRecognitionParams();
 
 		//If this fails the ticket writing method has a problem with language mapping
@@ -202,7 +194,7 @@ public class TicketTest {
 		}
 		//Check the definitions of outputs and their locations
 		logger.debug("Checking output definitions");
-		for (OutputFileFormatSettings offs: params.getExportFormatList()) {
+		for (OutputFileFormatSettings offs : params.getExportFormatList()) {
 			if (offs.isSetOutputFileFormat()) {
 				OCRFormat format = OCRFormat.parseOCRFormat(offs.getOutputFileFormat());
 				String location = offs.getOutputLocation();
@@ -210,7 +202,7 @@ public class TicketTest {
 				assertTrue(outputDefinitions.containsKey(format));
 				assertTrue(((AbbyyOCROutput) outputDefinitions.get(format)).getRemoteLocation().equals(location));
 			}
-			
+
 		}
 	}
 
