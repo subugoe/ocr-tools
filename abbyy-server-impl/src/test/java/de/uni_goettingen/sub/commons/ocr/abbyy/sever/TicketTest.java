@@ -49,6 +49,7 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.helpers.Loader;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -250,6 +251,13 @@ public class TicketTest {
 		} else {
 			return "";
 		}
+	}
+	
+	@AfterClass
+	public static void cleanup () {
+		logger.debug("Cleaning up");
+		ticketFile.delete();
+		assertTrue(!ticketFile.exists());
 	}
 
 }
