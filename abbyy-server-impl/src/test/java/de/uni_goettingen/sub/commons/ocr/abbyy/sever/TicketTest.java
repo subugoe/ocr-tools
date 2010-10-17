@@ -44,8 +44,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.helpers.Loader;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
@@ -93,7 +91,7 @@ public class TicketTest {
 
 	@SuppressWarnings("serial")
 	@BeforeClass
-	public static void init () throws FileSystemException, ConfigurationException, FileNotFoundException, MalformedURLException {
+	public static void init () throws FileNotFoundException, MalformedURLException {
 		basefolderFile = getBaseFolderAsFile();
 		ocrp = mock(OCRProcess.class);
 		ocrp.addLanguage(Locale.GERMAN);
