@@ -41,13 +41,13 @@ public interface OCROutput {
 	 * @param format
 	 *            the new format
 	 */
-	public void setFormat (OCRFormat format);
+	//public void setFormat (OCRFormat format);
 
 	/**
 	 * Gets the format.
 	 * 
 	 * @return the format
 	 */
-	public OCRFormat getFormat ();
-
+	//public OCRFormat getFormat ();
+	
 }
