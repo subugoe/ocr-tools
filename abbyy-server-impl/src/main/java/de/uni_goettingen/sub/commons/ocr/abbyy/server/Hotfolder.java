@@ -84,7 +84,7 @@ public class Hotfolder extends Thread{
 	protected static String localOutputDir = null;
 	
 	/** The fileinfos. */
-	protected List<AbbyyOCRFile> fileInfos = null;
+	protected List<AbbyyOCRImage> fileInfos = null;
 	
 	protected String webdavURL;
 	protected String inputFolder ;
@@ -113,17 +113,17 @@ public class Hotfolder extends Thread{
 	/**
 	 * Copy a url from source to destination. Assumes overwrite.
 	 *
-	 * @param files is a List of The Class AbbyyOCRFile. Is a representation of an 
+	 * @param files is a List of The Class AbbyyOCRImage. Is a representation of an 
 	 * OCRImage suitable for holding references to remote files as used by the Abbyy 
 	 * Recognition Server
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
 	 * @throws FileSystemException 
 	 */
-	public void copyFilesToServer(List<AbbyyOCRFile> files) throws
+	public void copyFilesToServer(List<AbbyyOCRImage> files) throws
 			InterruptedException, FileSystemException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
-		for (AbbyyOCRFile info : files) {
+		for (AbbyyOCRImage info : files) {
 			/* File f = urlToFile(AbbyyFileName); */
 			FileObject remoteFile = fsManager.resolveFile(info.getRemoteURL()
 					.toString());
@@ -270,13 +270,13 @@ public class Hotfolder extends Thread{
 	 * @throws FileSystemException the file system exception
 	 * @throws MalformedURLException the malformed url exception
 	 */
-	List<AbbyyOCRFile> getUrlList(String imageDirectory) throws FileSystemException, MalformedURLException {
-		List<AbbyyOCRFile> imageList = new ArrayList<AbbyyOCRFile>();
+	List<AbbyyOCRImage> getUrlList(String imageDirectory) throws FileSystemException, MalformedURLException {
+		List<AbbyyOCRImage> imageList = new ArrayList<AbbyyOCRImage>();
 		getUrlImage = fsManager.resolveFile(imageDirectory);
 		FileObject[] children = getUrlImage.getChildren();
 		 for ( int i = 0; i < children.length; i++ )
 	        {
-			 imageList.add(new AbbyyOCRFile(new URL(children[ i ].getName().toString())));
+			 imageList.add(new AbbyyOCRImage(new URL(children[ i ].getName().toString())));
 	        }
 		return imageList;
 	}

@@ -323,7 +323,7 @@ public class AbbyyServerEngine implements OCREngine {
 
 	@Override
 	public OCRImage newImage() {
-		return new AbbyyOCRFile();
+		return new AbbyyOCRImage();
 	}
 	
 	@Override

@@ -23,7 +23,7 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 
 /**
- * The Class AbbyyOCRFile. Is a representation of an OCRImage suitable
+ * The Class AbbyyOCRImage. Is a representation of an OCRImage suitable
  * for holding references to remote files as used by the Abbyy Recognition
  * Server. It adds two fields:
  * - remoteFileName, the file name as used on the remote system, usally a
@@ -31,7 +31,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
  * - remoteURL, an URL representing the remote file, it should be resolveable
  * from the local Server. 
  */
-public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
+public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	//This represents the filename that should be written to the ticket.
 	protected String remoteFileName;
 
@@ -45,15 +45,15 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	 * 
 	 * @param imageUrl the image url
 	 */
-	public AbbyyOCRFile(URL imageUrl) {
+	public AbbyyOCRImage(URL imageUrl) {
 		super(imageUrl);
 	}
 	
-	public AbbyyOCRFile (OCRImage i) {
+	public AbbyyOCRImage (OCRImage i) {
 		super(i);
 	}
 	
-	protected AbbyyOCRFile () {
+	protected AbbyyOCRImage () {
 		
 	}
 	
@@ -64,7 +64,7 @@ public class AbbyyOCRFile extends AbstractOCRImage implements OCRImage {
 	 * @param remoteURL the remote url
 	 * @param remoteFileName the remote file name
 	 */
-	public AbbyyOCRFile(URL imageUrl, URL remoteURL, String remoteFileName) {
+	public AbbyyOCRImage(URL imageUrl, URL remoteURL, String remoteFileName) {
 		super(imageUrl);
 		this.url = imageUrl;
 		this.remoteURL = remoteURL;

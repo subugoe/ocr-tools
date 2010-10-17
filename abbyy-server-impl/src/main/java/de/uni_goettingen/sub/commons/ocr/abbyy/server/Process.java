@@ -128,8 +128,8 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	Set<String> ocrOutFormatFile = new LinkedHashSet<String>();
 	
 	/** The file infos. */
-	protected List<AbbyyOCRFile> fileInfos = null;
-	protected List<AbbyyOCRFile> fileInfosreplacement = null;
+	protected List<AbbyyOCRImage> fileInfos = null;
+	protected List<AbbyyOCRImage> fileInfosreplacement = null;
 	/** The config. */
 	PropertiesConfiguration config;
 	
@@ -209,7 +209,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			while(done){
 				try{
 					done = false;
-					fileInfos = addTicketFile(new LinkedList<AbbyyOCRFile>(fileInfos),
+					fileInfos = addTicketFile(new LinkedList<AbbyyOCRImage>(fileInfos),
 							identifier);				
 				}catch (Exception e){
 					
@@ -233,14 +233,14 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 					logger.error("Got FileSystemException ", e);
 					if (k == 0 || k == 1){
 						copyOnly = true;	
-						for (AbbyyOCRFile info : fileInfos) {
+						for (AbbyyOCRImage info : fileInfos) {
 						hotfolder.deleteIfExists(info.getRemoteURL());
 						logger.error("Second try!! copy images from " + identifier);
 						System.out.println("Second try!! copy images from " + identifier);
 						}
 						k++;
 					}else{
-						for (AbbyyOCRFile info : fileInfos) {
+						for (AbbyyOCRImage info : fileInfos) {
 							hotfolder.deleteIfExists(info.getRemoteURL());
 							logger.error("Second try!! copy images from " + identifier);
 							System.out.println("images deleted from " + identifier);
@@ -395,14 +395,14 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	 * param maxSize.
 	 *
 	 * @param dir the file system, where are all images
-	 * @return the file list of the AbbyyOCRFile.
+	 * @return the file list of the AbbyyOCRImage.
 	 * @throws FileSystemException 
 	 */
-	protected List<AbbyyOCRFile> getFileList(String imageDirectory) throws FileSystemException {
+	protected List<AbbyyOCRImage> getFileList(String imageDirectory) throws FileSystemException {
 	//	List<File> files = makeFileList(dir, extension);
 
 		Long size = 0l;
-		fileInfos = new ArrayList<AbbyyOCRFile> ();
+		fileInfos = new ArrayList<AbbyyOCRImage> ();
 		for (OCRImage i: getOcrImages()) {
 			String imageName = i.getUrl().getPath();
 			File imageNameFile = new File(imageName);
@@ -411,7 +411,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 			File remoteFilepath = new File(remoteImageNamePath);
 			URL remoteURL = hotfolder.stringToUrl(remoteFilepath.getAbsolutePath());
 			
-			AbbyyOCRFile aof = new  AbbyyOCRFile(i.getUrl(), remoteURL, imageNameFile.getName());
+			AbbyyOCRImage aof = new  AbbyyOCRImage(i.getUrl(), remoteURL, imageNameFile.getName());
 			//hotfolder.urlToFile(i.getUrl());		
 			//aof.setRemoteURL(null);
 			fileInfos.add(aof);
@@ -502,14 +502,14 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	/**
 	 * Fix remote path.
 	 *
-	 * @param infoList, is a List of AbbyyOCRFile
+	 * @param infoList, is a List of AbbyyOCRImage
 	 * @param name for identifier
-	 * @return the list of AbbyyOCRFile
+	 * @return the list of AbbyyOCRImage
 	 */
-	protected List<AbbyyOCRFile> fixRemotePath(List<AbbyyOCRFile> infoList,
+	protected List<AbbyyOCRImage> fixRemotePath(List<AbbyyOCRImage> infoList,
 			String name) {
-		LinkedList<AbbyyOCRFile> newList = new LinkedList<AbbyyOCRFile>();
-		for (AbbyyOCRFile info : infoList) {
+		LinkedList<AbbyyOCRImage> newList = new LinkedList<AbbyyOCRImage>();
+		for (AbbyyOCRImage info : infoList) {
 			if (info.getRemoteURL().toString() != null) {
 				try {
 					// Rewrite remote name
@@ -552,13 +552,13 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 	/**
 	 * Adds the ticket file.
 	 *
-	 * @param fileInfos the list of the AbbyyOCRFile
+	 * @param fileInfos the list of the AbbyyOCRImage
 	 * @param ticketName the ticket name
-	 * @return the list of the AbbyyOCRFile
+	 * @return the list of the AbbyyOCRImage
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	private LinkedList<AbbyyOCRFile> addTicketFile(
-			LinkedList<AbbyyOCRFile> fileInfos, String ticketName)
+	private LinkedList<AbbyyOCRImage> addTicketFile(
+			LinkedList<AbbyyOCRImage> fileInfos, String ticketName)
 			throws IOException {
 		/* write Ticket-File over all Files: */
 
@@ -566,7 +566,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		String ticketTempDir = null;
 		inputFiles = null;
 		inputFiles = new ArrayList<File>();
-		for (AbbyyOCRFile fileInfo : fileInfos) {
+		for (AbbyyOCRImage fileInfo : fileInfos) {
 			if (fileInfo.getRemoteURL().toString() != null) {
 				inputFiles.add(hotfolder.urlToFile(fileInfo.getRemoteURL()));
 			}
@@ -591,7 +591,7 @@ public class Process extends Ticket implements OCRProcess, Runnable {
 		write(ticketFile.getAbsoluteFile(), identifier);
 		inputFiles = null;
 		String outputFile = webdavURL + inputFolder + "/" + ticketFileName;
-		/*fileInfos.addFirst(new AbbyyOCRFile(hotfolder.fileToURL(ticketFile),
+		/*fileInfos.addFirst(new AbbyyOCRImage(hotfolder.fileToURL(ticketFile),
 				null, outputFile));*/
 		logger.trace("Copy from " + ticketFile.getAbsolutePath() + " to "
 				+ ticketTempDir);
