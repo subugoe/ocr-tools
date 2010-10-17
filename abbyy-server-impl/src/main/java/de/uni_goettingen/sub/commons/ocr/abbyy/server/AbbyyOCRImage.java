@@ -39,8 +39,6 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	protected URL remoteURL = null;
 	
 	protected Long size = 0l;
-
-//	protected URL url = null;
 	
 	/**
 	 * Instantiates a new abbyy ocr file.
@@ -68,7 +66,7 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	 */
 	public AbbyyOCRImage(URL imageUrl, URL remoteURL, String remoteFileName) {
 		super(imageUrl);
-		this.url = imageUrl;
+		this.imageUrl = imageUrl;
 		this.remoteURL = remoteURL;
 		this.remoteFileName = remoteFileName;
 	}
@@ -111,11 +109,11 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 		this.remoteURL = remoteURL;
 	}
 	
-	/*public URL getUrl() {
-		return this.url;
-	}*/
-	
-	public Long getsize() {
+	public Long getSize() {
 		return size;
+	}
+	
+	public void setSize (Long size) {
+		this.size = size;
 	}
 }
