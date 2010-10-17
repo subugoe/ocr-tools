@@ -5,7 +5,7 @@ moveToLocal: file://./src/test/resources/move/
 input: input
 output: output
 error: error
-maxSize: 6597189
+maxSize: 218095370
 maxFiles: 567103
 maxThreads: 5
 milisPerFile: 5500
