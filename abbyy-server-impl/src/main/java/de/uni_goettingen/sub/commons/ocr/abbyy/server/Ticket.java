@@ -174,13 +174,18 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			aoi.setRemoteFileName(i.getName());
 			addImage(aoi);
 		}
+		Map<OCRFormat, OCROutput> outputs = new HashMap<OCRFormat, OCROutput>();
 		for (OutputFileFormatSettings offs: params.getExportFormatList()) {
 			if (offs.isSetOutputFileFormat()) {
-				String format = offs.getOutputFileFormat();
+				OCRFormat format = OCRFormat.parseOCRFormat(offs.getOutputFileFormat());
 				String location = offs.getOutputLocation();
+				AbbyyOCROutput aoo = new AbbyyOCROutput();
+				aoo.setRemoteLocation(location);
+				outputs.put(format, aoo);
 			}
 			
 		}
+		setOcrOutput(outputs);
 			
 	}
 	
