@@ -68,7 +68,7 @@ public class AbbyyServerEngine implements OCREngine {
 	ConfigParser c;
 	
 	/** The process. */
-	//protected Process process;
+	//protected AbbyyProcess process;
 	
 	/** The hotfolder. */
 	protected Hotfolder hotfolder;
@@ -121,11 +121,11 @@ public class AbbyyServerEngine implements OCREngine {
 	/** The directories as process */
 	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
 	
-	//Process ocrp ;
+	//AbbyyProcess ocrp ;
 	
 	// OCR Processes
 	/** The processes. */
-	Queue<Process> processes = new ConcurrentLinkedQueue<Process>();
+	Queue<AbbyyProcess> processes = new ConcurrentLinkedQueue<AbbyyProcess>();
 
 	/**
 	 * Instantiates a new abbyy server engine.
@@ -192,8 +192,8 @@ public class AbbyyServerEngine implements OCREngine {
 		ExecutorService pool = new OCRExecuter(maxThreads);
 		 
 		for (OCRProcess process : getOcrProcess()) {
-			//	Process process = new Process(dir);
-			processes.add((Process) process);
+			//	AbbyyProcess process = new AbbyyProcess(dir);
+			processes.add((AbbyyProcess) process);
 		}
 
 		for (OCRProcess proces : processes) {
@@ -328,7 +328,7 @@ public class AbbyyServerEngine implements OCREngine {
 	
 	@Override
 	public OCRProcess newProcess() {
-				return new Process();
+				return new AbbyyProcess();
 	}
 
 
