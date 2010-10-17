@@ -11,16 +11,17 @@ public interface OCREngine {
 	/**
 	 * Recognize. Start
 	 */
-	public void recognize ();
+	public Observer recognize (OCRProcess process);
 
 	/**
-	 * Sets the oCR process.
+	 * Adds a oCR process.
 	 * 
 	 * @param process
 	 *            the new oCR process
 	 */
-	//public void setOCRProcess (OCRProcess process);
+
 	public void addOcrProcess(OCRProcess ocrp);
+	
 	/**
 	 * Gets the oCR process.
 	 * 
@@ -29,24 +30,15 @@ public interface OCREngine {
 	public List<OCRProcess> getOcrProcess();
 
 	/**
-	 * Gets the result.
-	 * 
-	 * @return the result
-	 */
-	public OCROutput getResult ();
-
-	/**
 	 * Sets the observer.
 	 * 
 	 * @param observer
 	 *            the new observer
 	 */
-	public void setObserver (Observer observer);
+	//public void setObserver (Observer observer);
 
 	public OCRImage newImage ();
 	
 	public OCRProcess newProcess();
-
-
 	
 }
