@@ -59,6 +59,7 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
@@ -106,11 +107,21 @@ public class TicketTest {
 		ticketFile = new File(basefolderFile.getAbsolutePath() + "ticket.xml");
 
 		//Create some mock images
+		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
 			ocri = mock(OCRImage.class);
-			when(ocri.getUrl()).thenReturn(new URL(basefolderFile.toURI().toURL().toString() + i));
-			ocrp.addImage(ocri);
+			String imageUrl = basefolderFile.toURI().toURL().toString() + i;
+			when(ocri.getUrl()).thenReturn(new URL(imageUrl));
+			logger.debug("Added url to list: " + imageUrl);
+			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
+			assertTrue(imageUrl.equals(aoi.getUrl().toString()));
+			aoi.setRemoteFileName("remoteName" + i);
+			imgList.add(aoi);
 		}
+		
+		assertTrue(imgList.size() == 10);
+		when(ocrp.getOcrImages()).thenReturn(imgList);
+		assertTrue(ocrp.getOcrImages().size() == 10);
 
 		try {
 			when(ocri.getUrl()).thenReturn(new File("/tmp").toURI().toURL());
@@ -126,7 +137,6 @@ public class TicketTest {
 	@Test
 	public void writeTicket () throws IOException {
 		assertNotNull("base path is null", basefolderFile);
-
 		ticket = new Ticket(ocrp);
 
 		ticketStream = new FileOutputStream(ticketFile);
@@ -140,7 +150,6 @@ public class TicketTest {
 
 	@Test
 	public void readTicket () throws XmlException, IOException {
-
 		XmlOptions options = new XmlOptions();
 		// Set the namespace 
 		options.setLoadSubstituteNamespaces(Collections.singletonMap("", Ticket.NAMESPACE));
@@ -154,41 +163,35 @@ public class TicketTest {
 		//TODO: Use ticket.java to read the ticket.
 
 		//If this fails the ticket writing method has a problem with language mapping
-
+		logger.debug("Checking languages");
 		for (String lang: rp.getLanguageList()) {
 			logger.debug("found language:" + lang);
 			assertTrue(Ticket.LANGUAGE_MAP.containsValue(lang));
 		}
 		
 		//Compare the files from the ticket with the mock object
+		Integer numFiles = ocrp.getOcrImages().size();
+		logger.debug("Checking " + numFiles + " files");
 		List<String> ticketFiles = parseFilesFromTicket(ticketFile);
-		for (int i = 0; i < ticketFiles.size(); i++) {
-			logger.debug("File from mock object: " + ocrp.getOcrImages().get(i).toString());
-			logger.debug("File from ticket file: " + ticketFiles.get(i));
-			assertTrue(ticketFiles.get(i).equals(ocrp.getOcrImages().get(i).toString()));
+		for (int i = 0; i < numFiles; i++) {
+			String mFilename = ((AbbyyOCRImage) ocrp.getOcrImages().get(i)).getRemoteFileName();
+			String tFilename = ticketFiles.get(i);
+			logger.debug("File from mock object: " + mFilename);
+			
+			logger.debug("File from ticket file: " + tFilename);
+			assertTrue(mFilename.equals(tFilename));
 		}
 	}
 
 	public static List<String> parseFilesFromTicket (File ticketFile) throws XmlException, IOException {
-		//TODO: Use ticket.java to read the ticket.
-		/*
-		List<String> files = new ArrayList<String>();
-		XmlOptions options = new XmlOptions();
-		// Set the namespace 
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("", Ticket.NAMESPACE));
-		// Load the Xml 
-		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.parse(ticketFile, options);
-
-		XmlTicket ticket = ticketDoc.getXmlTicket();
-		List<InputFile> fl = ticket.getInputFileList();
-		for (InputFile i : fl) {
-			files.add(i.getName());
-		}
-		*/
 		List<String> files = new ArrayList<String>();
 		Ticket t = new Ticket(new FileInputStream(ticketFile));
+		t.parseTicket();
+		assertTrue(t.getOcrImages().size() == 10);
 		for (OCRImage oi: t.getOcrImages()) {
-			files.add(oi.getUrl().toString());
+			AbbyyOCRImage aoi = (AbbyyOCRImage) oi;
+			logger.debug("Found reference to " + aoi.getRemoteFileName() + " in ticket.");
+			files.add(aoi.getRemoteFileName());
 		}
 
 		return files;
