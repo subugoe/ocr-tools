@@ -1,6 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
-import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -75,7 +74,7 @@ public interface OCRProcess {
 	/**
 	 * Adds the image.
 	 * 
-	 * @param ocrImage
+	 * @param ocrImages
 	 *            the ocr image
 	 */
 	public void addImage (OCRImage ocrImage);
@@ -84,21 +83,8 @@ public interface OCRProcess {
 
 	public void setOutputLocation (String outputLocation);
 	
-	/*
-	public List<File> getDirectories() ;
-
-	public void setDirectories(List<File> directories);
-	*/
-	
 	public void setName (String name);
 
 	public String getName () ;
 	
-	//TODO: Remove this.
-	
-	/*
-	public String getImageDirectory() ;
-
-	public void setImageDirectory(String imageDirectory);
-	*/
 }
