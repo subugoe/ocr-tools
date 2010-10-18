@@ -25,7 +25,7 @@ public class OcrCliTest {
 	}
 	
 	@Test
-	public void testCli () throws IOException {	
+	public void testCli () {	
 		OCRProcess process = mock(OCRProcess.class);
 		OCREngine engine = mock(OCREngine.class);
 		OCRCli ocr = MyOCRCli.getInstance(engine, process);
