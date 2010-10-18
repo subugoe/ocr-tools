@@ -1,5 +1,8 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 import org.apache.commons.configuration.Configuration;
@@ -22,22 +25,27 @@ public class ConfigParser {
 	protected Integer maxThreads;
 	protected Boolean checkServerState;
 	protected Boolean debugAuth = false;
-	protected static String DEFAULT_CONFIG = "abbyyServer.properties";
+	public final static String DEFAULT_CONFIG = "abbyyServer.properties";
+	public final static String DEBUG_PROPERTY= "ocr.finereader.server.debug.auth";
 
 	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 
-	static {
-
-	}
+	protected URL configUrl;
 
 	public ConfigParser() {
-		loadConfig();
+		try {
+			this.configUrl = new File(DEFAULT_CONFIG).toURI().toURL();
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("Error loading configuration file", e);
+		}
 	}
 
-	//TODO: Try to remove this method
-	public ConfigParser(Configuration config) {
-		this.config = config;
-		loadConfig();
+	public ConfigParser(URL url) throws ConfigurationException {
+		this.configUrl = url;
+	}
+
+	public ConfigParser loadConfig () {
+		return loadConfig(this.configUrl);
 	}
 
 	/**
@@ -48,13 +56,13 @@ public class ConfigParser {
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	public ConfigParser loadConfig () {
-		if (Boolean.parseBoolean(System.getProperty("ocr.finereader.server.debug.auth"))) {
+	public ConfigParser loadConfig (URL configLocation) {
+		if (Boolean.parseBoolean(System.getProperty(DEBUG_PROPERTY))) {
 			debugAuth = true;
 		}
 		// do something with config
 		try {
-			config = new PropertiesConfiguration(DEFAULT_CONFIG);
+			config = new PropertiesConfiguration(configLocation);
 		} catch (ConfigurationException e) {
 			logger.error("Error reading configuration", e);
 			throw new RuntimeException(e);
@@ -64,7 +72,6 @@ public class ConfigParser {
 		serverURL = serverURL.endsWith("/") ? serverURL : serverURL + "/";
 		if (serverURL != null) {
 			serverURL = parseString(serverURL);
-
 		}
 
 		username = config.getString("username");
@@ -110,7 +117,7 @@ public class ConfigParser {
 		logger.debug("Max treads: " + maxThreads);
 
 		logger.debug("Check server state: " + checkServerState);
-		
+
 		return this;
 	}
 
@@ -130,7 +137,6 @@ public class ConfigParser {
 		return remoteFile;
 
 	}
-
 
 	public String getWebdavURL () {
 		return serverURL;
@@ -152,7 +158,8 @@ public class ConfigParser {
 	}
 
 	/**
-	 * @param inputFolder the inputFolder to set
+	 * @param inputFolder
+	 *            the inputFolder to set
 	 */
 	public void setInputFolder (String inputFolder) {
 		this.inputFolder = inputFolder;
@@ -166,7 +173,8 @@ public class ConfigParser {
 	}
 
 	/**
-	 * @param errorFolder the errorFolder to set
+	 * @param errorFolder
+	 *            the errorFolder to set
 	 */
 	public void setErrorFolder (String errorFolder) {
 		this.errorFolder = errorFolder;
@@ -180,7 +188,8 @@ public class ConfigParser {
 	}
 
 	/**
-	 * @param maxSize the maxSize to set
+	 * @param maxSize
+	 *            the maxSize to set
 	 */
 	public void setMaxSize (Long maxSize) {
 		this.maxSize = maxSize;
@@ -194,7 +203,8 @@ public class ConfigParser {
 	}
 
 	/**
-	 * @param maxFiles the maxFiles to set
+	 * @param maxFiles
+	 *            the maxFiles to set
 	 */
 	public void setMaxFiles (Long maxFiles) {
 		this.maxFiles = maxFiles;
@@ -208,7 +218,8 @@ public class ConfigParser {
 	}
 
 	/**
-	 * @param maxThreads the maxThreads to set
+	 * @param maxThreads
+	 *            the maxThreads to set
 	 */
 	public void setMaxThreads (Integer maxThreads) {
 		this.maxThreads = maxThreads;
@@ -222,7 +233,8 @@ public class ConfigParser {
 	}
 
 	/**
-	 * @param checkServerState the checkServerState to set
+	 * @param checkServerState
+	 *            the checkServerState to set
 	 */
 	public void setCheckServerState (Boolean checkServerState) {
 		this.checkServerState = checkServerState;
@@ -234,6 +246,5 @@ public class ConfigParser {
 	public Configuration getConfig () {
 		return config;
 	}
-	
-	
+
 }
