@@ -106,7 +106,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	protected String reportSuffixforXml = ".xml";
 	/** The EXTENSION. */
-	protected static String extension = "tif";
+	//protected static String extension = "tif";
 
 	/** The hotfolder. */
 	protected Hotfolder hotfolder;
