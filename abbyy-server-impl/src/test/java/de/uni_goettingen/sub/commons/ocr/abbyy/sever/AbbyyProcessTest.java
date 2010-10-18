@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
 
 @SuppressWarnings("serial")
 public class AbbyyProcessTest {
@@ -70,9 +68,12 @@ public class AbbyyProcessTest {
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + INPUT + File.separator + book + ".xml");
 			aop.write(testTicket, testDir.getName());
 			logger.debug("Wrote Ticket:\n" + TicketTest.dumpTicket(new FileInputStream(testTicket)));
-			assertTrue(TicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
+			assertTrue("This fails if the number of files between ticket and file system differs.", TicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
 		}
-		
+	}
+	
+	@Test
+	public void createProcessViaAPI () {
 		
 	}
 	
