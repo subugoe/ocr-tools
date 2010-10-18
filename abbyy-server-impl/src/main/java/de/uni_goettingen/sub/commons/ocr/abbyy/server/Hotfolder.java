@@ -185,8 +185,18 @@ public class Hotfolder extends Thread {
 	 *             the file system exception
 	 */
 	//TODO: change this to URL
+	@Deprecated
 	public Boolean exists (String url) throws FileSystemException {
 		if (fsManager.resolveFile(url).exists()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	
+	public Boolean exists (URL url) throws FileSystemException {
+		if (fsManager.resolveFile(url.toString()).exists()) {
 			return true;
 		} else {
 			return false;
@@ -223,12 +233,22 @@ public class Hotfolder extends Thread {
 		}
 	}
 
-	//TODO: Finish this
 	public Long getTotalCount (URL url) throws FileSystemException {
 		FileObject urlFile = fsManager.resolveFile(url.toString());
 		Long count = 0l;
-
-		return count;
+		if (urlFile.getType() == FileType.FOLDER) {
+			FileObject[] children = urlFile.getChildren();
+			for (int j = 0; j < children.length; j++) {
+				if (children[j].getType() == FileType.FOLDER) {
+					count += getTotalCount(children[j].getURL());
+				} else {
+					count += 1l;
+				}
+			}
+			return count;
+		} else {
+			return 1l;
+		}
 	}
 
 	/**
