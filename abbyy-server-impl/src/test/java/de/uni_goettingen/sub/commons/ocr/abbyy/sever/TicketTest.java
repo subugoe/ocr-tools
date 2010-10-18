@@ -81,7 +81,7 @@ public class TicketTest {
 	private static FileOutputStream ticketStream;
 	private static OCRImage ocri = null;
 	
-	protected String name = "515";
+	protected String name = "testTicket";
 	
 	private Ticket ticket;
 	
@@ -139,8 +139,6 @@ public class TicketTest {
 			logger.debug("This should never happen", e);
 		}
 
-
-
 		when(ocrp.getOcrOutput()).thenReturn(OUTPUT_DEFINITIONS);
 
 	}
@@ -150,6 +148,7 @@ public class TicketTest {
 		assertNotNull("base path is null", BASEFOLDER_FILE);
 		ticket = new Ticket(ocrp);
 
+		//Use a stream to check if we to write it directly into a Stream
 		ticketStream = new FileOutputStream(TICKET_FILE);
 		ticket.write(ticketStream, name);
 
