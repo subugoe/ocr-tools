@@ -2,10 +2,14 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.sever;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +20,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 @SuppressWarnings("serial")
 public class AbbyyProcessTest {
@@ -73,7 +81,26 @@ public class AbbyyProcessTest {
 	}
 	
 	@Test
-	public void createProcessViaAPI () {
+	public void createProcessViaAPI () throws MalformedURLException {
+		AbbyyServerEngine ase = AbbyyServerEngine.getInstance();
+		assertNotNull(ase);
+		OCRProcess op = ase.newProcess();
+		List<OCRImage> imgList = new ArrayList<OCRImage>();
+		for (int i = 0; i < 10; i++) {
+			OCRImage ocri = mock(OCRImage.class);
+			String imageUrl = BASEFOLDER_FILE.toURI().toURL().toString() + i;
+			when(ocri.getUrl()).thenReturn(new URL(imageUrl));
+			logger.debug("Added url to list: " + imageUrl);
+			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
+			assertTrue(imageUrl.equals(aoi.getUrl().toString()));
+			aoi.setRemoteFileName("remoteName" + i);
+			imgList.add(aoi);
+		}
+		op.setOcrImages(imgList);
+		AbbyyProcess aop = (AbbyyProcess) op;
+		//aop.write(out, identifier)
+
+		
 		
 	}
 	

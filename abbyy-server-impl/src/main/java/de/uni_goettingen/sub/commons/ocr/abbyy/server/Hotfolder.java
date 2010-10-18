@@ -40,24 +40,11 @@ import org.slf4j.LoggerFactory;
  * Recognition Server.
  */
 public class Hotfolder extends Thread {
+	// The Constant logger.
+	final static Logger logger = LoggerFactory.getLogger(Hotfolder.class);
 
 	// The errror, input, output folder.
 	protected URL inFolder, outFolder, errrorFolder;
-
-	// The url file.
-	FileObject urlFile = null;
-
-	// The url file string to url.
-	FileObject urlFileStringToUrl = null;
-
-	// The get url image.
-	FileObject getUrlImage = null;
-
-	/** The total size. */
-	Long totalSize = 0l;
-
-	// The image directory.
-	protected String imageDirectory;
 
 	// The fileinfos.
 	protected List<AbbyyOCRImage> fileInfos = null;
@@ -66,11 +53,6 @@ public class Hotfolder extends Thread {
 	protected String inputFolder;
 	protected String outputFolder;
 	protected String errorFolder;
-
-	//protected static Boolean writeRemotePrefix = true;
-
-	// The Constant logger.
-	final static Logger logger = LoggerFactory.getLogger(Hotfolder.class);
 
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;
@@ -223,7 +205,7 @@ public class Hotfolder extends Thread {
 	 *             the file system exception
 	 */
 	public Long getTotalSize (URL url) throws FileSystemException {
-		urlFile = fsManager.resolveFile(url.toString());
+		FileObject urlFile = fsManager.resolveFile(url.toString());
 
 		Long size = 0l;
 		if (urlFile.getType() == FileType.FOLDER) {
@@ -245,9 +227,10 @@ public class Hotfolder extends Thread {
 	
 	//TODO: Finish this
 	public Long getTotalCount (URL url) throws FileSystemException {
-		urlFile = fsManager.resolveFile(url.toString());
+		FileObject urlFile = fsManager.resolveFile(url.toString());
+		Long count = 0l;
 		
-		return null;
+		return count;
 	}
 
 	/**
@@ -259,8 +242,9 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
+	@Deprecated
 	public URL stringToUrl (String uri) throws FileSystemException {
-		urlFileStringToUrl = fsManager.resolveFile(uri);
+		FileObject urlFileStringToUrl = fsManager.resolveFile(uri);
 		return urlFileStringToUrl.getURL();
 
 	}
@@ -278,7 +262,7 @@ public class Hotfolder extends Thread {
 	 */
 	List<AbbyyOCRImage> getUrlList (String imageDirectory) throws FileSystemException, MalformedURLException {
 		List<AbbyyOCRImage> imageList = new ArrayList<AbbyyOCRImage>();
-		getUrlImage = fsManager.resolveFile(imageDirectory);
+		FileObject getUrlImage = fsManager.resolveFile(imageDirectory);
 		FileObject[] children = getUrlImage.getChildren();
 		for (int i = 0; i < children.length; i++) {
 			imageList.add(new AbbyyOCRImage(new URL(children[i].getName().toString())));
@@ -302,25 +286,6 @@ public class Hotfolder extends Thread {
 		}
 		return url;
 	}
-
-	/**
-	 * Url to file.
-	 * 
-	 * @param url
-	 *            the url
-	 * @return the file
-	 */
-	/*
-	public File urlToFile (URL url) {
-		File file = null;
-		try {
-			file = new File(url.toURI());
-		} catch (URISyntaxException e) {
-			file = new File(url.getPath());
-		}
-		return file;
-	}
-	*/
 
 	/**
 	 * Gets the in folder.

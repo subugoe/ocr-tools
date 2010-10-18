@@ -87,7 +87,6 @@ public class TicketTest {
 	
 	static {
 		BASEFOLDER_FILE = getBaseFolderAsFile();
-		ocrp = mock(OCRProcess.class);
 		ocrp.addLanguage(Locale.GERMAN);
 		when(ocrp.getLangs()).thenReturn(new HashSet<Locale>() {
 			{

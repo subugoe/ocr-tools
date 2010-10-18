@@ -858,6 +858,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *             the file system exception
 	 */
 	protected void deleteAllFiles (Set<String> checkfile, String url) throws FileSystemException {
+		//TODO: Remove file from here
 		File urlpath = new File(url);
 		hotfolder.deleteIfExists(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix);
 		for (String fileName : checkfile) {

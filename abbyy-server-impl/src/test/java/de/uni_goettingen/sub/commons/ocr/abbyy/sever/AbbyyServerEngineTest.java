@@ -9,7 +9,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -28,7 +27,6 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
 public class AbbyyServerEngineTest {
 	public static OCREngine abbyy;
