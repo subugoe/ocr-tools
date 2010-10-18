@@ -21,15 +21,13 @@ public class ConfigParser {
 	protected Long maxFiles;
 	protected Integer maxThreads;
 	protected Boolean checkServerState;
-	protected static Boolean debugAuth = false;
+	protected Boolean debugAuth = false;
 	protected static String DEFAULT_CONFIG = "abbyyServer.properties";
 
 	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 	
 	static {
-		if (Boolean.parseBoolean(System.getProperty("ocr.finereader.server.debug.auth"))) {
-			debugAuth = true;
-		}
+		
 			
 	}
 
@@ -52,6 +50,9 @@ public class ConfigParser {
 	 *             the configuration exception
 	 */
 	public void loadConfig () {
+		if (Boolean.parseBoolean(System.getProperty("ocr.finereader.server.debug.auth"))) {
+			debugAuth = true;
+		}
 		// do something with config
 		try {
 			config = new PropertiesConfiguration(DEFAULT_CONFIG);
@@ -137,7 +138,7 @@ public class ConfigParser {
 		ConfigParser.webdavURL = webdavURL;
 	}
 	
-	public static Boolean getDebugAuth() {
+	public Boolean getDebugAuth() {
 		return debugAuth;
 	}
 }
