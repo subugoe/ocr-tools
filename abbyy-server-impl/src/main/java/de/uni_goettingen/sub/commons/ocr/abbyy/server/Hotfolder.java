@@ -122,18 +122,19 @@ public class Hotfolder extends Thread {
 	/**
 	 * Copy a files from remotefile to localfile. Assumes overwrite.
 	 * 
-	 * @param remotefile
+	 * @param from
 	 *            , the url of the file name as used on the remote system,
 	 *            usally a relative file name and thus represented as a String
-	 * @param localfile
+	 * @param to
 	 *            , an URL representing the local file, it should be resolveable
 	 *            from the local Server.
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public void copyAllFiles (String remotefile, String localfile) throws FileSystemException {
-		FileObject remoteFile = fsManager.resolveFile(remotefile);
-		FileObject localFile = fsManager.resolveFile(localfile);
+	//TODO: Use URLs
+	public void copyAllFiles (String from, String to) throws FileSystemException {
+		FileObject remoteFile = fsManager.resolveFile(from);
+		FileObject localFile = fsManager.resolveFile(to);
 		localFile.copyFrom(remoteFile, new AllFileSelector());
 	}
 
@@ -241,6 +242,7 @@ public class Hotfolder extends Thread {
 		}
 	}
 	
+	//TODO: Finish this
 	public Long getTotalCount (URL url) throws FileSystemException {
 		urlFile = fsManager.resolveFile(url.toString());
 		

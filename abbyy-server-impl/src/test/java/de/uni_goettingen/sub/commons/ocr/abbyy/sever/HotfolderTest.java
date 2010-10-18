@@ -104,12 +104,11 @@ public class HotfolderTest {
 		assertTrue(IMAGE_SIZE.equals(size));
 	}
 	
-	@Ignore
 	@Test
 	public void testCopy () throws FileSystemException {
 		logger.debug("Copy " + testImageUrl.toString() + " to " + testDirUrl.toString());
 		Hotfolder h = new Hotfolder();
-		h.copyAllFiles(testDirUrl.toString(), testImageUrl.toString());
+		h.copyAllFiles(testImageUrl.toString(), testDirUrl.toString());
 		assertTrue(testImageTargetFile.exists());
 	}
 	
