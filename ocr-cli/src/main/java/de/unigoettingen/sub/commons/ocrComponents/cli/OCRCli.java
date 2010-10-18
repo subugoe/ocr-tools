@@ -135,7 +135,7 @@ public class OCRCli {
 	 * @param args the arguments
 	 * @throws IOException 
 	 */
-	public void configureFromArgs(String[] args) throws IOException {
+	public void configureFromArgs(String[] args) {
 		//list of the directory
 		List<String> files = defaultOpts(args);
 		
@@ -230,6 +230,7 @@ public class OCRCli {
 	 */
 	public static List<Locale> parseLangs(String str) {
 		List<Locale> langs = new ArrayList<Locale>();
+		//TODO: Test this, remove the if
 		if (str.contains(",")) {
 			for (String lang : Arrays.asList(str.split(","))) {
 				langs.add(new Locale(lang));
@@ -269,18 +270,20 @@ public class OCRCli {
 	 */
 	public static List<OCRFormat> parseOCRFormat(String str) {
 		List<OCRFormat> ocrFormats = new ArrayList<OCRFormat>();
-		
+		//TODO: Add a test for this
+		//TODO: remove the else clause
 		if (str.contains(",")) {
 			for (String ocrFormat : Arrays.asList(str.split(","))) {
 				
-				getOrdinal( ocrFormat.toUpperCase(), ocrFormat );
-				ocrFormats.add(OCRFormat.valueOf(ocrFormat.toUpperCase()));
-				process.addOCRFormat(OCRFormat.valueOf(ocrFormat.toUpperCase()));
+				//getOrdinal( ocrFormat.toUpperCase(), ocrFormat );
+				ocrFormats.add(OCRFormat.parseOCRFormat(ocrFormat.toUpperCase()));
+				
+				//process.addOCRFormat(OCRFormat.parseOCRFormat(ocrFormat.toUpperCase()));
 			}
 		} else {
-			getOrdinal( str.toUpperCase() , str );
-			ocrFormats.add(OCRFormat.valueOf(str.toUpperCase()));
-			process.addOCRFormat(OCRFormat.valueOf(str.toUpperCase()));
+			//getOrdinal( str.toUpperCase() , str );
+			ocrFormats.add(OCRFormat.parseOCRFormat(str.toUpperCase()));
+			//process.addOCRFormat(OCRFormat.parseOCRFormat(str.toUpperCase()));
 		}
 		return ocrFormats;
 	}
@@ -369,10 +372,15 @@ public class OCRCli {
 			if (cmd.getOptionValue("o") != null
 					&& !cmd.getOptionValue("o").equals("")) {
 				localOutputDir = cmd.getOptionValue("o");
-				process.setOutputLocation(localOutputDir);
+				for (OCRFormat of: f) {
+					//TODO: Finish this
+					//OCRResult 
+				}
+				
+				//process.setOutputLocation(localOutputDir);
 			}
 		}
-		//Lise of the directory wich are images
+		//List of the directory wich are images
 		return cmd.getArgList();
 	}
 
