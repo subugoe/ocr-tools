@@ -65,16 +65,21 @@ public class AbbyyServerSimulator extends Thread {
 				logger.debug("Adding " + f.getName() + " as expected result.");
 			}
 		}
-
 	}
 
 	@Override
 	public void run () {
 		while (!isInterrupted()) {
+			
 			try {
+				checkDirectory(input);
 				sleep(500);
 			} catch (InterruptedException e) {
 				interrupt();
+			} catch (XmlException e) {
+				logger.error("Got an error parsing XML.", e);
+			} catch (IOException e) {
+				logger.error("Got an error reading file.", e);
 			}
 
 			if (finish == true) {
@@ -83,7 +88,6 @@ public class AbbyyServerSimulator extends Thread {
 			}
 			logger.trace("Reached end of loop.");
 		}
-
 	}
 
 	protected void removeJob (String name) throws XmlException, IOException {
@@ -94,11 +98,14 @@ public class AbbyyServerSimulator extends Thread {
 	}
 
 	protected void checkDirectory (File dir) throws XmlException, IOException {
+		logger.debug("Checking directory: " + dir.getAbsolutePath());
 		for (File f : Arrays.asList(dir.listFiles())) {
 			if (f.getAbsolutePath().endsWith("xml")) {
-
+				
 				String name = f.getName();
+				logger.debug("Found XML: " + name);
 				name = name.substring(name.indexOf(".xml"));
+				//TODO: Parse ticket here;
 			}
 		}
 

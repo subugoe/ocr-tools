@@ -241,4 +241,8 @@ public class ConfigParser {
 		return config;
 	}
 
+	public String getOutoutFolder () {
+		return outputFolder;
+	}
+
 }
