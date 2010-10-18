@@ -82,16 +82,16 @@ public class AbbyyServerEngine implements OCREngine {
 
 	// internal tweaking variables
 	// Variables used for process management
-	/** The max size. */
-	protected static Long maxSize = 5368709120l;
+	// The max size, default is currently 50 MB
+	protected static Long maxSize = 1024l * 1024 *50l;
 
-	/** The max files. */
+	// The max files, default is currently 5000 files
 	protected static Long maxFiles = 5000l;
 
-	/** The check server state. */
+	// The check server state.
 	protected static Boolean checkServerState = true;
 
-	/** The directories as process */
+	// The directories as process
 	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
 
 	protected Boolean started = false;
@@ -130,21 +130,6 @@ public class AbbyyServerEngine implements OCREngine {
 	}
 
 	/**
-	 * API Start
-	 */
-	public void recognize () {
-		try {
-			start();
-		} catch (FileSystemException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RuntimeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Start the threadPooling
 	 * 
 	 * @throws RuntimeException
@@ -152,19 +137,19 @@ public class AbbyyServerEngine implements OCREngine {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public void start () throws RuntimeException, FileSystemException {
+	public void start () {
 		if (checkServerState) {
 			try {
 				checkServerState();
-			} catch (Exception e) {
-				logger.error(e.toString());
+			} catch (IOException e) {
+				logger.error("got IOException during processing", e);
+				throw new OCRException(e);
 			}
 		}
 
 		ExecutorService pool = new OCRExecuter(maxThreads);
 
 		for (OCRProcess process : getOcrProcess()) {
-			//	AbbyyProcess process = new AbbyyProcess(dir);
 			processes.add((AbbyyProcess) process);
 		}
 
@@ -174,7 +159,6 @@ public class AbbyyServerEngine implements OCREngine {
 
 		pool.shutdown();
 		try {
-
 			pool.awaitTermination(3600, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			logger.error("Got a problem with thread pool: ", e);
@@ -216,6 +200,7 @@ public class AbbyyServerEngine implements OCREngine {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
+	//TODO: this should be part of the Hotfolder.
 	public void checkServerState () throws IOException {
 		if (maxSize != 0 && maxFiles != 0) {
 			List<URL> urls = new ArrayList<URL>();
@@ -287,17 +272,9 @@ public class AbbyyServerEngine implements OCREngine {
 	public Observer recognize (OCRProcess process) {
 		processes.add((AbbyyProcess) process);
 		if (!started) {
-			try {
-				start();
-			} catch (FileSystemException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RuntimeException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			start();
 		}
-		
+		//TODO: Get an Observer from somewhere, probably use a Future
 		return null;
 	}
 

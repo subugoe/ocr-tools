@@ -158,18 +158,13 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		try {
 			ticketDoc = XmlTicketDocument.Factory.parse(is, options);
 		} catch (XmlException e) {
-			//TODO: Use a logger
-			// TODO Auto-generated catch block (log this)
-			e.printStackTrace();
+			logger.error("Parsing of XML failed", e);
 		} catch (IOException e) {
-			//TODO: Use a logger
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IO (read of ticket ) failed", e);
 		}
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
 
-		//RecognitionParams rp = ticket.getRecognitionParams();
 		List<InputFile> fl = ticket.getInputFileList();
 		for (InputFile i : fl) {
 			AbbyyOCRImage aoi = new AbbyyOCRImage();
@@ -185,10 +180,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 				aoo.setRemoteLocation(location);
 				outputs.put(format, aoo);
 			}
-
 		}
 		setOcrOutput(outputs);
-
 	}
 
 	public void write (OutputStream out, String identifier) throws IOException {
