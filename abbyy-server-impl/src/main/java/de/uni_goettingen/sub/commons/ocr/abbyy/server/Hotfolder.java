@@ -30,6 +30,7 @@ import org.apache.commons.vfs.FileContent;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.VFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,6 +202,7 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
+	//TODO: change this to URL
 	public Boolean exists (String url) throws FileSystemException {
 		if (fsManager.resolveFile(url).exists()) {
 			return true;
@@ -219,25 +221,30 @@ public class Hotfolder extends Thread {
 	 *             the file system exception
 	 */
 	public Long getTotalSize (URL url) throws FileSystemException {
-		totalSize++;
 		urlFile = fsManager.resolveFile(url.toString());
 
-		long foldersize = 0;
-		if (urlFile.getType().toString().equals("folder")) {
+		Long size = 0l;
+		if (urlFile.getType() == FileType.FOLDER) {
 			FileObject[] children = urlFile.getChildren();
 			for (int j = 0; j < children.length; j++) {
-				if (children[j].getType().toString().equals("folder")) {
-					foldersize += getTotalSize(children[j].getURL());
+				if (children[j].getType() == FileType.FOLDER) {
+					size += getTotalSize(children[j].getURL());
 				} else {
 					FileContent contentFile = children[j].getContent();
-					foldersize += contentFile.getSize();
+					size += contentFile.getSize();
 				}
 			}
-			return foldersize;
+			return size;
 		} else {
 			FileContent content = urlFile.getContent();
 			return content.getSize();
 		}
+	}
+	
+	public Long getTotalCount (URL url) throws FileSystemException {
+		urlFile = fsManager.resolveFile(url.toString());
+		
+		return null;
 	}
 
 	/**

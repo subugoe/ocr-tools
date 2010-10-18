@@ -79,7 +79,7 @@ public class AbbyyServerEngineTest {
 		hotfolderError = hotfolderErrorpath.getAbsolutePath() + "/" + errorfolderResultpath.getName();
 		File[] filess = errorfolderResultpath.listFiles();
 		assertNotNull(filess);
-		hotfolder.mkCol(hotfolder.fileToURL(new File(hotfolderError)));
+		hotfolder.mkDir(hotfolder.fileToURL(new File(hotfolderError)));
 		for (File currentFile : filess) {
 			String currentFileString = currentFile.getName();
 			if (!currentFileString.startsWith(".")) {
@@ -141,7 +141,7 @@ public class AbbyyServerEngineTest {
 
 			fileListimage = null;
 		}
-		logger.info("Strating recognize method");
+		logger.info("Starting recognize method");
 		abbyy.recognize();
 
 		//check for results
@@ -165,51 +165,7 @@ public class AbbyyServerEngineTest {
 		return remoteFile;
 	}
 
-	public static List<File> getImageDirectories (File dir) {
-		List<File> dirs = new ArrayList<File>();
 
-		if (makeFileList(dir, extension).size() > 0) {
-			dirs.add(dir);
-		}
-
-		List<File> fileList;
-		if (dir.isDirectory()) {
-			fileList = Arrays.asList(dir.listFiles());
-			for (File file : fileList) {
-				if (file.isDirectory()) {
-					List<File> files = makeFileList(dir, extension);
-					for (File f : files) {
-						logger.debug("File: " + f.getAbsolutePath());
-					}
-					if (files.size() > 0) {
-						dirs.addAll(files);
-					} else {
-						dirs.addAll(getImageDirectories(file));
-					}
-				}
-			}
-		} else {
-			throw new IllegalStateException(dir.getAbsolutePath() + " is not a directory");
-		}
-		return dirs;
-	}
-
-	public static List<File> makeFileList (File dir, String filter) {
-		List<File> fileList;
-		if (dir.isDirectory()) {
-			// OCR.logger.trace(inputFile + " is a directory");
-
-			File files[] = dir.listFiles(new FileExtensionsFilter(filter));
-			fileList = Arrays.asList(files);
-			Collections.sort(fileList);
-
-		} else {
-			fileList = new ArrayList<File>();
-			fileList.add(dir);
-			// OCR.logger.trace("Input file: " + inputFile);
-		}
-		return fileList;
-	}
 
 	@Test
 	public void checkDirectories () {
