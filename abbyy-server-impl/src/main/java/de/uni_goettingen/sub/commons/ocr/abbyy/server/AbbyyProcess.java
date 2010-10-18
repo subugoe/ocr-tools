@@ -1,5 +1,23 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+/*
+
+Copyright 2010 SUB Goettingen. All rights reserved.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -126,7 +144,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	/** The file infos. */
 	protected List<AbbyyOCRImage> fileInfos = null;
-	protected List<AbbyyOCRImage> fileInfosreplacement = null;
+	//protected List<AbbyyOCRImage> fileInfosreplacement = null;
 	// The configuration.
 	protected ConfigParser config;
 
@@ -342,13 +360,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		} catch (MalformedURLException e) {
 			logger.error("Processing failed (MalformedURLException)", e);
 		} finally {
-			fileInfosreplacement = null;
+			//fileInfosreplacement = null;
 			fileInfos = null;
 			ocrErrorFormatFile = null;
 			ocrOutFormatFile = null;
 			//inputFiles = null;
 			logger.trace("AbbyyProcess " + identifier + " ended ");
-			//System.out.println("AbbyyProcess " + identifier + " ended ");
 		}
 
 	}
@@ -481,7 +498,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				newList.add(info);
 			}
 		}
-
 		return newList;
 	}
 
