@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class HotfolderTest {
 	protected static File testDirFile, testImageFile, testImageTargetFile;
 	protected static URL testDirUrl, testImageUrl, testImageTargetUrl;
 	protected static String dirName = "testDir";
+	protected static String target;
 
 	static {
 		TEST_INPUT_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + INPUT);
@@ -48,7 +50,7 @@ public class HotfolderTest {
 	
 	@BeforeClass
 	public static void init () throws MalformedURLException {
-		testDirFile = new File(TEST_HOTFOLDER_FILE.getAbsolutePath() + File.separator + dirName);
+		testDirFile = new File(TEST_HOTFOLDER_FILE.getAbsolutePath() + File.separator + dirName + File.separator);
 		testDirUrl = testDirFile.toURI().toURL();
 		logger.info("testDirUrl is " + testDirUrl);
 		
@@ -58,33 +60,11 @@ public class HotfolderTest {
 		logger.info("testImageUrl is " + testImageUrl);
 		
 		testImageTargetFile = new File(TEST_HOTFOLDER_FILE.getAbsolutePath() + File.separator + dirName + File.separator + IMAGE_NAME);
-		assertTrue(!testImageTargetFile.exists());
+		assertTrue("File " + testImageTargetFile.getAbsolutePath() + " already exists", !testImageTargetFile.exists());
 		testImageTargetUrl = testImageTargetFile.toURI().toURL();
 		logger.info("testImageTargetUrl is " + testImageTargetUrl);
-	}
-
-	@Ignore
-	@Test
-	public void testHotfolder () throws IOException, InterruptedException {
-		List<AbbyyOCRImage> files = new ArrayList<AbbyyOCRImage>();
-		//AbbyyOCRImage abbyy = new AbbyyOCRImage(new URL("http://localhost/webdav/Test/TestB.tif"));					
-
-		System.out.println(TicketTest.getBaseFolderAsFile().getAbsolutePath().toString());
-		URL local = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "local/testfile");
-		URL input = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile");
-		//URL hotfol = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "local/");
-		AbbyyOCRImage abbyy = new AbbyyOCRImage(local, input, "");
-		files.add(abbyy);
-
-		Hotfolder hot = new Hotfolder();
-
-		//String remotefile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile";
-		//String localfile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/error/testfile1";
-		//assertTrue(new File(TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile").exists());
-		///		hot.copyAllFiles(remotefile, localfile);
-		hot.delete(input);
-
-
+		
+		target = testDirUrl.toString() + "/" + getFileName(testImageUrl);
 	}
 	
 	@Test
@@ -105,18 +85,29 @@ public class HotfolderTest {
 	}
 	
 	@Test
-	public void testCopy () throws FileSystemException {
-		logger.debug("Copy " + testImageUrl.toString() + " to " + testDirUrl.toString());
+	public void testCopy () throws FileSystemException, MalformedURLException, URISyntaxException {
+		logger.debug("Copy " + testImageUrl.toString() + " to " + target);
 		Hotfolder h = new Hotfolder();
-		h.copyAllFiles(testImageUrl.toString(), testDirUrl.toString());
-		assertTrue(testImageTargetFile.exists());
+		h.copyAllFiles(testImageUrl.toString(), target);
+		assertTrue("File can't be found.", new File(new URL(target).toURI()).exists());
+	}
+	
+	public static String getFileName (URL u) {
+		String[] urlParts = u.toString().split("/");
+		return urlParts[urlParts.length - 1];
 	}
 	
 	@Test
 	public void testExists() throws FileSystemException {
-		logger.debug("Checking if " + testImageTargetUrl.toString() + " exists.");
+		logger.debug("Checking if " + target + " exists.");
 		Hotfolder h = new Hotfolder();
-		assertTrue(h.exists(testImageTargetUrl.toString()));
+		assertTrue(h.exists(target));
+	}
+	@Test
+	public void testDelete () throws FileSystemException, MalformedURLException {
+		Hotfolder h = new Hotfolder();
+		h.delete(new URL(target));
+		assertTrue(!new File(target).exists());
 	}
 	
 	@AfterClass
@@ -126,6 +117,7 @@ public class HotfolderTest {
 		testDirFile.delete();
 		assertTrue("Directory wasn't deleted", !testDirFile.exists());
 		
+		//This shouldn't be nessecary
 		testImageTargetFile.delete();
 		assertTrue("File wasn't deleted", !testImageTargetFile.exists());
 	}

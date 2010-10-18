@@ -132,6 +132,7 @@ public class Hotfolder extends Thread {
 	 *             the file system exception
 	 */
 	//TODO: Use URLs
+	//TODO: This is dangerous, check if the file exists!
 	public void copyAllFiles (String from, String to) throws FileSystemException {
 		FileObject remoteFile = fsManager.resolveFile(from);
 		FileObject localFile = fsManager.resolveFile(to);
