@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 
 public class ConfigParser {
 	protected Configuration config;
-	protected static String webdavURL;
-	protected String webdavUsername;
-	protected String webdavPassword;
+	protected static String serverURL;
+	protected String username;
+	protected String password;
 	protected String inputFolder;
 	protected String outputFolder;
 	protected String errorFolder;
@@ -48,7 +48,7 @@ public class ConfigParser {
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	public void loadConfig () {
+	public ConfigParser loadConfig () {
 		if (Boolean.parseBoolean(System.getProperty("ocr.finereader.server.debug.auth"))) {
 			debugAuth = true;
 		}
@@ -60,15 +60,15 @@ public class ConfigParser {
 			throw new RuntimeException(e);
 		}
 
-		webdavURL = config.getString("remoteURL");
-		webdavURL = webdavURL.endsWith("/") ? webdavURL : webdavURL + "/";
-		if (webdavURL != null) {
-			webdavURL = parseString(webdavURL);
+		serverURL = config.getString("remoteURL");
+		serverURL = serverURL.endsWith("/") ? serverURL : serverURL + "/";
+		if (serverURL != null) {
+			serverURL = parseString(serverURL);
 
 		}
 
-		webdavUsername = config.getString("username");
-		webdavPassword = config.getString("password");
+		username = config.getString("username");
+		password = config.getString("password");
 		inputFolder = config.getString("input");
 		outputFolder = config.getString("output");
 		errorFolder = config.getString("error");
@@ -92,9 +92,9 @@ public class ConfigParser {
 		// Add a preconfigred local output folder
 
 		if (debugAuth) {
-			logger.debug("URL: " + webdavURL);
-			logger.debug("User: " + webdavUsername);
-			logger.debug("Password: " + webdavPassword);
+			logger.debug("URL: " + serverURL);
+			logger.debug("User: " + username);
+			logger.debug("Password: " + password);
 		} else {
 			logger.debug("URL: " + "*hidden* - enable debugAuth to log login data");
 			logger.debug("User: " + "*hidden* - enable debugAuth to log login data");
@@ -110,7 +110,8 @@ public class ConfigParser {
 		logger.debug("Max treads: " + maxThreads);
 
 		logger.debug("Check server state: " + checkServerState);
-
+		
+		return this;
 	}
 
 	public static String parseString (String str) {
@@ -130,14 +131,107 @@ public class ConfigParser {
 	}
 
 	public String getWebdavURL () {
-		return webdavURL;
+		return serverURL;
 	}
 
 	public void setWebdavURL (String webdavURL) {
-		ConfigParser.webdavURL = webdavURL;
+		ConfigParser.serverURL = webdavURL;
 	}
 
 	public Boolean getDebugAuth () {
 		return debugAuth;
 	}
+
+	/**
+	 * @return the inputFolder
+	 */
+	public String getInputFolder () {
+		return inputFolder;
+	}
+
+	/**
+	 * @param inputFolder the inputFolder to set
+	 */
+	public void setInputFolder (String inputFolder) {
+		this.inputFolder = inputFolder;
+	}
+
+	/**
+	 * @return the errorFolder
+	 */
+	public String getErrorFolder () {
+		return errorFolder;
+	}
+
+	/**
+	 * @param errorFolder the errorFolder to set
+	 */
+	public void setErrorFolder (String errorFolder) {
+		this.errorFolder = errorFolder;
+	}
+
+	/**
+	 * @return the maxSize
+	 */
+	public Long getMaxSize () {
+		return maxSize;
+	}
+
+	/**
+	 * @param maxSize the maxSize to set
+	 */
+	public void setMaxSize (Long maxSize) {
+		this.maxSize = maxSize;
+	}
+
+	/**
+	 * @return the maxFiles
+	 */
+	public Long getMaxFiles () {
+		return maxFiles;
+	}
+
+	/**
+	 * @param maxFiles the maxFiles to set
+	 */
+	public void setMaxFiles (Long maxFiles) {
+		this.maxFiles = maxFiles;
+	}
+
+	/**
+	 * @return the maxThreads
+	 */
+	public Integer getMaxThreads () {
+		return maxThreads;
+	}
+
+	/**
+	 * @param maxThreads the maxThreads to set
+	 */
+	public void setMaxThreads (Integer maxThreads) {
+		this.maxThreads = maxThreads;
+	}
+
+	/**
+	 * @return the checkServerState
+	 */
+	public Boolean getCheckServerState () {
+		return checkServerState;
+	}
+
+	/**
+	 * @param checkServerState the checkServerState to set
+	 */
+	public void setCheckServerState (Boolean checkServerState) {
+		this.checkServerState = checkServerState;
+	}
+
+	/**
+	 * @return the config
+	 */
+	public Configuration getConfig () {
+		return config;
+	}
+	
+	
 }

@@ -25,7 +25,6 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,7 +167,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		//TODO Break up this method
 
 		try {
-			config = new ConfigParser();
+			config = new ConfigParser().loadConfig();
+
 			hotfolder = new Hotfolder();
 		} catch (FileSystemException e) {
 			logger.error("Can't access file system", e);
@@ -571,7 +571,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		// addLanguage(locale)
 		//addLanguage(Locale.GERMAN);
 		//addOCRFormat(OCRFormat.PDF);
-		//setOutPutLocation(webdavURL + outputFolder);
+		//setOutPutLocation(serverURL + outputFolder);
 
 		//TODO: Commented these out, these methods aren't found
 		//setMillisPerFile(millisPerFile);
@@ -603,10 +603,10 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			e.printStackTrace();
 		}
 
-		webdavURL = config.getString("remoteURL");
-		webdavURL = webdavURL.endsWith("/") ? webdavURL : webdavURL + "/";
-		if (webdavURL != null) {
-			webdavURL = parseString(webdavURL);
+		serverURL = config.getString("remoteURL");
+		serverURL = serverURL.endsWith("/") ? serverURL : serverURL + "/";
+		if (serverURL != null) {
+			serverURL = parseString(serverURL);
 		}
 		moveToLocal = config.getString("moveToLocal");
 		moveToLocal = moveToLocal.endsWith("/") ? moveToLocal : moveToLocal + "/";
@@ -628,7 +628,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 
 		// Add a preconfigred local output folder
-		logger.debug("URL: " + webdavURL);
+		logger.debug("URL: " + serverURL);
 
 		logger.debug("Input folder: " + inputFolder);
 
