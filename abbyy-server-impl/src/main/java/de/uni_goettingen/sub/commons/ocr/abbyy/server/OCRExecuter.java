@@ -1,4 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
+
 /*
 
 © 2010, SUB Göttingen. All rights reserved.
@@ -24,29 +25,27 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-
-
 /**
  * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
  * execution of tasks on the Recognition Server with respect of the resource
- * constrains, like total number of files and used storage. 
+ * constrains, like total number of files and used storage.
  */
 public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	//TODO: Also document the differences to the overridden methods.
-	
-	public Integer maxThreads ;
 
-	private boolean isPaused;
+	public Integer maxThreads;
+
+	private Boolean isPaused;
 	private ReentrantLock pauseLock = new ReentrantLock();
 	private Condition unpaused = pauseLock.newCondition();
 
-	private int maxSize;
+	private Long maxSize;
 
-	private int maxFiles;
+	private Long maxFiles;
 
-	private int totalFileSize;
+	private Long totalFileSize;
 
-	private int totalFileCount;
+	private Long totalFileCount;
 
 	public OCRExecuter(Integer maxThreads) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
@@ -57,7 +56,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 * @see java.util.concurrent.ThreadPoolExecutor#beforeExecute(java.lang.Thread, java.lang.Runnable)
 	 */
 	@Override
-	protected void beforeExecute(Thread t, Runnable r) {
+	protected void beforeExecute (Thread t, Runnable r) {
 		super.beforeExecute(t, r);
 		if (r instanceof AbbyyProcess) {
 			AbbyyProcess abbyyProcess = (AbbyyProcess) r;
@@ -88,7 +87,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 * @see java.util.concurrent.ThreadPoolExecutor#afterExecute(java.lang.Runnable, java.lang.Throwable)
 	 */
 	@Override
-	protected void afterExecute(Runnable r, Throwable e) {
+	protected void afterExecute (Runnable r, Throwable e) {
 		super.afterExecute(r, e);
 		if (r instanceof AbbyyProcess) {
 			AbbyyProcess abbyyProcess = (AbbyyProcess) r;
@@ -109,7 +108,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	/**
 	 * this method pauses the execution.
 	 */
-	public void pause() {
+	public void pause () {
 		pauseLock.lock();
 		try {
 			isPaused = true;
@@ -123,7 +122,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	/**
 	 * This Method resumes the execution of the executor.
 	 */
-	public void resume() {
+	public void resume () {
 		pauseLock.lock();
 		try {
 			isPaused = false;
@@ -133,10 +132,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
-	//TODO: Check size here, this is just a place holder for now.
-	protected Integer getFileSize(AbbyyProcess p) {
-		return 0;
+	protected Long getFileSize (AbbyyProcess p) {
+		return p.calculateSize();
 	}
 
-	
 }

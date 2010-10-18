@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 /**
  * The Class AbbyyServerEngine.
@@ -210,10 +211,18 @@ public class AbbyyServerEngine implements OCREngine {
 	 * 
 	 */
 
-	public static AbbyyServerEngine getInstance () throws FileSystemException, ConfigurationException {
+	public static AbbyyServerEngine getInstance () {
 
 		if (_instance == null) {
-			_instance = new AbbyyServerEngine();
+			try {
+				_instance = new AbbyyServerEngine();
+			} catch (FileSystemException e) {
+				logger.error("Can't get file system", e);
+				throw new OCRException(e);
+			} catch (ConfigurationException e) {
+				logger.error("Can't read configuration", e);
+				throw new OCRException(e);
+			}
 		}
 		return _instance;
 	}
