@@ -17,14 +17,14 @@ public class ConfigParserTest {
 	@BeforeClass
 	public static void init () {
 		ConfigParser cp = new ConfigParser();
-		assertFalse(ConfigParser.getDebugAuth());
+		assertFalse(cp.getDebugAuth());
 	}
 
 	@Test
 	public void testAuth () {
 		System.setProperty("ocr.finereader.server.debug.auth", "true");
 		ConfigParser cp = new ConfigParser();
-		assertTrue(ConfigParser.getDebugAuth());
+		assertTrue(cp.getDebugAuth());
 
 	}
 
