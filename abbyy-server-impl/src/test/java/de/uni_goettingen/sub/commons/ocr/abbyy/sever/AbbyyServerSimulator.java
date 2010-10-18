@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 
 public class AbbyyServerSimulator extends Thread {
 	protected File hotfolder, input, output, error, expected, errorExpected, outputExpected;
-	protected static String INPUT_NAME = "input";
-	protected static String OUTPUT_NAME = "output";
-	protected static String ERROR_NAME = "error";
+	public static String INPUT_NAME = "input";
+	public static String OUTPUT_NAME = "output";
+	public static String ERROR_NAME = "error";
 
 	protected Map<String, File> resultsError = new HashMap<String, File>();
 	protected Map<String, File> resultsOutput = new HashMap<String, File>();
@@ -32,7 +32,7 @@ public class AbbyyServerSimulator extends Thread {
 		error = new File(hotfolder.getAbsolutePath() + File.separator + ERROR_NAME);
 
 		errorExpected = new File(expactations.getAbsolutePath() + File.separator + ERROR_NAME);
-		outputExpected = new File(expactations.getAbsolutePath() + File.separator + ERROR_NAME);
+		outputExpected = new File(expactations.getAbsolutePath() + File.separator + OUTPUT_NAME);
 
 		for (File f : Arrays.asList(errorExpected.listFiles())) {
 			if (f.isDirectory()) {

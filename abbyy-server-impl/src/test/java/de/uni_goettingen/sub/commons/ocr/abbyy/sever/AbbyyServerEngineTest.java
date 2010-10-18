@@ -46,7 +46,7 @@ public class AbbyyServerEngineTest {
 		abbyy = AbbyyServerEngine.getInstance();
 		assertNotNull(abbyy);
 		*/
-		AbbyyServerSimulator ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTATIONS_FILE);
+		AbbyyServerSimulator ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTED_FILE);
 		ass.start();
 	}
 
