@@ -40,8 +40,7 @@ import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	//TODO: Add this stuff: <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
-	
-	
+
 	/** The Constant logger. */
 	final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
 
@@ -130,13 +129,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The config. */
 	PropertiesConfiguration config;
 
-	
 	//TODO: Add calculation of timeout, set it in the ticket.
 	// Two hours by default
 	protected Long maxOCRTimeout = 3600000l * 2;
 	// protected Integer secondsPerImage = 5;
 	protected Integer millisPerFile = 1200;
-	
+
 	/**
 	 * Instantiates a new process.
 	 * 
@@ -470,7 +468,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		List<File> fileList;
 		if (inputFile.isDirectory()) {
 			logger.trace(inputFile + " is a directory");
-
 
 			fileList = Arrays.asList(inputFile.listFiles(new FileExtensionsFilter(filter)));
 			Collections.sort(fileList);
@@ -864,15 +861,17 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 		hotfolder.deleteIfExists(urlpath.getAbsolutePath());
 	}
-	
+
 	public static AbbyyProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
 		AbbyyProcess ap = new AbbyyProcess();
-		List<File> imagefiles = getImageDirectories(directory, extension);
-		for (File f: imagefiles) {
-			AbbyyOCRImage aoi = new AbbyyOCRImage(f.toURI().toURL());
-			ap.addImage(aoi);
+		List<File> imageDirs = getImageDirectories(directory, extension);
+		for (File id : imageDirs) {
+			for (File imageFile : makeFileList(id, extension)) {
+				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI().toURL());
+				ap.addImage(aoi);
+			}
 		}
-		
+
 		return ap;
 	}
 
@@ -905,5 +904,4 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		return dirs;
 	}
 
-	
 }
