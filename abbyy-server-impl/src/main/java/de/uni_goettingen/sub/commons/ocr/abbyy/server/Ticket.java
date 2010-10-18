@@ -300,4 +300,17 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		this.oCRTimeOut = oCRTimeOut;
 	}
 
+	@Override
+	public void addImage(OCRImage ocrImage) {
+		AbbyyOCRImage aoi = new AbbyyOCRImage(ocrImage);
+		String[] urlParts = ocrImage.getUrl().toString().split("/");
+		if (getName() != null) {
+			aoi.setRemoteFileName(getName() + "-" + urlParts[urlParts.length - 1]); 
+		} else {
+			aoi.setRemoteFileName(urlParts[urlParts.length - 1]);
+		}
+		super.addImage(aoi);
+		
+	}
+	
 }
