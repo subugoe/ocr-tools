@@ -19,10 +19,12 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 public class HotfolderTest {
 	final static Logger logger = LoggerFactory.getLogger(HotfolderTest.class);
 	public static File BASEFOLDER_FILE = TicketTest.BASEFOLDER_FILE;
-	public static File TEST_INPUT_FILE, TEST_HOTFOLDER_FILE, TEST_EXPECTATIONS_FILE;
-	public static URL TEST_INPUT_URL, TEST_HOTFOLDER_URL;
+	public static File TEST_INPUT_FILE, TEST_HOTFOLDER_FILE, TEST_EXPECTED_FILE;
+	public static URL TEST_INPUT_URL, TEST_HOTFOLDER_URL, TEST_EXPECTED_URL;
 	public static String INPUT = "input";
 	public static String HOTFOLDER = "hotfolder";
+	public static String EXPECTED = "expected";
+	
 	public static String IMAGE_NAME = "00000001.tif";
 	public static Long IMAGE_SIZE = 10069l;
 
@@ -34,6 +36,7 @@ public class HotfolderTest {
 	static {
 		TEST_INPUT_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + INPUT);
 		TEST_HOTFOLDER_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + HOTFOLDER);
+		TEST_EXPECTED_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + EXPECTED);
 		try {
 			TEST_INPUT_URL = TEST_INPUT_FILE.toURI().toURL();
 			TEST_HOTFOLDER_URL = TEST_HOTFOLDER_FILE.toURI().toURL();
