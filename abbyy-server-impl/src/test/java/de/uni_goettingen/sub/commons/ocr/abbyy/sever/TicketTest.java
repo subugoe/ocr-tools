@@ -112,9 +112,7 @@ public class TicketTest {
 	public static void init () throws FileNotFoundException, MalformedURLException {
 
 		//This s just here to display the works of the mocking framework
-		assertTrue(ocrp.getLangs().contains(Locale.GERMAN));
-
-		
+		assertTrue("This should never happen", ocrp.getLangs().contains(Locale.GERMAN));
 
 		//Create some mock images
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
@@ -186,7 +184,6 @@ public class TicketTest {
 			String mFilename = ((AbbyyOCRImage) ocrp.getOcrImages().get(i)).getRemoteFileName();
 			String tFilename = ticketFiles.get(i);
 			logger.debug("File from mock object: " + mFilename);
-
 			logger.debug("File from ticket file: " + tFilename);
 			assertTrue(mFilename.equals(tFilename));
 		}
@@ -200,7 +197,6 @@ public class TicketTest {
 				assertTrue(OUTPUT_DEFINITIONS.containsKey(format));
 				assertTrue(((AbbyyOCROutput) OUTPUT_DEFINITIONS.get(format)).getRemoteLocation().equals(location));
 			}
-
 		}
 	}
 	
@@ -213,12 +209,12 @@ public class TicketTest {
 		Ticket t = new Ticket(new FileInputStream(ticketFile));
 		t.parseTicket();
 		if (expectedSize != null) {
-			assertTrue(t.getOcrImages().size() == expectedSize);
+			assertTrue("Expected size of " + expectedSize, t.getOcrImages().size() == expectedSize);
 		}
 		
 		for (OCRImage oi : t.getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) oi;
-			assertTrue(aoi.getRemoteFileName().length() > 0);
+			assertTrue("File is set but contains no file name", aoi.getRemoteFileName().length() > 0);
 			logger.debug("Found reference to " + aoi.getRemoteFileName() + " in ticket.");
 			files.add(aoi.getRemoteFileName());
 		}
@@ -262,7 +258,7 @@ public class TicketTest {
 	public static void cleanup () {
 		logger.debug("Cleaning up");
 		TICKET_FILE.delete();
-		assertTrue(!TICKET_FILE.exists());
+		assertTrue("File wasn't deleted", !TICKET_FILE.exists());
 	}
 
 }

@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
 /**
@@ -865,9 +866,16 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	public static AbbyyProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
 		AbbyyProcess ap = new AbbyyProcess();
 		List<File> imageDirs = getImageDirectories(directory, extension);
+
 		for (File id : imageDirs) {
+			if (imageDirs.size() > 1) {
+				throw new OCRException("createProcessFromDir can currently create only one AbbyyProcess!");
+			}
+			String jobName = id.getName();
 			for (File imageFile : makeFileList(id, extension)) {
+				ap.setName(jobName);
 				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI().toURL());
+				
 				ap.addImage(aoi);
 			}
 		}
