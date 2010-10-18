@@ -65,7 +65,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected Boolean validateTicket = false;
 	//The timeout for the ticket
 	protected Integer oCRTimeOut = null;
-	
+
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
 
@@ -147,7 +147,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	public Ticket(URL url) throws IOException {
 		this(url.openStream());
 	}
-	
+
 	public void parseTicket () throws MalformedURLException {
 		//TODO: Finish this method
 		XmlOptions options = new XmlOptions();
@@ -171,13 +171,13 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 		//RecognitionParams rp = ticket.getRecognitionParams();
 		List<InputFile> fl = ticket.getInputFileList();
-		for (InputFile i: fl) {
+		for (InputFile i : fl) {
 			AbbyyOCRImage aoi = new AbbyyOCRImage();
 			aoi.setRemoteFileName(i.getName());
 			super.addImage(aoi);
 		}
 		Map<OCRFormat, OCROutput> outputs = new HashMap<OCRFormat, OCROutput>();
-		for (OutputFileFormatSettings offs: params.getExportFormatList()) {
+		for (OutputFileFormatSettings offs : params.getExportFormatList()) {
 			if (offs.isSetOutputFileFormat()) {
 				OCRFormat format = OCRFormat.parseOCRFormat(offs.getOutputFileFormat());
 				String location = offs.getOutputLocation();
@@ -185,20 +185,20 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 				aoo.setRemoteLocation(location);
 				outputs.put(format, aoo);
 			}
-			
+
 		}
 		setOcrOutput(outputs);
-			
+
 	}
-	
+
 	public void write (OutputStream out, String identifier) throws IOException {
 		if (out == null) {
 			throw new IllegalStateException();
 		}
-		
+
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
-		
+
 		/*
 		Integer OCRTimeOut = getOcrImages().size() * millisPerFile;
 		if (maxOCRTimeout < OCRTimeOut) {
@@ -233,7 +233,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			throw new OCRException("No export options given!");
 		}
 		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[getOcrOutput().size()];
-		for (OCRFormat of: getOcrOutput().keySet()) {
+		for (OCRFormat of : getOcrOutput().keySet()) {
 			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(of);
 			if (exportFormat == null) {
 				continue;
@@ -246,15 +246,15 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			settings[i] = exportFormat;
 			i++;
 		}
-		
+
 		exportParams.setExportFormatArray(settings);
-		
+
 		ticketDoc.save(out, opts);
 		if (validateTicket && !ticket.validate()) {
 			logger.error("Ticket not valid!");
 			throw new RuntimeException("Ticket not valid!");
 		}
-		
+
 	}
 
 	public void write (File ticketFile, String identifier) throws IOException {
@@ -294,25 +294,26 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	}
 
 	/**
-	 * @param oCRTimeOut the oCRTimeOut to set
+	 * @param oCRTimeOut
+	 *            the oCRTimeOut to set
 	 */
 	public void setoCRTimeOut (Integer oCRTimeOut) {
 		this.oCRTimeOut = oCRTimeOut;
 	}
 
 	@Override
-	public void addImage(OCRImage ocrImage) {
+	public void addImage (OCRImage ocrImage) {
 		AbbyyOCRImage aoi = new AbbyyOCRImage(ocrImage);
 		String[] urlParts = ocrImage.getUrl().toString().split("/");
 		if (getName() != null) {
-			aoi.setRemoteFileName(getName() + "-" + urlParts[urlParts.length - 1]); 
+			aoi.setRemoteFileName(getName() + "-" + urlParts[urlParts.length - 1]);
 		} else {
 			logger.error("Name for process not set, expect error if your using parallel processes");
 			//TODO: Raise an Exception here
 			aoi.setRemoteFileName(urlParts[urlParts.length - 1]);
 		}
 		super.addImage(aoi);
-		
+
 	}
-	
+
 }

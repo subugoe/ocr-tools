@@ -6,13 +6,13 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 public class AbbyyOCROutput extends AbstractOCROutput {
 
 	protected String remoteLocation;
-	
+
 	public AbbyyOCROutput(OCROutput ocrOutput) {
 		super(ocrOutput);
 	}
 
 	public AbbyyOCROutput() {
-		
+
 	}
 
 	/**
@@ -23,12 +23,11 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * @param remoteLocation the remoteLocation to set
+	 * @param remoteLocation
+	 *            the remoteLocation to set
 	 */
 	public void setRemoteLocation (String remoteLocation) {
 		this.remoteLocation = remoteLocation;
 	}
-	
-	
 
 }

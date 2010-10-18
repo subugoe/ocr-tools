@@ -218,7 +218,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 					copyOnly = false;
 					hotfolder.deleteIfExists(inputDerectoryFile.getAbsolutePath());
 					logger.trace(" Failed!! XMLTicket can not created for " + identifier);
-					
 
 				}
 			}
@@ -439,7 +438,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 		return size;
 	}
-	
+
 	/**
 	 * Calculate size.
 	 * 
@@ -449,7 +448,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 */
 	public Long calculateSize () {
 		Long size = 0l;
-		for (OCRImage i: getOcrImages()) {
+		for (OCRImage i : getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) i;
 			size += aoi.getSize();
 		}
@@ -916,7 +915,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 		return dirs;
 	}
-	
+
 	/**
 	 * The Class TimeoutExcetion.
 	 */

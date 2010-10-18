@@ -222,12 +222,12 @@ public class Hotfolder extends Thread {
 			return content.getSize();
 		}
 	}
-	
+
 	//TODO: Finish this
 	public Long getTotalCount (URL url) throws FileSystemException {
 		FileObject urlFile = fsManager.resolveFile(url.toString());
 		Long count = 0l;
-		
+
 		return count;
 	}
 

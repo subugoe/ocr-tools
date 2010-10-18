@@ -25,10 +25,9 @@ public class ConfigParser {
 	protected static String DEFAULT_CONFIG = "abbyyServer.properties";
 
 	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
-	
+
 	static {
-		
-			
+
 	}
 
 	public ConfigParser() {
@@ -91,7 +90,7 @@ public class ConfigParser {
 		}
 
 		// Add a preconfigred local output folder
-		
+
 		if (debugAuth) {
 			logger.debug("URL: " + webdavURL);
 			logger.debug("User: " + webdavUsername);
@@ -137,8 +136,8 @@ public class ConfigParser {
 	public void setWebdavURL (String webdavURL) {
 		ConfigParser.webdavURL = webdavURL;
 	}
-	
-	public Boolean getDebugAuth() {
+
+	public Boolean getDebugAuth () {
 		return debugAuth;
 	}
 }

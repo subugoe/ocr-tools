@@ -1,4 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
+
 /*
 
 © 2010, SUB Goettingen. All rights reserved.
@@ -23,13 +24,12 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 
 /**
- * The Class AbbyyOCRImage. Is a representation of an OCRImage suitable
- * for holding references to remote files as used by the Abbyy Recognition
- * Server. It adds two fields:
- * - remoteFileName, the file name as used on the remote system, usally a
- * relative file name and thus represented as a String.
- * - remoteURL, an URL representing the remote file, it should be resolveable
- * from the local Server. 
+ * The Class AbbyyOCRImage. Is a representation of an OCRImage suitable for
+ * holding references to remote files as used by the Abbyy Recognition Server.
+ * It adds two fields: - remoteFileName, the file name as used on the remote
+ * system, usally a relative file name and thus represented as a String. -
+ * remoteURL, an URL representing the remote file, it should be resolveable from
+ * the local Server.
  */
 public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	//This represents the filename that should be written to the ticket.
@@ -37,32 +37,36 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 
 	//This represents the URL to the remote system
 	protected URL remoteURL = null;
-	
+
 	protected Long size = 0l;
-	
+
 	/**
 	 * Instantiates a new abbyy ocr file.
 	 * 
-	 * @param imageUrl the image url
+	 * @param imageUrl
+	 *            the image url
 	 */
 	public AbbyyOCRImage(URL imageUrl) {
 		super(imageUrl);
 	}
-	
-	public AbbyyOCRImage (OCRImage i) {
+
+	public AbbyyOCRImage(OCRImage i) {
 		super(i);
 	}
-	
-	protected AbbyyOCRImage () {
-		
+
+	protected AbbyyOCRImage() {
+
 	}
-	
+
 	/**
 	 * Instantiates a new abbyy ocr file.
-	 *
-	 * @param imageUrl the image url
-	 * @param remoteURL the remote url
-	 * @param remoteFileName the remote file name
+	 * 
+	 * @param imageUrl
+	 *            the image url
+	 * @param remoteURL
+	 *            the remote url
+	 * @param remoteFileName
+	 *            the remote file name
 	 */
 	public AbbyyOCRImage(URL imageUrl, URL remoteURL, String remoteFileName) {
 		super(imageUrl);
@@ -72,47 +76,49 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	}
 
 	//TODO: Add a copy contructor for OCRFile.
-	
+
 	/**
 	 * Gets the remote file name.
-	 *
+	 * 
 	 * @return the remote file name
 	 */
-	public String getRemoteFileName() {
+	public String getRemoteFileName () {
 		return remoteFileName;
 	}
 
 	/**
 	 * Sets the remote file name.
-	 *
-	 * @param remoteFileName the new remote file name
+	 * 
+	 * @param remoteFileName
+	 *            the new remote file name
 	 */
-	public void setRemoteFileName(String remoteFileName) {
+	public void setRemoteFileName (String remoteFileName) {
 		this.remoteFileName = remoteFileName;
 	}
 
 	/**
 	 * Gets the remote url.
-	 *
+	 * 
 	 * @return the remote url
 	 */
-	public URL getRemoteURL() {
+	public URL getRemoteURL () {
 		return this.remoteURL;
 	}
 
 	/**
 	 * Sets the remote url.
-	 *
-	 * @param remoteURL the new remote url
+	 * 
+	 * @param remoteURL
+	 *            the new remote url
 	 */
-	public void setRemoteURL(URL remoteURL) {
+	public void setRemoteURL (URL remoteURL) {
 		this.remoteURL = remoteURL;
 	}
-	
-	public Long getSize() {
+
+	public Long getSize () {
 		return size;
 	}
-	
+
 	public void setSize (Long size) {
 		this.size = size;
 	}
