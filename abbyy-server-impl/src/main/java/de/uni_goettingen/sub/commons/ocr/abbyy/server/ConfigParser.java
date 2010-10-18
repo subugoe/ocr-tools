@@ -25,7 +25,7 @@ public class ConfigParser {
 	protected Integer maxThreads;
 	protected Boolean checkServerState;
 	protected Boolean debugAuth = false;
-	public final static String DEFAULT_CONFIG = "abbyyServer.properties";
+	public final static String DEFAULT_CONFIG = "/abbyyServer.properties";
 	public final static String DEBUG_PROPERTY= "ocr.finereader.server.debug.auth";
 
 	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
@@ -33,11 +33,7 @@ public class ConfigParser {
 	protected URL configUrl;
 
 	public ConfigParser() {
-		try {
-			this.configUrl = new File(DEFAULT_CONFIG).toURI().toURL();
-		} catch (MalformedURLException e) {
-			throw new RuntimeException("Error loading configuration file", e);
-		}
+		this.configUrl = getClass().getResource(DEFAULT_CONFIG);
 	}
 
 	public ConfigParser(URL url) throws ConfigurationException {
