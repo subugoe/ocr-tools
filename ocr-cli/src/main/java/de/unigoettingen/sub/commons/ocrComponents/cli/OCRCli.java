@@ -97,7 +97,7 @@ public class OCRCli {
 	protected static OCREngine engine;
 	
 	/** The process. */
-	protected static List<OCRProcess> processes;
+	protected static List<OCRProcess> processes = new ArrayList<OCRProcess>();
 
 	
 	
@@ -146,7 +146,13 @@ public class OCRCli {
 			
 			for (String dir : files) {
 				List<File> newFiles = new ArrayList<File>();
-				newFiles.addAll(getImageDirectories(new File(dir)));
+				try {
+					//Catch this exception to generate a proper error message
+					newFiles.addAll(getImageDirectories(new File(dir)));
+				} catch (IllegalStateException ise) {
+					System.err.println(new File(dir).getAbsolutePath() + "is not a directory! Exiting");
+					System.exit(5);
+				}
 				//TODO
 			//	OCRProcess p = engine.newProcess(new File(dir));
 				OCRImage img = null;
