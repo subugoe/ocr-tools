@@ -18,7 +18,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -83,7 +82,6 @@ public class Hotfolder extends Thread {
 	public void copyFilesToServer (List<AbbyyOCRImage> files) throws InterruptedException, FileSystemException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (AbbyyOCRImage info : files) {
-			/* File f = urlToFile(AbbyyFileName); */
 			FileObject remoteFile = fsManager.resolveFile(info.getRemoteURL().toString());
 			FileObject imageUrlfile = fsManager.resolveFile(info.getUrl().toString());
 			// Delete if exists
@@ -115,7 +113,7 @@ public class Hotfolder extends Thread {
 	 */
 	//TODO: Use URLs
 	//TODO: This is dangerous, check if the file exists!
-	public void copyAllFiles (String from, String to) throws FileSystemException {
+	public void copyFile (String from, String to) throws FileSystemException {
 		FileObject remoteFile = fsManager.resolveFile(from);
 		FileObject localFile = fsManager.resolveFile(to);
 		localFile.copyFrom(remoteFile, new AllFileSelector());
@@ -268,23 +266,6 @@ public class Hotfolder extends Thread {
 			imageList.add(new AbbyyOCRImage(new URL(children[i].getName().toString())));
 		}
 		return imageList;
-	}
-
-	/**
-	 * File to url.
-	 * 
-	 * @param file
-	 *            the file
-	 * @return the uRL
-	 */
-	public URL fileToURL (File file) {
-		URL url = null;
-		try {
-			url = new URL("file://" + file.getPath());
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		return url;
 	}
 
 	/**

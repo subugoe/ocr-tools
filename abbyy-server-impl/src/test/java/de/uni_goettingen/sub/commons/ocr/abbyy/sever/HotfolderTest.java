@@ -19,7 +19,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 public class HotfolderTest {
 	final static Logger logger = LoggerFactory.getLogger(HotfolderTest.class);
 	public static File BASEFOLDER_FILE = TicketTest.BASEFOLDER_FILE;
-	public static File TEST_INPUT_FILE, TEST_HOTFOLDER_FILE;
+	public static File TEST_INPUT_FILE, TEST_HOTFOLDER_FILE, TEST_EXPECTATIONS_FILE;
 	public static URL TEST_INPUT_URL, TEST_HOTFOLDER_URL;
 	public static String INPUT = "input";
 	public static String HOTFOLDER = "hotfolder";
@@ -83,7 +83,7 @@ public class HotfolderTest {
 	public void testCopy () throws FileSystemException, MalformedURLException, URISyntaxException {
 		logger.debug("Copy " + testImageUrl.toString() + " to " + target);
 		Hotfolder h = new Hotfolder();
-		h.copyAllFiles(testImageUrl.toString(), target);
+		h.copyFile(testImageUrl.toString(), target);
 		assertTrue("File can't be found.", new File(new URL(target).toURI()).exists());
 	}
 
