@@ -353,7 +353,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			ocrOutFormatFile = null;
 			inputFiles = null;
 			logger.trace("AbbyyProcess " + identifier + " ended ");
-			System.out.println("AbbyyProcess " + identifier + " ended ");
+			//System.out.println("AbbyyProcess " + identifier + " ended ");
 		}
 
 	}
@@ -369,6 +369,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @throws FileSystemException
 	 * @throws MalformedURLException 
 	 */
+	//TODO: Remove this.
 	protected List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException, MalformedURLException {
 		//	List<File> files = makeFileList(dir, EXTENSION);
 
