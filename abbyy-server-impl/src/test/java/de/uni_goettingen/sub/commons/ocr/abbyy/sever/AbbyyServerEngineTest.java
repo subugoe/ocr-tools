@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.vfs.FileSystemException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -33,21 +34,27 @@ public class AbbyyServerEngineTest {
 	public Hotfolder hotfolder;
 	protected List<File> directories = new ArrayList<File>();
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngineTest.class);
+	protected static AbbyyServerSimulator ass = null; 
 
 	@Before
 	public void init () throws FileSystemException, ConfigurationException, URISyntaxException {
 		logger.debug("Starting Test");
-		ConfigParser config = new ConfigParser();
-		logger.debug(config.getWebdavURL());
+		ConfigParser config = new ConfigParser().loadConfig();
+		
+		logger.debug("Server URL is " + config.getWebdavURL());
 		URI uri = new URI(config.getWebdavURL());
 
 		assertNotNull(uri);
-		/*
-		abbyy = AbbyyServerEngine.getInstance();
-		assertNotNull(abbyy);
-		*/
-		AbbyyServerSimulator ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTED_FILE);
+
+		ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTED_FILE);
 		ass.start();
+	}
+	
+	@Test
+	public void checkThread () throws InterruptedException {
+		Thread.sleep(1000);
+		logger.debug("Checking for Thread");
+		assertTrue("Thread is dead", ass.isAlive());
 	}
 
 	@Test
@@ -202,6 +209,12 @@ public class AbbyyServerEngineTest {
 			}
 		}
 
+	}
+	
+	@After
+	public void stop() throws InterruptedException {
+		ass.interrupt();
+		ass.join();
 	}
 
 }

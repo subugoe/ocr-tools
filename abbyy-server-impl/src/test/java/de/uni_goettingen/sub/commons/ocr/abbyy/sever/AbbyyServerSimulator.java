@@ -51,22 +51,17 @@ public class AbbyyServerSimulator extends Thread {
 	@Override
 	public void run () {
 		while (!isInterrupted()) {
-
-			if (input.listFiles().length == 0) {
-				finish = true;
-			}
-
 			try {
 				sleep(500);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				interrupt();
 			}
 
 			if (finish == true) {
 				clean();
 				interrupt();
 			}
+			logger.trace("End of loop.");
 		}
 
 	}
