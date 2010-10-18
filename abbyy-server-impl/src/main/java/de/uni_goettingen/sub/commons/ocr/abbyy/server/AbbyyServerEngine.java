@@ -52,7 +52,7 @@ public class AbbyyServerEngine implements OCREngine {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngine.class);
 
 	// The configuration.
-	ConfigParser config;
+	protected ConfigParser config;
 
 	/** The hotfolder. */
 	protected Hotfolder hotfolder;
@@ -60,24 +60,12 @@ public class AbbyyServerEngine implements OCREngine {
 	/** single instance of AbbyyServerEngine. */
 	private static AbbyyServerEngine _instance;
 
-	// The server url.
-	protected static String serverUrl = null;
-
 	// State variables
 	// The total file count.
 	protected static Long totalFileCount = 0l;
 
 	// The total file size.
 	protected static Long totalFileSize = 0l;
-	// Folders
-	/** The input folder. */
-	protected static String inputFolder = null;
-
-	/** The output folder. */
-	protected static String outputFolder = null;
-
-	/** The error folder. */
-	protected static String errorFolder = null;
 
 	// internal tweaking variables
 	// Variables used for process management
@@ -112,20 +100,16 @@ public class AbbyyServerEngine implements OCREngine {
 		hotfolder = new Hotfolder(config);
 
 		//TODO: remove this
-		serverUrl = ConfigParser.serverURL;
-		inputFolder = config.inputFolder;
-		outputFolder = config.outputFolder;
-		errorFolder = config.errorFolder;
-
+		
 		maxSize = config.getMaxSize();
 		maxFiles = config.getMaxFiles();
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
 
-		hotfolder.setErrorFolder(errorFolder);
-		hotfolder.setInputFolder(inputFolder);
-		hotfolder.setOutputFolder(outputFolder);
-		hotfolder.setWebdavURL(serverUrl);
+		hotfolder.setErrorFolder(config.errorFolder);
+		hotfolder.setInputFolder(config.inputFolder);
+		hotfolder.setOutputFolder(config.outputFolder);
+		hotfolder.setWebdavURL(config.getServerURL());
 
 	}
 
@@ -200,12 +184,13 @@ public class AbbyyServerEngine implements OCREngine {
 		if (maxSize != 0 && maxFiles != 0) {
 
 			// check if a slash is already appended
+			final String serverUrl = config.getServerURL();
 			Map<URL, Long> sizeMap = new LinkedHashMap<URL, Long>() {
 				{
-
-					put(new URL(serverUrl + inputFolder + "/"), 0l);
-					put(new URL(serverUrl + inputFolder + "/"), 0l);
-					put(new URL(serverUrl + errorFolder + "/"), 0l);
+					//TODO: There is an error in here
+					put(new URL(serverUrl + config.getInputFolder() + "/"), 0l);
+					put(new URL(serverUrl + config.getOutoutFolder() + "/"), 0l);
+					put(new URL(serverUrl + config.getErrorFolder() + "/"), 0l);
 				}
 			};
 

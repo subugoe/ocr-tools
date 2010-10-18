@@ -266,9 +266,9 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 					}
 
-				} catch (Exception e1) {
-					logger.error("Got Exception", e1);
-					throw new RuntimeException(e1);
+				} catch (Exception e) {
+					logger.error("Got Exception", e);
+					throw new RuntimeException(e);
 				}
 			}
 			wait = fileInfos.size() * millisPerFile;
@@ -382,6 +382,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @throws MalformedURLException 
 	 */
 	//TODO: Remove this.
+	//TODO: remove size calculation
 	protected List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException, MalformedURLException {
 		//	List<File> files = makeFileList(dir, EXTENSION);
 
