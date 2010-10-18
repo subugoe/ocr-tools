@@ -114,6 +114,7 @@ public class ConfigParser {
 		return this;
 	}
 
+	//TODO: Check if we really need this
 	public static String parseString (String str) {
 		String remoteFile = null;
 		if (str.contains("/./")) {
@@ -129,6 +130,7 @@ public class ConfigParser {
 		return remoteFile;
 
 	}
+
 
 	public String getWebdavURL () {
 		return serverURL;

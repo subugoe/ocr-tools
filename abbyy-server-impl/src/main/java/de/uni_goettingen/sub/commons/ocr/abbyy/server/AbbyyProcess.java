@@ -427,28 +427,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	}
 
 	/**
-	 * Calculate size.
+	 * Calculate size of the OCRImages representing this process
 	 * 
-	 * @param files
-	 *            is the List of files
-	 * @return the long, size of all files
-	 */
-	//TODO: Remove this
-	/*
-	public static Long calculateSize (List<File> files) {
-		Long size = 0l;
-		for (File file : files) {
-			size += file.length();
-		}
-		return size;
-	}
-	*/
-
-	/**
-	 * Calculate size.
-	 * 
-	 * @param files
-	 *            is the List of files
 	 * @return the long, size of all files
 	 */
 	public Long calculateSize () {
