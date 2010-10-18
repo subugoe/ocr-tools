@@ -23,7 +23,7 @@ public class AbbyyProcessTest {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyProcessTest.class);
 	public static File BASEFOLDER_FILE = TicketTest.BASEFOLDER_FILE;
 	public static List<String> TEST_FOLDERS;
-	public static String INPUT = "input";
+
 	
 	static {
 		TEST_FOLDERS = new ArrayList<String>(){{
@@ -45,12 +45,12 @@ public class AbbyyProcessTest {
 	@Test
 	public void createAbbyyProcess () throws IOException {
 		for (String book: TEST_FOLDERS) {
-			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + INPUT + File.separator + book);
+			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyProcess for "+ testDir.getAbsolutePath());
 			AbbyyProcess aop = AbbyyProcess.createProcessFromDir(testDir, TicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
-			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + INPUT + File.separator + book + ".xml");
+			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
 			aop.write(testTicket, testDir.getName());
 			logger.debug("Wrote Ticket:\n" + TicketTest.dumpTicket(new FileInputStream(testTicket)));
 		}
@@ -60,12 +60,12 @@ public class AbbyyProcessTest {
 	@Test
 	public void checkTicketCount () throws IOException, XmlException {
 		for (String book: TEST_FOLDERS) {
-			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + INPUT + File.separator + book);
+			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyProcess for "+ testDir.getAbsolutePath());
 			AbbyyProcess aop = AbbyyProcess.createProcessFromDir(testDir, TicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
-			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + INPUT + File.separator + book + ".xml");
+			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
 			aop.write(testTicket, testDir.getName());
 			logger.debug("Wrote Ticket:\n" + TicketTest.dumpTicket(new FileInputStream(testTicket)));
 			assertTrue("This fails if the number of files between ticket and file system differs.", TicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
@@ -81,7 +81,7 @@ public class AbbyyProcessTest {
 	public static void cleanup () {
 		logger.debug("Cleaning up");
 		for (String book: TEST_FOLDERS) {
-			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + INPUT + File.separator + book + ".xml");
+			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
 			logger.equals("Deleting file " + testTicket.getAbsolutePath());
 			testTicket.delete();
 			assertTrue(!testTicket.exists());
