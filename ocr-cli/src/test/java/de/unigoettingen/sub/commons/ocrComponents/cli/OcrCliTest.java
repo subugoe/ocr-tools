@@ -3,8 +3,6 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,10 +14,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli;
 
-
 public class OcrCliTest {
-
-	
 	@Before
 	public  void init () {
 	}
