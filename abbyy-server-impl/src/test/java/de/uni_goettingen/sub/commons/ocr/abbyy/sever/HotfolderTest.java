@@ -50,12 +50,17 @@ public class HotfolderTest {
 	public static void init () throws MalformedURLException {
 		testDirFile = new File(TEST_HOTFOLDER_FILE.getAbsolutePath() + File.separator + dirName);
 		testDirUrl = testDirFile.toURI().toURL();
+		logger.info("testDirUrl is " + testDirUrl);
 		
 		testImageFile = new File(TEST_INPUT_FILE.getAbsolutePath() + File.separator + AbbyyProcessTest.TEST_FOLDERS.get(0) + File.separator + IMAGE_NAME);
+		assertTrue(testImageFile.exists());
 		testImageUrl = testImageFile.toURI().toURL();
+		logger.info("testImageUrl is " + testImageUrl);
 		
 		testImageTargetFile = new File(TEST_HOTFOLDER_FILE.getAbsolutePath() + File.separator + dirName + File.separator + IMAGE_NAME);
+		assertTrue(!testImageTargetFile.exists());
 		testImageTargetUrl = testImageTargetFile.toURI().toURL();
+		logger.info("testImageTargetUrl is " + testImageTargetUrl);
 	}
 
 	@Ignore
@@ -77,15 +82,14 @@ public class HotfolderTest {
 		String localfile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/error/testfile1";
 		//assertTrue(new File(TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile").exists());
 		///		hot.copyAllFiles(remotefile, localfile);
-		System.out.println(localfile);
 		hot.delete(input);
 
-		//zahl = hot.getTotalSize(hotfol);
 
 	}
 	
 	@Test
 	public void testMkDir () throws MalformedURLException, FileSystemException {
+		logger.debug("Checking if " + testDirUrl.toString() + " can be created.");
 		Hotfolder h = new Hotfolder();
 		h.mkDir(testDirUrl);
 		assertTrue(testDirFile.exists());
@@ -93,6 +97,7 @@ public class HotfolderTest {
 	
 	@Test
 	public void checkSize () throws FileSystemException {
+		logger.debug("Checking size of " + testImageUrl.toString());
 		Hotfolder h = new Hotfolder();
 		Long size = h.getTotalSize(testImageUrl);
 		logger.debug("Size is " + size.toString());
@@ -101,6 +106,7 @@ public class HotfolderTest {
 	
 	@Test
 	public void testCopy () throws FileSystemException {
+		logger.debug("Copy " + testImageUrl.toString() + " to " + testDirUrl.toString());
 		Hotfolder h = new Hotfolder();
 		h.copyAllFiles(testDirUrl.toString(), testImageUrl.toString());
 		assertTrue(testImageTargetFile.exists());
@@ -108,6 +114,7 @@ public class HotfolderTest {
 	
 	@Test
 	public void testExists() throws FileSystemException {
+		logger.debug("Checking if " + testImageTargetUrl.toString() + " exists.");
 		Hotfolder h = new Hotfolder();
 		assertTrue(h.exists(testImageTargetUrl.toString()));
 	}
@@ -118,6 +125,9 @@ public class HotfolderTest {
 
 		testDirFile.delete();
 		assertTrue("Directory wasn't deleted", !testDirFile.exists());
+		
+		testImageTargetFile.delete();
+		assertTrue("File wasn't deleted", !testImageTargetFile.exists());
 	}
 
 }
