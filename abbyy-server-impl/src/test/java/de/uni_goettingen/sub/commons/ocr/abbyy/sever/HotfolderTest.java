@@ -72,14 +72,14 @@ public class HotfolderTest {
 		System.out.println(TicketTest.getBaseFolderAsFile().getAbsolutePath().toString());
 		URL local = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "local/testfile");
 		URL input = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile");
-		URL hotfol = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "local/");
+		//URL hotfol = new URL(TicketTest.getBaseFolderAsFile().toURI().toURL() + "local/");
 		AbbyyOCRImage abbyy = new AbbyyOCRImage(local, input, "");
 		files.add(abbyy);
 
 		Hotfolder hot = new Hotfolder();
 
-		String remotefile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile";
-		String localfile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/error/testfile1";
+		//String remotefile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile";
+		//String localfile = TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/error/testfile1";
 		//assertTrue(new File(TicketTest.getBaseFolderAsFile().toURI().toURL() + "hotfolder/input/testfile").exists());
 		///		hot.copyAllFiles(remotefile, localfile);
 		hot.delete(input);
