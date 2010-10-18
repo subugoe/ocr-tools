@@ -872,6 +872,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		for (File id : imageDirs) {
 			if (imageDirs.size() > 1) {
+				logger.error("Directory " + directory.getAbsolutePath() + " contains more then one image directories");
 				throw new OCRException("createProcessFromDir can currently create only one AbbyyProcess!");
 			}
 			String jobName = id.getName();
