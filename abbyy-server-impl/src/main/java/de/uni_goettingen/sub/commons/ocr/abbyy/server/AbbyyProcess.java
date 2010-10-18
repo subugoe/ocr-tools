@@ -552,7 +552,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		inputFiles = new ArrayList<File>();
 		for (AbbyyOCRImage fileInfo : fileInfos) {
 			if (fileInfo.getRemoteURL().toString() != null) {
-				inputFiles.add(hotfolder.urlToFile(fileInfo.getRemoteURL()));
+				//TODO: Repair this.
+				//inputFiles.add(hotfolder.urlToFile(fileInfo.getRemoteURL()));
 			}
 			if (ticketTempDir == null) {
 				ticketTempDir = webdavURL + inputFolder + "/" + identifier + "/" + ticketFileName;
