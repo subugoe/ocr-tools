@@ -40,9 +40,7 @@ public class AbbyyProcessTest {
 			add("PPN514401303_1890");
 			add("PPN514854804_0001");
 		}};
-				
 	}
-	
 	
 	@BeforeClass
 	public static void init () {
@@ -99,8 +97,6 @@ public class AbbyyProcessTest {
 		op.setOcrImages(imgList);
 		AbbyyProcess aop = (AbbyyProcess) op;
 		//aop.write(out, identifier)
-
-		
 		
 	}
 	

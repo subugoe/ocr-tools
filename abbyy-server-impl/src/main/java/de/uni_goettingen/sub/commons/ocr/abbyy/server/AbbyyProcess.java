@@ -838,10 +838,10 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		//URL folder = hotfolder.stringToUrl(urlpath.getAbsolutePath());
 		URL localFolder = hotfolder.stringToUrl(localfile + "/" + identifier);
 		hotfolder.mkDir(localFolder);
-		hotfolder.copyAllFiles(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix, localfile + "/" + identifier + "/" + identifier + reportSuffix);
+		hotfolder.copyFile(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix, localfile + "/" + identifier + "/" + identifier + reportSuffix);
 		for (String fileName : checkfile) {
 			//System.out.println(localfile + "/" + identifier + "/" + fileName);
-			hotfolder.copyAllFiles(urlpath.getAbsolutePath() + "/" + fileName, localfile + "/" + identifier + "/" + fileName);
+			hotfolder.copyFile(urlpath.getAbsolutePath() + "/" + fileName, localfile + "/" + identifier + "/" + fileName);
 			logger.debug("Copy File From " + urlpath.getAbsolutePath() + "/" + fileName + " To" + localfile);
 		}
 		//hotfolder.deleteIfExists(folder);
