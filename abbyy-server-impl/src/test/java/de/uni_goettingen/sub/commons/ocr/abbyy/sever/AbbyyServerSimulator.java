@@ -37,12 +37,14 @@ public class AbbyyServerSimulator extends Thread {
 		for (File f : Arrays.asList(errorExpected.listFiles())) {
 			if (f.isDirectory()) {
 				resultsError.put(f.getName(), f);
+				logger.debug("Adding " + f.getName() + " as error result.");
 			}
 		}
 
 		for (File f : Arrays.asList(outputExpected.listFiles())) {
 			if (f.isDirectory()) {
 				resultsError.put(f.getName(), f);
+				logger.debug("Adding " + f.getName() + " as expected result.");
 			}
 		}
 
@@ -61,7 +63,7 @@ public class AbbyyServerSimulator extends Thread {
 				clean();
 				interrupt();
 			}
-			logger.trace("End of loop.");
+			logger.trace("Reached end of loop.");
 		}
 
 	}

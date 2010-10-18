@@ -52,31 +52,18 @@ public class AbbyyServerEngine implements OCREngine {
 	/** The Constant logger. */
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngine.class);
 
-	/** The config. */
-	//Configuration config ;
+	// The configuration.
 	ConfigParser config;
-
-	/** The process. */
-	//protected AbbyyProcess process;
 
 	/** The hotfolder. */
 	protected Hotfolder hotfolder;
 
 	/** single instance of AbbyyServerEngine. */
 	private static AbbyyServerEngine _instance;
+	
+	// The server url.
+	protected static String serveUrl = null;
 
-	/** The EXTENSION. */
-	protected static String extension = "tif";
-	// Server information
-	/** The webdav url. */
-	protected static String webdavURL = null;
-
-	/** The webdav username. */
-	//protected static String webdavUsername = null;
-
-	/** The webdav password. */
-	//protected static String webdavPassword = null;
-	// public String defaultConfig = "config-properties";
 	// State variables
 	/** The total file count. */
 	protected static Long totalFileCount = 0l;
@@ -104,16 +91,12 @@ public class AbbyyServerEngine implements OCREngine {
 	/** The check server state. */
 	protected static Boolean checkServerState = true;
 
-	/** The local output dir. */
-	protected static String localOutputDir = null;
-
 	/** The directories as process */
 	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
 
-	//AbbyyProcess ocrp ;
-
+	protected Boolean started = false;
+	
 	// OCR Processes
-	/** The processes. */
 	Queue<AbbyyProcess> processes = new ConcurrentLinkedQueue<AbbyyProcess>();
 
 	/**
@@ -129,7 +112,7 @@ public class AbbyyServerEngine implements OCREngine {
 		hotfolder = new Hotfolder(config);
 		
 		//TODO: remove this
-		webdavURL = ConfigParser.serverURL;
+		serveUrl = ConfigParser.serverURL;
 		inputFolder = config.inputFolder;
 		outputFolder = config.outputFolder;
 		errorFolder = config.errorFolder;
@@ -142,7 +125,7 @@ public class AbbyyServerEngine implements OCREngine {
 		hotfolder.setErrorFolder(errorFolder);
 		hotfolder.setInputFolder(inputFolder);
 		hotfolder.setOutputFolder(outputFolder);
-		hotfolder.setWebdavURL(webdavURL);
+		hotfolder.setWebdavURL(serveUrl);
 
 	}
 
@@ -237,9 +220,9 @@ public class AbbyyServerEngine implements OCREngine {
 		if (maxSize != 0 && maxFiles != 0) {
 			List<URL> urls = new ArrayList<URL>();
 			// check if a slash is already appended
-			String input_uri = webdavURL + inputFolder + "/";
-			String output_uri = webdavURL + outputFolder + "/";
-			String error_uri = webdavURL + errorFolder + "/";
+			String input_uri = serveUrl + inputFolder + "/";
+			String output_uri = serveUrl + outputFolder + "/";
+			String error_uri = serveUrl + errorFolder + "/";
 
 			File inputfile = new File(input_uri);
 			input_uri = inputfile.getAbsolutePath();
@@ -302,7 +285,19 @@ public class AbbyyServerEngine implements OCREngine {
 
 	@Override
 	public Observer recognize (OCRProcess process) {
-		// TODO Auto-generated method stub
+		processes.add((AbbyyProcess) process);
+		if (!started) {
+			try {
+				start();
+			} catch (FileSystemException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RuntimeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		return null;
 	}
 

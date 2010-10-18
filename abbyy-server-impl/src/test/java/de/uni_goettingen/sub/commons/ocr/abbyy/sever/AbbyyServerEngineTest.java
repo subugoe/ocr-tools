@@ -41,8 +41,8 @@ public class AbbyyServerEngineTest {
 		logger.debug("Starting Test");
 		ConfigParser config = new ConfigParser().loadConfig();
 		
-		logger.debug("Server URL is " + config.getWebdavURL());
-		URI uri = new URI(config.getWebdavURL());
+		logger.debug("Server URL is " + config.getServerURL());
+		URI uri = new URI(config.getServerURL());
 
 		assertNotNull(uri);
 
