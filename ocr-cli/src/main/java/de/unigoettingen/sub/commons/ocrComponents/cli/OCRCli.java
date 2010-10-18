@@ -97,7 +97,7 @@ public class OCRCli {
 	protected static OCREngine engine;
 	
 	/** The process. */
-	protected static OCRProcess process;
+	protected static List<OCRProcess> processes;
 
 	
 	
@@ -123,10 +123,12 @@ public class OCRCli {
 	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
-		logger.info("Creating OCRRunner instance");
+		logger.info("Creating OCRCli instance");
 		OCRCli ocr = OCRCli.getInstance();	
 		ocr.configureFromArgs(args);
-		engine.recognize();
+		for (OCRProcess p: processes) {
+			engine.recognize(p);
+		}
 	}
 
 	/**
@@ -150,11 +152,11 @@ public class OCRCli {
 				OCRImage img = null;
 				for (File file : newFiles) {
 					img = engine.newImage();
-					System.out.println(engine.newImage().getClass());
-					System.out.println(img.toString());
-					System.out.print(file.toString());
-					img.setUrl(new URL ("file://" + file.toString()));
-					//img.setUrl(new URL(file.getAbsolutePath().toString()));
+					try {
+						img.setUrl(file.toURI().toURL());
+					} catch (MalformedURLException e) {
+						logger.error("This should never happen");
+					}
 				//	p.addImage(img);
 				}
 				//list of the directory as process
@@ -234,11 +236,11 @@ public class OCRCli {
 		if (str.contains(",")) {
 			for (String lang : Arrays.asList(str.split(","))) {
 				langs.add(new Locale(lang));
-			    process.addLanguage(new Locale(lang));
+			    //process.addLanguage(new Locale(lang));
 			}
 		} else {
 			langs.add(new Locale(str));
-			process.addLanguage(new Locale(str));
+			//process.addLanguage(new Locale(str));
 		}
 		return langs;
 	}
