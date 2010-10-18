@@ -201,8 +201,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			}
 			String inputDerectory = webdavURL + inputFolder + "/" + identifier;
 			File inputDerectoryFile = new File(inputDerectory);
-			if (!hotfolder.fileIfexists(inputDerectoryFile.getAbsolutePath())) {
-				hotfolder.mkCol(hotfolder.stringToUrl(inputDerectoryFile.getAbsolutePath()));
+			if (!hotfolder.exists(inputDerectoryFile.getAbsolutePath())) {
+				hotfolder.mkDir(hotfolder.stringToUrl(inputDerectoryFile.getAbsolutePath()));
 
 			}
 
@@ -663,7 +663,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		String resultURLPrefix = webdavURL + outputFolder + "/" + identifier + "/" + identifier + reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
 
-		return hotfolder.fileIfexists(resultURLPrefixpath.getAbsolutePath());
+		return hotfolder.exists(resultURLPrefixpath.getAbsolutePath());
 	}
 
 	/**
@@ -676,7 +676,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	protected Boolean checkErrorXmlResults () throws FileSystemException {
 		String resultURLPrefix = webdavURL + errorFolder + "/" + identifier + "/" + identifier + reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
-		return hotfolder.fileIfexists(resultURLPrefixpath.getAbsolutePath());
+		return hotfolder.exists(resultURLPrefixpath.getAbsolutePath());
 	}
 
 	/**
@@ -785,7 +785,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		for (String fileName : checkfile) {
 			File urlpath = new File(url + "/" + fileName);
-			if (hotfolder.fileIfexists(urlpath.getAbsolutePath())) {
+			if (hotfolder.exists(urlpath.getAbsolutePath())) {
 				logger.debug("File " + fileName + " exists already");
 			} else {
 				logger.debug("File " + fileName + " Not exists");
@@ -810,7 +810,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		int result = 0;
 		File urlpath = new File(url);
 		for (String fileName : checkfile) {
-			if (hotfolder.fileIfexists(urlpath.getAbsolutePath() + "/" + fileName)) {
+			if (hotfolder.exists(urlpath.getAbsolutePath() + "/" + fileName)) {
 				logger.debug("File " + fileName + " exists already");
 			} else {
 				logger.debug("File " + fileName + " Not exists");
@@ -836,7 +836,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		File urlpath = new File(url);
 		//URL folder = hotfolder.stringToUrl(urlpath.getAbsolutePath());
 		URL localFolder = hotfolder.stringToUrl(localfile + "/" + identifier);
-		hotfolder.mkCol(localFolder);
+		hotfolder.mkDir(localFolder);
 		hotfolder.copyAllFiles(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix, localfile + "/" + identifier + "/" + identifier + reportSuffix);
 		for (String fileName : checkfile) {
 			//System.out.println(localfile + "/" + identifier + "/" + fileName);
