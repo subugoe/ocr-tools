@@ -132,11 +132,11 @@ public class ConfigParser {
 
 	}
 
-	public String getWebdavURL () {
+	public String getServerURL () {
 		return serverURL;
 	}
 
-	public void setWebdavURL (String webdavURL) {
+	public void setServerURL (String webdavURL) {
 		ConfigParser.serverURL = webdavURL;
 	}
 
