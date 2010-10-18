@@ -65,7 +65,7 @@ public class AbbyyServerEngine implements OCREngine {
 	/** single instance of AbbyyServerEngine. */
 	private static AbbyyServerEngine _instance;
 
-	/** The extension. */
+	/** The EXTENSION. */
 	protected static String extension = "tif";
 	// Server information
 	/** The webdav url. */
@@ -150,7 +150,6 @@ public class AbbyyServerEngine implements OCREngine {
 	/**
 	 * API Start
 	 */
-	@Override
 	public void recognize () {
 		try {
 			start();
@@ -291,7 +290,6 @@ public class AbbyyServerEngine implements OCREngine {
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#getResult()
 	 */
-	@Override
 	public OCROutput getResult () {
 		// TODO Auto-generated method stub
 		return null;
@@ -300,7 +298,6 @@ public class AbbyyServerEngine implements OCREngine {
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#setObserver(java.util.Observer)
 	 */
-	@Override
 	public void setObserver (Observer observer) {
 		// TODO Auto-generated method stub
 
@@ -314,6 +311,12 @@ public class AbbyyServerEngine implements OCREngine {
 	@Override
 	public OCRProcess newProcess () {
 		return new AbbyyProcess();
+	}
+
+	@Override
+	public Observer recognize (OCRProcess process) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
