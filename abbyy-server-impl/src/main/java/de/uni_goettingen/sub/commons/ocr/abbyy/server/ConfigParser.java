@@ -21,24 +21,25 @@ public class ConfigParser {
 	protected Long maxFiles;
 	protected Integer maxThreads;
 	protected Boolean checkServerState;
+	protected static Boolean debugAuth = false;
+	protected static String DEFAULT_CONFIG = "abbyyServer.properties";
 
 	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
+	
+	static {
+		if (Boolean.parseBoolean(System.getProperty("ocr.finereader.server.debug.auth"))) {
+			debugAuth = true;
+		}
+			
+	}
 
 	public ConfigParser() {
-		try {
-			loadConfig();
-		} catch (ConfigurationException e) {
-			throw new RuntimeException(e);
-		}
+		loadConfig();
 	}
 
 	public ConfigParser(Configuration config) {
 		this.config = config;
-		try {
-			loadConfig();
-		} catch (ConfigurationException e) {
-			throw new RuntimeException(e);
-		}
+		loadConfig();
 	}
 
 	/**
@@ -49,13 +50,13 @@ public class ConfigParser {
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	public void loadConfig () throws ConfigurationException {
+	public void loadConfig () {
 		// do something with config
 		try {
-			config = new PropertiesConfiguration("config-properties");
-		} catch (org.apache.commons.configuration.ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			config = new PropertiesConfiguration(DEFAULT_CONFIG);
+		} catch (ConfigurationException e) {
+			logger.error("Error reading configuration", e);
+			throw new RuntimeException(e);
 		}
 
 		webdavURL = config.getString("remoteURL");
@@ -88,9 +89,16 @@ public class ConfigParser {
 		}
 
 		// Add a preconfigred local output folder
-		logger.debug("URL: " + webdavURL);
-		logger.debug("User: " + webdavUsername);
-		logger.debug("Password: " + webdavPassword);
+		
+		if (debugAuth) {
+			logger.debug("URL: " + webdavURL);
+			logger.debug("User: " + webdavUsername);
+			logger.debug("Password: " + webdavPassword);
+		} else {
+			logger.debug("URL: " + "*hidden* - enable debugAuth to log login data");
+			logger.debug("User: " + "*hidden* - enable debugAuth to log login data");
+			logger.debug("Password: " + "*hidden* - enable debugAuth to log login data");
+		}
 
 		logger.debug("Input folder: " + inputFolder);
 		logger.debug("Output Folder: " + outputFolder);
