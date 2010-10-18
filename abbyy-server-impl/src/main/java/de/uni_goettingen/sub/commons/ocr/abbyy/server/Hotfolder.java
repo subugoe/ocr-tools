@@ -306,7 +306,7 @@ public class Hotfolder extends Thread {
 		return serverURL;
 	}
 
-	public void setWebdavURL (String serverURL) {
+	public void setServerURL (String serverURL) {
 		this.serverURL = serverURL;
 	}
 

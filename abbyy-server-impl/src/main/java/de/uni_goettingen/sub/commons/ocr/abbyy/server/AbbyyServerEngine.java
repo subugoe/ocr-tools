@@ -95,21 +95,19 @@ public class AbbyyServerEngine implements OCREngine {
 	 *             the configuration exception
 	 */
 	public AbbyyServerEngine() throws FileSystemException, ConfigurationException {
-
 		config = new ConfigParser().loadConfig();
 		hotfolder = new Hotfolder(config);
-
-		//TODO: remove this
 		
 		maxSize = config.getMaxSize();
 		maxFiles = config.getMaxFiles();
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
 
+		//TODO: remove this
 		hotfolder.setErrorFolder(config.errorFolder);
 		hotfolder.setInputFolder(config.inputFolder);
 		hotfolder.setOutputFolder(config.outputFolder);
-		hotfolder.setWebdavURL(config.getServerURL());
+		hotfolder.setServerURL(config.getServerURL());
 
 	}
 

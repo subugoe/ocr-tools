@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AbbyyServerSimulator extends Thread {
-	protected File hotfolder, input, output, error, expected, errorExpected, outputExpected;
+	protected File input, output, error, expected, errorExpected, outputExpected;
 	public static String INPUT_NAME = "input";
 	public static String OUTPUT_NAME = "output";
 	public static String ERROR_NAME = "error";
@@ -65,6 +65,7 @@ public class AbbyyServerSimulator extends Thread {
 				logger.debug("Adding " + f.getName() + " as expected result.");
 			}
 		}
+		logger.debug("Simulator set up.");
 	}
 
 	@Override
@@ -99,7 +100,12 @@ public class AbbyyServerSimulator extends Thread {
 
 	protected void checkDirectory (File dir) throws XmlException, IOException {
 		logger.debug("Checking directory: " + dir.getAbsolutePath());
-		for (File f : Arrays.asList(dir.listFiles())) {
+		List<File> inputContents = Arrays.asList(dir.listFiles());
+		if (inputContents.size() < 1) {
+			logger.info("No files in input folder.");
+			return;
+		}
+		for (File f : inputContents) {
 			if (f.getAbsolutePath().endsWith("xml")) {
 				
 				String name = f.getName();
