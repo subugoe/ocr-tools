@@ -185,17 +185,6 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	//TODO: change this to URL
-	@Deprecated
-	public Boolean exists (String url) throws FileSystemException {
-		if (fsManager.resolveFile(url).exists()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	
 	public Boolean exists (URL url) throws FileSystemException {
 		if (fsManager.resolveFile(url.toString()).exists()) {
 			return true;

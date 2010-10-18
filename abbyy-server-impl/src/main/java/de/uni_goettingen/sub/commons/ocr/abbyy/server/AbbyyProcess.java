@@ -769,12 +769,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @return the int result
 	 * @throws FileSystemException
 	 *             the file system exception
+	 * @throws MalformedURLException 
 	 */
-	protected int resultAllFilesNotExists (Set<String> checkfile, String url) throws FileSystemException {
+	protected int resultAllFilesNotExists (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
 		int result = 0;
 		File urlpath = new File(url);
 		for (String fileName : checkfile) {
-			if (hotfolder.exists(urlpath.getAbsolutePath() + "/" + fileName)) {
+			if (hotfolder.exists(new URL(urlpath.getAbsolutePath() + "/" + fileName))) {
 				logger.debug("File " + fileName + " exists already");
 			} else {
 				logger.debug("File " + fileName + " Not exists");
@@ -819,15 +820,16 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            the url, wich are all images
 	 * @throws FileSystemException
 	 *             the file system exception
+	 * @throws MalformedURLException 
 	 */
-	protected void deleteAllFiles (Set<String> checkfile, String url) throws FileSystemException {
+	protected void deleteAllFiles (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
 		//TODO: Remove file from here
 		File urlpath = new File(url);
-		hotfolder.deleteIfExists(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix);
+		hotfolder.deleteIfExists(new URL(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix));
 		for (String fileName : checkfile) {
-			hotfolder.deleteIfExists(urlpath.getAbsolutePath() + "/" + fileName);
+			hotfolder.deleteIfExists(new URL(urlpath.getAbsolutePath() + "/" + fileName));
 		}
-		hotfolder.deleteIfExists(urlpath.getAbsolutePath());
+		hotfolder.deleteIfExists(new URL(urlpath.getAbsolutePath()));
 	}
 
 	public static AbbyyProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {

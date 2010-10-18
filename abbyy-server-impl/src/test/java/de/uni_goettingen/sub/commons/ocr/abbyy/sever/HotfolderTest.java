@@ -96,10 +96,10 @@ public class HotfolderTest {
 	}
 
 	@Test
-	public void testExists () throws FileSystemException {
+	public void testExists () throws FileSystemException, MalformedURLException {
 		logger.debug("Checking if " + target + " exists.");
 		Hotfolder h = new Hotfolder();
-		assertTrue(h.exists(target));
+		assertTrue(h.exists(new URL(target)));
 	}
 
 	@Test
