@@ -77,14 +77,14 @@ public class TicketTest {
 	public static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 
 	private static OCRProcess ocrp = null;
-	
+
 	private static FileOutputStream ticketStream;
 	private static OCRImage ocri = null;
-	
+
 	protected String name = "testTicket";
-	
+
 	private Ticket ticket;
-	
+
 	static {
 		BASEFOLDER_FILE = getBaseFolderAsFile();
 		//ocrp.addLanguage(Locale.GERMAN);
@@ -95,7 +95,7 @@ public class TicketTest {
 			}
 		});
 		TICKET_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + "ticket.xml");
-		
+
 		final AbbyyOCROutput aoo = new AbbyyOCROutput();
 		aoo.setRemoteLocation(OUTPUT_LOCATION);
 
@@ -106,7 +106,7 @@ public class TicketTest {
 			}
 		};
 	}
-	
+
 	@BeforeClass
 	public static void init () throws FileNotFoundException, MalformedURLException {
 
@@ -198,9 +198,9 @@ public class TicketTest {
 			}
 		}
 	}
-	
+
 	public static List<String> parseFilesFromTicket (File ticketFile) throws XmlException, IOException {
-		return parseFilesFromTicket (ticketFile, null);
+		return parseFilesFromTicket(ticketFile, null);
 	}
 
 	public static List<String> parseFilesFromTicket (File ticketFile, Integer expectedSize) throws XmlException, IOException {
@@ -210,7 +210,7 @@ public class TicketTest {
 		if (expectedSize != null) {
 			assertTrue("Expected size of " + expectedSize, t.getOcrImages().size() == expectedSize);
 		}
-		
+
 		for (OCRImage oi : t.getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) oi;
 			assertTrue("File is set but contains no file name", aoi.getRemoteFileName().length() > 0);
@@ -252,7 +252,7 @@ public class TicketTest {
 			return "";
 		}
 	}
-	
+
 	@AfterClass
 	public static void cleanup () {
 		logger.debug("Cleaning up");

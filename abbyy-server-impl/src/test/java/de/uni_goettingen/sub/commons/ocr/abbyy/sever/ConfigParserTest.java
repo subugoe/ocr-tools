@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 
 public class ConfigParserTest {
-	
+
 	final static Logger logger = LoggerFactory.getLogger(ConfigParserTest.class);
-	
+
 	@BeforeClass
 	public static void init () {
 		ConfigParser cp = new ConfigParser();
@@ -25,7 +25,7 @@ public class ConfigParserTest {
 		System.setProperty("ocr.finereader.server.debug.auth", "true");
 		ConfigParser cp = new ConfigParser();
 		assertTrue(ConfigParser.getDebugAuth());
-		
+
 	}
-	
+
 }
