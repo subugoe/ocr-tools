@@ -307,6 +307,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		if (getName() != null) {
 			aoi.setRemoteFileName(getName() + "-" + urlParts[urlParts.length - 1]); 
 		} else {
+			logger.error("Name for process not set, expect error if your using parallel processes");
+			//TODO: Raise an Exception here
 			aoi.setRemoteFileName(urlParts[urlParts.length - 1]);
 		}
 		super.addImage(aoi);
