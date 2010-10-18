@@ -54,7 +54,7 @@ public class AbbyyServerEngine implements OCREngine {
 
 	/** The config. */
 	//Configuration config ;
-	ConfigParser c;
+	ConfigParser config;
 
 	/** The process. */
 	//protected AbbyyProcess process;
@@ -125,20 +125,20 @@ public class AbbyyServerEngine implements OCREngine {
 	 */
 	public AbbyyServerEngine() throws FileSystemException, ConfigurationException {
 		hotfolder = new Hotfolder();
-		c = new ConfigParser();
-		c.loadConfig();
-		//protected Configuration config;
-		webdavURL = ConfigParser.webdavURL;
-		webdavUsername = c.webdavUsername;
-		webdavPassword = c.webdavPassword;
-		inputFolder = c.inputFolder;
-		outputFolder = c.outputFolder;
-		errorFolder = c.errorFolder;
+		config = new ConfigParser().loadConfig();
+		
+		//TODO: remove this
+		webdavURL = ConfigParser.serverURL;
+		webdavUsername = config.username;
+		webdavPassword = config.password;
+		inputFolder = config.inputFolder;
+		outputFolder = config.outputFolder;
+		errorFolder = config.errorFolder;
 
-		maxSize = c.maxSize;
-		maxFiles = c.maxFiles;
-		maxThreads = c.maxThreads;
-		checkServerState = c.checkServerState;
+		maxSize = config.maxSize;
+		maxFiles = config.maxFiles;
+		maxThreads = config.maxThreads;
+		checkServerState = config.checkServerState;
 
 		hotfolder.setErrorFolder(errorFolder);
 		hotfolder.setInputFolder(inputFolder);
