@@ -40,6 +40,9 @@ import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
  */
 public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
+	//TODO: Add this stuff: <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+	
+	
 	/** The Constant logger. */
 	final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
 
@@ -104,7 +107,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	protected String reportSuffix = ".xml.result.xml";
 
 	protected String reportSuffixforXml = ".xml";
-	/** The extension. */
+	/** The EXTENSION. */
 	protected static String extension = "tif";
 
 	/** The hotfolder. */
@@ -384,7 +387,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @throws FileSystemException
 	 */
 	protected List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException {
-		//	List<File> files = makeFileList(dir, extension);
+		//	List<File> files = makeFileList(dir, EXTENSION);
 
 		Long size = 0l;
 		fileInfos = new ArrayList<AbbyyOCRImage>();
@@ -467,16 +470,16 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	public static List<File> makeFileList (File inputFile, String filter) {
 		List<File> fileList;
 		if (inputFile.isDirectory()) {
-			// OCR.logger.trace(inputFile + " is a directory");
+			logger.trace(inputFile + " is a directory");
 
-			File files[] = inputFile.listFiles(new FileExtensionsFilter(filter));
-			fileList = Arrays.asList(files);
+
+			fileList = Arrays.asList(inputFile.listFiles(new FileExtensionsFilter(filter)));
 			Collections.sort(fileList);
 
 		} else {
 			fileList = new ArrayList<File>();
 			fileList.add(inputFile);
-			// OCR.logger.trace("Input file: " + inputFile);
+			logger.trace("Input file: " + inputFile);
 		}
 		return fileList;
 	}
@@ -505,6 +508,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 					try {
 						info.setRemoteURL(new URL(newRemoteName));
 					} catch (MalformedURLException e) {
+						//TODO: Use a logger
 						e.printStackTrace();
 					}
 
@@ -541,7 +545,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	private LinkedList<AbbyyOCRImage> addTicketFile (LinkedList<AbbyyOCRImage> fileInfos, String ticketName) throws IOException {
-		/* write Ticket-File over all Files: */
+		//write Ticket-File over all Files:
 
 		String ticketFileName = ticketName + ".xml";
 		String ticketTempDir = null;
@@ -555,16 +559,15 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				ticketTempDir = webdavURL + inputFolder + "/" + identifier + "/" + ticketFileName;
 			}
 		}
-		setInputFiles(inputFiles);
+		//setInputFiles(inputFiles);
 		// put XML-Ticket to webdav-server, inputFolder
-		ticketFile = new File(ticketTempDir);
+		File ticketFile = new File(ticketTempDir);
 		// Writing Ticket
 		// Ticket ticket = new Ticket(ticketFile);
-		// ticket.setEngineConfig(engineConfig);
 		// addLanguage(locale)
-		addLanguage(Locale.GERMAN);
-		addOCRFormat(OCRFormat.PDF);
-		setOutPutLocation(webdavURL + outputFolder);
+		//addLanguage(Locale.GERMAN);
+		//addOCRFormat(OCRFormat.PDF);
+		//setOutPutLocation(webdavURL + outputFolder);
 
 		//TODO: Commented these out, these methods aren't found
 		//setMillisPerFile(millisPerFile);
@@ -862,5 +865,46 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 		hotfolder.deleteIfExists(urlpath.getAbsolutePath());
 	}
+	
+	public static AbbyyProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
+		AbbyyProcess ap = new AbbyyProcess();
+		List<File> imagefiles = getImageDirectories(directory, extension);
+		for (File f: imagefiles) {
+			AbbyyOCRImage aoi = new AbbyyOCRImage(f.toURI().toURL());
+			ap.addImage(aoi);
+		}
+		
+		return ap;
+	}
 
+	public static List<File> getImageDirectories (File dir, String extension) {
+		List<File> dirs = new ArrayList<File>();
+
+		if (makeFileList(dir, extension).size() > 0) {
+			dirs.add(dir);
+		}
+
+		List<File> fileList;
+		if (dir.isDirectory()) {
+			fileList = Arrays.asList(dir.listFiles());
+			for (File file : fileList) {
+				if (file.isDirectory()) {
+					List<File> files = makeFileList(dir, extension);
+					for (File f : files) {
+						logger.debug("File: " + f.getAbsolutePath());
+					}
+					if (files.size() > 0) {
+						dirs.addAll(files);
+					} else {
+						dirs.addAll(getImageDirectories(file, extension));
+					}
+				}
+			}
+		} else {
+			throw new IllegalStateException(dir.getAbsolutePath() + " is not a directory");
+		}
+		return dirs;
+	}
+
+	
 }
