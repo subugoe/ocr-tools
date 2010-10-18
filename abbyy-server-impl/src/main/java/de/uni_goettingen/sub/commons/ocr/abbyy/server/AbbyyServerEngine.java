@@ -59,7 +59,7 @@ public class AbbyyServerEngine implements OCREngine {
 
 	/** single instance of AbbyyServerEngine. */
 	private static AbbyyServerEngine _instance;
-	
+
 	// The server url.
 	protected static String serverUrl = null;
 
@@ -82,7 +82,7 @@ public class AbbyyServerEngine implements OCREngine {
 	// internal tweaking variables
 	// Variables used for process management
 	// The max size, default is currently 50 MB
-	protected static Long maxSize = 1024l * 1024 *50l;
+	protected static Long maxSize = 1024l * 1024 * 50l;
 
 	// The max files, default is currently 5000 files
 	protected static Long maxFiles = 5000l;
@@ -94,21 +94,23 @@ public class AbbyyServerEngine implements OCREngine {
 	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
 
 	protected Boolean started = false;
-	
+
 	// OCR Processes
 	Queue<AbbyyProcess> processes = new ConcurrentLinkedQueue<AbbyyProcess>();
 
 	/**
 	 * Instantiates a new abbyy server engine.
-	 *
-	 * @throws FileSystemException the file system exception
-	 * @throws ConfigurationException the configuration exception
+	 * 
+	 * @throws FileSystemException
+	 *             the file system exception
+	 * @throws ConfigurationException
+	 *             the configuration exception
 	 */
 	public AbbyyServerEngine() throws FileSystemException, ConfigurationException {
-		
+
 		config = new ConfigParser().loadConfig();
 		hotfolder = new Hotfolder(config);
-		
+
 		//TODO: remove this
 		serverUrl = ConfigParser.serverURL;
 		inputFolder = config.inputFolder;
@@ -196,15 +198,17 @@ public class AbbyyServerEngine implements OCREngine {
 	@SuppressWarnings("serial")
 	public void checkServerState () throws IOException {
 		if (maxSize != 0 && maxFiles != 0) {
-			
+
 			// check if a slash is already appended
-			Map<URL, Long> sizeMap = new LinkedHashMap<URL, Long>(){{
-			
-			put(new URL(serverUrl + inputFolder + "/"), 0l);
-			put(new URL(serverUrl + inputFolder + "/"), 0l);
-			put(new URL(serverUrl + errorFolder + "/"), 0l);
-			}};
-			
+			Map<URL, Long> sizeMap = new LinkedHashMap<URL, Long>() {
+				{
+
+					put(new URL(serverUrl + inputFolder + "/"), 0l);
+					put(new URL(serverUrl + inputFolder + "/"), 0l);
+					put(new URL(serverUrl + errorFolder + "/"), 0l);
+				}
+			};
+
 			for (URL url : sizeMap.keySet()) {
 				sizeMap.put(url, hotfolder.getTotalSize(url));
 			}
