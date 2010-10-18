@@ -251,9 +251,9 @@ public class AbbyyServerEngine implements OCREngine {
 			File errorfile = new File(error_uri);
 			error_uri = errorfile.getAbsolutePath();
 
-			urls.add(hotfolder.stringToUrl(input_uri));
-			urls.add(hotfolder.stringToUrl(output_uri));
-			urls.add(hotfolder.stringToUrl(error_uri));
+			urls.add(new URL(input_uri));
+			urls.add(new URL(output_uri));
+			urls.add(new URL(error_uri));
 
 			Map<URL, Long> infoMap = new LinkedHashMap<URL, Long>();
 			for (URL uri : urls) {

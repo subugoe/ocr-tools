@@ -186,9 +186,14 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 		try {
 			fileInfos = getFileList(imageDirectory);
-		} catch (FileSystemException e1) {
+		} catch (FileSystemException e) {
+			//TODO: Use a logger
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			//TODO: Use a logger
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		Integer wait;
@@ -201,8 +206,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			}
 			String inputDerectory = webdavURL + inputFolder + "/" + identifier;
 			File inputDerectoryFile = new File(inputDerectory);
-			if (!hotfolder.exists(inputDerectoryFile.getAbsolutePath())) {
-				hotfolder.mkDir(hotfolder.stringToUrl(inputDerectoryFile.getAbsolutePath()));
+			if (!hotfolder.exists(inputDerectoryFile.toURI().toURL())) {
+				hotfolder.mkDir(inputDerectoryFile.toURI().toURL());
 
 			}
 
@@ -345,6 +350,9 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			logger.error("Processing failed", e);
 		} catch (InterruptedException e) {
 			logger.error("Processing failed", e);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} finally {
 			fileInfosreplacement = null;
 			fileInfos = null;
@@ -366,8 +374,9 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            the file system, where are all images
 	 * @return the file list of the AbbyyOCRImage.
 	 * @throws FileSystemException
+	 * @throws MalformedURLException 
 	 */
-	protected List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException {
+	protected List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException, MalformedURLException {
 		//	List<File> files = makeFileList(dir, EXTENSION);
 
 		Long size = 0l;
@@ -378,7 +387,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			size += imageNameFile.length();
 			String remoteImageNamePath = webdavURL + inputFolder + "/" + identifier + "/" + imageNameFile.getName() + "/";
 			File remoteFilepath = new File(remoteImageNamePath);
-			URL remoteURL = hotfolder.stringToUrl(remoteFilepath.getAbsolutePath());
+			URL remoteURL = remoteFilepath.toURI().toURL();
 
 			AbbyyOCRImage aof = new AbbyyOCRImage(i.getUrl(), remoteURL, imageNameFile.getName());
 			//hotfolder.urlToFile(i.getUrl());		
@@ -658,12 +667,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @return the boolean, true If exists
 	 * @throws FileSystemException
 	 *             the file system exception
+	 * @throws MalformedURLException 
 	 */
-	protected Boolean checkOutXmlResults () throws FileSystemException {
+	protected Boolean checkOutXmlResults () throws FileSystemException, MalformedURLException {
 		String resultURLPrefix = webdavURL + outputFolder + "/" + identifier + "/" + identifier + reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
 
-		return hotfolder.exists(resultURLPrefixpath.getAbsolutePath());
+		return hotfolder.exists(resultURLPrefixpath.toURI().toURL());
 	}
 
 	/**
@@ -672,11 +682,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @return the boolean, true If exists.
 	 * @throws FileSystemException
 	 *             the file system exception
+	 * @throws MalformedURLException 
 	 */
-	protected Boolean checkErrorXmlResults () throws FileSystemException {
+	protected Boolean checkErrorXmlResults () throws FileSystemException, MalformedURLException {
 		String resultURLPrefix = webdavURL + errorFolder + "/" + identifier + "/" + identifier + reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
-		return hotfolder.exists(resultURLPrefixpath.getAbsolutePath());
+		return hotfolder.exists(resultURLPrefixpath.toURI().toURL());
 	}
 
 	/**
@@ -780,12 +791,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @return the boolean, true if all files exists
 	 * @throws FileSystemException
 	 *             the file system exception
+	 * @throws MalformedURLException 
 	 */
-	protected Boolean checkIfAllFilesExists (Set<String> checkfile, String url) throws FileSystemException {
+	protected Boolean checkIfAllFilesExists (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
 
 		for (String fileName : checkfile) {
 			File urlpath = new File(url + "/" + fileName);
-			if (hotfolder.exists(urlpath.getAbsolutePath())) {
+			if (hotfolder.exists(urlpath.toURI().toURL())) {
 				logger.debug("File " + fileName + " exists already");
 			} else {
 				logger.debug("File " + fileName + " Not exists");
