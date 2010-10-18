@@ -7,7 +7,7 @@ public class MyOCRCli extends OCRCli {
 		
 		public MyOCRCli (OCREngine engine, OCRProcess process) {
 			this.engine = engine;
-			this.process = process;
+			this.processes.add(process);
 		}
 		
 		public static OCRCli getInstance () {

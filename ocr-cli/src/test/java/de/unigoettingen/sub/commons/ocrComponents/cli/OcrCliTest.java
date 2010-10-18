@@ -31,12 +31,11 @@ public class OcrCliTest {
 		OCRCli ocr = MyOCRCli.getInstance(engine, process);
 		
 		String[] args = new String[5];
-		//TODO: This is just wrong
-		args[0] = "-l Deutsch,English";
+		args[0] = "-l de,en";
 		args[1] = "-o ./target";
 		args[2] = "-fTXT,PDF";
-		args[3] = "./src/test/resources/hotfolder/input";		
-		args[4] = "./src/test/resources/hotfolder/output";
+		args[3] = "./target/test-classes";		
+		args[4] = "./target/test-classes";
 		ocr.configureFromArgs(args);
 				
 	}
@@ -48,6 +47,11 @@ public class OcrCliTest {
 		assertTrue(langs.contains(Locale.ENGLISH));
 		langs = OCRCli.parseLangs("ru");
 		assertTrue(langs.contains(new Locale("ru")));
+		//this shouldn't work
+		langs = OCRCli.parseLangs("Deutsch,English");
+		assertTrue(!langs.contains(Locale.GERMAN));
+		assertTrue(!langs.contains(Locale.ENGLISH));
+		
 	}
 	
 	@Test
