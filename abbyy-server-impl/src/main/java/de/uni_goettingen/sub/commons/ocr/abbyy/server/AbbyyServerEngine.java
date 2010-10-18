@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 /**
@@ -281,26 +280,6 @@ public class AbbyyServerEngine implements OCREngine {
 
 	public void addOcrProcess (OCRProcess ocrp) {
 		this.ocrProcess.add(ocrp);
-	}
-
-	/*public void setOcrProcess(List<OCRProcess> ocrProcess) {
-		this.ocrProcess = ocrProcess;
-	}*/
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#getResult()
-	 */
-	public OCROutput getResult () {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#setObserver(java.util.Observer)
-	 */
-	public void setObserver (Observer observer) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
