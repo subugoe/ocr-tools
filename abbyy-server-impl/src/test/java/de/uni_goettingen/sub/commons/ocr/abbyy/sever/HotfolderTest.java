@@ -24,7 +24,7 @@ public class HotfolderTest {
 	public static String INPUT = "input";
 	public static String HOTFOLDER = "hotfolder";
 	public static String EXPECTED = "expected";
-	
+
 	public static String IMAGE_NAME = "00000001.tif";
 	public static Long IMAGE_SIZE = 10069l;
 
