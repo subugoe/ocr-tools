@@ -18,7 +18,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -62,13 +61,13 @@ public class AbbyyServerEngine implements OCREngine {
 	private static AbbyyServerEngine _instance;
 	
 	// The server url.
-	protected static String serveUrl = null;
+	protected static String serverUrl = null;
 
 	// State variables
-	/** The total file count. */
+	// The total file count.
 	protected static Long totalFileCount = 0l;
 
-	/** The total file size. */
+	// The total file size.
 	protected static Long totalFileSize = 0l;
 	// Folders
 	/** The input folder. */
@@ -101,10 +100,9 @@ public class AbbyyServerEngine implements OCREngine {
 
 	/**
 	 * Instantiates a new abbyy server engine.
-	 * 
-	 * @throws FileSystemException
-	 *             the file system exception
-	 * 
+	 *
+	 * @throws FileSystemException the file system exception
+	 * @throws ConfigurationException the configuration exception
 	 */
 	public AbbyyServerEngine() throws FileSystemException, ConfigurationException {
 		
@@ -112,7 +110,7 @@ public class AbbyyServerEngine implements OCREngine {
 		hotfolder = new Hotfolder(config);
 		
 		//TODO: remove this
-		serveUrl = ConfigParser.serverURL;
+		serverUrl = ConfigParser.serverURL;
 		inputFolder = config.inputFolder;
 		outputFolder = config.outputFolder;
 		errorFolder = config.errorFolder;
@@ -125,17 +123,13 @@ public class AbbyyServerEngine implements OCREngine {
 		hotfolder.setErrorFolder(errorFolder);
 		hotfolder.setInputFolder(inputFolder);
 		hotfolder.setOutputFolder(outputFolder);
-		hotfolder.setWebdavURL(serveUrl);
+		hotfolder.setWebdavURL(serverUrl);
 
 	}
 
 	/**
 	 * Start the threadPooling
 	 * 
-	 * @throws RuntimeException
-	 *             the runtime exception
-	 * @throws FileSystemException
-	 *             the file system exception
 	 */
 	public void start () {
 		if (checkServerState) {
@@ -149,6 +143,7 @@ public class AbbyyServerEngine implements OCREngine {
 
 		ExecutorService pool = new OCRExecuter(maxThreads);
 
+		//TODO: Check if this can be just one loop
 		for (OCRProcess process : getOcrProcess()) {
 			processes.add((AbbyyProcess) process);
 		}
@@ -170,10 +165,6 @@ public class AbbyyServerEngine implements OCREngine {
 	 * Gets the single instance of AbbyyServerEngine.
 	 * 
 	 * @return single instance of AbbyyServerEngine
-	 * @throws FileSystemException
-	 *             the file system exception
-	 * @throws ConfigurationException
-	 *             the configuration exception
 	 * 
 	 */
 
@@ -201,39 +192,30 @@ public class AbbyyServerEngine implements OCREngine {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	//TODO: this should be part of the Hotfolder.
+	//TODO: There is a problem in her somewhere in here, a Malformed URL Exception is thrown
+	@SuppressWarnings("serial")
 	public void checkServerState () throws IOException {
 		if (maxSize != 0 && maxFiles != 0) {
-			List<URL> urls = new ArrayList<URL>();
+			
 			// check if a slash is already appended
-			String input_uri = serveUrl + inputFolder + "/";
-			String output_uri = serveUrl + outputFolder + "/";
-			String error_uri = serveUrl + errorFolder + "/";
-
-			File inputfile = new File(input_uri);
-			input_uri = inputfile.getAbsolutePath();
-
-			File outputfile = new File(output_uri);
-			output_uri = outputfile.getAbsolutePath();
-
-			File errorfile = new File(error_uri);
-			error_uri = errorfile.getAbsolutePath();
-
-			urls.add(new URL(input_uri));
-			urls.add(new URL(output_uri));
-			urls.add(new URL(error_uri));
-
-			Map<URL, Long> infoMap = new LinkedHashMap<URL, Long>();
-			for (URL uri : urls) {
-				infoMap.put(uri, hotfolder.getTotalSize(uri));
+			Map<URL, Long> sizeMap = new LinkedHashMap<URL, Long>(){{
+			
+			put(new URL(serverUrl + inputFolder + "/"), 0l);
+			put(new URL(serverUrl + inputFolder + "/"), 0l);
+			put(new URL(serverUrl + errorFolder + "/"), 0l);
+			}};
+			
+			for (URL url : sizeMap.keySet()) {
+				sizeMap.put(url, hotfolder.getTotalSize(url));
 			}
-			totalFileCount = new Integer(infoMap.size()).longValue();
-			for (Long size : infoMap.values()) {
+			totalFileCount = new Integer(sizeMap.size()).longValue();
+			for (Long size : sizeMap.values()) {
 				if (size != null) {
 					totalFileSize += size;
 				}
 			}
-			System.out.println("TotalFileSize = " + totalFileSize);
-			logger.trace("TotalFileSize = " + totalFileSize);
+			logger.debug("TotalFileSize = " + totalFileSize);
+
 			if (maxFiles != 0 && totalFileCount > maxFiles) {
 				logger.error("Too much files. Max number of files is " + maxFiles + ". Number of files on server: " + totalFileCount + ".\nExit program.");
 				throw new IllegalStateException("Max number of files exeded");
