@@ -1,7 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
