@@ -147,23 +147,6 @@ public class Hotfolder extends Thread {
 	}
 
 	/**
-	 * Delete a resource at the specified url(String) if exists.
-	 * 
-	 * @param url
-	 *            the url
-	 * @throws FileSystemException
-	 *             the file system exception
-	 */
-	//TODO: Try to remove this method.
-	@Deprecated
-	public void deleteIfExists (String url) throws FileSystemException {
-		if (fsManager.resolveFile(url).delete()) {
-			logger.debug(url + " Exists already but now deleted");
-		}
-
-	}
-
-	/**
 	 * to create a directory at the specified url
 	 * 
 	 * @param url

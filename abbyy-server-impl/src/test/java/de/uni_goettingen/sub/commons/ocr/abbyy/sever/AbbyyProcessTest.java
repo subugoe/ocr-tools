@@ -96,7 +96,7 @@ public class AbbyyProcessTest {
 			imgList.add(aoi);
 		}
 		op.setOcrImages(imgList);
-		AbbyyProcess aop = (AbbyyProcess) op;
+		//AbbyyProcess aop = (AbbyyProcess) op;
 		//aop.write(out, identifier)
 
 	}
