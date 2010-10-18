@@ -41,6 +41,7 @@ import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	//TODO: Add this stuff: <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+	//TODO: Check if timeout is written, add a test for this
 
 	/** The Constant logger. */
 	final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
@@ -128,7 +129,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	protected List<AbbyyOCRImage> fileInfos = null;
 	protected List<AbbyyOCRImage> fileInfosreplacement = null;
 	/** The config. */
-	PropertiesConfiguration config;
+	ConfigParser config;
 
 	//TODO: Add calculation of timeout, set it in the ticket.
 	// Two hours by default
@@ -164,18 +165,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 */
 	@Override
 	public void run () {
+		//TODO Break up this method
 
 		try {
-			loadConfig(config);
-			//TODO: Don't catch raw Exceptions
-		} catch (Exception e) {
-			logger.error(e.toString());
-		}
-		try {
+			config = new ConfigParser();
 			hotfolder = new Hotfolder();
-		} catch (FileSystemException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+		} catch (FileSystemException e) {
+			logger.error("Can't access file system", e);
 		}
 		identifier = getName();
 		//imageDirectory = getImageDirectory();
@@ -208,7 +204,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			File inputDerectoryFile = new File(inputDerectory);
 			if (!hotfolder.exists(inputDerectoryFile.toURI().toURL())) {
 				hotfolder.mkDir(inputDerectoryFile.toURI().toURL());
-
 			}
 
 			//XMLTicket must be treated here
@@ -232,7 +227,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				try {
 					copyOnly = false;
 					hotfolder.copyFilesToServer(fileInfos);
-
 				} catch (FileSystemException e) {
 					logger.error("Got FileSystemException ", e);
 					if (k == 0 || k == 1) {
@@ -440,6 +434,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @return the long, size of all files
 	 */
 	//TODO: Remove this
+	/*
 	public static Long calculateSize (List<File> files) {
 		Long size = 0l;
 		for (File file : files) {
@@ -447,6 +442,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 		return size;
 	}
+	*/
 
 	/**
 	 * Calculate size.
@@ -597,6 +593,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
+	/*
 	public void loadConfig (PropertiesConfiguration config) throws ConfigurationException {
 		// do something with config
 		try {
@@ -621,12 +618,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		outputFolder = config.getString("output");
 		errorFolder = config.getString("error");
 
-		/*
-		 * if (config.getString("//setting[@name='langs']/@value") != null &&
-		 * !config.getString("//setting[@name='langs']/@value").equals("")) {
-		 * langs =
-		 * parseLangs(config.getString("//setting[@name='langs']/@value")); }
-		 */
+		
 		if (config.getString("maxSize") != null && !config.getString("maxSize").equals("")) {
 			maxSize = Long.parseLong(config.getString("maxSize"));
 		}
@@ -644,7 +636,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		logger.debug("Max files: " + maxFiles);
 
 	}
-
+*/
 	public static String parseString (String str) {
 		String remoteFile = null;
 		if (str.contains("/./")) {
@@ -701,6 +693,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @throws XMLStreamException
 	 *             the xML stream exception
 	 */
+	//TODO: Change this to handle streams
 	protected Set<String> xmlresultOutputparse (File file) throws FileNotFoundException, XMLStreamException {
 		Set<String> ocrFormatFile = new LinkedHashSet<String>();
 		String filename = null;
@@ -736,6 +729,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @throws XMLStreamException
 	 *             the xML stream exception
 	 */
+	//TODO: Change this to handle streams
 	protected Set<String> xmlresultErrorparse (File file) throws FileNotFoundException, XMLStreamException {
 		Set<String> ocrErrorFile = new LinkedHashSet<String>();
 		String error = null;
@@ -843,15 +837,15 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            the localfile
 	 * @throws FileSystemException
 	 *             the file system exception
+	 * @throws MalformedURLException 
 	 */
-	protected void copyAllFiles (Set<String> checkfile, String url, String localfile) throws FileSystemException {
+	protected void copyAllFiles (Set<String> checkfile, String url, String localfile) throws FileSystemException, MalformedURLException {
 		File urlpath = new File(url);
 		//URL folder = hotfolder.stringToUrl(urlpath.getAbsolutePath());
-		URL localFolder = hotfolder.stringToUrl(localfile + "/" + identifier);
+		URL localFolder = new URL(localfile + "/" + identifier);
 		hotfolder.mkDir(localFolder);
 		hotfolder.copyFile(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix, localfile + "/" + identifier + "/" + identifier + reportSuffix);
 		for (String fileName : checkfile) {
-			//System.out.println(localfile + "/" + identifier + "/" + fileName);
 			hotfolder.copyFile(urlpath.getAbsolutePath() + "/" + fileName, localfile + "/" + identifier + "/" + fileName);
 			logger.debug("Copy File From " + urlpath.getAbsolutePath() + "/" + fileName + " To" + localfile);
 		}
