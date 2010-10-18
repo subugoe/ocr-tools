@@ -25,7 +25,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileContent;
@@ -42,34 +41,25 @@ import org.slf4j.LoggerFactory;
  */
 public class Hotfolder extends Thread {
 
-	/** The errror, input, output folder. */
+	// The errror, input, output folder.
 	protected URL inFolder, outFolder, errrorFolder;
 
-	/** The url file. */
+	// The url file.
 	FileObject urlFile = null;
 
-	/** The url file string to url. */
+	// The url file string to url.
 	FileObject urlFileStringToUrl = null;
 
-	/** The get url image. */
+	// The get url image.
 	FileObject getUrlImage = null;
 
 	/** The total size. */
 	Long totalSize = 0l;
 
-	/** The image directory. */
+	// The image directory.
 	protected String imageDirectory;
 
-	/** The identifier. */
-	protected String identifier;
-	//protected HierarchicalConfiguration configu;
-	/** The language. */
-	protected static List<Locale> langs;
-
-	/** The local output dir. */
-	protected static String localOutputDir = null;
-
-	/** The fileinfos. */
+	// The fileinfos.
 	protected List<AbbyyOCRImage> fileInfos = null;
 
 	protected String webdavURL;
@@ -79,11 +69,11 @@ public class Hotfolder extends Thread {
 
 	//protected static Boolean writeRemotePrefix = true;
 
-	/** The Constant logger. */
+	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(Hotfolder.class);
 
-	/** The fsmanager. */
-	FileSystemManager fsManager = null;
+	// The fsmanager.
+	protected FileSystemManager fsManager = null;
 
 	/**
 	 * Instantiates a new hotfolder.
@@ -119,7 +109,7 @@ public class Hotfolder extends Thread {
 			if (info.toString().endsWith("/")) {
 				logger.trace("Creating new directory " + info.getRemoteURL().toString() + "!");
 				// Create the directory
-				mkCol(info.getRemoteURL());
+				mkDir(info.getRemoteURL());
 
 			} else {
 
@@ -169,7 +159,7 @@ public class Hotfolder extends Thread {
 	 */
 	public void deleteIfExists (URL url) throws FileSystemException {
 		if (fsManager.resolveFile(url.toString()).delete()) {
-			logger.debug(url.toString() + " Exists already but now deleted");
+			logger.trace(url.toString() + " exists already, but now deleted");
 		}
 	}
 
@@ -196,9 +186,9 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public void mkCol (URL url) throws FileSystemException {
+	public void mkDir (URL url) throws FileSystemException {
 		fsManager.resolveFile(url.toString()).createFolder();
-		logger.debug(url.toString() + " created");
+		logger.debug("Directory " + url.toString() + " created");
 	}
 
 	/**
@@ -210,7 +200,7 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public boolean fileIfexists (String url) throws FileSystemException {
+	public Boolean exists (String url) throws FileSystemException {
 		if (fsManager.resolveFile(url).exists()) {
 			return true;
 		} else {
