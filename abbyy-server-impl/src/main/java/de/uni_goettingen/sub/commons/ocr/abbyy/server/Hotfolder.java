@@ -45,9 +45,6 @@ public class Hotfolder extends Thread {
 	// The errror, input, output folder.
 	protected URL inFolder, outFolder, errrorFolder;
 
-	// The fileinfos.
-	protected List<AbbyyOCRImage> fileInfos = null;
-
 	protected String webdavURL;
 	protected String inputFolder;
 	protected String outputFolder;
@@ -249,22 +246,6 @@ public class Hotfolder extends Thread {
 		} else {
 			return 1l;
 		}
-	}
-
-	/**
-	 * String to url.
-	 * 
-	 * @param uri
-	 *            the uri
-	 * @return the uRL
-	 * @throws FileSystemException
-	 *             the file system exception
-	 */
-	@Deprecated
-	public URL stringToUrl (String uri) throws FileSystemException {
-		FileObject urlFileStringToUrl = fsManager.resolveFile(uri);
-		return urlFileStringToUrl.getURL();
-
 	}
 
 	/**
