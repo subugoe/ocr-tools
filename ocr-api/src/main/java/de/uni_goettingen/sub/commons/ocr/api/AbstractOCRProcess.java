@@ -1,11 +1,16 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
 public abstract class AbstractOCRProcess implements OCRProcess {
 
@@ -115,6 +120,29 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 
 	public Map<OCRFormat, OCROutput> getOcrOutput () {
 		return this.ocrOutput;
+	}
+
+	/**
+	 *makeFileList is a simple static method to create a list of files ending with the given extension
+	 * 
+	 * @param inputFile
+	 *            the input file, where are all images
+	 * @param filter
+	 *            or Extension
+	 * @return the list of all files have "filter" as ending
+	 */
+	public static List<File> makeFileList (File inputFile, String filter) {
+		List<File> fileList;
+		if (inputFile.isDirectory()) {
+	
+			fileList = Arrays.asList(inputFile.listFiles(new FileExtensionsFilter(filter)));
+			Collections.sort(fileList);
+	
+		} else {
+			fileList = new ArrayList<File>();
+			fileList.add(inputFile);
+		}
+		return fileList;
 	}
 	
 }
