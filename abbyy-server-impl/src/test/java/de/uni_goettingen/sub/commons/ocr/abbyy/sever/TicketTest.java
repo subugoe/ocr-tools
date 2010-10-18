@@ -87,7 +87,7 @@ public class TicketTest {
 	
 	static {
 		BASEFOLDER_FILE = getBaseFolderAsFile();
-		ocrp.addLanguage(Locale.GERMAN);
+		//ocrp.addLanguage(Locale.GERMAN);
 		when(ocrp.getLangs()).thenReturn(new HashSet<Locale>() {
 			{
 				add(Locale.GERMAN);

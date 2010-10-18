@@ -37,6 +37,7 @@ public class ConfigParser {
 		loadConfig();
 	}
 
+	//TODO: Try to remove this method
 	public ConfigParser(Configuration config) {
 		this.config = config;
 		loadConfig();
@@ -134,5 +135,9 @@ public class ConfigParser {
 
 	public void setWebdavURL (String webdavURL) {
 		ConfigParser.webdavURL = webdavURL;
+	}
+	
+	public static Boolean getDebugAuth() {
+		return debugAuth;
 	}
 }
