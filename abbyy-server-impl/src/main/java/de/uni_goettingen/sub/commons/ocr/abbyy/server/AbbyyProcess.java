@@ -218,7 +218,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 					copyOnly = false;
 					hotfolder.deleteIfExists(inputDerectoryFile.getAbsolutePath());
 					logger.trace(" Failed!! XMLTicket can not created for " + identifier);
-					System.out.println(" Failed!! XMLTicket can not created for " + identifier);
+					
 
 				}
 			}
@@ -359,22 +359,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	}
 
 	/**
-	 * The Class TimeoutExcetion.
-	 */
-	public class TimeoutExcetion extends Exception {
-
-		/** The Constant serialVersionUID. */
-		private static final long serialVersionUID = -3002142265497735648L;
-
-		/**
-		 * Instantiates a new timeout excetion.
-		 */
-		public TimeoutExcetion() {
-			super();
-		}
-	}
-
-	/**
 	 * proof if number of files is in limit as defined in config-properties
 	 * file, param maxFiles and proof overall filesize-limit as defined in
 	 * config-properties file, param maxSize.
@@ -436,7 +420,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            the url
 	 * @return the string
 	 */
-	public String windows2unixFileSeparator (String url) {
+	public static String windows2unixFileSeparator (String url) {
 		return url.replace("\\", "/");
 	}
 
@@ -447,10 +431,27 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            is the List of files
 	 * @return the long, size of all files
 	 */
+	//TODO: Remove this
 	public static Long calculateSize (List<File> files) {
 		Long size = 0l;
 		for (File file : files) {
 			size += file.length();
+		}
+		return size;
+	}
+	
+	/**
+	 * Calculate size.
+	 * 
+	 * @param files
+	 *            is the List of files
+	 * @return the long, size of all files
+	 */
+	public Long calculateSize () {
+		Long size = 0l;
+		for (OCRImage i: getOcrImages()) {
+			AbbyyOCRImage aoi = (AbbyyOCRImage) i;
+			size += aoi.getSize();
 		}
 		return size;
 	}
@@ -490,6 +491,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            for identifier
 	 * @return the list of AbbyyOCRImage
 	 */
+	//TODO: Check if this one is still needed
 	protected List<AbbyyOCRImage> fixRemotePath (List<AbbyyOCRImage> infoList, String name) {
 		LinkedList<AbbyyOCRImage> newList = new LinkedList<AbbyyOCRImage>();
 		for (AbbyyOCRImage info : infoList) {
@@ -875,7 +877,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			for (File imageFile : makeFileList(id, extension)) {
 				ap.setName(jobName);
 				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI().toURL());
-				
+				aoi.setSize(imageFile.length());
 				ap.addImage(aoi);
 			}
 		}
@@ -910,6 +912,22 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			throw new IllegalStateException(dir.getAbsolutePath() + " is not a directory");
 		}
 		return dirs;
+	}
+	
+	/**
+	 * The Class TimeoutExcetion.
+	 */
+	public class TimeoutExcetion extends Exception {
+
+		/** The Constant serialVersionUID. */
+		private static final long serialVersionUID = -3002142265497735648L;
+
+		/**
+		 * Instantiates a new timeout excetion.
+		 */
+		public TimeoutExcetion() {
+			super();
+		}
 	}
 
 }
