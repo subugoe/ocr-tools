@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -29,10 +28,10 @@ import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
-import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
 /**
  * The Class AbbyyProcess.
@@ -43,7 +42,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	//TODO: Check if timeout is written, add a test for this
 
 	/** The Constant logger. */
-	final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
+	public final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
 
 	/** The local path separator. */
 	protected static String localPathSeparator = File.separator;
@@ -127,8 +126,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The file infos. */
 	protected List<AbbyyOCRImage> fileInfos = null;
 	protected List<AbbyyOCRImage> fileInfosreplacement = null;
-	/** The config. */
-	ConfigParser config;
+	// The configuration.
+	protected ConfigParser config;
 
 	//TODO: Add calculation of timeout, set it in the ticket.
 	// Two hours by default
@@ -441,32 +440,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	}
 
 	/**
-	 * very easy file filters, get all files which in the topical list, have
-	 * "filter" as ending
-	 * 
-	 * @param inputFile
-	 *            the input file, where are all images
-	 * @param filter
-	 *            or Extension
-	 * @return the list of all files have "filter" as ending
-	 */
-	public static List<File> makeFileList (File inputFile, String filter) {
-		List<File> fileList;
-		if (inputFile.isDirectory()) {
-			logger.trace(inputFile + " is a directory");
-
-			fileList = Arrays.asList(inputFile.listFiles(new FileExtensionsFilter(filter)));
-			Collections.sort(fileList);
-
-		} else {
-			fileList = new ArrayList<File>();
-			fileList.add(inputFile);
-			logger.trace("Input file: " + inputFile);
-		}
-		return fileList;
-	}
-
-	/**
 	 * Fix remote path.
 	 * 
 	 * @param infoList
@@ -527,6 +500,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
+	//TODO: Keep the ticket in ram or tmp and add it on demand
 	private LinkedList<AbbyyOCRImage> addTicketFile (LinkedList<AbbyyOCRImage> fileInfos, String ticketName) throws IOException {
 		//write Ticket-File over all Files:
 
@@ -617,6 +591,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	}
 */
+	//TODO: Remove this
+	/*
 	public static String parseString (String str) {
 		String remoteFile = null;
 		if (str.contains("/./")) {
@@ -632,6 +608,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		return remoteFile;
 
 	}
+	*/
 
 	/**
 	 * Check xml results in output folder If exists.
@@ -862,7 +839,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				throw new OCRException("createProcessFromDir can currently create only one AbbyyProcess!");
 			}
 			String jobName = id.getName();
-			for (File imageFile : makeFileList(id, extension)) {
+			for (File imageFile : AbstractOCRProcess.makeFileList(id, extension)) {
 				ap.setName(jobName);
 				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI().toURL());
 				aoi.setSize(imageFile.length());
@@ -876,7 +853,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	public static List<File> getImageDirectories (File dir, String extension) {
 		List<File> dirs = new ArrayList<File>();
 
-		if (makeFileList(dir, extension).size() > 0) {
+		if (AbstractOCRProcess.makeFileList(dir, extension).size() > 0) {
 			dirs.add(dir);
 		}
 
@@ -885,7 +862,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			fileList = Arrays.asList(dir.listFiles());
 			for (File file : fileList) {
 				if (file.isDirectory()) {
-					List<File> files = makeFileList(dir, extension);
+					List<File> files = AbstractOCRProcess.makeFileList(dir, extension);
 					for (File f : files) {
 						logger.debug("File: " + f.getAbsolutePath());
 					}
