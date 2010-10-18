@@ -45,10 +45,9 @@ public class Hotfolder extends Thread {
 	// The errror, input, output folder.
 	protected URL inFolder, outFolder, errrorFolder;
 
-	protected String webdavURL;
-	protected String inputFolder;
-	protected String outputFolder;
-	protected String errorFolder;
+	protected String serverURL, inputFolder, outputFolder, errorFolder;
+	
+	protected ConfigParser config;
 
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;
@@ -61,6 +60,11 @@ public class Hotfolder extends Thread {
 	 */
 	public Hotfolder() throws FileSystemException {
 		fsManager = VFS.getManager();
+	}
+
+	public Hotfolder(ConfigParser config) throws FileSystemException {
+		this();
+		this.config = config;
 	}
 
 	/**
@@ -327,11 +331,11 @@ public class Hotfolder extends Thread {
 	}
 
 	public String getWebdavURL () {
-		return webdavURL;
+		return serverURL;
 	}
 
-	public void setWebdavURL (String webdavURL) {
-		this.webdavURL = webdavURL;
+	public void setWebdavURL (String serverURL) {
+		this.serverURL = serverURL;
 	}
 
 	public String getInputFolder () {
