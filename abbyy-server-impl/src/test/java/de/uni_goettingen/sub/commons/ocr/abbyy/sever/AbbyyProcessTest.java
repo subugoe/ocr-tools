@@ -6,9 +6,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.xmlbeans.XmlException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
 
 @SuppressWarnings("serial")
 public class AbbyyProcessTest {
@@ -53,6 +56,23 @@ public class AbbyyProcessTest {
 			aop.write(testTicket, testDir.getName());
 			logger.debug("Wrote Ticket:\n" + TicketTest.dumpTicket(new FileInputStream(testTicket)));
 		}
+		
+	}
+	
+	@Test
+	public void checkTicketCount () throws IOException, XmlException {
+		for (String book: TEST_FOLDERS) {
+			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + INPUT + File.separator + book);
+			logger.debug("Creating AbbyyProcess for "+ testDir.getAbsolutePath());
+			AbbyyProcess aop = AbbyyProcess.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			assertNotNull(aop);
+			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
+			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + INPUT + File.separator + book + ".xml");
+			aop.write(testTicket, testDir.getName());
+			logger.debug("Wrote Ticket:\n" + TicketTest.dumpTicket(new FileInputStream(testTicket)));
+			assertTrue(TicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
+		}
+		
 		
 	}
 	

@@ -181,7 +181,7 @@ public class TicketTest {
 		//Compare the files from the ticket with the mock object
 		Integer numFiles = ocrp.getOcrImages().size();
 		logger.debug("Checking " + numFiles + " files");
-		List<String> ticketFiles = parseFilesFromTicket(TICKET_FILE);
+		List<String> ticketFiles = parseFilesFromTicket(TICKET_FILE, 10);
 		for (int i = 0; i < numFiles; i++) {
 			String mFilename = ((AbbyyOCRImage) ocrp.getOcrImages().get(i)).getRemoteFileName();
 			String tFilename = ticketFiles.get(i);
@@ -203,14 +203,22 @@ public class TicketTest {
 
 		}
 	}
-
+	
 	public static List<String> parseFilesFromTicket (File ticketFile) throws XmlException, IOException {
+		return parseFilesFromTicket (ticketFile, null);
+	}
+
+	public static List<String> parseFilesFromTicket (File ticketFile, Integer expectedSize) throws XmlException, IOException {
 		List<String> files = new ArrayList<String>();
 		Ticket t = new Ticket(new FileInputStream(ticketFile));
 		t.parseTicket();
-		assertTrue(t.getOcrImages().size() == 10);
+		if (expectedSize != null) {
+			assertTrue(t.getOcrImages().size() == expectedSize);
+		}
+		
 		for (OCRImage oi : t.getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) oi;
+			assertTrue(aoi.getRemoteFileName().length() > 0);
 			logger.debug("Found reference to " + aoi.getRemoteFileName() + " in ticket.");
 			files.add(aoi.getRemoteFileName());
 		}
