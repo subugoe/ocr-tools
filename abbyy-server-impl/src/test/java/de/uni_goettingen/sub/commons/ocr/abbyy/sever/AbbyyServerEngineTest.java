@@ -46,6 +46,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 public class AbbyyServerEngineTest {
 	public static OCREngine abbyy;
@@ -92,7 +93,7 @@ public class AbbyyServerEngineTest {
 					+ book
 					+ ".xml");
 			aop.write(testTicket, testDir.getName());
-			logger.debug("Wrote Ticket:\n" + TicketTest.dumpTicket(new FileInputStream(testTicket)));
+			logger.debug("Wrote Ticket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
 			logger.debug("Starting Engine");
 			ase.recognize(aop);
 		}
