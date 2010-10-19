@@ -124,9 +124,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The hotfolder. */
 	protected Hotfolder hotfolder;
 
-	/** the XmlParser */
-	protected XmlParser xmlParser;
-
 	/** The image directory. */
 	protected String imageDirectory;
 
@@ -183,7 +180,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		try {
 			config = new ConfigParser().loadConfig();
-			xmlParser = new XmlParser();
 			hotfolder = new Hotfolder();
 		} catch (FileSystemException e) {
 			logger.error("Can't access file system", e);
@@ -275,7 +271,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 					String resultOutURLPrefixAbsolutePath = resultOutURLPrefixpath.getAbsolutePath();
 					// TODO Erkennungsrat muss noch ausgelesen werden(ich
 					// wei das eigentlich nicht deswegen ist noch offen)
-					ocrOutFormatFile = xmlParser.xmlresultOutputparse(new File(resultOutURLPrefixAbsolutePath));
+					ocrOutFormatFile = XmlParser.xmlresultOutputparse(new File(resultOutURLPrefixAbsolutePath));
 					File moveToLocalpath = new File(moveToLocal);
 					String moveToLocalAbsolutePath = moveToLocalpath.getAbsolutePath();
 
@@ -303,7 +299,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 						File resultErrorURLPrefixpath = new File(resultErrorURLPrefix + "/" + identifier + reportSuffix);
 						String resultErrorURLPrefixAbsolutePath = resultErrorURLPrefixpath.getAbsolutePath();
 						// TODO: Get the result report
-						ocrErrorFormatFile = xmlParser.xmlresultErrorparse(new File(resultErrorURLPrefixAbsolutePath), identifier);
+						ocrErrorFormatFile = XmlParser.xmlresultErrorparse(new File(resultErrorURLPrefixAbsolutePath), identifier);
 						for (int index = 1; index <= 2; index++) {
 							if (checkIfAllFilesExists(ocrErrorFormatFile, resultErrorURLPrefix + "/")) {
 								deleteAllFiles(ocrErrorFormatFile, resultErrorURLPrefix);
