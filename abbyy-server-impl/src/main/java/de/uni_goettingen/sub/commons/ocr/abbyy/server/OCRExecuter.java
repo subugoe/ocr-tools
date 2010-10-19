@@ -35,13 +35,14 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 
 	public Integer maxThreads;
 
-	private Boolean isPaused;
+	private Boolean isPaused = false;
 	private ReentrantLock pauseLock = new ReentrantLock();
 	private Condition unpaused = pauseLock.newCondition();
 
-	private Long maxSize;
+	//TODO: Get this from ConfigParser
+	private Long maxSize = 0l;
 
-	private Long maxFiles;
+	private Long maxFiles = 0l;
 
 	private Long totalFileSize;
 
