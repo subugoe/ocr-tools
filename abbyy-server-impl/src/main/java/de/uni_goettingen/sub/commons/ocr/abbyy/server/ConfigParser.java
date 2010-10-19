@@ -1,11 +1,9 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -61,7 +59,7 @@ public class ConfigParser {
 		}
 
 		serverURL = config.getString("remoteURL");
-		
+
 		try {
 			if (!serverURL.contains("./") && serverURL.startsWith("file")) {
 				//This is true if we have an absolute local (file) uri;
