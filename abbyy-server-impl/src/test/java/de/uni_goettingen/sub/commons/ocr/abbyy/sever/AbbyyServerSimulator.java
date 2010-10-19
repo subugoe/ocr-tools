@@ -30,8 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AbbyyServerSimulator extends Thread {
-	protected File input, output, error, expected, errorExpected, outputExpected;
-	public static String INPUT_NAME = "input";
+	protected File hotfolder, output, error, expected, errorExpected, outputExpected;
+	public static String HOTFOLDER_NAME = "hotfolder";
 	public static String OUTPUT_NAME = "output";
 	public static String ERROR_NAME = "error";
 
@@ -44,10 +44,11 @@ public class AbbyyServerSimulator extends Thread {
 
 	protected Boolean finish = false;
 
-	public AbbyyServerSimulator(File hotfolder, File expactations) {
-		input = new File(hotfolder.getAbsolutePath() + File.separator + INPUT_NAME);
-		output = new File(hotfolder.getAbsolutePath() + File.separator + OUTPUT_NAME);
-		error = new File(hotfolder.getAbsolutePath() + File.separator + ERROR_NAME);
+	public AbbyyServerSimulator(File hotfolder, File output, File expactations) {
+		//Hotfolder is the input directory
+		this.hotfolder = hotfolder;
+		this.output = output;
+		this.error = new File(hotfolder.getAbsolutePath() + File.separator + ERROR_NAME);
 
 		errorExpected = new File(expactations.getAbsolutePath() + File.separator + ERROR_NAME);
 		outputExpected = new File(expactations.getAbsolutePath() + File.separator + OUTPUT_NAME);
@@ -71,9 +72,9 @@ public class AbbyyServerSimulator extends Thread {
 	@Override
 	public void run () {
 		while (!isInterrupted()) {
-			
+
 			try {
-				checkDirectory(input);
+				checkDirectory(hotfolder);
 				sleep(500);
 			} catch (InterruptedException e) {
 				interrupt();
@@ -92,14 +93,15 @@ public class AbbyyServerSimulator extends Thread {
 	}
 
 	protected void removeJob (String name) throws XmlException, IOException {
-		List<String> files = TicketTest.parseFilesFromTicket(new File(input.getAbsolutePath() + File.separator + name + ".xml"));
+		List<String> files = TicketTest.parseFilesFromTicket(new File(hotfolder.getAbsolutePath() + File.separator + name + ".xml"));
 		for (String str : files) {
-			new File(input.getAbsolutePath() + File.separator + str).delete();
+			new File(hotfolder.getAbsolutePath() + File.separator + str).delete();
 		}
 	}
 
 	protected void checkDirectory (File dir) throws XmlException, IOException {
 		logger.debug("Checking directory: " + dir.getAbsolutePath());
+
 		List<File> inputContents = Arrays.asList(dir.listFiles());
 		if (inputContents.size() < 1) {
 			logger.info("No files in input folder.");
@@ -107,7 +109,7 @@ public class AbbyyServerSimulator extends Thread {
 		}
 		for (File f : inputContents) {
 			if (f.getAbsolutePath().endsWith("xml")) {
-				
+
 				String name = f.getName();
 				logger.debug("Found XML: " + name);
 				name = name.substring(name.indexOf(".xml"));
@@ -130,7 +132,7 @@ public class AbbyyServerSimulator extends Thread {
 	}
 
 	protected Long calculateWait (String name) throws XmlException, IOException {
-		List<String> files = TicketTest.parseFilesFromTicket(new File(input.getAbsolutePath() + File.separator + name + ".xml"));
+		List<String> files = TicketTest.parseFilesFromTicket(new File(hotfolder.getAbsolutePath() + File.separator + name + ".xml"));
 		return files.size() * wait;
 	}
 
@@ -144,7 +146,7 @@ public class AbbyyServerSimulator extends Thread {
 	}
 
 	protected void clean () {
-		cleandir(input);
+		cleandir(hotfolder);
 		cleandir(output);
 		cleandir(error);
 

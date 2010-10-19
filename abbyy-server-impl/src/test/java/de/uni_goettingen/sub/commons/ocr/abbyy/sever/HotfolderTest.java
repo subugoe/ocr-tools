@@ -37,9 +37,10 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 public class HotfolderTest {
 	final static Logger logger = LoggerFactory.getLogger(HotfolderTest.class);
 	public static File BASEFOLDER_FILE = TicketTest.BASEFOLDER_FILE;
-	public static File TEST_INPUT_FILE, TEST_HOTFOLDER_FILE, TEST_EXPECTED_FILE;
+	public static File TEST_INPUT_FILE, TEST_OUTPUT_FILE, TEST_HOTFOLDER_FILE, TEST_EXPECTED_FILE;
 	public static URL TEST_INPUT_URL, TEST_HOTFOLDER_URL, TEST_EXPECTED_URL;
 	public static String INPUT = "input";
+	public static String OUTPUT = "output";
 	public static String HOTFOLDER = "hotfolder";
 	public static String EXPECTED = "expected";
 
@@ -53,6 +54,7 @@ public class HotfolderTest {
 
 	static {
 		TEST_INPUT_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + INPUT);
+		TEST_OUTPUT_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + OUTPUT);
 		TEST_HOTFOLDER_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + HOTFOLDER);
 		TEST_EXPECTED_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + EXPECTED);
 		try {

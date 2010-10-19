@@ -52,22 +52,22 @@ public class AbbyyServerEngineTest {
 	public Hotfolder hotfolder;
 	protected List<File> directories = new ArrayList<File>();
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngineTest.class);
-	protected static AbbyyServerSimulator ass = null; 
+	protected static AbbyyServerSimulator ass = null;
 
 	@Before
 	public void init () throws FileSystemException, ConfigurationException, URISyntaxException {
 		logger.debug("Starting Test");
 		ConfigParser config = new ConfigParser().loadConfig();
-		
+
 		logger.debug("Server URL is " + config.getServerURL());
 		URI uri = new URI(config.getServerURL());
 
 		assertNotNull(uri);
 
-		ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTED_FILE);
+		ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_OUTPUT_FILE, HotfolderTest.TEST_EXPECTED_FILE);
 		ass.start();
 	}
-	
+
 	@Test
 	public void checkThread () throws InterruptedException {
 		Thread.sleep(1000);
@@ -161,7 +161,7 @@ public class AbbyyServerEngineTest {
 		//Look for folders containing tif files in ./src/test/resources/local/ as listFolders
 		//Add a static method for this.
 		inputfile = parseString(inputfile);
-		File inputfilepath = new File(inputfile);
+		//File inputfilepath = new File(inputfile);
 		listFolders = null; // getImageDirectories(new File(inputfilepath.getAbsolutePath()));
 		//Loop over listFolder to get the files, create OCR Images and add them to the process
 
@@ -228,9 +228,9 @@ public class AbbyyServerEngineTest {
 		}
 
 	}
-	
+
 	@After
-	public void stop() throws InterruptedException {
+	public void stop () throws InterruptedException {
 		ass.interrupt();
 		ass.join();
 	}
