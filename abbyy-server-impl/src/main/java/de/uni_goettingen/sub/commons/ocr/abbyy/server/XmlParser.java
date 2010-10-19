@@ -25,21 +25,29 @@ import java.io.InputStream;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XmlParser {
-	
+
 	/** The Constant logger. */
 	public final static Logger logger = LoggerFactory.getLogger(XmlParser.class);
+
+	//These are just wrappers, they will be removed...
+	@Deprecated
+	protected static Set<String> xmlresultOutputparse (File file) throws FileNotFoundException, XMLStreamException {
+		return xmlresultOutputparse(new FileInputStream(file));
+	}
+	
+	@Deprecated
+	protected static Set<String> xmlresultErrorparse (File file, String identifier) throws FileNotFoundException, XMLStreamException {
+		return xmlresultErrorparse(new FileInputStream(file), identifier);
+	}
 
 	/**
 	 * parse Xml result in output folder.
@@ -52,13 +60,12 @@ public class XmlParser {
 	 * @throws XMLStreamException
 	 *             the xML stream exception
 	 */
-	//TODO: Change this to handle streams
-	protected Set<String> xmlresultOutputparse (File file) throws FileNotFoundException, XMLStreamException {
+	protected static Set<String> xmlresultOutputparse (InputStream is) throws FileNotFoundException, XMLStreamException {
 		Set<String> ocrFormatFile = new LinkedHashSet<String>();
 		String filename = null;
-		final InputStream osmHamburgInStream = new FileInputStream(file);
+		//final InputStream osmHamburgInStream = new FileInputStream(file);
 		XMLInputFactory factory = XMLInputFactory.newInstance();
-		XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(osmHamburgInStream);
+		XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(is);
 		try {
 			while (xmlStreamReader.hasNext()) {
 				int event = xmlStreamReader.next();
@@ -88,14 +95,13 @@ public class XmlParser {
 	 * @throws XMLStreamException
 	 *             the xML stream exception
 	 */
-	//TODO: Change this to handle streams
-	protected Set<String> xmlresultErrorparse (File file , String identifier) throws FileNotFoundException, XMLStreamException {
+	protected static Set<String> xmlresultErrorparse (InputStream is, String identifier) throws FileNotFoundException, XMLStreamException {
 		Set<String> ocrErrorFile = new LinkedHashSet<String>();
 		String error = null;
 
-		final InputStream osmHamburgInStream = new FileInputStream(file);
+		//final InputStream osmHamburgInStream = new FileInputStream(file);
 		XMLInputFactory factory = XMLInputFactory.newInstance();
-		XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(osmHamburgInStream);
+		XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(is);
 		try {
 			while (xmlStreamReader.hasNext()) {
 				int event = xmlStreamReader.next();
