@@ -130,6 +130,9 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The hotfolder. */
 	protected Hotfolder hotfolder;
 
+	/** the XmlParser */
+	protected XmlParser xmlParser;
+	
 	/** The image directory. */
 	protected String imageDirectory;
 
@@ -186,7 +189,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		try {
 			config = new ConfigParser().loadConfig();
-
+			xmlParser = new XmlParser();
 			hotfolder = new Hotfolder();
 		} catch (FileSystemException e) {
 			logger.error("Can't access file system", e);
@@ -247,24 +250,17 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 						for (AbbyyOCRImage info : fileInfos) {
 							hotfolder.deleteIfExists(info.getRemoteURL());
 							logger.error("Second try!! copy images from " + identifier);
-							System.out.println("Second try!! copy images from " + identifier);
+						}
+						if (k==1){
+							File xmlTicket = new File(inputDirectoryFile.getAbsolutePath() + "/" + identifier + "/" + reportSuffixforXml);
+							hotfolder.deleteIfExists(xmlTicket.toURI().toURL());
+							hotfolder.deleteIfExists(inputDirectoryFile.toURI().toURL());
+							logger.error("failed!!can not copy images from " + identifier);
+							copyOnly = false;
+							failed = true;
 						}
 						k++;
-					} else {
-						for (AbbyyOCRImage info : fileInfos) {
-							hotfolder.deleteIfExists(info.getRemoteURL());
-							logger.error("Second try!! copy images from " + identifier);
-							System.out.println("images deleted from " + identifier);
-						}
-						File xmlTicket = new File(inputDirectoryFile.getAbsolutePath() + "/" + identifier + "/" + reportSuffixforXml);
-						hotfolder.deleteIfExists(xmlTicket.toURI().toURL());
-
-						hotfolder.deleteIfExists(inputDirectoryFile.toURI().toURL());
-						logger.error("failed!!can not copy images from " + identifier);
-						copyOnly = false;
-						failed = true;
-
-					}
+					} 
 
 				} catch (Exception e) {
 					logger.error("Got Exception", e);
@@ -281,36 +277,30 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				// for Output folder
 				if (checkOutXmlResults()) {
 					String resultOutURLPrefix = webdavURL + outputFolder + "/" + identifier;
-
 					File resultOutURLPrefixpath = new File(resultOutURLPrefix + "/" + identifier + reportSuffix);
 					String resultOutURLPrefixAbsolutePath = resultOutURLPrefixpath.getAbsolutePath();
 					// TODO Erkennungsrat muss noch ausgelesen werden(ich
 					// wei das eigentlich nicht deswegen ist noch offen)
-					ocrOutFormatFile = xmlresultOutputparse(new File(resultOutURLPrefixAbsolutePath));
-
+					ocrOutFormatFile = xmlParser.xmlresultOutputparse(new File(resultOutURLPrefixAbsolutePath));
 					File moveToLocalpath = new File(moveToLocal);
 					String moveToLocalAbsolutePath = moveToLocalpath.getAbsolutePath();
 
 					// for Output folder
-					if (checkIfAllFilesExists(ocrOutFormatFile, resultOutURLPrefix + "/")) {
-						copyAllFiles(ocrOutFormatFile, resultOutURLPrefix, moveToLocalAbsolutePath);
-						deleteAllFiles(ocrOutFormatFile, resultOutURLPrefix);
-						failed = true;
-						logger.info("Move Processing successfully to " + moveToLocalAbsolutePath);
-					} else {
-
-						wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix) * millisPerFile + millisPerFile;
-						Thread.sleep(wait);
+					for ( int faktor = 1; faktor <= 2; faktor ++ ) {
 						if (checkIfAllFilesExists(ocrOutFormatFile, resultOutURLPrefix + "/")) {
 							copyAllFiles(ocrOutFormatFile, resultOutURLPrefix, moveToLocalAbsolutePath);
 							deleteAllFiles(ocrOutFormatFile, resultOutURLPrefix);
 							failed = true;
-							logger.info("Move Processing is successfull to " + moveToLocalAbsolutePath);
-
-						} else {
+							logger.info("Move Processing successfully to " + moveToLocalAbsolutePath);
+						}
+						if(faktor == 1 && !failed ){
+							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix) * millisPerFile + millisPerFile;
+							Thread.sleep(wait);
+						}
+						if(faktor == 2 && !failed ){
 							failed = true;
 							logger.error("failed!!TimeoutExcetion for Move Processing, All files Not exists in " + resultOutURLPrefix);
-						}
+						}	
 					}
 				} else {
 					// for Error folder
@@ -319,21 +309,20 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 						File resultErrorURLPrefixpath = new File(resultErrorURLPrefix + "/" + identifier + reportSuffix);
 						String resultErrorURLPrefixAbsolutePath = resultErrorURLPrefixpath.getAbsolutePath();
 						// TODO: Get the result report
-						ocrErrorFormatFile = xmlresultErrorparse(new File(resultErrorURLPrefixAbsolutePath));
-						if (checkIfAllFilesExists(ocrErrorFormatFile, resultErrorURLPrefix + "/")) {
-							deleteAllFiles(ocrErrorFormatFile, resultErrorURLPrefix);
-							failed = true;
-							logger.info("delete All Files Processing is successfull ");
-						} else {
-							wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix) * millisPerFile + millisPerFile;
-							Thread.sleep(wait);
+						ocrErrorFormatFile = xmlParser.xmlresultErrorparse(new File(resultErrorURLPrefixAbsolutePath), identifier);
+						for ( int index = 1; index <= 2; index ++ ) {
 							if (checkIfAllFilesExists(ocrErrorFormatFile, resultErrorURLPrefix + "/")) {
 								deleteAllFiles(ocrErrorFormatFile, resultErrorURLPrefix);
 								failed = true;
 								logger.info("delete All Files Processing is successfull ");
-							} else {
+							}
+							if(index == 1 && !failed ){
+								wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix) * millisPerFile + millisPerFile;
+								Thread.sleep(wait);
+							}
+							if(index == 2 && !failed ){
 								failed = true;
-								logger.error("failed!! TimeoutExcetion for delete All Files Processing, All files Not exists in!! " + resultErrorURLPrefix);
+								logger.error("failed!! TimeoutExcetion for delete All Files Processing, All files Not exists in!! " + resultErrorURLPrefix);						
 							}
 						}
 					}
@@ -384,8 +373,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	//TODO: Remove this.
 	//TODO: remove size calculation
 	protected List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException, MalformedURLException {
-		//	List<File> files = makeFileList(dir, EXTENSION);
-
 		Long size = 0l;
 		fileInfos = new ArrayList<AbbyyOCRImage>();
 		for (OCRImage i : getOcrImages()) {
@@ -397,8 +384,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			URL remoteURL = remoteFilepath.toURI().toURL();
 
 			AbbyyOCRImage aof = new AbbyyOCRImage(i.getUrl(), remoteURL, imageNameFile.getName());
-			//hotfolder.urlToFile(i.getUrl());		
-			//aof.setRemoteURL(null);
 			fileInfos.add(aof);
 		}
 
@@ -435,9 +420,9 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            the url
 	 * @return the string
 	 */
-	public static String windows2unixFileSeparator (String url) {
+	/*public static String windows2unixFileSeparator (String url) {
 		return url.replace("\\", "/");
-	}
+	}*/
 
 	/**
 	 * Calculate size of the OCRImages representing this process
@@ -515,113 +500,21 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 */
 	//TODO: Keep the ticket in ram or tmp and add it on demand
 	private LinkedList<AbbyyOCRImage> addTicketFile (LinkedList<AbbyyOCRImage> fileInfos, String ticketName) throws IOException {
-		//write Ticket-File over all Files:
-
+		
 		String ticketFileName = ticketName + ".xml";
 		String ticketTempDir = null;
-		//inputFiles = null;
-		//inputFiles = new ArrayList<File>();
-		for (AbbyyOCRImage fileInfo : fileInfos) {
-			if (fileInfo.getRemoteURL().toString() != null) {
-				//TODO: Repair this.
-				//inputFiles.add(hotfolder.urlToFile(fileInfo.getRemoteURL()));
-			}
-			if (ticketTempDir == null) {
-				ticketTempDir = webdavURL + inputFolder + "/" + identifier + "/" + ticketFileName;
-			}
+		
+		if (ticketTempDir == null) {
+			ticketTempDir = webdavURL + inputFolder + "/" + identifier + "/" + ticketFileName;
 		}
-		//setInputFiles(inputFiles);
-		// put XML-Ticket to webdav-server, inputFolder
+		
 		File ticketFile = new File(ticketTempDir);
-		// Writing Ticket
-		// Ticket ticket = new Ticket(ticketFile);
-		// addLanguage(locale)
-		//addLanguage(Locale.GERMAN);
-		//addOCRFormat(OCRFormat.PDF);
-		//setOutPutLocation(serverURL + outputFolder);
-
-		//TODO: Commented these out, these methods aren't found
-		//setMillisPerFile(millisPerFile);
-		//setMaxOCRTimeout(maxOCRTimeout);
 		write(ticketFile.getAbsoluteFile(), identifier);
-		//inputFiles = null;
-		//String outputFile = webdavURL + inputFolder + "/" + ticketFileName;
-		/*fileInfos.addFirst(new AbbyyOCRImage(hotfolder.fileToURL(ticketFile),
-				null, outputFile));*/
 		logger.trace("Copy from " + ticketFile.getAbsolutePath() + " to " + ticketTempDir);
 		return fileInfos;
 	}
 
-	/**
-	 * Load config.
-	 * 
-	 * @param config
-	 *            the config
-	 * @throws ConfigurationException
-	 *             the configuration exception
-	 */
-	/*
-	public void loadConfig (PropertiesConfiguration config) throws ConfigurationException {
-		// do something with config
-		try {
-			config = new PropertiesConfiguration("config-properties");
-		} catch (org.apache.commons.configuration.ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		serverURL = config.getString("remoteURL");
-		serverURL = serverURL.endsWith("/") ? serverURL : serverURL + "/";
-		if (serverURL != null) {
-			serverURL = parseString(serverURL);
-		}
-		moveToLocal = config.getString("moveToLocal");
-		moveToLocal = moveToLocal.endsWith("/") ? moveToLocal : moveToLocal + "/";
-		if (moveToLocal != null) {
-			moveToLocal = parseString(moveToLocal);
-		}
-
-		inputFolder = config.getString("input");
-		outputFolder = config.getString("output");
-		errorFolder = config.getString("error");
-
-		
-		if (config.getString("maxSize") != null && !config.getString("maxSize").equals("")) {
-			maxSize = Long.parseLong(config.getString("maxSize"));
-		}
-
-		if (config.getString("maxFiles") != null && !config.getString("maxFiles").equals("")) {
-			maxFiles = Long.parseLong(config.getString("maxFiles"));
-		}
-
-		// Add a preconfigred local output folder
-		logger.debug("URL: " + serverURL);
-
-		logger.debug("Input folder: " + inputFolder);
-
-		logger.debug("Max size: " + maxSize);
-		logger.debug("Max files: " + maxFiles);
-
-	}
-*/
-	//TODO: Remove this
-	/*
-	public static String parseString (String str) {
-		String remoteFile = null;
-		if (str.contains("/./")) {
-			int i = 0;
-			for (String lang : Arrays.asList(str.split("/./"))) {
-				if (i == 0) {
-					i++;
-				} else {
-					remoteFile = lang;
-				}
-			}
-		}
-		return remoteFile;
-
-	}
-	*/
 
 	/**
 	 * Check xml results in output folder If exists.
@@ -634,7 +527,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	protected Boolean checkOutXmlResults () throws FileSystemException, MalformedURLException {
 		String resultURLPrefix = webdavURL + outputFolder + "/" + identifier + "/" + identifier + reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
-
 		return hotfolder.exists(resultURLPrefixpath.toURI().toURL());
 	}
 
@@ -652,98 +544,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		return hotfolder.exists(resultURLPrefixpath.toURI().toURL());
 	}
 
-	/**
-	 * parse Xml result in output folder.
-	 * 
-	 * @param file
-	 *            xml result in output folder
-	 * @return the sets of all files Name, wich are in the xml file
-	 * @throws FileNotFoundException
-	 *             the file not found exception
-	 * @throws XMLStreamException
-	 *             the xML stream exception
-	 */
-	//TODO: Change this to handle streams
-	protected Set<String> xmlresultOutputparse (File file) throws FileNotFoundException, XMLStreamException {
-		Set<String> ocrFormatFile = new LinkedHashSet<String>();
-		String filename = null;
-		final InputStream osmHamburgInStream = new FileInputStream(file);
-		XMLInputFactory factory = XMLInputFactory.newInstance();
-		XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(osmHamburgInStream);
-		try {
-			while (xmlStreamReader.hasNext()) {
-				int event = xmlStreamReader.next();
-				if (event == XMLStreamConstants.START_ELEMENT) {
-					// if the element 'NamingRule' found
-					if (xmlStreamReader.getName().toString().equals("NamingRule")) {
-						filename = xmlStreamReader.getElementText().toString();
-						ocrFormatFile.add(filename);
-					}
-				}
-			}
-			logger.debug("the files which should be in output folder: " + ocrFormatFile);
-		} finally {
-			xmlStreamReader.close();
-		}
-		return ocrFormatFile;
-	}
-
-	/**
-	 * parse Xml result in error folder and get Error description
-	 * 
-	 * @param file
-	 *            xml result in error folder
-	 * @return the sets of all files Name, wich are in the xml file
-	 * @throws FileNotFoundException
-	 *             the file not found exception
-	 * @throws XMLStreamException
-	 *             the xML stream exception
-	 */
-	//TODO: Change this to handle streams
-	protected Set<String> xmlresultErrorparse (File file) throws FileNotFoundException, XMLStreamException {
-		Set<String> ocrErrorFile = new LinkedHashSet<String>();
-		String error = null;
-
-		final InputStream osmHamburgInStream = new FileInputStream(file);
-		XMLInputFactory factory = XMLInputFactory.newInstance();
-		XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(osmHamburgInStream);
-		try {
-			while (xmlStreamReader.hasNext()) {
-				int event = xmlStreamReader.next();
-				if (event == XMLStreamConstants.START_ELEMENT) {
-					// Error description
-					if (xmlStreamReader.getName().toString().equals("Error")) {
-						error = xmlStreamReader.getElementText();
-					}
-					// bilder die in verzeichnis befinden
-					if (xmlStreamReader.getName().toString().equals("InputFile")) {
-						// ber alle Attribute
-						for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++) {
-							String attributeName = xmlStreamReader.getAttributeName(i).toString();
-							// wenn version gefunden wurde
-							if (attributeName.equals("Name")) {
-								String str = xmlStreamReader.getAttributeValue(i);
-								String[] results = str.split("}_");
-								Boolean image = true;
-								for (int j = 0; j < results.length; j++) {
-									if (image) {
-										image = false;
-									} else {
-										ocrErrorFile.add(results[j]);
-										image = true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		} finally {
-			xmlStreamReader.close();
-		}
-		logger.debug("Band Name " + identifier + " Error :" + error);
-		return ocrErrorFile;
-	}
 
 	/**
 	 * Check if all files exists in url.
@@ -812,14 +612,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 */
 	protected void copyAllFiles (Set<String> checkfile, String url, String localfile) throws FileSystemException, MalformedURLException {
 		File urlpath = new File(url);
-		//URL folder = hotfolder.stringToUrl(urlpath.getAbsolutePath());
 		hotfolder.mkDir(new URL(localfile + "/" + identifier));
 		hotfolder.copyFile(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix, localfile + "/" + identifier + "/" + identifier + reportSuffix);
 		for (String fileName : checkfile) {
 			hotfolder.copyFile(urlpath.getAbsolutePath() + "/" + fileName, localfile + "/" + identifier + "/" + fileName);
 			logger.debug("Copy File From " + urlpath.getAbsolutePath() + "/" + fileName + " To" + localfile);
 		}
-		//hotfolder.deleteIfExists(folder);
 	}
 
 	/**
