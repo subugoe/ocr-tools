@@ -30,8 +30,6 @@ import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.util.file.FileUtils;
-
 public class AbbyyServerSimulator extends Thread {
 	protected File hotfolder, output, error, expected, errorExpected, outputExpected;
 	public static String HOTFOLDER_NAME = "hotfolder";
@@ -40,7 +38,7 @@ public class AbbyyServerSimulator extends Thread {
 
 	protected Map<String, File> resultsError = new HashMap<String, File>();
 	protected Map<String, File> resultsOutput = new HashMap<String, File>();
-	
+
 	protected List<Thread> processes = new ArrayList<Thread>();
 
 	protected static Long wait = 2000l;
@@ -90,7 +88,7 @@ public class AbbyyServerSimulator extends Thread {
 			}
 
 			if (finish == true) {
-				for (Thread t: processes) {
+				for (Thread t : processes) {
 					try {
 						t.join();
 					} catch (InterruptedException e) {
@@ -120,14 +118,14 @@ public class AbbyyServerSimulator extends Thread {
 			logger.info("No files in input folder.");
 			return;
 		}
-		
+
 		for (File f : inputContents) {
 			if (f.getAbsolutePath().endsWith("xml")) {
 
 				String ticket = f.getName();
 				logger.debug("Found XML: " + ticket);
 				String name = ticket.substring(ticket.indexOf(".xml"));
-				
+
 				//TODO: Parse ticket here;
 				Long wait = calculateWait(name);
 				//TODO: Create  new Thread which waits and copies the files afterwards
@@ -179,21 +177,22 @@ public class AbbyyServerSimulator extends Thread {
 			}
 		}
 	}
-	
+
 	private Thread createCopyThread (final Long wait, final String name) {
 		return new Thread() {
+			@Override
 			public void run () {
 				try {
 					sleep(wait);
 					//TODO: copy the files to the right location
 					//FileUtils.
 					if (resultsOutput.containsKey(name)) {
-						
+
 					}
 					if (resultsError.containsKey(name)) {
-						
+
 					}
-					
+
 					//Remove the files
 					removeJob(name);
 
