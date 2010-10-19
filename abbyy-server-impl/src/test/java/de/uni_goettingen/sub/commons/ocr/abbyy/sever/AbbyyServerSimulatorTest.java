@@ -20,12 +20,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class AbbyyServerSimulatorTest {
+
+	protected static AbbyyServerSimulator sim;
 
 	@BeforeClass
 	public static void init () {
@@ -38,8 +38,8 @@ public class AbbyyServerSimulatorTest {
 
 	@Test
 	public void testSimulator () {
-		AbbyyServerSimulator sim = new AbbyyServerSimulator(new File("./src/test/resources/hotfolder"), new File("./src/test/resources/expected"));
-		assertTrue(sim.input.isDirectory());
+		sim = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_OUTPUT_FILE, HotfolderTest.TEST_EXPECTED_FILE);
+		assertTrue(sim.hotfolder.isDirectory());
 		assertTrue(sim.output.isDirectory());
 		assertTrue(sim.error.isDirectory());
 	}
