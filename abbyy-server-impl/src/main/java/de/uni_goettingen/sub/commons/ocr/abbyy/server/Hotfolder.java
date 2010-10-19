@@ -34,6 +34,7 @@ import org.apache.commons.vfs.VFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 /**
@@ -80,7 +81,7 @@ public class Hotfolder extends Thread {
 	/**
 	 * Copy a url from source to destination. Assumes overwrite.
 	 * 
-	 * @param files
+	 * @param fileInfos
 	 *            is a List of The Class AbbyyOCRImage. Is a representation of
 	 *            an OCRImage suitable for holding references to remote files as
 	 *            used by the Abbyy Recognition Server
@@ -90,9 +91,9 @@ public class Hotfolder extends Thread {
 	 *             the interrupted exception
 	 * @throws FileSystemException
 	 */
-	public void copyFilesToServer (List<AbbyyOCRImage> files) throws InterruptedException, FileSystemException {
+	public void copyFilesToServer (List<AbbyyOCRImage> fileInfos) throws InterruptedException, FileSystemException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
-		for (AbbyyOCRImage info : files) {
+		for (AbbyyOCRImage info : fileInfos) {
 			FileObject remoteFile = fsManager.resolveFile(info.getRemoteURL().toString());
 			FileObject imageUrlfile = fsManager.resolveFile(info.getUrl().toString());
 			// Delete if exists

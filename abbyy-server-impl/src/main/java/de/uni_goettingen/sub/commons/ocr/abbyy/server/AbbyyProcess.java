@@ -136,8 +136,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The ocr out format file. */
 	Set<String> ocrOutFormatFile = new LinkedHashSet<String>();
 
-	/** The file infos. */
-	protected List<AbbyyOCRImage> fileInfos = null;
 	//protected List<AbbyyOCRImage> fileInfosreplacement = null;
 	// The configuration.
 	protected ConfigParser config;
@@ -187,20 +185,9 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		identifier = getName();
 		//imageDirectory = getImageDirectory();
 
-		//TODO: This is a bad hack.
-		if (imageDirectory == null) {
-			throw new RuntimeException("No directory given!");
-		}
-		try {
-			fileInfos = getFileList(imageDirectory);
-		} catch (FileSystemException e) {
-			logger.error("Got file system exception during creation of file list", e);
+		List<AbbyyOCRImage>fileInfos = convertList(getOcrImages());
 
-		} catch (MalformedURLException e) {
-			logger.error("Got malformed URL exception during creation of file list", e);
-		}
-
-		Integer wait;
+		Long wait;
 		try {
 			// engineConfig = createConfig(identifier);
 
@@ -219,12 +206,18 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				try {
 					done = false;
 					fileInfos = addTicketFile(new LinkedList<AbbyyOCRImage>(fileInfos), identifier);
-				} catch (Exception e) {
+				} catch (FileSystemException e) {
 					done = false;
 					failed = true;
 					copyOnly = false;
 					hotfolder.deleteIfExists(inputDirectoryFile.toURI().toURL());
-					logger.trace(" Failed!! XMLTicket can not created for " + identifier);
+					logger.error(" Failed!! XMLTicket can not created for " + identifier, e);
+				} catch (IOException e) {
+					done = false;
+					failed = true;
+					copyOnly = false;
+					hotfolder.deleteIfExists(inputDirectoryFile.toURI().toURL());
+					logger.error(" Failed!! XMLTicket can not created for " + identifier, e);
 				}
 			}
 			//copy must be treated here
@@ -252,12 +245,14 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 						k++;
 					}
 
-				} catch (Exception e) {
+					/*
+				} catch (FileSystemException e) {
 					logger.error("Got Exception", e);
-					throw new RuntimeException(e);
+					throw new OCRException(e);
+					*/
 				}
 			}
-			wait = fileInfos.size() * millisPerFile;
+			wait = fileInfos.size() * new Long(millisPerFile);
 			logger.info("Waiting " + wait + " milli seconds");
 
 			Thread.sleep(wait);
@@ -284,7 +279,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 							logger.info("Move Processing successfully to " + moveToLocalAbsolutePath);
 						}
 						if (faktor == 1 && !failed) {
-							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix) * millisPerFile + millisPerFile;
+							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix) * new Long(millisPerFile) + millisPerFile;
 							Thread.sleep(wait);
 						}
 						if (faktor == 2 && !failed) {
@@ -307,7 +302,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 								logger.info("delete All Files Processing is successfull ");
 							}
 							if (index == 1 && !failed) {
-								wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix) * millisPerFile + millisPerFile;
+								wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix) * new Long(millisPerFile) + millisPerFile;
 								Thread.sleep(wait);
 							}
 							if (index == 2 && !failed) {
@@ -364,7 +359,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	//TODO: remove size calculation
 	protected List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException, MalformedURLException {
 		Long size = 0l;
-		fileInfos = new ArrayList<AbbyyOCRImage>();
+		List<AbbyyOCRImage> fileInfos = new ArrayList<AbbyyOCRImage>();
 		for (OCRImage i : getOcrImages()) {
 			String imageName = i.getUrl().getPath();
 			File imageNameFile = new File(imageName);
@@ -431,16 +426,15 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/**
 	 * Fix remote path.
 	 * 
-	 * @param infoList
+	 * @param fileInfos
 	 *            , is a List of AbbyyOCRImage
 	 * @param name
 	 *            for identifier
 	 * @return the list of AbbyyOCRImage
 	 */
-	//TODO: Check if this one is still needed
-	protected List<AbbyyOCRImage> fixRemotePath (List<AbbyyOCRImage> infoList, String name) {
+	protected List<AbbyyOCRImage> fixRemotePath (List<AbbyyOCRImage> fileInfos, String name) {
 		LinkedList<AbbyyOCRImage> newList = new LinkedList<AbbyyOCRImage>();
-		for (AbbyyOCRImage info : infoList) {
+		for (AbbyyOCRImage info : fileInfos) {
 			if (info.getRemoteURL().toString() != null) {
 				try {
 					// Rewrite remote name
@@ -676,6 +670,14 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			throw new IllegalStateException(dir.getAbsolutePath() + " is not a directory");
 		}
 		return dirs;
+	}
+	
+	protected static List<AbbyyOCRImage> convertList (List<OCRImage> ocrImages) {
+		List<AbbyyOCRImage> images = new LinkedList<AbbyyOCRImage>();
+		for (OCRImage i: ocrImages) {
+			images.add((AbbyyOCRImage) i);
+		}
+		return images;
 	}
 
 	/**
