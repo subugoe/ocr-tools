@@ -357,7 +357,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 */
 	//TODO: Remove this.
 	//TODO: remove size calculation
-	protected List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException, MalformedURLException {
+	private List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException, MalformedURLException {
 		Long size = 0l;
 		List<AbbyyOCRImage> fileInfos = new ArrayList<AbbyyOCRImage>();
 		for (OCRImage i : getOcrImages()) {
@@ -372,20 +372,14 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			fileInfos.add(aof);
 		}
 
-		/**
-		 * proof if number of files is in limit as defined in config-properties
-		 * file, param maxFiles
-		 */
+		// proof if number of files is in limit as defined in config-properties file, param maxFiles
 
 		if (maxFiles != 0 && fileInfos.size() > maxFiles) {
 			logger.error("To much files (" + fileInfos.size() + "). The max amount of files is " + maxFiles + ". Stop processing!");
 			throw new RuntimeException("To much files!");
 		}
 
-		/**
-		 * proof overall filesize-limit as defined in config-properties, param
-		 * maxSize
-		 */
+		// proof overall filesize-limit as defined in config-properties, param maxSize
 
 		if (maxSize != 0 && size > maxSize) {
 			logger.error("Filesize to much (" + size + "Byte). The max size of all files is " + maxSize + "Byte. Stop processing!");
@@ -432,15 +426,20 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            for identifier
 	 * @return the list of AbbyyOCRImage
 	 */
-	protected List<AbbyyOCRImage> fixRemotePath (List<AbbyyOCRImage> fileInfos, String name) {
+	protected static List<AbbyyOCRImage> fixRemotePath (List<AbbyyOCRImage> fileInfos, String name) {
 		LinkedList<AbbyyOCRImage> newList = new LinkedList<AbbyyOCRImage>();
 		for (AbbyyOCRImage info : fileInfos) {
+			//TODO: Check why remote URL is null here
 			if (info.getRemoteURL().toString() != null) {
 				try {
 					// Rewrite remote name
 					Pattern pr = Pattern.compile(".*\\\\(.*)");
 					Matcher mr = pr.matcher(info.getRemoteURL().toString());
 					mr.find();
+					//TODO: this is a dirty hack
+					if (mr.group(1) == null) {
+						throw new IllegalStateException();
+					}
 					String newRemoteName = name + "-" + mr.group(1);
 					logger.trace("Rewiting " + info.getRemoteURL().toString() + " to " + newRemoteName);
 
