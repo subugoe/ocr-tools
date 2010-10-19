@@ -34,7 +34,6 @@ import org.apache.commons.vfs.VFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 /**
@@ -49,10 +48,10 @@ public class Hotfolder extends Thread {
 	protected URL inFolder, outFolder, errrorFolder;
 
 	protected String serverURL, inputFolder, outputFolder, errorFolder;
-	
+
 	protected ConfigParser config;
-	
-	private static Hotfolder _instance; 
+
+	private static Hotfolder _instance;
 
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;

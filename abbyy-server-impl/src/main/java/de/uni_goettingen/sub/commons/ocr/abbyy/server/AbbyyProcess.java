@@ -185,7 +185,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		identifier = getName();
 		//imageDirectory = getImageDirectory();
 
-		List<AbbyyOCRImage>fileInfos = convertList(getOcrImages());
+		List<AbbyyOCRImage> fileInfos = convertList(getOcrImages());
 
 		Long wait;
 		try {
@@ -246,7 +246,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 					}
 
 					/*
-				} catch (FileSystemException e) {
+					} catch (FileSystemException e) {
 					logger.error("Got Exception", e);
 					throw new OCRException(e);
 					*/
@@ -670,10 +670,10 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 		return dirs;
 	}
-	
+
 	protected static List<AbbyyOCRImage> convertList (List<OCRImage> ocrImages) {
 		List<AbbyyOCRImage> images = new LinkedList<AbbyyOCRImage>();
-		for (OCRImage i: ocrImages) {
+		for (OCRImage i : ocrImages) {
 			images.add((AbbyyOCRImage) i);
 		}
 		return images;
