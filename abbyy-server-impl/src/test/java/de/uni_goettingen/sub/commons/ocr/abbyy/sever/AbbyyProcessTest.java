@@ -43,6 +43,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 @SuppressWarnings("serial")
 public class AbbyyProcessTest {
@@ -77,9 +78,8 @@ public class AbbyyProcessTest {
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
 			aop.write(testTicket, testDir.getName());
-			logger.debug("Wrote Ticket:\n" + TicketTest.dumpTicket(new FileInputStream(testTicket)));
+			logger.debug("Wrote Ticket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
 		}
-
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class AbbyyProcessTest {
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
 			aop.write(testTicket, testDir.getName());
-			logger.debug("Wrote Ticket:\n" + TicketTest.dumpTicket(new FileInputStream(testTicket)));
+			logger.debug("Wrote Ticket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
 			assertTrue("This fails if the number of files between ticket and file system differs.", TicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
 		}
 	}
@@ -117,6 +117,23 @@ public class AbbyyProcessTest {
 		//AbbyyProcess aop = (AbbyyProcess) op;
 		//aop.write(out, identifier)
 
+	}
+	
+	@Test
+	public void createUrlBasedProcess () throws MalformedURLException {
+		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
+		AbbyyServerEngine ase = AbbyyServerEngine.getInstance();
+		assertNotNull(ase);
+		OCRProcess op = ase.newProcess();
+		List<OCRImage> imgList = new ArrayList<OCRImage>();
+		for (int i = 0; i < 10; i++) {
+			OCRImage ocri = mock(OCRImage.class);
+			String imageUrl = "http://127.0.0.1:8080/image-" + i;
+			when(ocri.getUrl()).thenReturn(new URL(imageUrl));
+			logger.debug("Added url to list: " + imageUrl);
+			imgList.add(ocri);
+		}
+		op.setOcrImages(imgList);
 	}
 
 	@AfterClass
