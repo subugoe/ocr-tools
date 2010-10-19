@@ -1,5 +1,9 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -11,20 +15,16 @@ import org.slf4j.LoggerFactory;
 
 public class ConfigParser {
 	protected Configuration config;
-	protected static String serverURL;
-	protected String username;
-	protected String password;
-	protected String inputFolder;
-	protected String outputFolder;
-	protected String errorFolder;
+	protected String serverURL;
+	protected String username, password;
+	protected String inputFolder, outputFolder, errorFolder;
 
-	protected Long maxSize;
-	protected Long maxFiles;
+	protected Long maxSize, maxFiles;
 	protected Integer maxThreads;
 	protected Boolean checkServerState;
 	protected Boolean debugAuth = false;
 	public final static String DEFAULT_CONFIG = "/abbyyServer.properties";
-	public final static String DEBUG_PROPERTY= "ocr.finereader.server.debug.auth";
+	public final static String DEBUG_PROPERTY = "ocr.finereader.server.debug.auth";
 
 	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 
@@ -47,8 +47,6 @@ public class ConfigParser {
 	 * 
 	 * @param config
 	 *            the config
-	 * @throws ConfigurationException
-	 *             the configuration exception
 	 */
 	public ConfigParser loadConfig (URL configLocation) {
 		if (Boolean.parseBoolean(System.getProperty(DEBUG_PROPERTY))) {
@@ -63,10 +61,25 @@ public class ConfigParser {
 		}
 
 		serverURL = config.getString("remoteURL");
-		serverURL = serverURL.endsWith("/") ? serverURL : serverURL + "/";
-		if (serverURL != null) {
-			serverURL = parseString(serverURL);
+		
+		try {
+			if (!serverURL.contains("./") && serverURL.startsWith("file")) {
+				//This is true if we have an absolute local (file) uri;
+				serverURL = new URI(serverURL).toString();
+			} else if (serverURL.startsWith("file") && serverURL.contains("./")) {
+				//An relative URI with file prefix, just remove the prefix
+				serverURL.replace("file:", "");
+			}
+			if (!new URI(serverURL).isAbsolute()) {
+				//got an relative URI
+				URI context = new File(".").toURI();
+				//Resolve it against the base path of the current process
+				serverURL = context.resolve(new URI(serverURL)).toString();
+			}
+		} catch (URISyntaxException e) {
+			logger.error("URI is malformed", e);
 		}
+		serverURL = serverURL.endsWith("/") ? serverURL : serverURL + "/";
 
 		username = config.getString("username");
 		password = config.getString("password");
@@ -90,7 +103,7 @@ public class ConfigParser {
 			maxFiles = Long.parseLong(config.getString("maxFiles"));
 		}
 
-		// Add a preconfigred local output folder
+		//TODO: Add a preconfigured local output folder
 
 		if (debugAuth) {
 			logger.debug("URL: " + serverURL);
@@ -115,29 +128,12 @@ public class ConfigParser {
 		return this;
 	}
 
-	//TODO: Check if we really need this
-	public static String parseString (String str) {
-		String remoteFile = null;
-		if (str.contains("/./")) {
-			int i = 0;
-			for (String lang : Arrays.asList(str.split("/./"))) {
-				if (i == 0) {
-					i++;
-				} else {
-					remoteFile = lang;
-				}
-			}
-		}
-		return remoteFile;
-
-	}
-
 	public String getServerURL () {
 		return serverURL;
 	}
 
 	public void setServerURL (String webdavURL) {
-		ConfigParser.serverURL = webdavURL;
+		this.serverURL = webdavURL;
 	}
 
 	public Boolean getDebugAuth () {
