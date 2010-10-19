@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,8 @@ import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.util.file.FileUtils;
+
 public class AbbyyServerSimulator extends Thread {
 	protected File hotfolder, output, error, expected, errorExpected, outputExpected;
 	public static String HOTFOLDER_NAME = "hotfolder";
@@ -37,6 +40,8 @@ public class AbbyyServerSimulator extends Thread {
 
 	protected Map<String, File> resultsError = new HashMap<String, File>();
 	protected Map<String, File> resultsOutput = new HashMap<String, File>();
+	
+	protected List<Thread> processes = new ArrayList<Thread>();
 
 	protected static Long wait = 2000l;
 
@@ -62,7 +67,7 @@ public class AbbyyServerSimulator extends Thread {
 
 		for (File f : Arrays.asList(outputExpected.listFiles())) {
 			if (f.isDirectory()) {
-				resultsError.put(f.getName(), f);
+				resultsOutput.put(f.getName(), f);
 				logger.debug("Adding " + f.getName() + " as expected result.");
 			}
 		}
@@ -85,6 +90,14 @@ public class AbbyyServerSimulator extends Thread {
 			}
 
 			if (finish == true) {
+				for (Thread t: processes) {
+					try {
+						t.join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				clean();
 				interrupt();
 			}
@@ -107,28 +120,33 @@ public class AbbyyServerSimulator extends Thread {
 			logger.info("No files in input folder.");
 			return;
 		}
+		
 		for (File f : inputContents) {
 			if (f.getAbsolutePath().endsWith("xml")) {
 
-				String name = f.getName();
-				logger.debug("Found XML: " + name);
-				name = name.substring(name.indexOf(".xml"));
+				String ticket = f.getName();
+				logger.debug("Found XML: " + ticket);
+				String name = ticket.substring(ticket.indexOf(".xml"));
+				
 				//TODO: Parse ticket here;
+				Long wait = calculateWait(name);
+				//TODO: Create  new Thread which waits and copies the files afterwards
+				Thread serverProcess = createCopyThread(wait, name);
+				serverProcess.run();
+				processes.add(serverProcess);
 			}
 		}
 
+		/*
 		if (containsTicket(dir)) {
 
 			//Extract the job name
 			String name = null;
 
 			//calculate wait time
-			Long wait = calculateWait(name);
-
-			//Remove the files
-			removeJob(name);
 
 		}
+		*/
 	}
 
 	protected Long calculateWait (String name) throws XmlException, IOException {
@@ -160,6 +178,38 @@ public class AbbyyServerSimulator extends Thread {
 				f.delete();
 			}
 		}
+	}
+	
+	private Thread createCopyThread (final Long wait, final String name) {
+		return new Thread() {
+			public void run () {
+				try {
+					sleep(wait);
+					//TODO: copy the files to the right location
+					//FileUtils.
+					if (resultsOutput.containsKey(name)) {
+						
+					}
+					if (resultsError.containsKey(name)) {
+						
+					}
+					
+					//Remove the files
+					removeJob(name);
+
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (XmlException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		};
 	}
 
 }

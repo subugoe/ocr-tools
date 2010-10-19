@@ -66,6 +66,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 @SuppressWarnings("serial")
 public class TicketTest {
@@ -149,7 +150,7 @@ public class TicketTest {
 		ticketStream = new FileOutputStream(TICKET_FILE);
 		ticket.write(ticketStream, name);
 
-		String ticket = dumpTicket(new FileInputStream(TICKET_FILE));
+		String ticket = StreamUtils.dumpInputStream(new FileInputStream(TICKET_FILE));
 		logger.debug("This is the ticket\n" + ticket);
 
 		assertTrue(TICKET_FILE.exists());
@@ -231,26 +232,6 @@ public class TicketTest {
 			basefolder = new File(url.getPath());
 		}
 		return basefolder;
-	}
-
-	public static String dumpTicket (InputStream in) throws IOException {
-		if (in != null) {
-			Writer writer = new StringWriter();
-
-			char[] buffer = new char[1024];
-			try {
-				Reader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-				int n;
-				while ((n = reader.read(buffer)) != -1) {
-					writer.write(buffer, 0, n);
-				}
-			} finally {
-				in.close();
-			}
-			return writer.toString();
-		} else {
-			return "";
-		}
 	}
 
 	@AfterClass
