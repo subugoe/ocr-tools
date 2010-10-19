@@ -34,6 +34,8 @@ import org.apache.commons.vfs.VFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+
 /**
  * The Class Hotfolder is used to control the hotfolders used by the Abbyy
  * Recognition Server.
@@ -48,6 +50,8 @@ public class Hotfolder extends Thread {
 	protected String serverURL, inputFolder, outputFolder, errorFolder;
 	
 	protected ConfigParser config;
+	
+	private static Hotfolder _instance; 
 
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;
@@ -58,8 +62,14 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public Hotfolder() throws FileSystemException {
-		fsManager = VFS.getManager();
+	public Hotfolder() {
+		try {
+			fsManager = VFS.getManager();
+		} catch (FileSystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new OCRException(e);
+		}
 	}
 
 	public Hotfolder(ConfigParser config) throws FileSystemException {
@@ -302,7 +312,7 @@ public class Hotfolder extends Thread {
 		this.errrorFolder = errrorFolder;
 	}
 
-	public String getWebdavURL () {
+	public String getServerURL () {
 		return serverURL;
 	}
 
@@ -332,6 +342,13 @@ public class Hotfolder extends Thread {
 
 	public void setErrorFolder (String errorFolder) {
 		this.errorFolder = errorFolder;
+	}
+
+	public static Hotfolder newInstace () {
+		if (_instance == null) {
+			_instance = new Hotfolder();
+		}
+		return _instance;
 	}
 
 }
