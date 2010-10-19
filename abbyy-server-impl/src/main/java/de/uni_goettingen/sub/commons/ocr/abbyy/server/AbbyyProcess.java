@@ -19,10 +19,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -36,11 +34,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.naming.ConfigurationException;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
@@ -132,7 +126,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	/** the XmlParser */
 	protected XmlParser xmlParser;
-	
+
 	/** The image directory. */
 	protected String imageDirectory;
 
@@ -251,7 +245,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 							hotfolder.deleteIfExists(info.getRemoteURL());
 							logger.error("Second try!! copy images from " + identifier);
 						}
-						if (k==1){
+						if (k == 1) {
 							File xmlTicket = new File(inputDirectoryFile.getAbsolutePath() + "/" + identifier + "/" + reportSuffixforXml);
 							hotfolder.deleteIfExists(xmlTicket.toURI().toURL());
 							hotfolder.deleteIfExists(inputDirectoryFile.toURI().toURL());
@@ -260,7 +254,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 							failed = true;
 						}
 						k++;
-					} 
+					}
 
 				} catch (Exception e) {
 					logger.error("Got Exception", e);
@@ -286,21 +280,21 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 					String moveToLocalAbsolutePath = moveToLocalpath.getAbsolutePath();
 
 					// for Output folder
-					for ( int faktor = 1; faktor <= 2; faktor ++ ) {
+					for (int faktor = 1; faktor <= 2; faktor++) {
 						if (checkIfAllFilesExists(ocrOutFormatFile, resultOutURLPrefix + "/")) {
 							copyAllFiles(ocrOutFormatFile, resultOutURLPrefix, moveToLocalAbsolutePath);
 							deleteAllFiles(ocrOutFormatFile, resultOutURLPrefix);
 							failed = true;
 							logger.info("Move Processing successfully to " + moveToLocalAbsolutePath);
 						}
-						if(faktor == 1 && !failed ){
+						if (faktor == 1 && !failed) {
 							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix) * millisPerFile + millisPerFile;
 							Thread.sleep(wait);
 						}
-						if(faktor == 2 && !failed ){
+						if (faktor == 2 && !failed) {
 							failed = true;
 							logger.error("failed!!TimeoutExcetion for Move Processing, All files Not exists in " + resultOutURLPrefix);
-						}	
+						}
 					}
 				} else {
 					// for Error folder
@@ -310,19 +304,19 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 						String resultErrorURLPrefixAbsolutePath = resultErrorURLPrefixpath.getAbsolutePath();
 						// TODO: Get the result report
 						ocrErrorFormatFile = xmlParser.xmlresultErrorparse(new File(resultErrorURLPrefixAbsolutePath), identifier);
-						for ( int index = 1; index <= 2; index ++ ) {
+						for (int index = 1; index <= 2; index++) {
 							if (checkIfAllFilesExists(ocrErrorFormatFile, resultErrorURLPrefix + "/")) {
 								deleteAllFiles(ocrErrorFormatFile, resultErrorURLPrefix);
 								failed = true;
 								logger.info("delete All Files Processing is successfull ");
 							}
-							if(index == 1 && !failed ){
+							if (index == 1 && !failed) {
 								wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix) * millisPerFile + millisPerFile;
 								Thread.sleep(wait);
 							}
-							if(index == 2 && !failed ){
+							if (index == 2 && !failed) {
 								failed = true;
-								logger.error("failed!! TimeoutExcetion for delete All Files Processing, All files Not exists in!! " + resultErrorURLPrefix);						
+								logger.error("failed!! TimeoutExcetion for delete All Files Processing, All files Not exists in!! " + resultErrorURLPrefix);
 							}
 						}
 					}
@@ -368,7 +362,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            the file system, where are all images
 	 * @return the file list of the AbbyyOCRImage.
 	 * @throws FileSystemException
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	//TODO: Remove this.
 	//TODO: remove size calculation
@@ -500,21 +494,19 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 */
 	//TODO: Keep the ticket in ram or tmp and add it on demand
 	private LinkedList<AbbyyOCRImage> addTicketFile (LinkedList<AbbyyOCRImage> fileInfos, String ticketName) throws IOException {
-		
+
 		String ticketFileName = ticketName + ".xml";
 		String ticketTempDir = null;
-		
+
 		if (ticketTempDir == null) {
 			ticketTempDir = webdavURL + inputFolder + "/" + identifier + "/" + ticketFileName;
 		}
-		
+
 		File ticketFile = new File(ticketTempDir);
 		write(ticketFile.getAbsoluteFile(), identifier);
 		logger.trace("Copy from " + ticketFile.getAbsolutePath() + " to " + ticketTempDir);
 		return fileInfos;
 	}
-
-
 
 	/**
 	 * Check xml results in output folder If exists.
@@ -522,7 +514,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @return the boolean, true If exists
 	 * @throws FileSystemException
 	 *             the file system exception
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	protected Boolean checkOutXmlResults () throws FileSystemException, MalformedURLException {
 		String resultURLPrefix = webdavURL + outputFolder + "/" + identifier + "/" + identifier + reportSuffix;
@@ -536,14 +528,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @return the boolean, true If exists.
 	 * @throws FileSystemException
 	 *             the file system exception
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	protected Boolean checkErrorXmlResults () throws FileSystemException, MalformedURLException {
 		String resultURLPrefix = webdavURL + errorFolder + "/" + identifier + "/" + identifier + reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
 		return hotfolder.exists(resultURLPrefixpath.toURI().toURL());
 	}
-
 
 	/**
 	 * Check if all files exists in url.
@@ -555,7 +546,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @return the boolean, true if all files exists
 	 * @throws FileSystemException
 	 *             the file system exception
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	protected Boolean checkIfAllFilesExists (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
 
@@ -581,7 +572,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @return the int result
 	 * @throws FileSystemException
 	 *             the file system exception
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	protected int resultAllFilesNotExists (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
 		int result = 0;
@@ -608,7 +599,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            the localfile
 	 * @throws FileSystemException
 	 *             the file system exception
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	protected void copyAllFiles (Set<String> checkfile, String url, String localfile) throws FileSystemException, MalformedURLException {
 		File urlpath = new File(url);
@@ -629,7 +620,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            the url, wich are all images
 	 * @throws FileSystemException
 	 *             the file system exception
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	protected void deleteAllFiles (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
 		//TODO: Remove file from here
