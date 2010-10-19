@@ -181,8 +181,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		try {
 			config = new ConfigParser().loadConfig();
 			hotfolder = new Hotfolder();
-		} catch (FileSystemException e) {
-			logger.error("Can't access file system", e);
+		} catch (OCRException e) {
+			logger.error("Can't create Hotfolder", e);
 		}
 		identifier = getName();
 		//imageDirectory = getImageDirectory();

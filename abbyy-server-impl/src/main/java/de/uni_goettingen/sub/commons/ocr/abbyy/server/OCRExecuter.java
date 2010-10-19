@@ -46,6 +46,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	private Long totalFileSize;
 
 	private Long totalFileCount;
+	
+	protected Hotfolder hotfolder = Hotfolder.newInstace();
 
 	public OCRExecuter(Integer maxThreads) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());

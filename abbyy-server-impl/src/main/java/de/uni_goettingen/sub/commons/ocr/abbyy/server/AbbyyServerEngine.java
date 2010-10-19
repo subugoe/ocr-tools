@@ -182,13 +182,13 @@ public class AbbyyServerEngine implements OCREngine {
 		if (maxSize != 0 && maxFiles != 0) {
 
 			// check if a slash is already appended
-			final String serverUrl = config.getServerURL();
+			final URL serverUrl = new URL(config.getServerURL());
 			Map<URL, Long> sizeMap = new LinkedHashMap<URL, Long>() {
 				{
 					//TODO: There is an error in here
-					put(new URL(serverUrl + config.getInputFolder() + "/"), 0l);
-					put(new URL(serverUrl + config.getOutoutFolder() + "/"), 0l);
-					put(new URL(serverUrl + config.getErrorFolder() + "/"), 0l);
+					put(new URL(serverUrl.toString() + config.getInputFolder() + "/"), 0l);
+					put(new URL(serverUrl.toString() + config.getOutoutFolder() + "/"), 0l);
+					put(new URL(serverUrl.toString() + config.getErrorFolder() + "/"), 0l);
 				}
 			};
 
