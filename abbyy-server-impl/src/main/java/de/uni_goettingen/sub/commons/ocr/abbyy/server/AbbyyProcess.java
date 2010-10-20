@@ -52,17 +52,15 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	//TODO: Check if timeout is written, add a test for this
 	//TODO: User ram or tmp file system for ticket file
 
-	/** The Constant logger. */
+	// The Constant logger.
 	public final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
 
-	/** The local path separator. */
+	// The local path separator.
 	protected static String localPathSeparator = File.separator;
 
 	//TODO: Use static fields from the engine class here.
 	// The server url.
 	protected static String serverURL = null;
-
-
 
 	// The output folder.
 	protected static String outputFolder = null;
@@ -316,56 +314,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 		doneTime = System.currentTimeMillis();
 	}
-
-	/**
-	 * proof if number of files is in limit as defined in config-properties
-	 * file, param maxFiles and proof overall filesize-limit as defined in
-	 * config-properties file, param maxSize.
-	 * 
-	 * @param dir
-	 *            the file system, where are all images
-	 * @return the file list of the AbbyyOCRImage.
-	 * @throws FileSystemException
-	 * @throws MalformedURLException
-	 */
-	//TODO: Remove this.
-	//TODO: remove size calculation
-	/*
-	private List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException, MalformedURLException {
-		Long size = 0l;
-		List<AbbyyOCRImage> fileInfos = new ArrayList<AbbyyOCRImage>();
-		for (OCRImage i : getOcrImages()) {
-			String imageName = i.getUrl().getPath();
-			File imageNameFile = new File(imageName);
-			size += imageNameFile.length();
-			String remoteImageNamePath = serverURL + inputFolder + "/" + identifier + "/" + imageNameFile.getName() + "/";
-			File remoteFilepath = new File(remoteImageNamePath);
-			URL remoteURL = remoteFilepath.toURI().toURL();
-
-			AbbyyOCRImage aof = new AbbyyOCRImage(i.getUrl(), remoteURL, imageNameFile.getName());
-			fileInfos.add(aof);
-		}
-
-		// proof if number of files is in limit as defined in config-properties file, param maxFiles
-
-		if (maxFiles != 0 && fileInfos.size() > maxFiles) {
-			logger.error("To much files (" + fileInfos.size() + "). The max amount of files is " + maxFiles + ". Stop processing!");
-			throw new RuntimeException("To much files!");
-		}
-
-		// proof overall filesize-limit as defined in config-properties, param maxSize
-
-		if (maxSize != 0 && size > maxSize) {
-			logger.error("Filesize to much (" + size + "Byte). The max size of all files is " + maxSize + "Byte. Stop processing!");
-			throw new RuntimeException("Filesize to much!");
-		}
-
-		this.fileCount = new Long(getOcrImages().size());
-		this.fileSize = size;
-
-		return fileInfos;
-	}
-	*/
 
 	/**
 	 * Windows2unix file separator.
