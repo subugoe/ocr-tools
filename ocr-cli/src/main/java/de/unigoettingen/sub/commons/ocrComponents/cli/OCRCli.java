@@ -29,6 +29,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
 /**
@@ -216,27 +217,7 @@ public class OCRCli {
 
 	}
 
-	/**
-	 * Parses the language.
-	 * 
-	 * @param str
-	 *            the str
-	 * @return the list of language
-	 */
-	public static List<Locale> parseLangs (String str) {
-		List<Locale> langs = new ArrayList<Locale>();
-		//TODO: Test this, remove the if
-		if (str.contains(",")) {
-			for (String lang : Arrays.asList(str.split(","))) {
-				langs.add(new Locale(lang));
-				//process.addLanguage(new Locale(lang));
-			}
-		} else {
-			langs.add(new Locale(str));
-			//process.addLanguage(new Locale(str));
-		}
-		return langs;
-	}
+
 
 	/**
 	 * getordinal. checks whether format already gives in enum OCRFormat Class
@@ -347,7 +328,7 @@ public class OCRCli {
 
 		// Sprache
 		if (cmd.hasOption("l")) {
-			langs = parseLangs(cmd.getOptionValue("l"));
+			langs = OCRUtil.parseLangs(cmd.getOptionValue("l"));
 		} else {
 			langs = new ArrayList<Locale>();
 			langs.add(new Locale("de"));
