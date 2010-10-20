@@ -109,8 +109,8 @@ public class AbbyyServerSimulator extends Thread {
 		}
 	}
 
-	protected void removeJob (String name) throws XmlException, IOException {
-		List<String> files = TicketTest.parseFilesFromTicket(new File(hotfolder.getAbsolutePath() + File.separator + name + ".xml"));
+	protected void removeJob (File file) throws XmlException, IOException {
+		List<String> files = TicketTest.parseFilesFromTicket(file);
 		for (String str : files) {
 			new File(hotfolder.getAbsolutePath() + File.separator + str).delete();
 		}
@@ -135,7 +135,7 @@ public class AbbyyServerSimulator extends Thread {
 				//TODO: Parse ticket here;
 				Long wait = calculateWait(f);
 				//TODO: Create  new Thread which waits and copies the files afterwards
-				Thread serverProcess = createCopyThread(wait, name);
+				Thread serverProcess = createCopyThread(wait, f);
 				serverProcess.run();
 				processes.add(serverProcess);
 			}
@@ -174,13 +174,15 @@ public class AbbyyServerSimulator extends Thread {
 		FileUtils.deleteInDir(errorHotfolder);
 	}
 
-	private Thread createCopyThread (final Long wait, final String name) {
+	private Thread createCopyThread (final Long wait, final File ticket) {
 		//Wait 30 minutes
-		final Long maxWait = 60l * 30l * 1000;
+		//final Long maxWait = 60l * 30l * 1000;
 		return new Thread() {
 			@Override
 			public void run () {
 				try {
+					String name = ticket.getName();
+					name = name.substring(0, name.indexOf(".xml"));
 					//Long startTime = System.currentTimeMillis();
 					logger.info("Waiting " + wait + " mili seconds");
 					sleep(wait);
@@ -201,7 +203,7 @@ public class AbbyyServerSimulator extends Thread {
 					}
 
 					//Remove the files
-					removeJob(name);
+					removeJob(ticket);
 
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
