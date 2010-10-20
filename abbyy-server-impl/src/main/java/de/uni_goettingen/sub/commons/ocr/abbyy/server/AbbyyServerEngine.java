@@ -195,7 +195,7 @@ public class AbbyyServerEngine implements OCREngine {
 			for (URL url : sizeMap.keySet()) {
 				sizeMap.put(url, hotfolder.getTotalSize(url));
 			}
-			totalFileCount = new Integer(sizeMap.size()).longValue();
+			totalFileCount = Integer.valueOf(sizeMap.size()).longValue();
 			for (Long size : sizeMap.values()) {
 				if (size != null) {
 					totalFileSize += size;

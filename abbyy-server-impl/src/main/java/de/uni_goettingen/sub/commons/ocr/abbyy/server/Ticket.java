@@ -211,10 +211,10 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		imageProcessingParams.setDeskew(false);
 		RecognitionParams recognitionParams = ticket.addNewRecognitionParams();
 
+		if (langs == null) {
+			throw new OCRException("No language given!");
+		}
 		for (Locale l : langs) {
-			if (langs == null) {
-				throw new OCRException("No language given!");
-			}
 			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
 		}
 		ExportParams exportParams = ticket.addNewExportParams();
@@ -250,7 +250,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		ticketDoc.save(out, opts);
 		if (validateTicket && !ticket.validate()) {
 			logger.error("Ticket not valid!");
-			throw new RuntimeException("Ticket not valid!");
+			throw new OCRException("Ticket not valid!");
 		}
 
 	}

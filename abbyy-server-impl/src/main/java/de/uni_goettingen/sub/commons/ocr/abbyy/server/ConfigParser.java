@@ -11,6 +11,8 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+
 public class ConfigParser {
 	protected Configuration config;
 	protected String serverURL;
@@ -55,7 +57,7 @@ public class ConfigParser {
 			config = new PropertiesConfiguration(configLocation);
 		} catch (ConfigurationException e) {
 			logger.error("Error reading configuration", e);
-			throw new RuntimeException(e);
+			throw new OCRException(e);
 		}
 
 		serverURL = config.getString("remoteURL");
@@ -66,7 +68,7 @@ public class ConfigParser {
 				serverURL = new URI(serverURL).toString();
 			} else if (serverURL.startsWith("file") && serverURL.contains("./")) {
 				//An relative URI with file prefix, just remove the prefix
-				serverURL.replace("file:", "");
+				serverURL = serverURL.replace("file:", "");
 			}
 			if (!new URI(serverURL).isAbsolute()) {
 				//got an relative URI
