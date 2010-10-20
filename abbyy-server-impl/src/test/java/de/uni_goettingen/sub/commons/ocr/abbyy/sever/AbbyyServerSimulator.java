@@ -52,10 +52,12 @@ public class AbbyyServerSimulator extends Thread {
 	public AbbyyServerSimulator(File hotfolder, File expactations) {
 		//Hotfolder is the input directory
 		this.hotfolder = hotfolder;
+		this.expected = expactations;
+		
 		this.inputHotfolder = new File(hotfolder.getAbsolutePath() + File.separator + INPUT_NAME);
 		this.outputHotfolder = new File(hotfolder.getAbsolutePath() + File.separator + OUTPUT_NAME);
 		this.errorHotfolder = new File(hotfolder.getAbsolutePath() + File.separator + ERROR_NAME);
-
+		
 		errorExpected = new File(expactations.getAbsolutePath() + File.separator + ERROR_NAME);
 		outputExpected = new File(expactations.getAbsolutePath() + File.separator + OUTPUT_NAME);
 
