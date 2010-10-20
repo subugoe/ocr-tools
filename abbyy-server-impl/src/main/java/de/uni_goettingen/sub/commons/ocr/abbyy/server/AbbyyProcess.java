@@ -110,7 +110,10 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	protected Boolean done = true;
 
 	// The done date.
-	protected Date doneDate = null;
+	protected Long startTime = null;
+	
+	// The done date.
+	protected Long doneTime = null;
 
 	// The report suffix.
 	protected String reportSuffix = ".xml.result.xml";
@@ -162,6 +165,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	@Override
 	public void run () {
 		//TODO Break up this method
+		startTime = System.currentTimeMillis();
 
 		config = new ConfigParser().loadConfig();
 		identifier = getName();
@@ -180,21 +184,18 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		String tmpTicket = null;
 		try {
+			//Write ticket to temp file
 			tmpTicket = "tmp://" + identifier + ".xml";
 			OutputStream os = hotfolder.getOutputStream(new URI(tmpTicket));
 			write(os, identifier);
 			os.close();
-
-			//TODO: the ticket should be handled separately
-			//fileInfos = addTicketFile(new LinkedList<AbbyyOCRImage>(fileInfos), identifier);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error writing ticket", e);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error seting tmp URI for ticket", e);
 		}
 
+		//Copy the ticket
 		try {
 			//TODO: Check if this files exists on the server, if so remove them
 			logger.debug("Coping files to server.");
@@ -206,14 +207,11 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			//hotfolder.copyFile(tmpTicket, );
 		} catch (FileSystemException e) {
 			failed = true;
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Couldn't write files to server URL", e);
 		} catch (InterruptedException e) {
 			failed = true;
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("OCR Process was interrupted while coping files to server.", e);
 		}
-		//Copy the ticket
 
 		//Wait for results if needed
 		if (!failed && !copyOnly) {
@@ -224,8 +222,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				Thread.sleep(wait);
 			} catch (InterruptedException e) {
 				failed = true;
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("OCR Process was interrupted while waiting for results.", e);
 			}
 			//Get files here
 		}
@@ -372,7 +369,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			done = true;
 			logger.trace("AbbyyProcess " + identifier + " ended ");
 		}
-
+		doneTime = System.currentTimeMillis();
 	}
 
 	/**
