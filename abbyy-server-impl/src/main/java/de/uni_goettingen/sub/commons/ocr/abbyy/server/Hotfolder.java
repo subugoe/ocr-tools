@@ -19,6 +19,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
  */
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -66,8 +67,7 @@ public class Hotfolder extends Thread {
 		try {
 			fsManager = VFS.getManager();
 		} catch (FileSystemException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Can't get file system manager", e);
 			throw new OCRException(e);
 		}
 	}
@@ -245,14 +245,20 @@ public class Hotfolder extends Thread {
 	 * @throws MalformedURLException
 	 *             the malformed url exception
 	 */
-	List<AbbyyOCRImage> getUrlList (String imageDirectory) throws FileSystemException, MalformedURLException {
+	//TODO: Check if this is still needed
+	public List<AbbyyOCRImage> getUrlList (URL imageDirectory) throws FileSystemException, MalformedURLException {
 		List<AbbyyOCRImage> imageList = new ArrayList<AbbyyOCRImage>();
-		FileObject getUrlImage = fsManager.resolveFile(imageDirectory);
+		FileObject getUrlImage = fsManager.resolveFile(imageDirectory.toString());
 		FileObject[] children = getUrlImage.getChildren();
 		for (int i = 0; i < children.length; i++) {
 			imageList.add(new AbbyyOCRImage(new URL(children[i].getName().toString())));
 		}
 		return imageList;
+	}
+	
+	public OutputStream getOutputStream (URL url) throws FileSystemException {
+		FileObject out = fsManager.resolveFile(url.toString());
+		return out.getContent().getOutputStream();
 	}
 
 	/**
