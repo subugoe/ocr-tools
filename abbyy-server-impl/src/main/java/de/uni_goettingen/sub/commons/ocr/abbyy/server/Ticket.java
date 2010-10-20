@@ -219,6 +219,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
 		}
 		ExportParams exportParams = ticket.addNewExportParams();
+		//TODO: Make this configurable
 		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
 
 		Integer i = 0;
@@ -226,15 +227,18 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			throw new OCRException("No export options given!");
 		}
 		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[getOcrOutput().size()];
-		for (OCRFormat of : getOcrOutput().keySet()) {
+		Map<OCRFormat, OCROutput> output = getOcrOutput();
+		for (OCRFormat of : output.keySet()) {
 			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(of);
 			if (exportFormat == null) {
 				continue;
 			}
 			exportFormat.setOutputFlowType("SharedFolder");
 			exportFormat.setOutputFileFormat(of.name());
-			exportFormat.setNamingRule(identifier + "." + of.name().toLowerCase());
-			AbbyyOCROutput aoo = (AbbyyOCROutput) getOcrOutput().get(of);
+			//TODO: Use OCR Output here.
+			String name = identifier + "." + of.name().toLowerCase();
+			exportFormat.setNamingRule(name);
+			AbbyyOCROutput aoo = (AbbyyOCROutput) output.get(of);
 			exportFormat.setOutputLocation(aoo.getRemoteLocation());
 			settings[i] = exportFormat;
 			i++;

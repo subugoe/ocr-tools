@@ -97,6 +97,7 @@ public class AbbyyServerEngineTest {
 			logger.debug("Starting Engine");
 			ase.recognize(aop);
 		}
+		//TODO: Test if process failed
 
 	}
 
