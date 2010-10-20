@@ -38,10 +38,11 @@ public class AbbyyServerSimulatorTest {
 
 	@Test
 	public void testSimulator () {
-		sim = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_OUTPUT_FILE, HotfolderTest.TEST_EXPECTED_FILE);
+		sim = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTED_FILE);
 		assertTrue(sim.hotfolder.isDirectory());
-		assertTrue(sim.output.isDirectory());
-		assertTrue(sim.error.isDirectory());
+		assertTrue(sim.inputHotfolder.isDirectory());
+		assertTrue(sim.outputHotfolder.isDirectory());
+		assertTrue(sim.errorHotfolder.isDirectory());
 	}
 
 }

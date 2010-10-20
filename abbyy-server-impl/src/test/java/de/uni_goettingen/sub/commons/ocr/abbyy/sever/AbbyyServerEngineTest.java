@@ -65,7 +65,7 @@ public class AbbyyServerEngineTest {
 
 		assertNotNull(uri);
 
-		ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_OUTPUT_FILE, HotfolderTest.TEST_EXPECTED_FILE);
+		ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTED_FILE);
 		ass.start();
 	}
 
