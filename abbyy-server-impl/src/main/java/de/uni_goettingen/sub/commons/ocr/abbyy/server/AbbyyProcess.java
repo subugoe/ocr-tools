@@ -87,9 +87,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The error folder. */
 	protected static String errorFolder = null;
 
-	/** The list of the inputfiles. */
-	//private static List<File> inputFiles = null;
-
 	/** The list of the language. */
 	protected static List<Locale> langs;
 
@@ -118,14 +115,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	protected String reportSuffix = ".xml.result.xml";
 
 	protected String reportSuffixforXml = ".xml";
-	/** The EXTENSION. */
-	//protected static String extension = "tif";
 
 	/** The hotfolder. */
 	protected Hotfolder hotfolder;
 
 	/** The image directory. */
-	protected String imageDirectory;
+	//protected String imageDirectory;
 
 	/** The identifier. */
 	protected String identifier;
@@ -154,19 +149,23 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
+	/*
 	public AbbyyProcess(File dir) throws FileSystemException {
 		super();
 		hotfolder = new Hotfolder();
-		this.imageDirectory = dir.getAbsolutePath();
+		//this.imageDirectory = dir.getAbsolutePath();
 		this.identifier = dir.getName();
 
-	}
+	}*/
 
 	public AbbyyProcess(OCRProcess p) {
 		super(p);
+		hotfolder = new Hotfolder();
 	}
 
 	protected AbbyyProcess() {
+		super();
+		hotfolder = new Hotfolder();
 	}
 
 	/* (non-Javadoc)
@@ -178,18 +177,16 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		try {
 			config = new ConfigParser().loadConfig();
-			hotfolder = new Hotfolder();
+			//hotfolder = new Hotfolder();
 		} catch (OCRException e) {
 			logger.error("Can't create Hotfolder", e);
 		}
 		identifier = getName();
-		//imageDirectory = getImageDirectory();
 
 		List<AbbyyOCRImage> fileInfos = convertList(getOcrImages());
 
 		Long wait;
 		try {
-			// engineConfig = createConfig(identifier);
 
 			if (fixRemotePath) {
 				fileInfos = fixRemotePath(fileInfos, identifier);
@@ -564,10 +561,10 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 * @throws MalformedURLException
 	 */
 	protected int resultAllFilesNotExists (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
-		int result = 0;
-		File urlpath = new File(url);
+		Integer result = 0;
+		
 		for (String fileName : checkfile) {
-			if (hotfolder.exists(new URL(urlpath.getAbsolutePath() + "/" + fileName))) {
+			if (hotfolder.exists(new URL(new File(url).getAbsolutePath() + "/" + fileName))) {
 				logger.debug("File " + fileName + " exists already");
 			} else {
 				logger.debug("File " + fileName + " Not exists");
@@ -613,12 +610,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 */
 	protected void deleteAllFiles (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
 		//TODO: Remove file from here
-		File urlpath = new File(url);
-		hotfolder.deleteIfExists(new URL(urlpath.getAbsolutePath() + "/" + identifier + reportSuffix));
+		String base = new File(url).getAbsolutePath();
+		hotfolder.deleteIfExists(new URL(base + "/" + identifier + reportSuffix));
 		for (String fileName : checkfile) {
-			hotfolder.deleteIfExists(new URL(urlpath.getAbsolutePath() + "/" + fileName));
+			hotfolder.deleteIfExists(new URL(base + "/" + fileName));
 		}
-		hotfolder.deleteIfExists(new URL(urlpath.getAbsolutePath()));
+		hotfolder.deleteIfExists(new URL(base));
 	}
 
 	public static AbbyyProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
@@ -642,6 +639,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		return ap;
 	}
 
+	//TODO: Move this
 	public static List<File> getImageDirectories (File dir, String extension) {
 		List<File> dirs = new ArrayList<File>();
 
