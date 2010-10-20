@@ -21,6 +21,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -256,7 +257,7 @@ public class Hotfolder extends Thread {
 		return imageList;
 	}
 	
-	public OutputStream getOutputStream (URL url) throws FileSystemException {
+	public OutputStream getOutputStream (URI url) throws FileSystemException {
 		FileObject out = fsManager.resolveFile(url.toString());
 		return out.getContent().getOutputStream();
 	}

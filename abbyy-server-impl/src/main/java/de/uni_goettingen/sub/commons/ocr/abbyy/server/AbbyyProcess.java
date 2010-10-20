@@ -21,7 +21,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -173,11 +176,23 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		}
 		
+		//TODO: calculate the server side timeout
+		
 		//Create a List of files that should be copied
+		
+		String tmpTicket = null;
 		try {
+			tmpTicket = "tmp://" + identifier + ".xml";
+			OutputStream os = hotfolder.getOutputStream(new URI(tmpTicket));
+			write(os, identifier);
+			os.close();
+
 			//TODO: the ticket should be handled separately
-			fileInfos = addTicketFile(new LinkedList<AbbyyOCRImage>(fileInfos), identifier);
+			//fileInfos = addTicketFile(new LinkedList<AbbyyOCRImage>(fileInfos), identifier);
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -188,6 +203,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			logger.debug("Coping files to server.");
 			//Copy the files
 			hotfolder.copyFilesToServer(fileInfos);
+			//TODO: Copy the ticket
+			//hotfolder.copyFile(tmpTicket, );
 		} catch (FileSystemException e) {
 			failed = true;
 			// TODO Auto-generated catch block
@@ -268,11 +285,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				}
 			}
 			*/
+			/*
 			Long wait = fileInfos.size() * new Long(millisPerFile);
 			logger.info("Waiting " + wait + " milli seconds");
 
 			Thread.sleep(wait);
-
+			*/
 			//TODO: failed isn't a shared state indicator
 			while (!failed) {
 				int firstwait = 0;
@@ -297,8 +315,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 						}
 						if (faktor == 1 && !failed) {
 							//TODO: Don't wait again
-							wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix) * new Long(millisPerFile) + millisPerFile;
-							Thread.sleep(wait);
+							//wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix) * new Long(millisPerFile) + millisPerFile;
+							//Thread.sleep(wait);
 						}
 						if (faktor == 2 && !failed) {
 							failed = true;
@@ -320,8 +338,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 								logger.info("delete All Files Processing is successfull ");
 							}
 							if (index == 1 && !failed) {
-								wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix) * new Long(millisPerFile) + millisPerFile;
-								Thread.sleep(wait);
+								//wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix) * new Long(millisPerFile) + millisPerFile;
+								//Thread.sleep(wait);
 							}
 							if (index == 2 && !failed) {
 								failed = true;
@@ -330,12 +348,14 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 						}
 					}
 				}
+				/*
 				if (firstwait == 0) {
 					Thread.sleep(wait / 2);
 					firstwait++;
 				} else {
 					failed = true;
 				}
+				*/
 			}
 
 		} catch (FileSystemException e) {
@@ -347,8 +367,10 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			logger.error("Processing failed (FileNotFoundException)", e);
 		} catch (XMLStreamException e) {
 			logger.error("Processing failed (XMLStreamException)", e);
+		/*
 		} catch (InterruptedException e) {
 			logger.error("Processing failed (InterruptedException)", e);
+		*/
 		} catch (MalformedURLException e) {
 			logger.error("Processing failed (MalformedURLException)", e);
 		} finally {
@@ -497,6 +519,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	//TODO: Keep the ticket in ram or tmp and add it on demand
+	/*
 	private LinkedList<AbbyyOCRImage> addTicketFile (LinkedList<AbbyyOCRImage> fileInfos, String ticketName) throws IOException {
 
 		String ticketFileName = ticketName + ".xml";
@@ -511,6 +534,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		logger.trace("Copy from " + ticketFile.getAbsolutePath() + " to " + ticketTempDir);
 		return fileInfos;
 	}
+	*/
 
 	/**
 	 * Check xml results in output folder If exists.
