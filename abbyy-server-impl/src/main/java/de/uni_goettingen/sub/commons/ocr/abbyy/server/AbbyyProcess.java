@@ -23,13 +23,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,39 +57,24 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	/** The local path separator. */
 	protected static String localPathSeparator = File.separator;
-	// Variables used for process management
-	//TODO: Try to remove this.
-	// The max size.
-
-	protected static Long maxSize = AbbyyServerEngine.maxSize;
-
-	// The max files. 5000 by default
-	protected static Long maxFiles = AbbyyServerEngine.maxFiles;
-
-	/** The file count. */
-	protected Long fileCount = 0l;
-
-	/** The file size. */
-	protected Long fileSize = 0l;
-
-	/** The server url. */
-	protected static String serverURL = null;
-
-	/** local Url wich are moved a result */
-	protected static String moveToLocal = null;
 
 	//TODO: Use static fields from the engine class here.
+	// The server url.
+	protected static String serverURL = null;
+
+
+
 	// The output folder.
 	protected static String outputFolder = null;
 
 	// The error folder.
 	protected static String errorFolder = null;
 
-	// The list of the language.
-	//This should also be in the super class
-	protected static List<Locale> langs;
-
-	/** The write remote prefix. */
+	//TODO: Try to get rid of this
+	// local Url wich are moved a result 
+	protected static String moveToLocal = null;
+	
+	// The write remote prefix.
 	protected static Boolean writeRemotePrefix = true;
 
 	// The copy only.
@@ -168,32 +151,26 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		startTime = System.currentTimeMillis();
 
 		config = new ConfigParser().loadConfig();
-		identifier = getName();
+		String name = getName();
 
 		//Create a List of files that should be copied
 		List<AbbyyOCRImage> fileInfos = convertList(getOcrImages());
 
 		//TODO: Try to get rid of this
 		if (fixRemotePath) {
-			fileInfos = fixRemotePath(fileInfos, identifier);
-
+			fileInfos = fixRemotePath(fileInfos, name);
 		}
 
 		//TODO: calculate the server side timeout and add it to the ticket
-		String tmpTicket = identifier + ".xml";
+		String tmpTicket = name + ".xml";
+		//Create ticket, copy files and ticket
 		try {
 			//Write ticket to temp file
+			logger.debug("Creating Ticket");
 			OutputStream os = hotfolder.createTmpFile(tmpTicket);
-			write(os, identifier);
+			write(os, name);
 			os.close();
-		} catch (IOException e) {
-			logger.error("Error writing ticket", e);
-		} catch (URISyntaxException e) {
-			logger.error("Error seting tmp URI for ticket", e);
-		}
 
-		//Copy the ticket
-		try {
 			logger.debug("Coping files to server.");
 			//Copy the files
 			if (!dryRun) {
@@ -210,15 +187,19 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			}
 			//Copy the ticket
 			hotfolder.copyTmpFile(tmpTicket, new URL(hotfolder  + tmpTicket));
+
 		} catch (FileSystemException e) {
 			failed = true;
 			logger.error("Couldn't write files to server URL", e);
+		} catch (IOException e) {
+			failed = true;
+			logger.error("Error writing ticket", e);
 		} catch (InterruptedException e) {
 			failed = true;
 			logger.error("OCR Process was interrupted while coping files to server.", e);
-		} catch (MalformedURLException e) {
+		} catch (URISyntaxException e) {
+			logger.error("Error seting tmp URI for ticket", e);
 			failed = true;
-			logger.error("Couldn't copy the ticket", e);
 		}
 
 		//Wait for results if needed
@@ -233,70 +214,26 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				logger.error("OCR Process was interrupted while waiting for results.", e);
 			}
 			//Get files here
+			
+			/*
+			if (checkOutXmlResults(name)) {
+				
+			}
+			*/
+			
+			
 		}
 
 		try {
 
-			/*
-						
 
-						//XMLTicket must be treated here
-
-							try {
-
-								fileInfos = addTicketFile(new LinkedList<AbbyyOCRImage>(fileInfos), identifier);
-
-							} catch (IOException e) {
-								done = true;
-								failed = true;
-								copyOnly = false;
-								hotfolder.deleteIfExists(inputDirectoryFile.toURI().toURL());
-								logger.error(" Failed!! XMLTicket can not created for " + identifier, e);
-							}
-						*/
-			//copy must be treated here
-			//int k = 0;
-			//TODO: copyOnly is for fire and forgat OCR, not a shared state indicator
-			/*
-			while (copyOnly) {
-				try {
-					copyOnly = false;
-					hotfolder.copyFilesToServer(fileInfos);
-				} catch (FileSystemException e) {
-					logger.error("Got FileSystemException ", e);
-					if (k == 0 || k == 1) {
-						copyOnly = true;
-						for (AbbyyOCRImage info : fileInfos) {
-							hotfolder.deleteIfExists(info.getRemoteURL());
-							logger.error("Second try!! copy images from " + identifier);
-						}
-						if (k == 1) {
-							File xmlTicket = new File(inputDirectoryFile.getAbsolutePath() + "/" + identifier + "/" + reportSuffixforXml);
-							hotfolder.deleteIfExists(xmlTicket.toURI().toURL());
-							hotfolder.deleteIfExists(inputDirectoryFile.toURI().toURL());
-							logger.error("failed!!can not copy images from " + identifier);
-							copyOnly = false;
-							failed = true;
-						}
-						k++;
-					}
-
-				}
-			}
-			*/
-			/*
-			Long wait = fileInfos.size() * new Long(millisPerFile);
-			logger.info("Waiting " + wait + " milli seconds");
-
-			Thread.sleep(wait);
-			*/
 			//TODO: failed isn't a shared state indicator
 			while (!failed) {
 				//int firstwait = 0;
 				// for Output folder
-				if (checkOutXmlResults()) {
-					String resultOutURLPrefix = serverURL + outputFolder + "/" + identifier;
-					File resultOutURLPrefixpath = new File(resultOutURLPrefix + "/" + identifier + reportSuffix);
+				if (checkOutXmlResults(name)) {
+					String resultOutURLPrefix = serverURL + outputFolder + "/" + name;
+					File resultOutURLPrefixpath = new File(resultOutURLPrefix + "/" + name + reportSuffix);
 					String resultOutURLPrefixAbsolutePath = resultOutURLPrefixpath.getAbsolutePath();
 					// TODO Erkennungsrat muss noch ausgelesen werden(ich
 					// wei das eigentlich nicht deswegen ist noch offen)
@@ -324,12 +261,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 					}
 				} else {
 					// for Error folder
-					if (checkErrorXmlResults()) {
-						String resultErrorURLPrefix = serverURL + errorFolder + "/" + identifier;
-						File resultErrorURLPrefixpath = new File(resultErrorURLPrefix + "/" + identifier + reportSuffix);
+					if (checkErrorXmlResults(name)) {
+						String resultErrorURLPrefix = serverURL + errorFolder + "/" + name;
+						File resultErrorURLPrefixpath = new File(resultErrorURLPrefix + "/" + name + reportSuffix);
 						String resultErrorURLPrefixAbsolutePath = resultErrorURLPrefixpath.getAbsolutePath();
 						// TODO: Get the result report
-						ocrErrorFormatFile = XmlParser.xmlresultErrorparse(new File(resultErrorURLPrefixAbsolutePath), identifier);
+						ocrErrorFormatFile = XmlParser.xmlresultErrorparse(new File(resultErrorURLPrefixAbsolutePath), name);
 						for (int index = 1; index <= 2; index++) {
 							if (checkIfAllFilesExists(ocrErrorFormatFile, resultErrorURLPrefix + "/")) {
 								deleteAllFiles(ocrErrorFormatFile, resultErrorURLPrefix);
@@ -356,26 +293,26 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				}
 				*/
 			}
-
+			
 		} catch (FileSystemException e) {
-			logger.error("Processing failed", e);
+			logger.error("Processing failed (FileSystemException)", e);
 			failed = true;
 			throw new OCRException(e);
-
 		} catch (FileNotFoundException e) {
 			logger.error("Processing failed (FileNotFoundException)", e);
+			failed = true;
+			throw new OCRException(e);
 		} catch (XMLStreamException e) {
 			logger.error("Processing failed (XMLStreamException)", e);
-			/*
-			} catch (InterruptedException e) {
-				logger.error("Processing failed (InterruptedException)", e);
-			*/
+			failed = true;
+			throw new OCRException(e);
 		} catch (MalformedURLException e) {
 			logger.error("Processing failed (MalformedURLException)", e);
-		} finally {
 			failed = true;
+			throw new OCRException(e);
+		} finally {
 			done = true;
-			logger.trace("AbbyyProcess " + identifier + " ended ");
+			logger.trace("AbbyyProcess " + name + " ended ");
 		}
 		doneTime = System.currentTimeMillis();
 	}
@@ -517,7 +454,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *             the file system exception
 	 * @throws MalformedURLException
 	 */
-	protected Boolean checkOutXmlResults () throws FileSystemException, MalformedURLException {
+	protected Boolean checkOutXmlResults (String identifier) throws FileSystemException, MalformedURLException {
 		String resultURLPrefix = serverURL + outputFolder + "/" + identifier + "/" + identifier + reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
 		return hotfolder.exists(resultURLPrefixpath.toURI().toURL());
@@ -531,7 +468,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *             the file system exception
 	 * @throws MalformedURLException
 	 */
-	protected Boolean checkErrorXmlResults () throws FileSystemException, MalformedURLException {
+	protected Boolean checkErrorXmlResults (String identifier) throws FileSystemException, MalformedURLException {
 		String resultURLPrefix = serverURL + errorFolder + "/" + identifier + "/" + identifier + reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
 		return hotfolder.exists(resultURLPrefixpath.toURI().toURL());
