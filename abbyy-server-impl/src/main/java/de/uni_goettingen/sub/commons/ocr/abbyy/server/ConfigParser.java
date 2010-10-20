@@ -52,7 +52,7 @@ public class ConfigParser {
 		if (Boolean.parseBoolean(System.getProperty(DEBUG_PROPERTY))) {
 			debugAuth = true;
 		}
-		// do something with config
+		// load configuration
 		try {
 			config = new PropertiesConfiguration(configLocation);
 		} catch (ConfigurationException e) {
