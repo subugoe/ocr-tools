@@ -72,6 +72,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected Boolean singleFile = false;
 
 	static {
+		//TODO: Add more values to this map.
 		// See http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt for additional mappings
 		LANGUAGE_MAP.put(Locale.GERMAN, "German");
 		LANGUAGE_MAP.put(Locale.ENGLISH, "English");
@@ -82,9 +83,9 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	protected String outPutLocation;
 
 	//The namespace used for the Ticket files.
-	public static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
+	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 
-	protected static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS = null;
+	protected final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
 
 	// is represents the InputStream for files being read
 	private InputStream is;
@@ -128,19 +129,15 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		FORMAT_FRAGMENTS.put(OCRFormat.HTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.PDFA, null);
-
-	}
-
-	public Ticket() {
 	}
 
 	public Ticket(OCRProcess process) {
 		super(process);
 	}
 
-	/*protected Ticket () {
+	protected Ticket () {
 		super();
-	}*/
+	}
 
 	public Ticket(InputStream is) {
 		this.is = is;
@@ -262,31 +259,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		write(new FileOutputStream(ticketFile), identifier);
 	}
 
-	public static class TicketHelper {
-
-		static Pattern p = Pattern.compile("(.*)\\\\(.*)");
-		static Pattern n = Pattern.compile("(\\d.\\d*)");
-
-		static public String getOutputName (String str) {
-			Matcher m = n.matcher(str);
-			m.find();
-			return m.group(1);
-		}
-
-		static public String getName (String str) {
-			Matcher m = p.matcher(str);
-			m.find();
-			return m.group(2);
-		}
-
-		static public String getLocation (String str) {
-			Matcher m = p.matcher(str);
-			m.find();
-			return m.group(1);
-		}
-
-	}
-
 	/**
 	 * @return the oCRTimeOut
 	 */
@@ -317,4 +289,30 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
+	//TODO: Try to remove this
+	private static class TicketHelper {
+
+		static Pattern p = Pattern.compile("(.*)\\\\(.*)");
+		static Pattern n = Pattern.compile("(\\d.\\d*)");
+
+		static public String getOutputName (String str) {
+			Matcher m = n.matcher(str);
+			m.find();
+			return m.group(1);
+		}
+
+		static public String getName (String str) {
+			Matcher m = p.matcher(str);
+			m.find();
+			return m.group(2);
+		}
+
+		static public String getLocation (String str) {
+			Matcher m = p.matcher(str);
+			m.find();
+			return m.group(1);
+		}
+
+	}
+	
 }

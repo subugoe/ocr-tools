@@ -55,7 +55,7 @@ public class Hotfolder extends Thread {
 	protected ConfigParser config;
 
 	private static Hotfolder _instance;
-	
+
 	private static String tmpSchema = "tmp://";
 
 	// The fsmanager.
@@ -259,17 +259,17 @@ public class Hotfolder extends Thread {
 		}
 		return imageList;
 	}
-	
+
 	protected OutputStream getOutputStream (URI url) throws FileSystemException {
 		FileObject out = fsManager.resolveFile(url.toString());
 		return out.getContent().getOutputStream();
 	}
-	
+
 	public OutputStream createTmpFile (String name) throws FileSystemException, URISyntaxException {
 		String tmpTicket = tmpSchema + name;
 		return getOutputStream(new URI(tmpTicket));
 	}
-	
+
 	public void copyTmpFile (String tmpFile, URL to) throws FileSystemException {
 		copyFile(tmpSchema + tmpFile, to.toString());
 	}
