@@ -175,11 +175,11 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			fileInfos = fixRemotePath(fileInfos, identifier);
 
 		}
-		
+
 		//TODO: calculate the server side timeout
-		
+
 		//Create a List of files that should be copied
-		
+
 		String tmpTicket = null;
 		try {
 			tmpTicket = "tmp://" + identifier + ".xml";
@@ -197,12 +197,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			e.printStackTrace();
 		}
 
-
 		try {
 			//TODO: Check if this files exists on the server, if so remove them
 			logger.debug("Coping files to server.");
 			//Copy the files
-			hotfolder.copyFilesToServer(fileInfos);
+			if (!dryRun) {
+				hotfolder.copyFilesToServer(fileInfos);
+			}
 			//TODO: Copy the ticket
 			//hotfolder.copyFile(tmpTicket, );
 		} catch (FileSystemException e) {
@@ -215,7 +216,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			e.printStackTrace();
 		}
 		//Copy the ticket
-		
+
 		//Wait for results if needed
 		if (!failed && !copyOnly) {
 			Long wait = fileInfos.size() * new Long(millisPerFile);
@@ -230,31 +231,26 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			}
 			//Get files here
 		}
-		
+
 		try {
 
-/*
-			//TODO: This should exist on the server, remove it.
-			String inputDerectory = serverURL + inputFolder + "/" + identifier;
-			File inputDirectoryFile = new File(inputDerectory);
-			if (!hotfolder.exists(inputDirectoryFile.toURI().toURL())) {
-				hotfolder.mkDir(inputDirectoryFile.toURI().toURL());
-			}
+			/*
+						
 
-			//XMLTicket must be treated here
+						//XMLTicket must be treated here
 
-				try {
+							try {
 
-					fileInfos = addTicketFile(new LinkedList<AbbyyOCRImage>(fileInfos), identifier);
+								fileInfos = addTicketFile(new LinkedList<AbbyyOCRImage>(fileInfos), identifier);
 
-				} catch (IOException e) {
-					done = true;
-					failed = true;
-					copyOnly = false;
-					hotfolder.deleteIfExists(inputDirectoryFile.toURI().toURL());
-					logger.error(" Failed!! XMLTicket can not created for " + identifier, e);
-				}
-			*/
+							} catch (IOException e) {
+								done = true;
+								failed = true;
+								copyOnly = false;
+								hotfolder.deleteIfExists(inputDirectoryFile.toURI().toURL());
+								logger.error(" Failed!! XMLTicket can not created for " + identifier, e);
+							}
+						*/
 			//copy must be treated here
 			//int k = 0;
 			//TODO: copyOnly is for fire and forgat OCR, not a shared state indicator
@@ -293,7 +289,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			*/
 			//TODO: failed isn't a shared state indicator
 			while (!failed) {
-				int firstwait = 0;
+				//int firstwait = 0;
 				// for Output folder
 				if (checkOutXmlResults()) {
 					String resultOutURLPrefix = serverURL + outputFolder + "/" + identifier;
@@ -367,10 +363,10 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			logger.error("Processing failed (FileNotFoundException)", e);
 		} catch (XMLStreamException e) {
 			logger.error("Processing failed (XMLStreamException)", e);
-		/*
-		} catch (InterruptedException e) {
-			logger.error("Processing failed (InterruptedException)", e);
-		*/
+			/*
+			} catch (InterruptedException e) {
+				logger.error("Processing failed (InterruptedException)", e);
+			*/
 		} catch (MalformedURLException e) {
 			logger.error("Processing failed (MalformedURLException)", e);
 		} finally {
@@ -394,6 +390,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 */
 	//TODO: Remove this.
 	//TODO: remove size calculation
+	/*
 	private List<AbbyyOCRImage> getFileList (String imageDirectory) throws FileSystemException, MalformedURLException {
 		Long size = 0l;
 		List<AbbyyOCRImage> fileInfos = new ArrayList<AbbyyOCRImage>();
@@ -428,6 +425,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		return fileInfos;
 	}
+	*/
 
 	/**
 	 * Windows2unix file separator.
@@ -508,35 +506,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	}
 
 	/**
-	 * Adds the ticket file.
-	 * 
-	 * @param fileInfos
-	 *            the list of the AbbyyOCRImage
-	 * @param ticketName
-	 *            the ticket name
-	 * @return the list of the AbbyyOCRImage
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
-	//TODO: Keep the ticket in ram or tmp and add it on demand
-	/*
-	private LinkedList<AbbyyOCRImage> addTicketFile (LinkedList<AbbyyOCRImage> fileInfos, String ticketName) throws IOException {
-
-		String ticketFileName = ticketName + ".xml";
-		String ticketTempDir = null;
-
-		if (ticketTempDir == null) {
-			ticketTempDir = serverURL + inputFolder + "/" + identifier + "/" + ticketFileName;
-		}
-
-		File ticketFile = new File(ticketTempDir);
-		write(ticketFile.getAbsoluteFile(), identifier);
-		logger.trace("Copy from " + ticketFile.getAbsolutePath() + " to " + ticketTempDir);
-		return fileInfos;
-	}
-	*/
-
-	/**
 	 * Check xml results in output folder If exists.
 	 * 
 	 * @return the boolean, true If exists
@@ -604,7 +573,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 */
 	protected int resultAllFilesNotExists (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
 		Integer result = 0;
-		
+
 		for (String fileName : checkfile) {
 			if (hotfolder.exists(new URL(new File(url).getAbsolutePath() + "/" + fileName))) {
 				logger.debug("File " + fileName + " exists already");
@@ -722,11 +691,11 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	public Boolean isFailed () {
 		return failed;
 	}
-	
+
 	public Boolean isDone () {
 		return done;
 	}
-	
+
 	/**
 	 * The Class TimeoutExcetion.
 	 */
