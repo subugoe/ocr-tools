@@ -97,19 +97,13 @@ public class Hotfolder extends Thread {
 	public void copyFilesToServer (List<AbbyyOCRImage> fileInfos) throws InterruptedException, FileSystemException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (AbbyyOCRImage info : fileInfos) {
-			FileObject remoteFile = fsManager.resolveFile(info.getRemoteURL().toString());
-			FileObject imageUrlfile = fsManager.resolveFile(info.getUrl().toString());
-			// Delete if exists
-			deleteIfExists(info.getRemoteURL());
 			if (info.toString().endsWith("/")) {
 				logger.trace("Creating new directory " + info.getRemoteURL().toString() + "!");
 				// Create the directory
 				mkDir(info.getRemoteURL());
-
 			} else {
-
 				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteURL());
-				remoteFile.copyFrom(imageUrlfile, new AllFileSelector());
+				copyFile(info.getUrl().toString(), info.getRemoteURL().toString());
 			}
 		}
 	}
@@ -260,8 +254,8 @@ public class Hotfolder extends Thread {
 		return imageList;
 	}
 
-	protected OutputStream getOutputStream (URI url) throws FileSystemException {
-		FileObject out = fsManager.resolveFile(url.toString());
+	protected OutputStream getOutputStream (URI uri) throws FileSystemException {
+		FileObject out = fsManager.resolveFile(uri.toString());
 		return out.getContent().getOutputStream();
 	}
 
@@ -271,6 +265,10 @@ public class Hotfolder extends Thread {
 	}
 
 	public void copyTmpFile (String tmpFile, URL to) throws FileSystemException {
+		if (!fsManager.resolveFile(tmpSchema + tmpFile).exists()) {
+			logger.error(tmpSchema + tmpFile + "doesn't exist!");
+		}
+		
 		copyFile(tmpSchema + tmpFile, to.toString());
 	}
 

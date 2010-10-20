@@ -31,6 +31,8 @@ import org.junit.After;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.util.file.FileUtils;
+
 public class AbbyyServerSimulator extends Thread {
 	protected File hotfolder, inputHotfolder, outputHotfolder, errorHotfolder, expected, errorExpected, outputExpected;
 	public static String HOTFOLDER_NAME = "hotfolder";
@@ -128,10 +130,10 @@ public class AbbyyServerSimulator extends Thread {
 
 				String ticket = f.getName();
 				logger.debug("Found XML: " + ticket);
-				String name = ticket.substring(ticket.indexOf(".xml"));
+				String name = ticket.substring(0, ticket.indexOf(".xml"));
 
 				//TODO: Parse ticket here;
-				Long wait = calculateWait(name);
+				Long wait = calculateWait(f);
 				//TODO: Create  new Thread which waits and copies the files afterwards
 				Thread serverProcess = createCopyThread(wait, name);
 				serverProcess.run();
@@ -151,8 +153,8 @@ public class AbbyyServerSimulator extends Thread {
 		*/
 	}
 
-	protected Long calculateWait (String name) throws XmlException, IOException {
-		List<String> files = TicketTest.parseFilesFromTicket(new File(hotfolder.getAbsolutePath() + File.separator + name + ".xml"));
+	protected Long calculateWait (File file) throws XmlException, IOException {
+		List<String> files = TicketTest.parseFilesFromTicket(file);
 		return files.size() * wait;
 	}
 
@@ -167,20 +169,9 @@ public class AbbyyServerSimulator extends Thread {
 
 	@After
 	protected void clean () {
-		cleandir(inputHotfolder);
-		cleandir(outputHotfolder);
-		cleandir(errorHotfolder);
-
-	}
-
-	protected void cleandir (File dir) {
-		for (File f : Arrays.asList(dir.listFiles())) {
-			if (f.isDirectory()) {
-				cleandir(f);
-			} else {
-				f.delete();
-			}
-		}
+		FileUtils.deleteInDir(inputHotfolder);
+		FileUtils.deleteInDir(outputHotfolder);
+		FileUtils.deleteInDir(errorHotfolder);
 	}
 
 	private Thread createCopyThread (final Long wait, final String name) {
@@ -190,21 +181,23 @@ public class AbbyyServerSimulator extends Thread {
 			@Override
 			public void run () {
 				try {
-					Long startTime = System.currentTimeMillis();
+					//Long startTime = System.currentTimeMillis();
 					logger.info("Waiting " + wait + " mili seconds");
 					sleep(wait);
 					//Check if this Thread waits to long
+					/*
 					if (System.currentTimeMillis() > startTime + maxWait) {
 						interrupt();
 					}
+					*/
 					
 					//TODO: copy the files to the right location
 					//FileUtils.
 					if (resultsOutput.containsKey(name)) {
-
+						FileUtils.copyDirectory(resultsOutput.get(name), outputHotfolder);
 					}
 					if (resultsError.containsKey(name)) {
-
+						FileUtils.copyDirectory(resultsError.get(name), errorHotfolder);
 					}
 
 					//Remove the files

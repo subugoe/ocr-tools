@@ -60,8 +60,11 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	//TODO: Use static fields from the engine class here.
 	// The server url.
-	protected final static String serverURL = null;
+	protected static String serverURL;
 
+	// The output folder.
+	protected static String inputFolder = null;
+	
 	// The output folder.
 	protected final static String outputFolder = null;
 
@@ -150,6 +153,11 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		startTime = System.currentTimeMillis();
 
 		config = new ConfigParser().loadConfig();
+		serverURL = config.getServerURL();
+		
+		//TODO: move this into an init method
+		inputFolder = serverURL + "input" + "/";
+		
 		String name = getName();
 
 		//Create a List of files that should be copied
@@ -163,6 +171,20 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		//TODO: calculate the server side timeout and add it to the ticket
 		String tmpTicket = name + ".xml";
 		//Create ticket, copy files and ticket
+
+		//If we use the static method to create a process some fields aren't set correctly (remoteUrl, remoteFileName)
+		for (AbbyyOCRImage aoi: fileInfos) {
+			String remoteFileName = aoi.getUrl().toString();
+			remoteFileName = name + "-" + remoteFileName.substring(remoteFileName.lastIndexOf("/") + 1, remoteFileName.length());
+			aoi.setRemoteFileName(remoteFileName);
+			try {
+				aoi.setRemoteURL(new URL(serverURL + "/" + remoteFileName));
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		try {
 			//Write ticket to temp file
 			logger.debug("Creating Ticket");
@@ -174,8 +196,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			//Copy the files
 			if (!dryRun) {
 				for (AbbyyOCRImage aoi: fileInfos) {
-					//TODO: Fail if remoteUrl is null
-					//Here is an error somewhere
 					URL remoteUrl = aoi.getRemoteURL();
 					if (hotfolder.exists(remoteUrl)) {
 						logger.warn("File alerady exists on server, deleting it");
@@ -185,7 +205,8 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				hotfolder.copyFilesToServer(fileInfos);
 			}
 			//Copy the ticket
-			hotfolder.copyTmpFile(tmpTicket, new URL(hotfolder  + tmpTicket));
+			//TODO: This throws an IO Exception, because hotfolder doesn't have a prefix
+			hotfolder.copyTmpFile(tmpTicket, new URL(inputFolder + tmpTicket));
 
 		} catch (FileSystemException e) {
 			failed = true;
