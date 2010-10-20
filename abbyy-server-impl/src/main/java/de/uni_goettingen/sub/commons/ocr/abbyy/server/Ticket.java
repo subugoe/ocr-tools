@@ -68,6 +68,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
+	
+	protected Boolean singleFile = false;
 
 	static {
 		// See http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt for additional mappings
@@ -219,8 +221,10 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
 		}
 		ExportParams exportParams = ticket.addNewExportParams();
-		//TODO: Make this configurable
-		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
+		//TODO: check if we need to set a different string if we want seperate files
+		if (!singleFile) {
+			exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
+		}
 
 		Integer i = 0;
 		if (getOcrOutput() == null || getOcrOutput().size() < 1) {

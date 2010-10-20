@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,8 @@ public class Hotfolder extends Thread {
 	protected ConfigParser config;
 
 	private static Hotfolder _instance;
+	
+	private static String tmpSchema = "tmp://";
 
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;
@@ -257,9 +260,18 @@ public class Hotfolder extends Thread {
 		return imageList;
 	}
 	
-	public OutputStream getOutputStream (URI url) throws FileSystemException {
+	protected OutputStream getOutputStream (URI url) throws FileSystemException {
 		FileObject out = fsManager.resolveFile(url.toString());
 		return out.getContent().getOutputStream();
+	}
+	
+	public OutputStream createTmpFile (String name) throws FileSystemException, URISyntaxException {
+		String tmpTicket = tmpSchema + name;
+		return getOutputStream(new URI(tmpTicket));
+	}
+	
+	public void copyTmpFile (String tmpFile, URL to) throws FileSystemException {
+		copyFile(tmpSchema + tmpFile, to.toString());
 	}
 
 	/**

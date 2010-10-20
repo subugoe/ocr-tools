@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -81,10 +80,11 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** local Url wich are moved a result */
 	protected static String moveToLocal = null;
 
+	//TODO: Use static fields from the engine class here.
 	// The output folder.
 	protected static String outputFolder = null;
 
-	/** The error folder. */
+	// The error folder.
 	protected static String errorFolder = null;
 
 	// The list of the language.
@@ -170,6 +170,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		config = new ConfigParser().loadConfig();
 		identifier = getName();
 
+		//Create a List of files that should be copied
 		List<AbbyyOCRImage> fileInfos = convertList(getOcrImages());
 
 		//TODO: Try to get rid of this
@@ -178,15 +179,11 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		}
 
-		//TODO: calculate the server side timeout
-
-		//Create a List of files that should be copied
-
-		String tmpTicket = null;
+		//TODO: calculate the server side timeout and add it to the ticket
+		String tmpTicket = identifier + ".xml";
 		try {
 			//Write ticket to temp file
-			tmpTicket = "tmp://" + identifier + ".xml";
-			OutputStream os = hotfolder.getOutputStream(new URI(tmpTicket));
+			OutputStream os = hotfolder.createTmpFile(tmpTicket);
 			write(os, identifier);
 			os.close();
 		} catch (IOException e) {
@@ -197,20 +194,31 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 		//Copy the ticket
 		try {
-			//TODO: Check if this files exists on the server, if so remove them
 			logger.debug("Coping files to server.");
 			//Copy the files
 			if (!dryRun) {
+				for (AbbyyOCRImage aoi: fileInfos) {
+					//TODO: Fail if remoteUrl is null
+					//Here is an error somewhere
+					URL remoteUrl = aoi.getRemoteURL();
+					if (hotfolder.exists(remoteUrl)) {
+						logger.warn("File alerady exists on server, deleting it");
+						hotfolder.delete(remoteUrl);
+					}
+				}
 				hotfolder.copyFilesToServer(fileInfos);
 			}
-			//TODO: Copy the ticket
-			//hotfolder.copyFile(tmpTicket, );
+			//Copy the ticket
+			hotfolder.copyTmpFile(tmpTicket, new URL(hotfolder  + tmpTicket));
 		} catch (FileSystemException e) {
 			failed = true;
 			logger.error("Couldn't write files to server URL", e);
 		} catch (InterruptedException e) {
 			failed = true;
 			logger.error("OCR Process was interrupted while coping files to server.", e);
+		} catch (MalformedURLException e) {
+			failed = true;
+			logger.error("Couldn't copy the ticket", e);
 		}
 
 		//Wait for results if needed
@@ -456,6 +464,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            for identifier
 	 * @return the list of AbbyyOCRImage
 	 */
+	//TODO: Check if we need this method
 	protected static List<AbbyyOCRImage> fixRemotePath (List<AbbyyOCRImage> fileInfos, String name) {
 		LinkedList<AbbyyOCRImage> newList = new LinkedList<AbbyyOCRImage>();
 		for (AbbyyOCRImage info : fileInfos) {
@@ -624,6 +633,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		hotfolder.deleteIfExists(new URL(base));
 	}
 
+	//TODO: check if remoteURL is set correctly
 	public static AbbyyProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
 		AbbyyProcess ap = new AbbyyProcess();
 		List<File> imageDirs = AbstractOCRProcess.getImageDirectories(directory, extension);
