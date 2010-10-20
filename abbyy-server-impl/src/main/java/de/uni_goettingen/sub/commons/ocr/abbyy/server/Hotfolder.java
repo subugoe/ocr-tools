@@ -56,7 +56,7 @@ public class Hotfolder extends Thread {
 
 	private static Hotfolder _instance;
 
-	private static String tmpSchema = "tmp://";
+	private static String ticketTmpStore = "tmp://";
 
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;
@@ -260,16 +260,16 @@ public class Hotfolder extends Thread {
 	}
 
 	public OutputStream createTmpFile (String name) throws FileSystemException, URISyntaxException {
-		String tmpTicket = tmpSchema + name;
+		String tmpTicket = ticketTmpStore + name;
 		return getOutputStream(new URI(tmpTicket));
 	}
 
 	public void copyTmpFile (String tmpFile, URL to) throws FileSystemException {
-		if (!fsManager.resolveFile(tmpSchema + tmpFile).exists()) {
-			logger.error(tmpSchema + tmpFile + "doesn't exist!");
+		if (!fsManager.resolveFile(ticketTmpStore + tmpFile).exists()) {
+			logger.error(ticketTmpStore + tmpFile + "doesn't exist!");
 		}
 		
-		copyFile(tmpSchema + tmpFile, to.toString());
+		copyFile(ticketTmpStore + tmpFile, to.toString());
 	}
 
 	/**
