@@ -179,12 +179,20 @@ public class AbbyyServerSimulator extends Thread {
 	}
 
 	private Thread createCopyThread (final Long wait, final String name) {
+		//Wait 30 minutes
+		final Long maxWait = 60l * 30l * 1000;
 		return new Thread() {
 			@Override
 			public void run () {
 				try {
+					Long startTime = System.currentTimeMillis();
 					logger.info("Waiting " + wait + " mili seconds");
 					sleep(wait);
+					//Check if this Thread waits to long
+					if (System.currentTimeMillis() > startTime + maxWait) {
+						interrupt();
+					}
+					
 					//TODO: copy the files to the right location
 					//FileUtils.
 					if (resultsOutput.containsKey(name)) {
