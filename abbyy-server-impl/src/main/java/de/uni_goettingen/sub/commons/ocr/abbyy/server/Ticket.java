@@ -253,7 +253,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		}
 
 	}
-
+	@Deprecated
 	public void write (File ticketFile, String identifier) throws IOException {
 		write(new FileOutputStream(ticketFile), identifier);
 	}
