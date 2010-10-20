@@ -27,12 +27,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.xmlbeans.XmlException;
+import org.junit.After;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AbbyyServerSimulator extends Thread {
-	protected File hotfolder, output, error, expected, errorExpected, outputExpected;
+	protected File hotfolder, inputHotfolder, outputHotfolder, errorHotfolder, expected, errorExpected, outputExpected;
 	public static String HOTFOLDER_NAME = "hotfolder";
+	public static String INPUT_NAME = "input";
 	public static String OUTPUT_NAME = "output";
 	public static String ERROR_NAME = "error";
 
@@ -47,11 +49,12 @@ public class AbbyyServerSimulator extends Thread {
 
 	protected Boolean finish = false;
 
-	public AbbyyServerSimulator(File hotfolder, File output, File expactations) {
+	public AbbyyServerSimulator(File hotfolder, File expactations) {
 		//Hotfolder is the input directory
 		this.hotfolder = hotfolder;
-		this.output = output;
-		this.error = new File(hotfolder.getAbsolutePath() + File.separator + ERROR_NAME);
+		this.inputHotfolder = new File(hotfolder.getAbsolutePath() + File.separator + INPUT_NAME);
+		this.outputHotfolder = new File(hotfolder.getAbsolutePath() + File.separator + OUTPUT_NAME);
+		this.errorHotfolder = new File(hotfolder.getAbsolutePath() + File.separator + ERROR_NAME);
 
 		errorExpected = new File(expactations.getAbsolutePath() + File.separator + ERROR_NAME);
 		outputExpected = new File(expactations.getAbsolutePath() + File.separator + OUTPUT_NAME);
@@ -96,7 +99,6 @@ public class AbbyyServerSimulator extends Thread {
 						e.printStackTrace();
 					}
 				}
-				clean();
 				interrupt();
 			}
 			logger.trace("Reached end of loop.");
@@ -161,10 +163,11 @@ public class AbbyyServerSimulator extends Thread {
 		return false;
 	}
 
+	@After
 	protected void clean () {
-		cleandir(hotfolder);
-		cleandir(output);
-		cleandir(error);
+		cleandir(inputHotfolder);
+		cleandir(outputHotfolder);
+		cleandir(errorHotfolder);
 
 	}
 
