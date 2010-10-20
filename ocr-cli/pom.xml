@@ -50,6 +50,7 @@
 			<artifactId>ocrutil</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>jackrabbit-webdav</artifactId>
@@ -57,6 +58,7 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>de.unigoettingen.sub.commons</groupId>
 			<artifactId>util</artifactId>
