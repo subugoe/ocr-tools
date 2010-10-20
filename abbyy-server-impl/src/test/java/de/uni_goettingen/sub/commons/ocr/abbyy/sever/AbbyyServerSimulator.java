@@ -183,6 +183,7 @@ public class AbbyyServerSimulator extends Thread {
 			@Override
 			public void run () {
 				try {
+					logger.info("Waiting " + wait + " mili seconds");
 					sleep(wait);
 					//TODO: copy the files to the right location
 					//FileUtils.

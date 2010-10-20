@@ -94,13 +94,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	protected static Boolean writeRemotePrefix = true;
 
 	/** The copy only. */
-	protected Boolean copyOnly = true;
+	protected Boolean copyOnly = false;
 
 	/** The dry run. */
 	protected Boolean dryRun = false;
 
 	/** The fix remote path. */
-	protected Boolean fixRemotePath = true;
+	protected Boolean fixRemotePath = false;
 
 	/** The failed. */
 	protected Boolean failed = false;
@@ -108,27 +108,25 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The done. */
 	protected Boolean done = true;
 
-	/** The done date. */
-	Date doneDate = null;
+	// The done date.
+	protected Date doneDate = null;
 
-	/** The report suffix. */
+	// The report suffix.
 	protected String reportSuffix = ".xml.result.xml";
 
 	protected String reportSuffixforXml = ".xml";
 
-	/** The hotfolder. */
+	// The hotfolder.
 	protected Hotfolder hotfolder;
 
-	/** The image directory. */
-	//protected String imageDirectory;
-
-	/** The identifier. */
+	// The identifier.
+	//TODO: reuse name of AbstractOCRProcess
 	protected String identifier;
 
-	/** The ocr error format file. */
+	// The ocr error format file.
 	Set<String> ocrErrorFormatFile = new LinkedHashSet<String>();
 
-	/** The ocr out format file. */
+	// The ocr out format file.
 	Set<String> ocrOutFormatFile = new LinkedHashSet<String>();
 
 	//protected List<AbbyyOCRImage> fileInfosreplacement = null;
