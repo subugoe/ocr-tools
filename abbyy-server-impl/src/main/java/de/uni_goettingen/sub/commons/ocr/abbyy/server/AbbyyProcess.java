@@ -56,24 +56,25 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	public final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
 
 	// The local path separator.
-	protected static String localPathSeparator = File.separator;
+	protected final static String localPathSeparator = File.separator;
 
 	//TODO: Use static fields from the engine class here.
 	// The server url.
-	protected static String serverURL = null;
+	protected final static String serverURL = null;
 
 	// The output folder.
-	protected static String outputFolder = null;
+	protected final static String outputFolder = null;
 
 	// The error folder.
-	protected static String errorFolder = null;
+	protected final static String errorFolder = null;
 
 	//TODO: Try to get rid of this
 	// local Url wich are moved a result 
-	protected static String moveToLocal = null;
+	protected final static String moveToLocal = null;
 	
 	// The write remote prefix.
-	protected static Boolean writeRemotePrefix = true;
+	//TODO: check if we need this
+	protected final static Boolean writeRemotePrefix = true;
 
 	// The copy only.
 	protected Boolean copyOnly = false;
@@ -247,11 +248,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 							failed = true;
 							logger.info("Move Processing successfully to " + moveToLocalAbsolutePath);
 						}
+						/*
 						if (faktor == 1 && !failed) {
 							//TODO: Don't wait again
 							//wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix) * new Long(millisPerFile) + millisPerFile;
 							//Thread.sleep(wait);
 						}
+						*/
 						if (faktor == 2 && !failed) {
 							failed = true;
 							logger.error("failed!!TimeoutExcetion for Move Processing, All files Not exists in " + resultOutURLPrefix);
@@ -271,10 +274,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 								failed = true;
 								logger.info("delete All Files Processing is successfull ");
 							}
+							/*
 							if (index == 1 && !failed) {
 								//wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix) * new Long(millisPerFile) + millisPerFile;
 								//Thread.sleep(wait);
-							}
+							}*/
+							
 							if (index == 2 && !failed) {
 								failed = true;
 								logger.error("failed!! TimeoutExcetion for delete All Files Processing, All files Not exists in!! " + resultErrorURLPrefix);
@@ -282,14 +287,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 						}
 					}
 				}
-				/*
-				if (firstwait == 0) {
-					Thread.sleep(wait / 2);
-					firstwait++;
-				} else {
-					failed = true;
-				}
-				*/
+	
 			}
 			
 		} catch (FileSystemException e) {
@@ -559,7 +557,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/**
 	 * The Class TimeoutExcetion.
 	 */
-	public class TimeoutExcetion extends Exception {
+	public static class TimeoutExcetion extends Exception {
 
 		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = -3002142265497735648L;

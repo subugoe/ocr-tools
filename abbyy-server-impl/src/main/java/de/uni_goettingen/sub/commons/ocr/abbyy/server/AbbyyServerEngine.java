@@ -239,7 +239,10 @@ public class AbbyyServerEngine implements OCREngine {
 
 	@Override
 	public Observer recognize (OCRProcess process) {
-		processes.add((AbbyyProcess) process);
+		//TODO: Check if this instanceof works as expected	
+		if (process instanceof AbbyyProcess) {
+			processes.add((AbbyyProcess) process);
+		}
 		if (!started) {
 			start();
 		}
