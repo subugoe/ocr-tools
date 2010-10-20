@@ -50,6 +50,10 @@ public class AbbyyServerSimulator extends Thread {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerSimulator.class);
 
 	protected Boolean finish = false;
+	
+	protected static Long startTime = System.currentTimeMillis();
+	//Wait 15 minutes
+	protected static Long maxWait = 1000l * 60l *15l;
 
 	public AbbyyServerSimulator(File hotfolder, File expactations) {
 		//Hotfolder is the input directory
@@ -82,6 +86,9 @@ public class AbbyyServerSimulator extends Thread {
 	@Override
 	public void run () {
 		while (!isInterrupted()) {
+			if (System.currentTimeMillis() > startTime + maxWait) {
+				interrupt();
+			}
 
 			try {
 				checkDirectory(inputHotfolder);
@@ -130,7 +137,7 @@ public class AbbyyServerSimulator extends Thread {
 
 				String ticket = f.getName();
 				logger.debug("Found XML: " + ticket);
-				String name = ticket.substring(0, ticket.indexOf(".xml"));
+				//String name = ticket.substring(0, ticket.indexOf(".xml"));
 
 				//TODO: Parse ticket here;
 				Long wait = calculateWait(f);
@@ -140,17 +147,6 @@ public class AbbyyServerSimulator extends Thread {
 				processes.add(serverProcess);
 			}
 		}
-
-		/*
-		if (containsTicket(dir)) {
-
-			//Extract the job name
-			String name = null;
-
-			//calculate wait time
-
-		}
-		*/
 	}
 
 	protected Long calculateWait (File file) throws XmlException, IOException {
@@ -175,33 +171,25 @@ public class AbbyyServerSimulator extends Thread {
 	}
 
 	private Thread createCopyThread (final Long wait, final File ticket) {
-		//Wait 30 minutes
-		//final Long maxWait = 60l * 30l * 1000;
 		return new Thread() {
 			@Override
 			public void run () {
 				try {
 					String name = ticket.getName();
 					name = name.substring(0, name.indexOf(".xml"));
-					//Long startTime = System.currentTimeMillis();
 					logger.info("Waiting " + wait + " mili seconds");
 					sleep(wait);
 					//Check if this Thread waits to long
-					/*
-					if (System.currentTimeMillis() > startTime + maxWait) {
+					if (System.currentTimeMillis() > startTime + AbbyyServerSimulator.maxWait) {
 						interrupt();
 					}
-					*/
-					
-					//TODO: copy the files to the right location
-					//FileUtils.
+					//Copy the files to the right location
 					if (resultsOutput.containsKey(name)) {
 						FileUtils.copyDirectory(resultsOutput.get(name), outputHotfolder);
 					}
 					if (resultsError.containsKey(name)) {
 						FileUtils.copyDirectory(resultsError.get(name), errorHotfolder);
 					}
-
 					//Remove the files
 					removeJob(ticket);
 
@@ -215,7 +203,6 @@ public class AbbyyServerSimulator extends Thread {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 			}
 		};
 	}

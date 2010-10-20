@@ -14,19 +14,66 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 public class ConfigParser {
+	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 	protected Configuration config;
-	protected String serverURL;
+	public final static String DEFAULT_CONFIG = "/abbyyServer.properties";
+	public final static String DEBUG_PROPERTY = "ocr.finereader.server.debug.auth";
+	
+	//Default is 100 MB of storage
+	public final static Long DEFAULT_MAXSIZE = 100l * 1024l * 1024l;
+	public final static String PARAMETER_MAXSIZE = "maxSize";
+	//Default is 10000 files
+	public final static Long DEFAULT_MAXFILES = 10000l;
+	public final static String PARAMETER_MAXFILES = "maxFiles";
+	//
+	public final static Integer DEFAULT_MAXTHREADS = 10;
+	public final static String PARAMETER_MAXTHREADS = "maxThreads";
+	public final static Boolean DEFAULT_CHECKSERVERSTATE = true;
+	public final static String PARAMETER_CHECKSERVERSTATE = "checkServerState";
+	public final static Boolean DEFAULT_DEBUGAUTH = false;
+	public final static String PARAMETER_DEBUGAUTH = "debugAuth";
+	
+	public final static String PARAMETER_USERNAME = "username";
+	public final static String PARAMETER_PASSWORD = "password";
+	
+
 	protected String username, password;
-	protected String inputFolder, outputFolder, errorFolder;
+
+	public final static String PARAMETER_SERVERURL = "serverUrl";
+	
+	protected String serverURL, inputFolder, outputFolder, errorFolder;
 
 	protected Long maxSize, maxFiles;
+	
+	protected Long minMilisPerFile, maxMilisPerFile;   
+	
 	protected Integer maxThreads;
 	protected Boolean checkServerState;
 	protected Boolean debugAuth = false;
-	public final static String DEFAULT_CONFIG = "/abbyyServer.properties";
-	public final static String DEBUG_PROPERTY = "ocr.finereader.server.debug.auth";
 
-	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
+	//Ticket specific settings
+	public final static String DEFAULT_TICKETTMPSTORE = "tmp://";
+	public final static String PARAMETER_TICKETTMPSTORE = "ticketTmpStore"; 
+	protected String ticketTmpStore = "tmp://";
+	public final static Boolean DEFAULT_VALIDATETICKET  = false;
+	public final static String PARAMETER_VALIDATETICKET = "validateTicket";
+	protected Boolean validateTicket = false;
+	public final static Long DEFAULT_CHECKINTERVAL = 20000l;
+	public final static String PARAMETER_CHECKINTERVAL = "checkInterval";
+	protected Long checkInterval;
+	//public final static String DEFAULT_OUTPUTLOCATION 
+	public final static String PARAMETER_OUTPUTLOCATION = "outputLocation";
+	protected String outputLocation;
+	
+	//Process specific settings
+	public final static Boolean DEFAULT_COPYONLY  = false;
+	public final static String PARAMETER_COPYONLY = "copyOnly";
+	protected Boolean copyOnly;
+
+	public final static Boolean DEFAULT_DRYRUN  = false;
+	public final static String PARAMETER_DRYRUN = "dryRun";
+	protected Boolean dryRun = false;
+	
 
 	protected URL configUrl;
 
@@ -81,8 +128,8 @@ public class ConfigParser {
 		}
 		serverURL = serverURL.endsWith("/") ? serverURL : serverURL + "/";
 
-		username = config.getString("username");
-		password = config.getString("password");
+		username = config.getString(PARAMETER_USERNAME);
+		password = config.getString(PARAMETER_PASSWORD);
 		inputFolder = config.getString("input");
 		outputFolder = config.getString("output");
 		errorFolder = config.getString("error");
@@ -91,13 +138,9 @@ public class ConfigParser {
 			checkServerState = Boolean.parseBoolean(config.getString("checkServerState"));
 		}
 
-		if (config.getString("maxThreads") != null && !config.getString("maxThreads").equals("")) {
-			maxThreads = Integer.parseInt(config.getString("maxThreads"));
-		}
-
-		if (config.getString("maxSize") != null && !config.getString("maxSize").equals("")) {
-			maxSize = Long.parseLong(config.getString("maxSize"));
-		}
+		maxThreads = config.getInteger(PARAMETER_MAXTHREADS, DEFAULT_MAXTHREADS);
+		maxSize = config.getLong(PARAMETER_MAXSIZE, DEFAULT_MAXSIZE);
+		maxFiles = config.getLong(PARAMETER_MAXFILES, DEFAULT_MAXFILES);
 
 		if (config.getString("maxFiles") != null && !config.getString("maxFiles").equals("")) {
 			maxFiles = Long.parseLong(config.getString("maxFiles"));
@@ -105,6 +148,7 @@ public class ConfigParser {
 
 		//TODO: Add a preconfigured local output folder
 
+		debugAuth = config.getBoolean(PARAMETER_DEBUGAUTH, DEFAULT_DEBUGAUTH);
 		if (debugAuth) {
 			logger.debug("URL: " + serverURL);
 			logger.debug("User: " + username);

@@ -71,6 +71,18 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	
 	protected Boolean singleFile = false;
 
+	protected String outputLocation;
+	
+	//The namespace used for the Ticket files.
+	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
+
+	protected final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
+	
+	// is represents the InputStream for files being read
+	private InputStream is;
+
+	protected static XmlOptions opts = new XmlOptions();
+	
 	static {
 		//TODO: Add more values to this map.
 		// See http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt for additional mappings
@@ -78,20 +90,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		LANGUAGE_MAP.put(Locale.ENGLISH, "English");
 		LANGUAGE_MAP.put(new Locale("la"), "Latin");
 		LANGUAGE_MAP.put(new Locale("ru"), "Russian");
-	}
 
-	protected String outPutLocation;
 
-	//The namespace used for the Ticket files.
-	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
-
-	protected final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
-
-	// is represents the InputStream for files being read
-	private InputStream is;
-
-	protected static XmlOptions opts = new XmlOptions();
-	static {
 		opts.setSavePrettyPrint();
 		opts.setSaveImplicitNamespaces(new HashMap<String, String>() {
 			{
@@ -99,9 +99,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			}
 		});
 		opts.setUseDefaultNamespace();
-	}
 
-	static {
+
 		FORMAT_FRAGMENTS = new HashMap<OCRFormat, OutputFileFormatSettings>();
 		XMLExportSettings xmlSettings = XMLExportSettings.Factory.newInstance(opts);
 
@@ -191,12 +190,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
 
-		/*
-		Integer OCRTimeOut = getOcrImages().size() * millisPerFile;
-		if (maxOCRTimeout < OCRTimeOut) {
-			throw new IllegalStateException("Calculated OCR Timeout to high: " + OCRTimeOut);
-		}
-		*/
 		if (oCRTimeOut != null) {
 			ticket.setOCRTimeout(BigInteger.valueOf(oCRTimeOut));
 		}
