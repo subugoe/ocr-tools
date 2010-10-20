@@ -8,6 +8,10 @@
 		<module>abbyy-server-impl</module>
 		<module>ocr-cli</module>
 		<module>ocr-api</module>
+		<!-- 
+		<module>abbyy-cli-impl</module>
+		 -->
+		<module>ocrutil</module>
 	</modules>
 	<developers>
 		<developer>
@@ -94,29 +98,20 @@
 					<testFailureIgnore>false</testFailureIgnore>
 				</configuration>
 			</plugin>
-<!-- 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>argouml-maven-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
-				<executions>
-					<execution>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>transform</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<inputFiles>
-						<file>${project.basedir}/src/main/resources</file>
-					</inputFiles>
-					<outputDirectory>${project.build.directory}/site/images</outputDirectory>
-				</configuration>
-			</plugin>
--->
+			<!--
+				<plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>argouml-maven-plugin</artifactId> <version>1.0-SNAPSHOT</version> <executions> <execution> <phase>pre-site</phase> <goals> <goal>transform</goal> </goals> </execution>
+				</executions> <configuration> <inputFiles> <file>${project.basedir}/src/main/resources</file> </inputFiles> <outputDirectory>${project.build.directory}/site/images</outputDirectory> </configuration> </plugin>
+			-->
 		</plugins>
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<distributionManagement>
 		<repository>
 			<id>archiva.internal</id>
