@@ -254,11 +254,12 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 							//wait = resultAllFilesNotExists(ocrOutFormatFile, resultOutURLPrefix) * new Long(millisPerFile) + millisPerFile;
 							//Thread.sleep(wait);
 						}
-						*/
+						
 						if (faktor == 2 && !failed) {
 							failed = true;
 							logger.error("failed!!TimeoutExcetion for Move Processing, All files Not exists in " + resultOutURLPrefix);
 						}
+						*/
 					}
 				} else {
 					// for Error folder
@@ -278,12 +279,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 							if (index == 1 && !failed) {
 								//wait = resultAllFilesNotExists(ocrErrorFormatFile, resultErrorURLPrefix) * new Long(millisPerFile) + millisPerFile;
 								//Thread.sleep(wait);
-							}*/
+							}
 							
 							if (index == 2 && !failed) {
 								failed = true;
 								logger.error("failed!! TimeoutExcetion for delete All Files Processing, All files Not exists in!! " + resultErrorURLPrefix);
 							}
+							*/
 						}
 					}
 				}
