@@ -26,8 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -63,11 +61,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The local path separator. */
 	protected static String localPathSeparator = File.separator;
 	// Variables used for process management
-	/** The max size. */
-	protected static Long maxSize = 5368709120l;
+	//TODO: Try to remove this.
+	// The max size.
 
-	/** The max files. */
-	protected static Long maxFiles = 5000l;
+	protected static Long maxSize = AbbyyServerEngine.maxSize;
+
+	// The max files. 5000 by default
+	protected static Long maxFiles = AbbyyServerEngine.maxFiles;
 
 	/** The file count. */
 	protected Long fileCount = 0l;
@@ -75,22 +75,20 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	/** The file size. */
 	protected Long fileSize = 0l;
 
-	/** The webdav url. */
+	/** The server url. */
 	protected static String serverURL = null;
 
 	/** local Url wich are moved a result */
 	protected static String moveToLocal = null;
 
-	/** The input folder. */
-	protected static String inputFolder = null;
-
-	/** The output folder. */
+	// The output folder.
 	protected static String outputFolder = null;
 
 	/** The error folder. */
 	protected static String errorFolder = null;
 
-	/** The list of the language. */
+	// The list of the language.
+	//This should also be in the super class
 	protected static List<Locale> langs;
 
 	/** The write remote prefix. */
@@ -99,10 +97,10 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	// The copy only.
 	protected Boolean copyOnly = false;
 
-	/** The dry run. */
+	// The dry run.
 	protected Boolean dryRun = false;
 
-	/** The fix remote path. */
+	/// The fix remote path.
 	protected Boolean fixRemotePath = false;
 
 	// The failed.
@@ -631,7 +629,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	public static AbbyyProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
 		AbbyyProcess ap = new AbbyyProcess();
-		List<File> imageDirs = getImageDirectories(directory, extension);
+		List<File> imageDirs = AbstractOCRProcess.getImageDirectories(directory, extension);
 
 		for (File id : imageDirs) {
 			if (imageDirs.size() > 1) {
@@ -648,36 +646,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		}
 
 		return ap;
-	}
-
-	//TODO: Move this
-	public static List<File> getImageDirectories (File dir, String extension) {
-		List<File> dirs = new ArrayList<File>();
-
-		if (AbstractOCRProcess.makeFileList(dir, extension).size() > 0) {
-			dirs.add(dir);
-		}
-
-		List<File> fileList;
-		if (dir.isDirectory()) {
-			fileList = Arrays.asList(dir.listFiles());
-			for (File file : fileList) {
-				if (file.isDirectory()) {
-					List<File> files = AbstractOCRProcess.makeFileList(dir, extension);
-					for (File f : files) {
-						logger.debug("File: " + f.getAbsolutePath());
-					}
-					if (files.size() > 0) {
-						dirs.addAll(files);
-					} else {
-						dirs.addAll(getImageDirectories(file, extension));
-					}
-				}
-			}
-		} else {
-			throw new IllegalStateException(dir.getAbsolutePath() + " is not a directory");
-		}
-		return dirs;
 	}
 
 	protected static List<AbbyyOCRImage> convertList (List<OCRImage> ocrImages) {

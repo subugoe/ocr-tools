@@ -122,6 +122,33 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 		return this.ocrOutput;
 	}
 
+	//TODO: Move this
+	public static List<File> getImageDirectories (File dir, String extension) {
+		List<File> dirs = new ArrayList<File>();
+	
+		if (makeFileList(dir, extension).size() > 0) {
+			dirs.add(dir);
+		}
+	
+		List<File> fileList;
+		if (dir.isDirectory()) {
+			fileList = Arrays.asList(dir.listFiles());
+			for (File file : fileList) {
+				if (file.isDirectory()) {
+					List<File> files = makeFileList(dir, extension);
+					if (files.size() > 0) {
+						dirs.addAll(files);
+					} else {
+						dirs.addAll(getImageDirectories(file, extension));
+					}
+				}
+			}
+		} else {
+			throw new IllegalStateException(dir.getAbsolutePath() + " is not a directory");
+		}
+		return dirs;
+	}
+
 	/**
 	 *makeFileList is a simple static method to create a list of files ending with the given extension
 	 * 
