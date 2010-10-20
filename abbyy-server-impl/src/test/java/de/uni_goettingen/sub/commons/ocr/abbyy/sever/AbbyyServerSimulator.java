@@ -80,7 +80,7 @@ public class AbbyyServerSimulator extends Thread {
 		while (!isInterrupted()) {
 
 			try {
-				checkDirectory(hotfolder);
+				checkDirectory(inputHotfolder);
 				sleep(500);
 			} catch (InterruptedException e) {
 				interrupt();

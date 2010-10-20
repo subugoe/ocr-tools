@@ -43,6 +43,7 @@ public class AbbyyServerSimulatorTest {
 		assertTrue(sim.inputHotfolder.isDirectory());
 		assertTrue(sim.outputHotfolder.isDirectory());
 		assertTrue(sim.errorHotfolder.isDirectory());
+		assertTrue(sim.expected.isDirectory());
 	}
 
 }
