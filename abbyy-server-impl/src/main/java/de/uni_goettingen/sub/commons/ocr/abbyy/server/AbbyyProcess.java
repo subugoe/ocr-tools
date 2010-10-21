@@ -52,7 +52,6 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	//TODO: Add this stuff: <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>, it's now part of the ticket
-	
 	//TODO: Make sure that the Executor reads the size and count of the remote server
 	//TODO: Save the stats of the remote system in a hidden file there
 	//TODO: check if the OCRResult stuff is used correctly
