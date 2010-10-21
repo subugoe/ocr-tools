@@ -22,10 +22,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -120,10 +118,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		this.hotfolder = hotfolder;
 	}
 
-	private AbbyyOCRProcess() {
-		super();
-	}
-
 	protected AbbyyOCRProcess(ConfigParser config) {
 		super();
 	}
@@ -135,9 +129,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	public void run () {
 		//TODO Break up this method
 		startTime = System.currentTimeMillis();
-
+		
 		//TODO: move this into an init method
 		config = new ConfigParser().loadConfig();
+		
+		if (hotfolder == null) {
+			hotfolder = new Hotfolder(config);
+		}
+
 		try {
 			serverUri = new URI(config.getServerURL());
 		} catch (URISyntaxException e2) {
@@ -148,9 +147,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		oCRTimeOut = getOcrImages().size() * config.maxMillisPerFile;
 		//millisPerFile = config.minMilisPerFile;
 		try {
-			inputUri = new URI(serverUri + "/" + config.getInput() + "/");
-			outputUri = new URI(serverUri + "/" + config.getOutput() + "/");
-			errorUri = new URI(serverUri + "/" + config.getError() + "/");
+			inputUri = new URI(serverUri + config.getInput() + "/");
+			outputUri = new URI(serverUri + config.getOutput() + "/");
+			errorUri = new URI(serverUri + config.getError() + "/");
 		} catch (URISyntaxException e1) {
 			logger.error("Can't setup server uris", e1);
 			throw new OCRException(e1);
@@ -213,7 +212,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				hotfolder.copyFilesToServer(fileInfos);
 			}
 			//Copy the ticket
-			hotfolder.copyTmpFile(tmpTicket, new URL(inputUri.toString() + tmpTicket));
+			hotfolder.copyTmpFile(tmpTicket, new URI(inputUri.toString() + tmpTicket));
 			if (config.copyOnly) {
 				logger.info("Process is in copy only mode, don't wait for results");
 				return;
@@ -324,8 +323,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			logger.error("Processing failed (XMLStreamException)", e);
 			failed = true;
 			throw new OCRException(e);
-		} catch (MalformedURLException e) {
-			logger.error("Processing failed (MalformedURLException)", e);
+		} catch (URISyntaxException e) {
+			logger.error("Processing failed (URISyntaxException)", e);
 			failed = true;
 			throw new OCRException(e);
 		} finally {
@@ -422,7 +421,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *             the file system exception
 	 * @throws MalformedURLException
 	 */
-	protected Boolean checkOutXmlResults (String identifier) throws FileSystemException, MalformedURLException {
+	protected Boolean checkOutXmlResults (String identifier) throws FileSystemException {
 		String resultURLPrefix = outputUri + identifier + "/" + identifier + config.reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
 		return hotfolder.exists(resultURLPrefixpath.toURI());
@@ -436,7 +435,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *             the file system exception
 	 * @throws MalformedURLException
 	 */
-	protected Boolean checkErrorXmlResults (String identifier) throws FileSystemException, MalformedURLException {
+	protected Boolean checkErrorXmlResults (String identifier) throws FileSystemException {
 		String resultURLPrefix = errorUri.toString() + identifier + "/" + identifier + config.reportSuffix;
 		File resultURLPrefixpath = new File(resultURLPrefix);
 		return hotfolder.exists(resultURLPrefixpath.toURI());
@@ -454,7 +453,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *             the file system exception
 	 * @throws MalformedURLException
 	 */
-	private Boolean checkIfAllFilesExists (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
+	private Boolean checkIfAllFilesExists (Set<String> checkfile, String url) throws FileSystemException {
 
 		for (String fileName : checkfile) {
 			File urlpath = new File(url + "/" + fileName);
@@ -481,7 +480,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 * @throws MalformedURLException
 	 * @throws URISyntaxException
 	 */
-	private int resultAllFilesNotExists (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException, URISyntaxException {
+	private int resultAllFilesNotExists (Set<String> checkfile, String url) throws FileSystemException, URISyntaxException {
 		Integer result = 0;
 
 		for (String fileName : checkfile) {
@@ -532,17 +531,17 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *            the url, wich are all images
 	 * @throws FileSystemException
 	 *             the file system exception
-	 * @throws MalformedURLException
+	 * @throws URISyntaxException 
 	 */
 	//TODO: Remove this, it works with diretories
-	private void deleteAllFiles (Set<String> checkfile, String url) throws FileSystemException, MalformedURLException {
+	private void deleteAllFiles (Set<String> checkfile, String url) throws FileSystemException, URISyntaxException {
 		//TODO: Remove file from here
 		String base = new File(url).getAbsolutePath();
-		hotfolder.deleteIfExists(new URL(base + "/" + getName() + config.reportSuffix));
+		hotfolder.deleteIfExists(new URI(base + "/" + getName() + config.reportSuffix));
 		for (String fileName : checkfile) {
-			hotfolder.deleteIfExists(new URL(base + "/" + fileName));
+			hotfolder.deleteIfExists(new URI(base + "/" + fileName));
 		}
-		hotfolder.deleteIfExists(new URL(base));
+		hotfolder.deleteIfExists(new URI(base));
 	}
 
 	protected static List<AbbyyOCRImage> convertList (List<OCRImage> ocrImages) {

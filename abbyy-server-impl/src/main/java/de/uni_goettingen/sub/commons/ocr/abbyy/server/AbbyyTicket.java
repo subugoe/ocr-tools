@@ -210,7 +210,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
 		}
 		//Add default languages from config
-		if (config != null) {
+		if (config != null && config.defaultLangs != null) {
 			for (Locale l : config.defaultLangs) {
 				if (!langs.contains(l)) {
 					recognitionParams.addLanguage(LANGUAGE_MAP.get(l));

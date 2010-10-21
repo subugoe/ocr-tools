@@ -73,12 +73,12 @@ public class HotfolderTest {
 		testImageFile = new File(TEST_INPUT_FILE.getAbsolutePath() + File.separator + AbbyyOCRProcessTest.TEST_FOLDERS.get(0) + File.separator + IMAGE_NAME);
 		assertTrue(testImageFile.exists());
 		testImageUri = testImageFile.toURI();
-		logger.info("testImageUrl is " + testImageUri);
+		logger.info("testImageUri is " + testImageUri);
 
 		testImageTargetFile = new File(TEST_HOTFOLDER_FILE.getAbsolutePath() + File.separator + dirName + File.separator + IMAGE_NAME);
 		assertTrue("File " + testImageTargetFile.getAbsolutePath() + " already exists", !testImageTargetFile.exists());
 		testImageTargetUri = testImageTargetFile.toURI();
-		logger.info("testImageTargetUrl is " + testImageTargetUri);
+		logger.info("testImageTargetUri is " + testImageTargetUri);
 
 		target = testDirUri.toString() + "/" + getFileName(testImageUri);
 		hotfolder = new Hotfolder(new ConfigParser());
