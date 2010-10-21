@@ -52,7 +52,7 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	//TODO: Add this stuff: <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>, it's now part of the ticket
-	//TODO: Check if timeout is written, add a test for this
+	
 	//TODO: Make sure that the Executor reads the size and count of the remote server
 	//TODO: Save the stats of the remote system in a hidden file there
 	//TODO: check if the OCRResult stuff is used correctly
@@ -131,6 +131,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		config = new ConfigParser().loadConfig();
 		serverURL = config.getServerURL();
 		maxOCRTimeout = config.maxOCRTimeout;
+		oCRTimeOut = getOcrImages().size() * config.maxMillisPerFile;
 		//millisPerFile = config.minMilisPerFile;
 		try {
 			inputUrl = new URL(serverURL + "/" + config.getInput() + "/");
@@ -216,18 +217,25 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 				expectedResults.add(new URL(remoteUrl + config.reportSuffix));
 			}
 			Long timeout = getOcrImages().size() * config.maxMillisPerFile;
-			if (waitForResults(expectedResults, timeout)) {
-				//Everything should be ok, get the files
-				for (OCRFormat output : outputs.keySet()) {
-					String remoteUrl = ((AbbyyOCROutput) outputs.get(output)).getRemoteUrl().toString();
-					String localUrl = outputs.get(output).getUrl().toString();
-					logger.debug("Copy from " + remoteUrl + " to " + localUrl);
-					hotfolder.copyFile(remoteUrl, localUrl);
-					logger.debug("Getting result descriptor");
-					hotfolder.copyFile(remoteUrl + config.reportSuffix, localUrl + config.reportSuffix);
+			try {
+				if (waitForResults(expectedResults, timeout)) {
+					//Everything should be ok, get the files
+					for (OCRFormat output : outputs.keySet()) {
+						String remoteUrl = ((AbbyyOCROutput) outputs.get(output)).getRemoteUrl().toString();
+						String localUrl = outputs.get(output).getUrl().toString();
+						logger.debug("Copy from " + remoteUrl + " to " + localUrl);
+						hotfolder.copyFile(remoteUrl, localUrl);
+						logger.debug("Getting result descriptor");
+						hotfolder.copyFile(remoteUrl + config.reportSuffix, localUrl + config.reportSuffix);
+					}
 				}
+			} catch (TimeoutExcetion e) {
+				logger.error("Got an timeout while waiting for results", e);
+				failed = true;
+				//TODO: Handle errors here
+				//Delete failed processes
 			}
-			//TODO: Handle errors here
+			
 
 		} catch (FileSystemException e) {
 			failed = true;
@@ -240,9 +248,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			logger.error("OCR Process was interrupted while coping files to server or waiting for result.", e);
 		} catch (URISyntaxException e) {
 			logger.error("Error seting tmp URI for ticket", e);
-			failed = true;
-		} catch (TimeoutExcetion e) {
-			logger.error("Got an timeout while aiting for results", e);
 			failed = true;
 		}
 
