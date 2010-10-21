@@ -51,7 +51,7 @@ public class Hotfolder extends Thread {
 	final static Logger logger = LoggerFactory.getLogger(Hotfolder.class);
 
 	// The errror, input, output folder.
-	protected URL inFolder, outFolder, errrorFolder;
+	protected URI inFolder, outFolder, errrorFolder;
 
 	protected String serverURL, inputFolder, outputFolder, errorFolder;
 
@@ -119,7 +119,8 @@ public class Hotfolder extends Thread {
 				// Create the directory
 				mkDir(info.getRemoteURI());
 			} else {
-				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteURI());
+				String to = info.getRemoteURI().toString().replace(config.password, "***");
+				logger.trace("Copy from " + info.getUrl().toString() + " to " + to);
 				copyFile(info.getUrl().toString(), info.getRemoteURI().toString());
 			}
 		}
@@ -165,7 +166,7 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public void deleteIfExists (URL url) throws FileSystemException {
+	public void deleteIfExists (URI url) throws FileSystemException {
 		if (fsManager.resolveFile(url.toString()).delete()) {
 			logger.trace(url.toString() + " exists already, but now deleted");
 		}
@@ -232,14 +233,14 @@ public class Hotfolder extends Thread {
 		}
 	}
 
-	public Long getTotalCount (URL url) throws FileSystemException {
+	public Long getTotalCount (URI url) throws FileSystemException, URISyntaxException {
 		FileObject urlFile = fsManager.resolveFile(url.toString());
 		Long count = 0l;
 		if (urlFile.getType() == FileType.FOLDER) {
 			FileObject[] children = urlFile.getChildren();
 			for (int j = 0; j < children.length; j++) {
 				if (children[j].getType() == FileType.FOLDER) {
-					count += getTotalCount(children[j].getURL());
+					count += getTotalCount(children[j].getURL().toURI());
 				} else {
 					count += 1l;
 				}
@@ -262,7 +263,7 @@ public class Hotfolder extends Thread {
 	 *             the malformed url exception
 	 */
 	//TODO: Check if this is still needed
-	public List<AbbyyOCRImage> getUrlList (URL imageDirectory) throws FileSystemException, MalformedURLException {
+	public List<AbbyyOCRImage> getUrlList (URI imageDirectory) throws FileSystemException, MalformedURLException {
 		List<AbbyyOCRImage> imageList = new ArrayList<AbbyyOCRImage>();
 		FileObject getUrlImage = fsManager.resolveFile(imageDirectory.toString());
 		FileObject[] children = getUrlImage.getChildren();
@@ -282,7 +283,7 @@ public class Hotfolder extends Thread {
 		return getOutputStream(new URI(tmpTicket));
 	}
 
-	public void copyTmpFile (String tmpFile, URL to) throws FileSystemException {
+	public void copyTmpFile (String tmpFile, URI to) throws FileSystemException {
 		if (!fsManager.resolveFile(config.ticketTmpStore + tmpFile).exists()) {
 			logger.error(config.ticketTmpStore + tmpFile + "doesn't exist!");
 		}
@@ -295,7 +296,7 @@ public class Hotfolder extends Thread {
 	 * 
 	 * @return the in folder
 	 */
-	public URL getInFolder () {
+	public URI getInFolder () {
 		return inFolder;
 	}
 
@@ -305,7 +306,7 @@ public class Hotfolder extends Thread {
 	 * @param inFolder
 	 *            the new in folder
 	 */
-	public void setInFolder (URL inFolder) {
+	public void setInFolder (URI inFolder) {
 		this.inFolder = inFolder;
 	}
 
@@ -314,7 +315,7 @@ public class Hotfolder extends Thread {
 	 * 
 	 * @return the out folder
 	 */
-	public URL getOutFolder () {
+	public URI getOutFolder () {
 		return outFolder;
 	}
 
@@ -324,7 +325,7 @@ public class Hotfolder extends Thread {
 	 * @param outFolder
 	 *            the new out folder
 	 */
-	public void setOutFolder (URL outFolder) {
+	public void setOutFolder (URI outFolder) {
 		this.outFolder = outFolder;
 	}
 
@@ -333,7 +334,7 @@ public class Hotfolder extends Thread {
 	 * 
 	 * @return the errror folder
 	 */
-	public URL getErrrorFolder () {
+	public URI getErrrorFolder () {
 		return errrorFolder;
 	}
 
@@ -343,7 +344,7 @@ public class Hotfolder extends Thread {
 	 * @param errrorFolder
 	 *            the new errror folder
 	 */
-	public void setErrrorFolder (URL errrorFolder) {
+	public void setErrrorFolder (URI errrorFolder) {
 		this.errrorFolder = errrorFolder;
 	}
 
