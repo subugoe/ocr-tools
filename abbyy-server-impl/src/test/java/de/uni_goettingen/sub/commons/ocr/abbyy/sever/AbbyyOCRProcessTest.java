@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -27,13 +28,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.impl.DefaultFileSystemManager;
+import org.apache.commons.vfs.provider.webdav.WebdavFileProvider;
 import org.apache.xmlbeans.XmlException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,6 +142,37 @@ public class AbbyyOCRProcessTest {
 			imgList.add(ocri);
 		}
 		op.setOcrImages(imgList);
+	}
+	
+	
+	@Ignore
+	@Test
+	public void testUrlSchemaResolver () throws URISyntaxException, FileSystemException {
+		URI webdavUrl = new URI("webdav://localhost/file");
+		//This should fail
+		logger.debug("Set URI to " + webdavUrl.toString());
+		Boolean mue = false;
+		try {
+			new URL(webdavUrl.toString());
+		} catch (MalformedURLException e) {
+			mue = true;
+			logger.trace("Got MalformedURLException as expected", e);
+		}
+		assertTrue(mue);
+		mue = false;
+		
+		//This shouldn't fail
+		//DefaultFileSystemManager fsm = new DefaultFileSystemManager();
+		//fsm.addProvider("webdav", new WebdavFileProvider());
+		//VFS.getManager().resolveURI(webdavUrl.toString());
+		URL.setURLStreamHandlerFactory(VFS.getManager().getURLStreamHandlerFactory());
+		try {
+			new URL(webdavUrl.toString());
+		} catch (MalformedURLException e) {
+			mue = true;
+			logger.trace("Got MalformedURLException, this shouldn't happen here.", e);
+		}
+		assertFalse(mue);
 	}
 
 	@AfterClass

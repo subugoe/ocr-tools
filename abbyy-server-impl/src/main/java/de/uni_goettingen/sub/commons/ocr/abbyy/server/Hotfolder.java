@@ -25,7 +25,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileContent;
@@ -57,9 +59,25 @@ public class Hotfolder extends Thread {
 
 	private static Hotfolder _instance;
 
+	// internal tweaking variables
+	// Variables used for process management
+	// The max size, default is defined in ConfigParser
+	protected static Long maxSize;
+
+	// The max files,  default is defined in ConfigParser
+	protected static Long maxFiles;
+	
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;
 
+	// State variables
+	// The total file count.
+	protected static Long totalFileCount = 0l;
+
+	// The total file size.
+	protected static Long totalFileSize = 0l;
+
+	
 	/**
 	 * Instantiates a new hotfolder.
 	 * 
@@ -97,12 +115,12 @@ public class Hotfolder extends Thread {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (AbbyyOCRImage info : fileInfos) {
 			if (info.toString().endsWith("/")) {
-				logger.trace("Creating new directory " + info.getRemoteURL().toString() + "!");
+				logger.trace("Creating new directory " + info.getRemoteURI().toString() + "!");
 				// Create the directory
-				mkDir(info.getRemoteURL());
+				mkDir(info.getRemoteURI());
 			} else {
-				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteURL());
-				copyFile(info.getUrl().toString(), info.getRemoteURL().toString());
+				logger.trace("Copy from " + info.getUrl().toString() + " to " + info.getRemoteURI());
+				copyFile(info.getUrl().toString(), info.getRemoteURI().toString());
 			}
 		}
 	}
@@ -135,7 +153,7 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public void delete (URL url) throws FileSystemException {
+	public void delete (URI url) throws FileSystemException {
 		fsManager.resolveFile(url.toString()).delete();
 	}
 
@@ -161,9 +179,9 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public void mkDir (URL url) throws FileSystemException {
-		fsManager.resolveFile(url.toString()).createFolder();
-		logger.debug("Directory " + url.toString() + " created");
+	public void mkDir (URI uri) throws FileSystemException {
+		fsManager.resolveFile(uri.toString()).createFolder();
+		logger.debug("Directory " + uri.toString() + " created");
 	}
 
 	/**
@@ -175,7 +193,7 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public Boolean exists (URL url) throws FileSystemException {
+	public Boolean exists (URI url) throws FileSystemException {
 		if (fsManager.resolveFile(url.toString()).exists()) {
 			return true;
 		} else {
@@ -186,21 +204,22 @@ public class Hotfolder extends Thread {
 	/**
 	 * Gets the total size for a url.
 	 * 
-	 * @param url
+	 * @param testImageUrl
 	 *            the url
 	 * @return the total size
 	 * @throws FileSystemException
 	 *             the file system exception
+	 * @throws URISyntaxException 
 	 */
-	public Long getTotalSize (URL url) throws FileSystemException {
-		FileObject urlFile = fsManager.resolveFile(url.toString());
+	public Long getTotalSize (URI testImageUrl) throws FileSystemException, URISyntaxException {
+		FileObject urlFile = fsManager.resolveFile(testImageUrl.toString());
 
 		Long size = 0l;
 		if (urlFile.getType() == FileType.FOLDER) {
 			FileObject[] children = urlFile.getChildren();
 			for (int j = 0; j < children.length; j++) {
 				if (children[j].getType() == FileType.FOLDER) {
-					size += getTotalSize(children[j].getURL());
+					size += getTotalSize(children[j].getURL().toURI());
 				} else {
 					FileContent contentFile = children[j].getContent();
 					size += contentFile.getSize();
@@ -373,7 +392,51 @@ public class Hotfolder extends Thread {
 		setInputFolder(config.input);
 		setOutputFolder(config.output);
 		setServerURL(config.getServerURL());
+		maxSize = config.getMaxSize();
+		maxFiles = config.getMaxFiles();
 
+	}
+	
+	@SuppressWarnings("serial")
+	public void checkServerState () throws IOException, URISyntaxException {
+		if (maxSize != 0 && maxFiles != 0) {
+
+			// check if a slash is already appended
+			final URI serverUri = new URI(config.getServerURL());
+			Map<URI, Long> sizeMap = new LinkedHashMap<URI, Long>() {
+				{
+					//TODO: There is an error in here
+					put(new URI(serverUri.toString() + config.getInput() + "/"), 0l);
+					put(new URI(serverUri.toString() + config.getOutput() + "/"), 0l);
+					put(new URI(serverUri.toString() + config.getError() + "/"), 0l);
+				}
+			};
+
+			for (URI uri : sizeMap.keySet()) {
+				sizeMap.put(uri, getTotalSize(uri));
+			}
+			totalFileCount = Integer.valueOf(sizeMap.size()).longValue();
+			for (Long size : sizeMap.values()) {
+				if (size != null) {
+					totalFileSize += size;
+				}
+			}
+			logger.debug("TotalFileSize = " + totalFileSize);
+
+			if (maxFiles != 0 && totalFileCount > maxFiles) {
+				logger.error("Too much files. Max number of files is " + maxFiles + ". Number of files on server: " + totalFileCount + ".\nExit program.");
+				throw new IllegalStateException("Max number of files exeded");
+			}
+			if (maxSize != 0 && totalFileSize > maxSize) {
+				logger.error("Size of files is too much files. Max size of all files is " + maxSize
+						+ ". Size of files on server: "
+						+ totalFileSize
+						+ ".\nExit program.");
+				throw new IllegalStateException("Max size of files exeded");
+			}
+		} else {
+			logger.warn("Server state checking is disabled.");
+		}
 	}
 
 }

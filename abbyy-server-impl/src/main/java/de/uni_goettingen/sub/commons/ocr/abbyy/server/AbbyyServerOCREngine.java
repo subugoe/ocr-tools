@@ -21,10 +21,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observer;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -63,21 +60,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	/** single instance of AbbyyServerOCREngine. */
 	private static AbbyyServerOCREngine _instance;
 
-	// State variables
-	// The total file count.
-	protected static Long totalFileCount = 0l;
-
-	// The total file size.
-	protected static Long totalFileSize = 0l;
-
-	// internal tweaking variables
-	// Variables used for process management
-	// The max size, default is defined in ConfigParser
-	protected static Long maxSize;
-
-	// The max files,  default is defined in ConfigParser
-	protected static Long maxFiles;
-
 	// The check server state.
 	protected static Boolean checkServerState = true;
 
@@ -92,12 +74,10 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	public AbbyyServerOCREngine() throws FileSystemException, ConfigurationException {
-		config = new ConfigParser().loadConfig();
+	private AbbyyServerOCREngine() throws FileSystemException, ConfigurationException {
 		hotfolder = new Hotfolder(config);
+		config = new ConfigParser().loadConfig();
 
-		maxSize = config.getMaxSize();
-		maxFiles = config.getMaxFiles();
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
 	}
@@ -107,6 +87,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 * 
 	 */
 	public void start () {
+		/*
 		if (checkServerState) {
 			try {
 				checkServerState();
@@ -115,7 +96,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 				throw new OCRException(e);
 			}
 		}
-
+		*/
 		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder);
 
 		//TODO: Check if this can be just one loop
@@ -167,47 +148,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 *             Signals that an I/O exception has occurred.
 	 */
 	//TODO: this should be part of the Hotfolder.
-	@SuppressWarnings("serial")
-	public void checkServerState () throws IOException {
-		if (maxSize != 0 && maxFiles != 0) {
-
-			// check if a slash is already appended
-			final URL serverUrl = new URL(config.getServerURL());
-			Map<URL, Long> sizeMap = new LinkedHashMap<URL, Long>() {
-				{
-					//TODO: There is an error in here
-					put(new URL(serverUrl.toString() + config.getInput() + "/"), 0l);
-					put(new URL(serverUrl.toString() + config.getOutput() + "/"), 0l);
-					put(new URL(serverUrl.toString() + config.getError() + "/"), 0l);
-				}
-			};
-
-			for (URL url : sizeMap.keySet()) {
-				sizeMap.put(url, hotfolder.getTotalSize(url));
-			}
-			totalFileCount = Integer.valueOf(sizeMap.size()).longValue();
-			for (Long size : sizeMap.values()) {
-				if (size != null) {
-					totalFileSize += size;
-				}
-			}
-			logger.debug("TotalFileSize = " + totalFileSize);
-
-			if (maxFiles != 0 && totalFileCount > maxFiles) {
-				logger.error("Too much files. Max number of files is " + maxFiles + ". Number of files on server: " + totalFileCount + ".\nExit program.");
-				throw new IllegalStateException("Max number of files exeded");
-			}
-			if (maxSize != 0 && totalFileSize > maxSize) {
-				logger.error("Size of files is too much files. Max size of all files is " + maxSize
-						+ ". Size of files on server: "
-						+ totalFileSize
-						+ ".\nExit program.");
-				throw new IllegalStateException("Max size of files exeded");
-			}
-		} else {
-			logger.warn("Server state checking is disabled.");
-		}
-	}
 
 	@Override
 	public OCRImage newImage () {
@@ -216,7 +156,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 
 	@Override
 	public OCRProcess newProcess () {
-		return new AbbyyOCRProcess(config);
+		return new AbbyyOCRProcess(config, hotfolder);
 	}
 
 	@Override

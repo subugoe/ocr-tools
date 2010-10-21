@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import java.net.URI;
 import java.net.URL;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
@@ -36,7 +37,7 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	protected String remoteFileName;
 
 	//This represents the URL to the remote system
-	protected URL remoteURL = null;
+	protected URI remoteURI = null;
 
 	protected Long size = 0l;
 
@@ -69,10 +70,10 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	 * @param remoteFileName
 	 *            the remote file name
 	 */
-	public AbbyyOCRImage(URL imageUrl, URL remoteURL, String remoteFileName) {
+	public AbbyyOCRImage(URL imageUrl, URI remoteURI, String remoteFileName) {
 		super(imageUrl);
 		this.imageUrl = imageUrl;
-		this.remoteURL = remoteURL;
+		this.remoteURI = remoteURI;
 		this.remoteFileName = remoteFileName;
 	}
 
@@ -100,8 +101,8 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	 * 
 	 * @return the remote url
 	 */
-	public URL getRemoteURL () {
-		return this.remoteURL;
+	public URI getRemoteURI () {
+		return this.remoteURI;
 	}
 
 	/**
@@ -110,8 +111,8 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	 * @param remoteURL
 	 *            the new remote url
 	 */
-	public void setRemoteURL (URL remoteURL) {
-		this.remoteURL = remoteURL;
+	public void setRemoteURI (URI remoteURI) {
+		this.remoteURI = remoteURI;
 	}
 
 	public Long getSize () {
