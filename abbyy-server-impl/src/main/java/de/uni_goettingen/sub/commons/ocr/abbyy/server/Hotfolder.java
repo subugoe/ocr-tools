@@ -86,6 +86,7 @@ public class Hotfolder extends Thread {
 	 */
 	private Hotfolder() {
 		try {
+			VFS.setUriStyle(true);
 			fsManager = VFS.getManager();
 		} catch (FileSystemException e) {
 			logger.error("Can't get file system manager", e);
@@ -154,21 +155,21 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public void delete (URI url) throws FileSystemException {
-		fsManager.resolveFile(url.toString()).delete();
+	public void delete (URI uri) throws FileSystemException {
+		fsManager.resolveFile(uri.toString()).delete();
 	}
 
 	/**
-	 * Delete a resource at the specified url if exists.
+	 * Delete a resource at the specified i if exists.
 	 * 
 	 * @param url
 	 *            the url
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public void deleteIfExists (URI url) throws FileSystemException {
-		if (fsManager.resolveFile(url.toString()).delete()) {
-			logger.trace(url.toString() + " exists already, but now deleted");
+	public void deleteIfExists (URI uri) throws FileSystemException {
+		if (fsManager.resolveFile(uri.toString()).delete()) {
+			logger.trace(uri.toString() + " exists already, but now deleted");
 		}
 	}
 
@@ -194,8 +195,8 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public Boolean exists (URI url) throws FileSystemException {
-		if (fsManager.resolveFile(url.toString()).exists()) {
+	public Boolean exists (URI uri) throws FileSystemException {
+		if (fsManager.resolveFile(uri.toString()).exists()) {
 			return true;
 		} else {
 			return false;
@@ -212,8 +213,8 @@ public class Hotfolder extends Thread {
 	 *             the file system exception
 	 * @throws URISyntaxException 
 	 */
-	public Long getTotalSize (URI testImageUrl) throws FileSystemException, URISyntaxException {
-		FileObject urlFile = fsManager.resolveFile(testImageUrl.toString());
+	public Long getTotalSize (URI testImageUri) throws FileSystemException, URISyntaxException {
+		FileObject urlFile = fsManager.resolveFile(testImageUri.toString());
 
 		Long size = 0l;
 		if (urlFile.getType() == FileType.FOLDER) {
@@ -233,11 +234,11 @@ public class Hotfolder extends Thread {
 		}
 	}
 
-	public Long getTotalCount (URI url) throws FileSystemException, URISyntaxException {
-		FileObject urlFile = fsManager.resolveFile(url.toString());
+	public Long getTotalCount (URI uri) throws FileSystemException, URISyntaxException {
+		FileObject uriFile = fsManager.resolveFile(uri.toString());
 		Long count = 0l;
-		if (urlFile.getType() == FileType.FOLDER) {
-			FileObject[] children = urlFile.getChildren();
+		if (uriFile.getType() == FileType.FOLDER) {
+			FileObject[] children = uriFile.getChildren();
 			for (int j = 0; j < children.length; j++) {
 				if (children[j].getType() == FileType.FOLDER) {
 					count += getTotalCount(children[j].getURL().toURI());
@@ -263,7 +264,7 @@ public class Hotfolder extends Thread {
 	 *             the malformed url exception
 	 */
 	//TODO: Check if this is still needed
-	public List<AbbyyOCRImage> getUrlList (URI imageDirectory) throws FileSystemException, MalformedURLException {
+	protected List<AbbyyOCRImage> getUrlList (URI imageDirectory) throws FileSystemException, MalformedURLException {
 		List<AbbyyOCRImage> imageList = new ArrayList<AbbyyOCRImage>();
 		FileObject getUrlImage = fsManager.resolveFile(imageDirectory.toString());
 		FileObject[] children = getUrlImage.getChildren();

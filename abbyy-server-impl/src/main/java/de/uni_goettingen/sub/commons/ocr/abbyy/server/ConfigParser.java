@@ -110,8 +110,8 @@ public class ConfigParser {
 		this.configUrl = url;
 	}
 
-	public ConfigParser loadConfig () {
-		return loadConfig(this.configUrl);
+	public ConfigParser parse () {
+		return parse(this.configUrl);
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class ConfigParser {
 	 * @param config
 	 *            the config
 	 */
-	public ConfigParser loadConfig (URL configLocation) {
+	public ConfigParser parse (URL configLocation) {
 		// load configuration
 		try {
 			config = new PropertiesConfiguration(configLocation);

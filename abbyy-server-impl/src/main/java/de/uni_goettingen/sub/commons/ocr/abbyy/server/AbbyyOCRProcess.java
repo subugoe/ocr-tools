@@ -131,7 +131,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		startTime = System.currentTimeMillis();
 		
 		//TODO: move this into an init method
-		config = new ConfigParser().loadConfig();
+		config = new ConfigParser().parse();
 		
 		if (hotfolder == null) {
 			hotfolder = new Hotfolder(config);
@@ -207,12 +207,16 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			os.close();
 
 			logger.debug("Coping files to server.");
-			//Copy the files
+
 			if (!config.dryRun) {
+				//Copy the ticket
+				hotfolder.copyTmpFile(tmpTicket, new URI(inputUri.toString() + tmpTicket));
+				//Copy the files
 				hotfolder.copyFilesToServer(fileInfos);
+			} else {
+				return;
 			}
-			//Copy the ticket
-			hotfolder.copyTmpFile(tmpTicket, new URI(inputUri.toString() + tmpTicket));
+			
 			if (config.copyOnly) {
 				logger.info("Process is in copy only mode, don't wait for results");
 				return;

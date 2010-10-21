@@ -58,7 +58,7 @@ public class AbbyyServerOCREngineTest {
 	@Before
 	public void init () throws FileSystemException, ConfigurationException, URISyntaxException {
 		logger.debug("Starting Test");
-		ConfigParser config = new ConfigParser().loadConfig();
+		ConfigParser config = new ConfigParser().parse();
 
 		logger.debug("Server URL is " + config.getServerURL());
 		URI uri = new URI(config.getServerURL());
