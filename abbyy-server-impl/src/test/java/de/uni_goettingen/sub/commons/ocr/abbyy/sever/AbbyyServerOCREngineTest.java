@@ -48,11 +48,11 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
-public class AbbyyServerEngineTest {
+public class AbbyyServerOCREngineTest {
 	public static OCREngine abbyy;
 	public Hotfolder hotfolder;
 	protected List<File> directories = new ArrayList<File>();
-	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngineTest.class);
+	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngineTest.class);
 	protected static AbbyyServerSimulator ass = null;
 
 	@Before
@@ -81,14 +81,14 @@ public class AbbyyServerEngineTest {
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
 
-		for (String book : AbbyyProcessTest.TEST_FOLDERS) {
-			File testDir = new File(AbbyyProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
+		for (String book : AbbyyOCRProcessTest.TEST_FOLDERS) {
+			File testDir = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
 			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
 			//TODO: set the inout folder to new File(hotfolder.getAbsolutePath() + File.separator + INPUT_NAME);
-			File testTicket = new File(AbbyyProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator
+			File testTicket = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator
 					+ HotfolderTest.INPUT
 					+ File.separator
 					+ book

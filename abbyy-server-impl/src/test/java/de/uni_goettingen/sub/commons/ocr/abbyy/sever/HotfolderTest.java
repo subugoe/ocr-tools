@@ -73,7 +73,7 @@ public class HotfolderTest {
 		testDirUrl = testDirFile.toURI().toURL();
 		logger.info("testDirUrl is " + testDirUrl);
 
-		testImageFile = new File(TEST_INPUT_FILE.getAbsolutePath() + File.separator + AbbyyProcessTest.TEST_FOLDERS.get(0) + File.separator + IMAGE_NAME);
+		testImageFile = new File(TEST_INPUT_FILE.getAbsolutePath() + File.separator + AbbyyOCRProcessTest.TEST_FOLDERS.get(0) + File.separator + IMAGE_NAME);
 		assertTrue(testImageFile.exists());
 		testImageUrl = testImageFile.toURI().toURL();
 		logger.info("testImageUrl is " + testImageUrl);
