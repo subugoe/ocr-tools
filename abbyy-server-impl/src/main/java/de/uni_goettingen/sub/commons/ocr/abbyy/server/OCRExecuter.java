@@ -62,17 +62,17 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void beforeExecute (Thread t, Runnable r) {
 		super.beforeExecute(t, r);
-		if (r instanceof AbbyyProcess) {
-			AbbyyProcess abbyyProcess = (AbbyyProcess) r;
+		if (r instanceof AbbyyOCRProcess) {
+			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
 			//TODO: Refresh server state here
 			if (maxFiles != 0 && maxSize != 0) {
-				if (abbyyProcess.getOcrImages().size() + totalFileCount > maxFiles || getFileSize(abbyyProcess) + totalFileSize > maxSize) {
+				if (abbyyOCRProcess.getOcrImages().size() + totalFileCount > maxFiles || getFileSize(abbyyOCRProcess) + totalFileSize > maxSize) {
 					pause();
 				}
 			}
 
 		} else {
-			throw new IllegalStateException("Not a AbbyyProcess object");
+			throw new IllegalStateException("Not a AbbyyOCRProcess object");
 		}
 
 		pauseLock.lock();
@@ -93,17 +93,17 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void afterExecute (Runnable r, Throwable e) {
 		super.afterExecute(r, e);
-		if (r instanceof AbbyyProcess) {
-			AbbyyProcess abbyyProcess = (AbbyyProcess) r;
+		if (r instanceof AbbyyOCRProcess) {
+			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
 			//TODO: Refresh server state here
 			if (maxFiles != 0 && maxSize != 0) {
-				if (abbyyProcess.getOcrImages().size() + totalFileCount < maxFiles || getFileSize(abbyyProcess) + totalFileSize < maxSize) {
+				if (abbyyOCRProcess.getOcrImages().size() + totalFileCount < maxFiles || getFileSize(abbyyOCRProcess) + totalFileSize < maxSize) {
 					pause();
 				}
 			}
 
 		} else {
-			throw new IllegalStateException("Not a AbbyyProcess object");
+			throw new IllegalStateException("Not a AbbyyOCRProcess object");
 		}
 	}
 
@@ -136,7 +136,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
-	protected Long getFileSize (AbbyyProcess p) {
+	protected Long getFileSize (AbbyyOCRProcess p) {
 		return p.calculateSize();
 	}
 
