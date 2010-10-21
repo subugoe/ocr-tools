@@ -61,10 +61,6 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	final static Logger logger = LoggerFactory.getLogger(Ticket.class);
 
-	// Should the ticket be validated.
-	//TODO: get this parameter from ConfigParser
-	protected Boolean validateTicket = false;
-
 	//TODO: Check if timeout is written, add a test for this
 	//The timeout for the ticket
 	protected Long oCRTimeOut = null;
@@ -74,9 +70,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	//TODO: get this parameter from ConfigParser
 	protected Boolean singleFile = false;
-
-	//TODO: get this parameter from ConfigParser
-	protected String outputLocation;
 
 	//The namespace used for the Ticket files.
 	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
@@ -259,7 +252,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		exportParams.setExportFormatArray(settings);
 
 		ticketDoc.save(out, opts);
-		if (validateTicket && !ticket.validate()) {
+		if (config != null && config.validateTicket && !ticket.validate()) {
 			logger.error("Ticket not valid!");
 			throw new OCRException("Ticket not valid!");
 		}
