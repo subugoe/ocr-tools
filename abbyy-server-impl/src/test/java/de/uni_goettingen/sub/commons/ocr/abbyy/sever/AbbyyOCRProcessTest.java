@@ -46,8 +46,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 @SuppressWarnings("serial")
-public class AbbyyProcessTest {
-	final static Logger logger = LoggerFactory.getLogger(AbbyyProcessTest.class);
+public class AbbyyOCRProcessTest {
+	final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcessTest.class);
 	public static File BASEFOLDER_FILE = TicketTest.BASEFOLDER_FILE;
 	public static List<String> TEST_FOLDERS;
 
@@ -64,7 +64,7 @@ public class AbbyyProcessTest {
 
 	@BeforeClass
 	public static void init () {
-		logger.debug("Starting AbbyyProcessTest");
+		logger.debug("Starting AbbyyOCRProcessTest");
 		//Nothing to do here
 	}
 
