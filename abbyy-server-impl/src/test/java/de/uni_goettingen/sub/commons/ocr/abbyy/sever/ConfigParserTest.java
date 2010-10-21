@@ -39,7 +39,7 @@ public class ConfigParserTest {
 	@BeforeClass
 	public static void init () throws ConfigurationException {
 		try {
-			cp = new ConfigParser().loadConfig();
+			cp = new ConfigParser().parse();
 		} catch (RuntimeException e) {
 			logger.info("If run from Maven an Exception is expected", e);
 		}
@@ -48,13 +48,13 @@ public class ConfigParserTest {
 
 	@Test
 	public void testConfiguration () {
-		cp = new ConfigParser().loadConfig();
+		cp = new ConfigParser().parse();
 		assertNotNull(cp.getConfig());
 	}
 
 	@Test
 	public void testUrl () throws ConfigurationException {
-		cp = new ConfigParser().loadConfig();
+		cp = new ConfigParser().parse();
 		assertFalse(cp.getDebugAuth());
 		assertNotNull(cp.getServerURL());
 	}
@@ -62,7 +62,7 @@ public class ConfigParserTest {
 	@Test
 	public void testAuth () throws ConfigurationException {
 		System.setProperty(ConfigParser.DEBUG_PROPERTY, "true");
-		cp = new ConfigParser().loadConfig();
+		cp = new ConfigParser().parse();
 		assertTrue(cp.getDebugAuth());
 	}
 
