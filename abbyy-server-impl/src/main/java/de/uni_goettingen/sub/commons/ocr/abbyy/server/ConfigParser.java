@@ -67,7 +67,7 @@ public class ConfigParser {
 	public final static String PARAMETER_MAXOCRTIMEOUT = "maxOCRTimeout";
 	protected Long minMillisPerFile, maxMillisPerFile, maxOCRTimeout;
 
-	//Ticket specific settings
+	//AbbyyTicket specific settings
 	public final static String DEFAULT_TICKETTMPSTORE = "tmp://";
 	public final static String PARAMETER_TICKETTMPSTORE = "ticketTmpStore";
 	protected String ticketTmpStore;

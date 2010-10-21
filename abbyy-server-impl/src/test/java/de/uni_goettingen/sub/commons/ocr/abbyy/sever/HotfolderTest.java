@@ -37,7 +37,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 
 public class HotfolderTest {
 	final static Logger logger = LoggerFactory.getLogger(HotfolderTest.class);
-	public static File BASEFOLDER_FILE = TicketTest.BASEFOLDER_FILE;
+	public static File BASEFOLDER_FILE = AbbyyTicketTest.BASEFOLDER_FILE;
 	public static File TEST_INPUT_FILE, TEST_OUTPUT_FILE, TEST_HOTFOLDER_FILE, TEST_EXPECTED_FILE;
 	public static URL TEST_INPUT_URL, TEST_HOTFOLDER_URL, TEST_EXPECTED_URL;
 	public static String INPUT = "input";

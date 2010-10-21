@@ -117,7 +117,7 @@ public class AbbyyServerSimulator extends Thread {
 	}
 
 	protected void removeJob (File file) throws XmlException, IOException {
-		List<String> files = TicketTest.parseFilesFromTicket(file);
+		List<String> files = AbbyyTicketTest.parseFilesFromTicket(file);
 		for (String str : files) {
 			new File(hotfolder.getAbsolutePath() + File.separator + str).delete();
 		}
@@ -153,7 +153,7 @@ public class AbbyyServerSimulator extends Thread {
 	}
 
 	protected Long calculateWait (File file) throws XmlException, IOException {
-		List<String> files = TicketTest.parseFilesFromTicket(file);
+		List<String> files = AbbyyTicketTest.parseFilesFromTicket(file);
 		return files.size() * wait;
 	}
 
