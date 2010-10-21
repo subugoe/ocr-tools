@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -46,7 +46,7 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 /**
  * The Class AbbyyServerOCREngine.
  */
-public class AbbyyServerOCREngine implements OCREngine {
+public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
 
 	// The max threads.
 	protected static Integer maxThreads;
@@ -57,7 +57,7 @@ public class AbbyyServerOCREngine implements OCREngine {
 	// The configuration.
 	protected static ConfigParser config;
 
-	/** The hotfolder. */
+	// The hotfolder.
 	protected Hotfolder hotfolder;
 
 	/** single instance of AbbyyServerOCREngine. */
@@ -72,22 +72,17 @@ public class AbbyyServerOCREngine implements OCREngine {
 
 	// internal tweaking variables
 	// Variables used for process management
-	// The max size, default is currently 50 MB
+	// The max size, default is defined in ConfigParser
 	protected static Long maxSize;
 
-	// The max files, default is currently 5000 files
+	// The max files,  default is defined in ConfigParser
 	protected static Long maxFiles;
 
 	// The check server state.
 	protected static Boolean checkServerState = true;
 
-	// The directories as process
-	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
-
-	protected Boolean started = false;
-
 	// OCR Processes
-	Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
+	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
 
 	/**
 	 * Instantiates a new abbyy server engine.
@@ -212,14 +207,6 @@ public class AbbyyServerOCREngine implements OCREngine {
 		} else {
 			logger.warn("Server state checking is disabled.");
 		}
-	}
-
-	public List<OCRProcess> getOcrProcess () {
-		return ocrProcess;
-	}
-
-	public void addOcrProcess (OCRProcess ocrp) {
-		this.ocrProcess.add(ocrp);
 	}
 
 	@Override
