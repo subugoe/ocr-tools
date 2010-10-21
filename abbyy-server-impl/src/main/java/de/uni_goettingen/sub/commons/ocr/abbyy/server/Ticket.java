@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -62,27 +63,34 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	final static Logger logger = LoggerFactory.getLogger(Ticket.class);
 
 	// Should the ticket be validated.
+	//TODO: get this parameter from ConfigParser
 	protected Boolean validateTicket = false;
+
 	//The timeout for the ticket
 	protected Integer oCRTimeOut = null;
 
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
-	
+
+	//TODO: get this parameter from ConfigParser
 	protected Boolean singleFile = false;
 
+	//TODO: get this parameter from ConfigParser
 	protected String outputLocation;
-	
+
+	//This should represent the expected results
+	protected Map<OCRFormat, ArrayList<URL>> expectedResults;
+
 	//The namespace used for the Ticket files.
 	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 
 	protected final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
-	
+
 	// is represents the InputStream for files being read
 	private InputStream is;
 
 	protected static XmlOptions opts = new XmlOptions();
-	
+
 	static {
 		//TODO: Add more values to this map.
 		// See http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt for additional mappings
@@ -91,7 +99,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		LANGUAGE_MAP.put(new Locale("la"), "Latin");
 		LANGUAGE_MAP.put(new Locale("ru"), "Russian");
 
-
 		opts.setSavePrettyPrint();
 		opts.setSaveImplicitNamespaces(new HashMap<String, String>() {
 			{
@@ -99,7 +106,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			}
 		});
 		opts.setUseDefaultNamespace();
-
 
 		FORMAT_FRAGMENTS = new HashMap<OCRFormat, OutputFileFormatSettings>();
 		XMLExportSettings xmlSettings = XMLExportSettings.Factory.newInstance(opts);
@@ -134,7 +140,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		super(process);
 	}
 
-	protected Ticket () {
+	protected Ticket() {
 		super();
 	}
 
@@ -247,6 +253,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		}
 
 	}
+
 	@Deprecated
 	public void write (File ticketFile, String identifier) throws IOException {
 		write(new FileOutputStream(ticketFile), identifier);
@@ -307,5 +314,5 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		}
 
 	}
-	
+
 }

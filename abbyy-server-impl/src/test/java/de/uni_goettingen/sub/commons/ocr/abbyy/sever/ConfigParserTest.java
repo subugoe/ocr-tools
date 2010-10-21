@@ -47,9 +47,16 @@ public class ConfigParserTest {
 	}
 
 	@Test
+	public void testConfiguration () {
+		cp = new ConfigParser().loadConfig();
+		assertNotNull(cp.getConfig());
+	}
+
+	@Test
 	public void testUrl () throws ConfigurationException {
 		cp = new ConfigParser().loadConfig();
 		assertFalse(cp.getDebugAuth());
+		assertNotNull(cp.getServerURL());
 	}
 
 	@Test
@@ -57,7 +64,6 @@ public class ConfigParserTest {
 		System.setProperty(ConfigParser.DEBUG_PROPERTY, "true");
 		cp = new ConfigParser().loadConfig();
 		assertTrue(cp.getDebugAuth());
-
 	}
 
 }

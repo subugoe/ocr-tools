@@ -43,7 +43,7 @@ public class XmlParser {
 	protected static Set<String> xmlresultOutputparse (File file) throws FileNotFoundException, XMLStreamException {
 		return xmlresultOutputparse(new FileInputStream(file));
 	}
-	
+
 	@Deprecated
 	protected static Set<String> xmlresultErrorparse (File file, String identifier) throws FileNotFoundException, XMLStreamException {
 		return xmlresultErrorparse(new FileInputStream(file), identifier);

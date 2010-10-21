@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 
 public class HotfolderTest {
@@ -51,6 +52,7 @@ public class HotfolderTest {
 	protected static URL testDirUrl, testImageUrl, testImageTargetUrl;
 	protected static String dirName = "testDir";
 	protected static String target;
+	protected static Hotfolder hotfolder;
 
 	static {
 		TEST_INPUT_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + INPUT);
@@ -63,11 +65,10 @@ public class HotfolderTest {
 		} catch (MalformedURLException e) {
 			logger.error("This should never happen!");
 		}
-
 	}
 
 	@BeforeClass
-	public static void init () throws MalformedURLException {
+	public static void init () throws MalformedURLException, FileSystemException {
 		testDirFile = new File(TEST_HOTFOLDER_FILE.getAbsolutePath() + File.separator + dirName + File.separator);
 		testDirUrl = testDirFile.toURI().toURL();
 		logger.info("testDirUrl is " + testDirUrl);
@@ -83,21 +84,20 @@ public class HotfolderTest {
 		logger.info("testImageTargetUrl is " + testImageTargetUrl);
 
 		target = testDirUrl.toString() + "/" + getFileName(testImageUrl);
+		hotfolder = new Hotfolder(new ConfigParser());
 	}
 
 	@Test
 	public void testMkDir () throws MalformedURLException, FileSystemException {
 		logger.debug("Checking if " + testDirUrl.toString() + " can be created.");
-		Hotfolder h = new Hotfolder();
-		h.mkDir(testDirUrl);
+		hotfolder.mkDir(testDirUrl);
 		assertTrue(testDirFile.exists());
 	}
 
 	@Test
 	public void checkSize () throws FileSystemException {
 		logger.debug("Checking size of " + testImageUrl.toString());
-		Hotfolder h = new Hotfolder();
-		Long size = h.getTotalSize(testImageUrl);
+		Long size = hotfolder.getTotalSize(testImageUrl);
 		logger.debug("Size is " + size.toString());
 		assertTrue(IMAGE_SIZE.equals(size));
 	}
@@ -105,8 +105,7 @@ public class HotfolderTest {
 	@Test
 	public void testCopy () throws FileSystemException, MalformedURLException, URISyntaxException {
 		logger.debug("Copy " + testImageUrl.toString() + " to " + target);
-		Hotfolder h = new Hotfolder();
-		h.copyFile(testImageUrl.toString(), target);
+		hotfolder.copyFile(testImageUrl.toString(), target);
 		assertTrue("File can't be found.", new File(new URL(target).toURI()).exists());
 	}
 
@@ -118,14 +117,12 @@ public class HotfolderTest {
 	@Test
 	public void testExists () throws FileSystemException, MalformedURLException {
 		logger.debug("Checking if " + target + " exists.");
-		Hotfolder h = new Hotfolder();
-		assertTrue(h.exists(new URL(target)));
+		assertTrue(hotfolder.exists(new URL(target)));
 	}
 
 	@Test
 	public void testDelete () throws FileSystemException, MalformedURLException {
-		Hotfolder h = new Hotfolder();
-		h.delete(new URL(target));
+		hotfolder.delete(new URL(target));
 		assertTrue(!new File(target).exists());
 	}
 
