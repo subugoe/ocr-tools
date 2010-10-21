@@ -65,8 +65,9 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	//TODO: get this parameter from ConfigParser
 	protected Boolean validateTicket = false;
 
+	//TODO: Check if timeout is written, add a test for this
 	//The timeout for the ticket
-	protected Integer oCRTimeOut = null;
+	protected Long oCRTimeOut = null;
 
 	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
@@ -273,7 +274,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	/**
 	 * @return the oCRTimeOut
 	 */
-	public Integer getoCRTimeOut () {
+	public Long getoCRTimeOut () {
 		return oCRTimeOut;
 	}
 
@@ -281,7 +282,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	 * @param oCRTimeOut
 	 *            the oCRTimeOut to set
 	 */
-	public void setoCRTimeOut (Integer oCRTimeOut) {
+	public void setoCRTimeOut (Long oCRTimeOut) {
 		this.oCRTimeOut = oCRTimeOut;
 	}
 
