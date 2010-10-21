@@ -48,7 +48,7 @@ import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 @SuppressWarnings("serial")
 public class AbbyyOCRProcessTest {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcessTest.class);
-	public static File BASEFOLDER_FILE = TicketTest.BASEFOLDER_FILE;
+	public static File BASEFOLDER_FILE = AbbyyTicketTest.BASEFOLDER_FILE;
 	public static List<String> TEST_FOLDERS;
 
 	static {
@@ -73,12 +73,12 @@ public class AbbyyOCRProcessTest {
 		for (String book : TEST_FOLDERS) {
 			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
-			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
 			assertNotNull(aop);
-			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
+			aop.setOcrOutput(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
 			aop.write(testTicket, testDir.getName());
-			logger.debug("Wrote Ticket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
+			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
 		}
 	}
 
@@ -87,13 +87,13 @@ public class AbbyyOCRProcessTest {
 		for (String book : TEST_FOLDERS) {
 			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
-			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
 			assertNotNull(aop);
-			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
+			aop.setOcrOutput(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
 			aop.write(testTicket, testDir.getName());
-			logger.debug("Wrote Ticket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
-			assertTrue("This fails if the number of files between ticket and file system differs.", TicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
+			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
+			assertTrue("This fails if the number of files between ticket and file system differs.", AbbyyTicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
 		}
 	}
 

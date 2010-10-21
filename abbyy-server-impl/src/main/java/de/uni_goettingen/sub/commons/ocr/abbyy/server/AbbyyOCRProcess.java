@@ -49,7 +49,7 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 /**
  * The Class AbbyyOCRProcess.
  */
-public class AbbyyOCRProcess extends Ticket implements OCRProcess, Runnable {
+public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable {
 
 	//TODO: Add this stuff: <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>, it's now part of the ticket
 	//TODO: Make sure that the Executor reads the size and count of the remote server
@@ -187,7 +187,7 @@ public class AbbyyOCRProcess extends Ticket implements OCRProcess, Runnable {
 
 		try {
 			//Write ticket to temp file
-			logger.debug("Creating Ticket");
+			logger.debug("Creating AbbyyTicket");
 			OutputStream os = hotfolder.createTmpFile(tmpTicket);
 			write(os, name);
 			os.close();

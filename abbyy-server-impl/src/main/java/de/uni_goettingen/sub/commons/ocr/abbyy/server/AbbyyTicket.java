@@ -58,8 +58,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 @SuppressWarnings("serial")
-public class Ticket extends AbstractOCRProcess implements OCRProcess {
-	final static Logger logger = LoggerFactory.getLogger(Ticket.class);
+public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
+	final static Logger logger = LoggerFactory.getLogger(AbbyyTicket.class);
 
 	//TODO: Check if timeout is written, add a test for this
 	//The timeout for the ticket
@@ -71,7 +71,7 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	//TODO: get this parameter from ConfigParser
 	protected Boolean singleFile = false;
 
-	//The namespace used for the Ticket files.
+	//The namespace used for the AbbyyTicket files.
 	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 
 	protected final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
@@ -129,19 +129,19 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		FORMAT_FRAGMENTS.put(OCRFormat.PDFA, null);
 	}
 
-	public Ticket(OCRProcess process) {
+	public AbbyyTicket(OCRProcess process) {
 		super(process);
 	}
 
-	protected Ticket() {
+	protected AbbyyTicket() {
 		super();
 	}
 
-	public Ticket(InputStream is) {
+	public AbbyyTicket(InputStream is) {
 		this.is = is;
 	}
 
-	public Ticket(URL url) throws IOException {
+	public AbbyyTicket(URL url) throws IOException {
 		this(url.openStream());
 	}
 
@@ -253,8 +253,8 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 		ticketDoc.save(out, opts);
 		if (config != null && config.validateTicket && !ticket.validate()) {
-			logger.error("Ticket not valid!");
-			throw new OCRException("Ticket not valid!");
+			logger.error("AbbyyTicket not valid!");
+			throw new OCRException("AbbyyTicket not valid!");
 		}
 
 	}

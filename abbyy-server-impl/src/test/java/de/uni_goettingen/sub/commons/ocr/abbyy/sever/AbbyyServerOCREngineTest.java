@@ -84,9 +84,9 @@ public class AbbyyServerOCREngineTest {
 		for (String book : AbbyyOCRProcessTest.TEST_FOLDERS) {
 			File testDir = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
-			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
 			assertNotNull(aop);
-			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
+			aop.setOcrOutput(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			//TODO: set the inout folder to new File(hotfolder.getAbsolutePath() + File.separator + INPUT_NAME);
 			File testTicket = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator
 					+ HotfolderTest.INPUT
@@ -94,7 +94,7 @@ public class AbbyyServerOCREngineTest {
 					+ book
 					+ ".xml");
 			aop.write(testTicket, testDir.getName());
-			logger.debug("Wrote Ticket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
+			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
 			logger.debug("Starting Engine");
 			ase.recognize(aop);
 		}

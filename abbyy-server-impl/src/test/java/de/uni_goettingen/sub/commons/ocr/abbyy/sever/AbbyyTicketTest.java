@@ -55,7 +55,7 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCROutput;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.Ticket;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyTicket;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -63,8 +63,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 @SuppressWarnings("serial")
-public class TicketTest {
-	final static Logger logger = LoggerFactory.getLogger(TicketTest.class);
+public class AbbyyTicketTest {
+	final static Logger logger = LoggerFactory.getLogger(AbbyyTicketTest.class);
 	public static String EXTENSION = "tif";
 	public static File BASEFOLDER_FILE;
 	public static String OUTPUT_LOCATION = "D:\\Recognition\\GDZ\\output";
@@ -78,7 +78,7 @@ public class TicketTest {
 
 	protected String name = "testTicket";
 
-	private Ticket ticket;
+	private AbbyyTicket abbyyTicket;
 
 	static {
 		BASEFOLDER_FILE = getBaseFolderAsFile();
@@ -89,7 +89,7 @@ public class TicketTest {
 				add(new Locale("la"));
 			}
 		});
-		TICKET_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + "ticket.xml");
+		TICKET_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + "abbyyTicket.xml");
 
 		final AbbyyOCROutput aoo = new AbbyyOCROutput();
 		aoo.setRemoteLocation(OUTPUT_LOCATION);
@@ -138,14 +138,14 @@ public class TicketTest {
 	@Test
 	public void writeTicket () throws IOException {
 		assertNotNull("base path is null", BASEFOLDER_FILE);
-		ticket = new Ticket(ocrp);
+		abbyyTicket = new AbbyyTicket(ocrp);
 
 		//Use a stream to check if we to write it directly into a Stream
 		ticketStream = new FileOutputStream(TICKET_FILE);
-		ticket.write(ticketStream, name);
+		abbyyTicket.write(ticketStream, name);
 
 		String ticket = StreamUtils.dumpInputStream(new FileInputStream(TICKET_FILE));
-		logger.debug("This is the ticket\n" + ticket);
+		logger.debug("This is the abbyyTicket\n" + ticket);
 
 		assertTrue(TICKET_FILE.exists());
 	}
@@ -154,7 +154,7 @@ public class TicketTest {
 	public void readTicket () throws XmlException, IOException {
 		XmlOptions options = new XmlOptions();
 		// Set the namespace 
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("", Ticket.NAMESPACE));
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("", AbbyyTicket.NAMESPACE));
 		// Load the Xml 
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.parse(TICKET_FILE, options);
 
@@ -163,14 +163,14 @@ public class TicketTest {
 
 		RecognitionParams rp = ticket.getRecognitionParams();
 
-		//If this fails the ticket writing method has a problem with language mapping
+		//If this fails the abbyyTicket writing method has a problem with language mapping
 		logger.debug("Checking languages");
 		for (String lang : rp.getLanguageList()) {
 			logger.debug("found language:" + lang);
-			assertTrue(Ticket.LANGUAGE_MAP.containsValue(lang));
+			assertTrue(AbbyyTicket.LANGUAGE_MAP.containsValue(lang));
 		}
 
-		//Compare the files from the ticket with the mock object
+		//Compare the files from the abbyyTicket with the mock object
 		Integer numFiles = ocrp.getOcrImages().size();
 		logger.debug("Checking " + numFiles + " files");
 		List<String> ticketFiles = parseFilesFromTicket(TICKET_FILE, 10);
@@ -178,7 +178,7 @@ public class TicketTest {
 			String mFilename = ((AbbyyOCRImage) ocrp.getOcrImages().get(i)).getRemoteFileName();
 			String tFilename = ticketFiles.get(i);
 			logger.debug("File from mock object: " + mFilename);
-			logger.debug("File from ticket file: " + tFilename);
+			logger.debug("File from abbyyTicket file: " + tFilename);
 			assertTrue(mFilename.equals(tFilename));
 		}
 		//Check the definitions of outputs and their locations
@@ -200,7 +200,7 @@ public class TicketTest {
 
 	public static List<String> parseFilesFromTicket (File ticketFile, Integer expectedSize) throws XmlException, IOException {
 		List<String> files = new ArrayList<String>();
-		Ticket t = new Ticket(new FileInputStream(ticketFile));
+		AbbyyTicket t = new AbbyyTicket(new FileInputStream(ticketFile));
 		t.parseTicket();
 		if (expectedSize != null) {
 			assertTrue("Expected size of " + expectedSize, t.getOcrImages().size() == expectedSize);
@@ -209,7 +209,7 @@ public class TicketTest {
 		for (OCRImage oi : t.getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) oi;
 			assertTrue("File is set but contains no file name", aoi.getRemoteFileName().length() > 0);
-			logger.debug("Found reference to " + aoi.getRemoteFileName() + " in ticket.");
+			logger.debug("Found reference to " + aoi.getRemoteFileName() + " in abbyyTicket.");
 			files.add(aoi.getRemoteFileName());
 		}
 
