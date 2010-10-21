@@ -51,12 +51,11 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
  */
 public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
-	//TODO: Add this stuff: <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+	//TODO: Add this stuff: <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>, it's now part of the ticket
 	//TODO: Check if timeout is written, add a test for this
-	//TODO: Add predefined languages here or in ticket
 	//TODO: Make sure that the Executor reads the size and count of the remote server
 	//TODO: Save the stats of the remote system in a hidden file there
-	//TODO: check if the OCRResult stuff is used corectly
+	//TODO: check if the OCRResult stuff is used correctly
 
 	// The Constant logger.
 	public final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
@@ -67,10 +66,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 
 	// The folder URLs.
 	protected URL inputUrl, outputUrl, errorUrl;
-
-	//TODO: Try to get rid of this, use OCRResult
-	// local Url wich are moved a result 
-	protected final static String moveToLocal = null;
 
 	// The fix remote path.
 	protected Boolean fixRemotePath = false;
@@ -86,7 +81,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	protected Long startTime = null;
 
 	// The done date.
-	protected Long doneTime = null;
+	protected Long endTime = null;
 
 	// The hotfolder.
 	protected Hotfolder hotfolder;
@@ -98,10 +93,6 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	//TODO: Remove this
 	// The ocr out format file.
 	Set<String> ocrOutFormatFile = new LinkedHashSet<String>();
-
-	//protected List<AbbyyOCRImage> fileInfosreplacement = null;
-	// The configuration.
-	protected ConfigParser config;
 
 	//TODO: Add calculation of timeout, set it in the ticket.
 
@@ -226,8 +217,17 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			}
 			Long timeout = getOcrImages().size() * config.maxMillisPerFile;
 			if (waitForResults(expectedResults, timeout)) {
-				//TODO: Everything should be ok, get the files
+				//Everything should be ok, get the files
+				for (OCRFormat output : outputs.keySet()) {
+					String remoteUrl = ((AbbyyOCROutput) outputs.get(output)).getRemoteUrl().toString();
+					String localUrl = outputs.get(output).getUrl().toString();
+					logger.debug("Copy from " + remoteUrl + " to " + localUrl);
+					hotfolder.copyFile(remoteUrl, localUrl);
+					logger.debug("Getting result descriptor");
+					hotfolder.copyFile(remoteUrl + config.reportSuffix, localUrl + config.reportSuffix);
+				}
 			}
+			//TODO: Handle errors here
 
 		} catch (FileSystemException e) {
 			failed = true;
@@ -258,16 +258,16 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 					// TODO Erkennungsrat muss noch ausgelesen werden(ich
 					// wei das eigentlich nicht deswegen ist noch offen)
 					ocrOutFormatFile = XmlParser.xmlresultOutputparse(new File(resultOutURLPrefixAbsolutePath));
-					File moveToLocalpath = new File(moveToLocal);
-					String moveToLocalAbsolutePath = moveToLocalpath.getAbsolutePath();
+					//File moveToLocalpath = new File(moveToLocal);
+					//String moveToLocalAbsolutePath = moveToLocalpath.getAbsolutePath();
 
 					// for Output folder
 					for (int faktor = 1; faktor <= 2; faktor++) {
 						if (checkIfAllFilesExists(ocrOutFormatFile, resultOutURLPrefix + "/")) {
-							copyAllFiles(ocrOutFormatFile, resultOutURLPrefix, moveToLocalAbsolutePath);
+							//copyAllFiles(ocrOutFormatFile, resultOutURLPrefix, moveToLocalAbsolutePath);
 							deleteAllFiles(ocrOutFormatFile, resultOutURLPrefix);
 							failed = true;
-							logger.info("Move Processing successfully to " + moveToLocalAbsolutePath);
+							//logger.info("Move Processing successfully to " + moveToLocalAbsolutePath);
 						}
 
 					}
@@ -311,9 +311,9 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			throw new OCRException(e);
 		} finally {
 			done = true;
+			endTime = System.currentTimeMillis();
 			logger.trace("AbbyyProcess " + name + " ended ");
 		}
-		doneTime = System.currentTimeMillis();
 	}
 
 	/**
@@ -565,6 +565,13 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 			Thread.sleep(config.checkInterval);
 		}
 		return true;
+	}
+	
+	public Long getDuration () {
+		if (done) {
+			return endTime - startTime;
+		}
+		return null;
 	}
 
 	/**

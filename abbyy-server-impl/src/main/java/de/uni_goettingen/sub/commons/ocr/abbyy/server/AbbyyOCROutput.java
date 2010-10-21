@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.net.URL;
+import java.util.List;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -27,6 +28,10 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 
 	protected String remoteLocation;
 	protected URL remoteUrl;
+	protected URL reportUrl;
+	protected Boolean singleFile = true;
+	//This is used, if we don't create the result in single file mode
+	protected List<URL> resultFragments;
 
 	public AbbyyOCROutput(OCROutput ocrOutput) {
 		super(ocrOutput);
@@ -64,6 +69,52 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	 */
 	public void setRemoteUrl (URL remoteUrl) {
 		this.remoteUrl = remoteUrl;
+	}
+
+	/**
+	 * @return the singleFile
+	 */
+	public Boolean getSingleFile () {
+		return singleFile;
+	}
+
+	/**
+	 * @param singleFile the singleFile to set
+	 */
+	public void setSingleFile (Boolean singleFile) {
+		this.singleFile = singleFile;
+	}
+
+	/**
+	 * @return the resultFragments
+	 */
+	public List<URL> getResultFragments () {
+		return resultFragments;
+	}
+	
+	public void addResultFragment (URL url) {
+		this.resultFragments.add(url);
+	}
+
+	/**
+	 * @param resultFragments the resultFragments to set
+	 */
+	public void setResultFragments (List<URL> resultFragments) {
+		this.resultFragments = resultFragments;
+	}
+
+	/**
+	 * @return the reportUrl
+	 */
+	public URL getReportUrl () {
+		return reportUrl;
+	}
+
+	/**
+	 * @param reportUrl the reportUrl to set
+	 */
+	public void setReportUrl (URL reportUrl) {
+		this.reportUrl = reportUrl;
 	}
 
 }

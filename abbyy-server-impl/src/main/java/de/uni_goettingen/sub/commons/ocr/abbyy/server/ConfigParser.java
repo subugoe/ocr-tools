@@ -78,9 +78,11 @@ public class ConfigParser {
 	public final String PARAMETER_SINGLEFILE = "singleFile";
 	protected Boolean singleFile;
 
-	//public final static String DEFAULT_OUTPUTLOCATION 
-	public final static String PARAMETER_OUTPUTLOCATION = "outputLocation";
-	protected String outputLocation;
+	//The output location on the server, needed to generate tickets
+	public final static String PARAMETER_SERVEROUTPUTLOCATION = "serverOutputLocation";
+	public final static String PARAMETER_LOCALOUTPUTLOCATION = "localOutputLocation";
+	public final static String DEFAULT_LOCALOUTPUTLOCATION = ".";
+	protected String serverOutputLocation, localOutputLocation;
 
 	//Process specific settings
 	public final static Boolean DEFAULT_COPYONLY = false;
@@ -183,7 +185,9 @@ public class ConfigParser {
 			defaultLangs = OCRUtil.parseLangs(config.getString(PARAMETER_DEFAULTLANGS, null));
 		}
 
-		//TODO: Add a local (remote) output folder
+		//Local and remote output locations
+		serverOutputLocation = config.getString(PARAMETER_SERVEROUTPUTLOCATION);
+		localOutputLocation = config.getString(PARAMETER_LOCALOUTPUTLOCATION, DEFAULT_LOCALOUTPUTLOCATION);
 
 		if (debugAuth) {
 			logger.trace("URL: " + serverURL);

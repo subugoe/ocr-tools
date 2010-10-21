@@ -26,7 +26,6 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -78,9 +77,6 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 	//TODO: get this parameter from ConfigParser
 	protected String outputLocation;
 
-	//This should represent the expected results
-	protected Map<OCRFormat, ArrayList<URL>> expectedResults;
-
 	//The namespace used for the Ticket files.
 	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 
@@ -88,6 +84,9 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 
 	// is represents the InputStream for files being read
 	private InputStream is;
+
+	// The configuration.
+	protected ConfigParser config;
 
 	protected static XmlOptions opts = new XmlOptions();
 
@@ -216,6 +215,14 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 		for (Locale l : langs) {
 			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
 		}
+		//Add default languages from config
+		if (config != null) {
+			for (Locale l : config.defaultLangs) {
+				if (!langs.contains(l)) {
+					recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
+				}
+			}
+		}
 		ExportParams exportParams = ticket.addNewExportParams();
 		//TODO: check if we need to set a different string if we want seperate files
 		if (!singleFile) {
@@ -239,7 +246,11 @@ public class Ticket extends AbstractOCRProcess implements OCRProcess {
 			String name = identifier + "." + of.name().toLowerCase();
 			exportFormat.setNamingRule(name);
 			AbbyyOCROutput aoo = (AbbyyOCROutput) output.get(of);
-			exportFormat.setOutputLocation(aoo.getRemoteLocation());
+			if (config != null && aoo.getRemoteLocation() == null) {
+				exportFormat.setOutputLocation(config.serverOutputLocation);
+			} else {
+				exportFormat.setOutputLocation(aoo.getRemoteLocation());
+			}
 			settings[i] = exportFormat;
 			i++;
 		}
