@@ -47,9 +47,9 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 /**
- * The Class AbbyyProcess.
+ * The Class AbbyyOCRProcess.
  */
-public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
+public class AbbyyOCRProcess extends Ticket implements OCRProcess, Runnable {
 
 	//TODO: Add this stuff: <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>, it's now part of the ticket
 	//TODO: Make sure that the Executor reads the size and count of the remote server
@@ -57,7 +57,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	//TODO: check if the OCRResult stuff is used correctly
 
 	// The Constant logger.
-	public final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
+	public final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcess.class);
 
 	//TODO: Use static fields from the engine class here.
 	// The server url.
@@ -104,17 +104,17 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 	 *            a OCR Process
 	 */
 
-	public AbbyyProcess(OCRProcess p) {
+	public AbbyyOCRProcess(OCRProcess p) {
 		super(p);
 		hotfolder = new Hotfolder(config);
 	}
 
-	protected AbbyyProcess(ConfigParser config) {
+	protected AbbyyOCRProcess(ConfigParser config) {
 		super();
 		hotfolder = new Hotfolder(config);
 	}
 
-	private AbbyyProcess() {
+	private AbbyyOCRProcess() {
 		super();
 	}
 
@@ -317,7 +317,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 		} finally {
 			done = true;
 			endTime = System.currentTimeMillis();
-			logger.trace("AbbyyProcess " + name + " ended ");
+			logger.trace("AbbyyOCRProcess " + name + " ended ");
 		}
 	}
 

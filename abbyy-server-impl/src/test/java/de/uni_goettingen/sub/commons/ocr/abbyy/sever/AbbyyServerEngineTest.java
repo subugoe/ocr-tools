@@ -39,8 +39,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -78,13 +78,13 @@ public class AbbyyServerEngineTest {
 
 	@Test
 	public void testRecognize () throws IOException {
-		AbbyyServerEngine ase = AbbyyServerEngine.getInstance();
+		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
 
 		for (String book : AbbyyProcessTest.TEST_FOLDERS) {
 			File testDir = new File(AbbyyProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
-			logger.debug("Creating AbbyyProcess for " + testDir.getAbsolutePath());
-			AbbyyProcess aop = AbbyyServerEngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
+			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
 			//TODO: set the inout folder to new File(hotfolder.getAbsolutePath() + File.separator + INPUT_NAME);

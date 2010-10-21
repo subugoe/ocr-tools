@@ -39,8 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerEngine;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
@@ -72,8 +72,8 @@ public class AbbyyProcessTest {
 	public void createAbbyyProcess () throws IOException {
 		for (String book : TEST_FOLDERS) {
 			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
-			logger.debug("Creating AbbyyProcess for " + testDir.getAbsolutePath());
-			AbbyyProcess aop = AbbyyServerEngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
+			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
@@ -86,8 +86,8 @@ public class AbbyyProcessTest {
 	public void checkTicketCount () throws IOException, XmlException {
 		for (String book : TEST_FOLDERS) {
 			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
-			logger.debug("Creating AbbyyProcess for " + testDir.getAbsolutePath());
-			AbbyyProcess aop = AbbyyServerEngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
+			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
@@ -99,7 +99,7 @@ public class AbbyyProcessTest {
 
 	@Test
 	public void createProcessViaAPI () throws MalformedURLException {
-		AbbyyServerEngine ase = AbbyyServerEngine.getInstance();
+		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
 		OCRProcess op = ase.newProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
@@ -114,7 +114,7 @@ public class AbbyyProcessTest {
 			imgList.add(aoi);
 		}
 		op.setOcrImages(imgList);
-		//AbbyyProcess aop = (AbbyyProcess) op;
+		//AbbyyOCRProcess aop = (AbbyyOCRProcess) op;
 		//aop.write(out, identifier)
 
 	}
@@ -122,7 +122,7 @@ public class AbbyyProcessTest {
 	@Test
 	public void createUrlBasedProcess () throws MalformedURLException {
 		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
-		AbbyyServerEngine ase = AbbyyServerEngine.getInstance();
+		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
 		OCRProcess op = ase.newProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();

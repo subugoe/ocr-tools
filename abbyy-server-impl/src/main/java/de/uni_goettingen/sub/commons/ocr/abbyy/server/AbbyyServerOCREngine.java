@@ -44,15 +44,15 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 /**
- * The Class AbbyyServerEngine.
+ * The Class AbbyyServerOCREngine.
  */
-public class AbbyyServerEngine implements OCREngine {
+public class AbbyyServerOCREngine implements OCREngine {
 
 	// The max threads.
 	protected static Integer maxThreads;
 	// protected ExecutorService pool = new OCRExecuter(maxThreads);
 	/** The Constant logger. */
-	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngine.class);
+	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngine.class);
 
 	// The configuration.
 	protected static ConfigParser config;
@@ -60,8 +60,8 @@ public class AbbyyServerEngine implements OCREngine {
 	/** The hotfolder. */
 	protected Hotfolder hotfolder;
 
-	/** single instance of AbbyyServerEngine. */
-	private static AbbyyServerEngine _instance;
+	/** single instance of AbbyyServerOCREngine. */
+	private static AbbyyServerOCREngine _instance;
 
 	// State variables
 	// The total file count.
@@ -87,7 +87,7 @@ public class AbbyyServerEngine implements OCREngine {
 	protected Boolean started = false;
 
 	// OCR Processes
-	Queue<AbbyyProcess> processes = new ConcurrentLinkedQueue<AbbyyProcess>();
+	Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
 
 	/**
 	 * Instantiates a new abbyy server engine.
@@ -97,7 +97,7 @@ public class AbbyyServerEngine implements OCREngine {
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	public AbbyyServerEngine() throws FileSystemException, ConfigurationException {
+	public AbbyyServerOCREngine() throws FileSystemException, ConfigurationException {
 		config = new ConfigParser().loadConfig();
 		hotfolder = new Hotfolder(config);
 
@@ -125,7 +125,7 @@ public class AbbyyServerEngine implements OCREngine {
 
 		//TODO: Check if this can be just one loop
 		for (OCRProcess process : getOcrProcess()) {
-			processes.add((AbbyyProcess) process);
+			processes.add((AbbyyOCRProcess) process);
 		}
 
 		for (OCRProcess process : processes) {
@@ -142,17 +142,17 @@ public class AbbyyServerEngine implements OCREngine {
 	}
 
 	/**
-	 * Gets the single instance of AbbyyServerEngine.
+	 * Gets the single instance of AbbyyServerOCREngine.
 	 * 
-	 * @return single instance of AbbyyServerEngine
+	 * @return single instance of AbbyyServerOCREngine
 	 * 
 	 */
 
-	public static AbbyyServerEngine getInstance () {
+	public static AbbyyServerOCREngine getInstance () {
 
 		if (_instance == null) {
 			try {
-				_instance = new AbbyyServerEngine();
+				_instance = new AbbyyServerOCREngine();
 			} catch (FileSystemException e) {
 				logger.error("Can't get file system", e);
 				throw new OCRException(e);
@@ -229,14 +229,14 @@ public class AbbyyServerEngine implements OCREngine {
 
 	@Override
 	public OCRProcess newProcess () {
-		return new AbbyyProcess(config);
+		return new AbbyyOCRProcess(config);
 	}
 
 	@Override
 	public Observer recognize (OCRProcess process) {
 		//TODO: Check if this instanceof works as expected	
-		if (process instanceof AbbyyProcess) {
-			processes.add((AbbyyProcess) process);
+		if (process instanceof AbbyyOCRProcess) {
+			processes.add((AbbyyOCRProcess) process);
 		}
 		if (!started) {
 			start();
@@ -245,14 +245,14 @@ public class AbbyyServerEngine implements OCREngine {
 		return null;
 	}
 
-	public static AbbyyProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
-		AbbyyProcess ap = new AbbyyProcess(config);
+	public static AbbyyOCRProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
+		AbbyyOCRProcess ap = new AbbyyOCRProcess(config);
 		List<File> imageDirs = AbstractOCRProcess.getImageDirectories(directory, extension);
 
 		for (File id : imageDirs) {
 			if (imageDirs.size() > 1) {
 				logger.error("Directory " + directory.getAbsolutePath() + " contains more then one image directories");
-				throw new OCRException("createProcessFromDir can currently create only one AbbyyProcess!");
+				throw new OCRException("createProcessFromDir can currently create only one AbbyyOCRProcess!");
 			}
 			String jobName = id.getName();
 			for (File imageFile : AbstractOCRProcess.makeFileList(id, extension)) {
