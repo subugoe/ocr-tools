@@ -36,20 +36,6 @@ public class OcrCliTest {
 	}
 
 	@Test
-	public void testLanguageParser () {
-		List<Locale> langs = OCRCli.parseLangs("de,en");
-		assertTrue(langs.contains(Locale.GERMAN));
-		assertTrue(langs.contains(Locale.ENGLISH));
-		langs = OCRCli.parseLangs("ru");
-		assertTrue(langs.contains(new Locale("ru")));
-		//this shouldn't work
-		langs = OCRCli.parseLangs("Deutsch,English");
-		assertTrue(!langs.contains(Locale.GERMAN));
-		assertTrue(!langs.contains(Locale.ENGLISH));
-		
-	}
-	
-	@Test
 	public void testFormatParser () {
 		List<OCRFormat> formats = OCRCli.parseOCRFormat("PDF,HTML");
 		assertTrue(formats.contains(OCRFormat.HTML));
