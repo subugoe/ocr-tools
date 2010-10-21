@@ -73,7 +73,7 @@ public class AbbyyProcessTest {
 		for (String book : TEST_FOLDERS) {
 			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyProcess for " + testDir.getAbsolutePath());
-			AbbyyProcess aop = AbbyyProcess.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			AbbyyProcess aop = AbbyyServerEngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
@@ -87,7 +87,7 @@ public class AbbyyProcessTest {
 		for (String book : TEST_FOLDERS) {
 			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyProcess for " + testDir.getAbsolutePath());
-			AbbyyProcess aop = AbbyyProcess.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			AbbyyProcess aop = AbbyyServerEngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
@@ -118,7 +118,7 @@ public class AbbyyProcessTest {
 		//aop.write(out, identifier)
 
 	}
-	
+
 	@Test
 	public void createUrlBasedProcess () throws MalformedURLException {
 		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");

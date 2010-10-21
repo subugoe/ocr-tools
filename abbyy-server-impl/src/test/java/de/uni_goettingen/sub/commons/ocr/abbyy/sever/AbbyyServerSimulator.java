@@ -50,20 +50,20 @@ public class AbbyyServerSimulator extends Thread {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerSimulator.class);
 
 	protected Boolean finish = false;
-	
+
 	protected static Long startTime = System.currentTimeMillis();
 	//Wait 15 minutes
-	protected static Long maxWait = 1000l * 60l *15l;
+	protected static Long maxWait = 1000l * 60l * 15l;
 
 	public AbbyyServerSimulator(File hotfolder, File expactations) {
 		//Hotfolder is the input directory
 		this.hotfolder = hotfolder;
 		this.expected = expactations;
-		
+
 		this.inputHotfolder = new File(hotfolder.getAbsolutePath() + File.separator + INPUT_NAME);
 		this.outputHotfolder = new File(hotfolder.getAbsolutePath() + File.separator + OUTPUT_NAME);
 		this.errorHotfolder = new File(hotfolder.getAbsolutePath() + File.separator + ERROR_NAME);
-		
+
 		errorExpected = new File(expactations.getAbsolutePath() + File.separator + ERROR_NAME);
 		outputExpected = new File(expactations.getAbsolutePath() + File.separator + OUTPUT_NAME);
 
@@ -121,6 +121,9 @@ public class AbbyyServerSimulator extends Thread {
 		for (String str : files) {
 			new File(hotfolder.getAbsolutePath() + File.separator + str).delete();
 		}
+		//delete the ticket
+		logger.info("Deleted referenced files, now deleting ticket");
+		file.delete();
 	}
 
 	protected void checkDirectory (File dir) throws XmlException, IOException {
@@ -143,7 +146,7 @@ public class AbbyyServerSimulator extends Thread {
 				Long wait = calculateWait(f);
 				//TODO: Create  new Thread which waits and copies the files afterwards
 				Thread serverProcess = createCopyThread(wait, f);
-				serverProcess.run();
+				serverProcess.start();
 				processes.add(serverProcess);
 			}
 		}
@@ -177,21 +180,29 @@ public class AbbyyServerSimulator extends Thread {
 				try {
 					String name = ticket.getName();
 					name = name.substring(0, name.indexOf(".xml"));
-					logger.info("Waiting " + wait + " mili seconds");
+					//Remove the files
+					removeJob(ticket);
+					logger.info("Removed files for " + name + ", waiting " + wait + " mili seconds");
 					sleep(wait);
 					//Check if this Thread waits to long
 					if (System.currentTimeMillis() > startTime + AbbyyServerSimulator.maxWait) {
-						interrupt();
+						logger.error("Waited a least" + (AbbyyServerSimulator.maxWait / 1000) + " seconds, exiting");
+						this.interrupt();
 					}
 					//Copy the files to the right location
+					Boolean foundResult = false;
 					if (resultsOutput.containsKey(name)) {
 						FileUtils.copyDirectory(resultsOutput.get(name), outputHotfolder);
+						foundResult = true;
 					}
 					if (resultsError.containsKey(name)) {
 						FileUtils.copyDirectory(resultsError.get(name), errorHotfolder);
+						foundResult = true;
 					}
-					//Remove the files
-					removeJob(ticket);
+					if (!foundResult) {
+						logger.error("Fond no prepared result for " + name);
+						this.interrupt();
+					}
 
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block

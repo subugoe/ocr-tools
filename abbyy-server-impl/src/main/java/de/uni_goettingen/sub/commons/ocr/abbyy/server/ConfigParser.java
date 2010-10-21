@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -12,68 +14,89 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
 public class ConfigParser {
 	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 	protected Configuration config;
 	public final static String DEFAULT_CONFIG = "/abbyyServer.properties";
 	public final static String DEBUG_PROPERTY = "ocr.finereader.server.debug.auth";
-	
+
 	//Default is 100 MB of storage
 	public final static Long DEFAULT_MAXSIZE = 100l * 1024l * 1024l;
 	public final static String PARAMETER_MAXSIZE = "maxSize";
+	protected Long maxSize;
 	//Default is 10000 files
 	public final static Long DEFAULT_MAXFILES = 10000l;
 	public final static String PARAMETER_MAXFILES = "maxFiles";
+	protected Long maxFiles;
 	//
 	public final static Integer DEFAULT_MAXTHREADS = 10;
 	public final static String PARAMETER_MAXTHREADS = "maxThreads";
+	protected Integer maxThreads;
 	public final static Boolean DEFAULT_CHECKSERVERSTATE = true;
 	public final static String PARAMETER_CHECKSERVERSTATE = "checkServerState";
+	protected Boolean checkServerState;
 	public final static Boolean DEFAULT_DEBUGAUTH = false;
 	public final static String PARAMETER_DEBUGAUTH = "debugAuth";
-	
+	protected Boolean debugAuth;
+
+	//User and password
 	public final static String PARAMETER_USERNAME = "username";
 	public final static String PARAMETER_PASSWORD = "password";
-	
-
 	protected String username, password;
 
 	public final static String PARAMETER_SERVERURL = "serverUrl";
-	
-	protected String serverURL, inputFolder, outputFolder, errorFolder;
+	public final static String PARAMETER_INPUT = "input";
+	public final static String DEFAULT_INPUT = "input";
+	public final static String PARAMETER_OUTPUT = "output";
+	public final static String DEFAULT_OUTPUT = "output";
+	public final static String PARAMETER_ERROR = "error";
+	public final static String DEFAULT_ERROR = "error";
+	protected String serverURL, input, output, error;
 
-	protected Long maxSize, maxFiles;
-	
-	protected Long minMilisPerFile, maxMilisPerFile;   
-	
-	protected Integer maxThreads;
-	protected Boolean checkServerState;
-	protected Boolean debugAuth = false;
+	//The different timeouts:
+	//Assume at least 1 second per file
+	public final static Long DEFAULT_MINMILLISPERFILE = 1000l;
+	public final static String PARAMETER_MINMILLISPERFILE = "minMillisPerFile";
+	//Assume 10 seconds per file as maximum
+	public final static Long DEFAULT_MAXMILLISPERFILE = 1000l * 10l;
+	public final static String PARAMETER_MAXMILLISPERFILE = "maxMillisPerFile";
+	//Process should be done in three hours, this is good for 6 * 60 * 3 images = 1080 at 10 seconds per image
+	public final static Long DEFAULT_MAXOCRTIMEOUT = 1000l * 60l * 60l * 3;
+	public final static String PARAMETER_MAXOCRTIMEOUT = "maxOCRTimeout";
+	protected Long minMillisPerFile, maxMillisPerFile, maxOCRTimeout;
 
 	//Ticket specific settings
 	public final static String DEFAULT_TICKETTMPSTORE = "tmp://";
-	public final static String PARAMETER_TICKETTMPSTORE = "ticketTmpStore"; 
-	protected String ticketTmpStore = "tmp://";
-	public final static Boolean DEFAULT_VALIDATETICKET  = false;
+	public final static String PARAMETER_TICKETTMPSTORE = "ticketTmpStore";
+	protected String ticketTmpStore;
+	public final static Boolean DEFAULT_VALIDATETICKET = false;
 	public final static String PARAMETER_VALIDATETICKET = "validateTicket";
-	protected Boolean validateTicket = false;
-	public final static Long DEFAULT_CHECKINTERVAL = 20000l;
-	public final static String PARAMETER_CHECKINTERVAL = "checkInterval";
-	protected Long checkInterval;
+	protected Boolean validateTicket;
+	public final Boolean DEFAULT_SINGLEFILE = false;
+	public final String PARAMETER_SINGLEFILE = "singleFile";
+	protected Boolean singleFile;
+
 	//public final static String DEFAULT_OUTPUTLOCATION 
 	public final static String PARAMETER_OUTPUTLOCATION = "outputLocation";
 	protected String outputLocation;
-	
+
 	//Process specific settings
-	public final static Boolean DEFAULT_COPYONLY  = false;
+	public final static Boolean DEFAULT_COPYONLY = false;
 	public final static String PARAMETER_COPYONLY = "copyOnly";
 	protected Boolean copyOnly;
-
-	public final static Boolean DEFAULT_DRYRUN  = false;
+	public final static Boolean DEFAULT_DRYRUN = false;
 	public final static String PARAMETER_DRYRUN = "dryRun";
-	protected Boolean dryRun = false;
-	
+	protected Boolean dryRun;
+	public final static Long DEFAULT_CHECKINTERVAL = 20000l;
+	public final static String PARAMETER_CHECKINTERVAL = "checkInterval";
+	protected Long checkInterval;
+	public final static String DEFAULT_REPORTSUFFIX = ".xml.result.xml";
+	public final static String PARAMETER_REPORTSUFFIX = "reportSuffix";
+	protected String reportSuffix;
+	public final static String PARAMETER_DEFAULTLANGS = "defaultLangs";
+	protected List<Locale> defaultLangs;
 
 	protected URL configUrl;
 
@@ -96,9 +119,6 @@ public class ConfigParser {
 	 *            the config
 	 */
 	public ConfigParser loadConfig (URL configLocation) {
-		if (Boolean.parseBoolean(System.getProperty(DEBUG_PROPERTY))) {
-			debugAuth = true;
-		}
 		// load configuration
 		try {
 			config = new PropertiesConfiguration(configLocation);
@@ -107,7 +127,7 @@ public class ConfigParser {
 			throw new OCRException(e);
 		}
 
-		serverURL = config.getString("remoteURL");
+		serverURL = config.getString(PARAMETER_SERVERURL);
 
 		try {
 			if (!serverURL.contains("./") && serverURL.startsWith("file")) {
@@ -128,44 +148,60 @@ public class ConfigParser {
 		}
 		serverURL = serverURL.endsWith("/") ? serverURL : serverURL + "/";
 
-		username = config.getString(PARAMETER_USERNAME);
-		password = config.getString(PARAMETER_PASSWORD);
-		inputFolder = config.getString("input");
-		outputFolder = config.getString("output");
-		errorFolder = config.getString("error");
-
-		if (config.getString("checkServerState") != null && !config.getString("checkServerState").equals("")) {
-			checkServerState = Boolean.parseBoolean(config.getString("checkServerState"));
+		if (System.getProperty(DEBUG_PROPERTY) != null) {
+			debugAuth = Boolean.parseBoolean(System.getProperty(DEBUG_PROPERTY));
+		} else {
+			debugAuth = config.getBoolean(PARAMETER_DEBUGAUTH, DEFAULT_DEBUGAUTH);
 		}
+
+		username = config.getString(PARAMETER_USERNAME, null);
+		password = config.getString(PARAMETER_PASSWORD, null);
+
+		input = config.getString(PARAMETER_INPUT, DEFAULT_INPUT);
+		output = config.getString(PARAMETER_OUTPUT, DEFAULT_OUTPUT);
+		error = config.getString(PARAMETER_ERROR, DEFAULT_ERROR);
+
+		checkServerState = config.getBoolean(PARAMETER_CHECKSERVERSTATE, DEFAULT_CHECKSERVERSTATE);
 
 		maxThreads = config.getInteger(PARAMETER_MAXTHREADS, DEFAULT_MAXTHREADS);
 		maxSize = config.getLong(PARAMETER_MAXSIZE, DEFAULT_MAXSIZE);
 		maxFiles = config.getLong(PARAMETER_MAXFILES, DEFAULT_MAXFILES);
 
-		if (config.getString("maxFiles") != null && !config.getString("maxFiles").equals("")) {
-			maxFiles = Long.parseLong(config.getString("maxFiles"));
+		minMillisPerFile = config.getLong(PARAMETER_MINMILLISPERFILE, DEFAULT_MINMILLISPERFILE);
+		maxMillisPerFile = config.getLong(PARAMETER_MAXMILLISPERFILE, DEFAULT_MAXMILLISPERFILE);
+		maxOCRTimeout = config.getLong(PARAMETER_MAXOCRTIMEOUT, DEFAULT_MAXOCRTIMEOUT);
+
+		copyOnly = config.getBoolean(PARAMETER_COPYONLY, DEFAULT_COPYONLY);
+		dryRun = config.getBoolean(PARAMETER_DRYRUN, DEFAULT_DRYRUN);
+		checkInterval = config.getLong(PARAMETER_CHECKINTERVAL, DEFAULT_CHECKINTERVAL);
+
+		ticketTmpStore = config.getString(PARAMETER_TICKETTMPSTORE, DEFAULT_TICKETTMPSTORE);
+		validateTicket = config.getBoolean(PARAMETER_VALIDATETICKET, DEFAULT_VALIDATETICKET);
+		singleFile = config.getBoolean(PARAMETER_SINGLEFILE, DEFAULT_SINGLEFILE);
+		config.getString(PARAMETER_REPORTSUFFIX, DEFAULT_REPORTSUFFIX);
+		if (config.getString(PARAMETER_DEFAULTLANGS, null) != null) {
+			defaultLangs = OCRUtil.parseLangs(config.getString(PARAMETER_DEFAULTLANGS, null));
 		}
 
-		//TODO: Add a preconfigured local output folder
+		//TODO: Add a local (remote) output folder
 
-		debugAuth = config.getBoolean(PARAMETER_DEBUGAUTH, DEFAULT_DEBUGAUTH);
 		if (debugAuth) {
-			logger.debug("URL: " + serverURL);
-			logger.debug("User: " + username);
-			logger.debug("Password: " + password);
+			logger.trace("URL: " + serverURL);
+			logger.trace("User: " + username);
+			logger.trace("Password: " + password);
 		} else {
-			logger.debug("URL: " + "*hidden* - enable debugAuth to log login data");
-			logger.debug("User: " + "*hidden* - enable debugAuth to log login data");
-			logger.debug("Password: " + "*hidden* - enable debugAuth to log login data");
+			logger.trace("URL: " + "*hidden* - enable debugAuth to log login data");
+			logger.trace("User: " + "*hidden* - enable debugAuth to log login data");
+			logger.trace("Password: " + "*hidden* - enable debugAuth to log login data");
 		}
 
-		logger.debug("Input folder: " + inputFolder);
-		logger.debug("Output Folder: " + outputFolder);
-		logger.debug("Error Folder: " + errorFolder);
+		logger.trace("Input folder: " + input);
+		logger.trace("Output Folder: " + output);
+		logger.trace("Error Folder: " + error);
 
-		logger.debug("Max size: " + maxSize);
-		logger.debug("Max files: " + maxFiles);
-		logger.debug("Max treads: " + maxThreads);
+		logger.trace("Max size: " + maxSize);
+		logger.trace("Max files: " + maxFiles);
+		logger.trace("Max treads: " + maxThreads);
 
 		logger.debug("Check server state: " + checkServerState);
 
@@ -187,31 +223,31 @@ public class ConfigParser {
 	/**
 	 * @return the inputFolder
 	 */
-	public String getInputFolder () {
-		return inputFolder;
+	public String getInput () {
+		return input;
 	}
 
 	/**
 	 * @param inputFolder
 	 *            the inputFolder to set
 	 */
-	public void setInputFolder (String inputFolder) {
-		this.inputFolder = inputFolder;
+	public void setInputFolder (String input) {
+		this.input = input;
 	}
 
 	/**
 	 * @return the errorFolder
 	 */
-	public String getErrorFolder () {
-		return errorFolder;
+	public String getError () {
+		return error;
 	}
 
 	/**
 	 * @param errorFolder
 	 *            the errorFolder to set
 	 */
-	public void setErrorFolder (String errorFolder) {
-		this.errorFolder = errorFolder;
+	public void setError (String error) {
+		this.error = error;
 	}
 
 	/**
@@ -281,8 +317,8 @@ public class ConfigParser {
 		return config;
 	}
 
-	public String getOutoutFolder () {
-		return outputFolder;
+	public String getOutput () {
+		return output;
 	}
 
 }

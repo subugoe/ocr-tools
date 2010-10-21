@@ -43,6 +43,7 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
  * The Class Hotfolder is used to control the hotfolders used by the Abbyy
  * Recognition Server.
  */
+//TODO: Make this a real singleton
 public class Hotfolder extends Thread {
 	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(Hotfolder.class);
@@ -56,8 +57,6 @@ public class Hotfolder extends Thread {
 
 	private static Hotfolder _instance;
 
-	private static String ticketTmpStore = "tmp://";
-
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;
 
@@ -67,7 +66,7 @@ public class Hotfolder extends Thread {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public Hotfolder() {
+	private Hotfolder() {
 		try {
 			fsManager = VFS.getManager();
 		} catch (FileSystemException e) {
@@ -76,7 +75,7 @@ public class Hotfolder extends Thread {
 		}
 	}
 
-	public Hotfolder(ConfigParser config) throws FileSystemException {
+	public Hotfolder(ConfigParser config) {
 		this();
 		this.config = config;
 	}
@@ -260,16 +259,16 @@ public class Hotfolder extends Thread {
 	}
 
 	public OutputStream createTmpFile (String name) throws FileSystemException, URISyntaxException {
-		String tmpTicket = ticketTmpStore + name;
+		String tmpTicket = config.ticketTmpStore + name;
 		return getOutputStream(new URI(tmpTicket));
 	}
 
 	public void copyTmpFile (String tmpFile, URL to) throws FileSystemException {
-		if (!fsManager.resolveFile(ticketTmpStore + tmpFile).exists()) {
-			logger.error(ticketTmpStore + tmpFile + "doesn't exist!");
+		if (!fsManager.resolveFile(config.ticketTmpStore + tmpFile).exists()) {
+			logger.error(config.ticketTmpStore + tmpFile + "doesn't exist!");
 		}
-		
-		copyFile(ticketTmpStore + tmpFile, to.toString());
+
+		copyFile(config.ticketTmpStore + tmpFile, to.toString());
 	}
 
 	/**
@@ -361,11 +360,20 @@ public class Hotfolder extends Thread {
 		this.errorFolder = errorFolder;
 	}
 
-	public static Hotfolder newInstace () {
+	public static Hotfolder newInstace (ConfigParser config) {
 		if (_instance == null) {
-			_instance = new Hotfolder();
+			_instance = new Hotfolder(config);
 		}
 		return _instance;
+	}
+
+	public void setConfig (ConfigParser config) {
+		this.config = config;
+		setErrorFolder(config.error);
+		setInputFolder(config.input);
+		setOutputFolder(config.output);
+		setServerURL(config.getServerURL());
+
 	}
 
 }

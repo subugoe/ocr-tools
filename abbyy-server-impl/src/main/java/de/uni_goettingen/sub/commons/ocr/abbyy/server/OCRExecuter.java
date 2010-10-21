@@ -47,12 +47,13 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	private Long totalFileSize;
 
 	private Long totalFileCount;
-	
-	protected Hotfolder hotfolder = Hotfolder.newInstace();
 
-	public OCRExecuter(Integer maxThreads) {
+	protected Hotfolder hotfolder;
+
+	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		this.maxThreads = maxThreads;
+		this.hotfolder = hotfolder;
 	}
 
 	/* (non-Javadoc)

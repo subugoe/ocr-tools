@@ -84,9 +84,10 @@ public class AbbyyServerEngineTest {
 		for (String book : AbbyyProcessTest.TEST_FOLDERS) {
 			File testDir = new File(AbbyyProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyProcess for " + testDir.getAbsolutePath());
-			AbbyyProcess aop = AbbyyProcess.createProcessFromDir(testDir, TicketTest.EXTENSION);
+			AbbyyProcess aop = AbbyyServerEngine.createProcessFromDir(testDir, TicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(TicketTest.OUTPUT_DEFINITIONS);
+			//TODO: set the inout folder to new File(hotfolder.getAbsolutePath() + File.separator + INPUT_NAME);
 			File testTicket = new File(AbbyyProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator
 					+ HotfolderTest.INPUT
 					+ File.separator
@@ -118,7 +119,7 @@ public class AbbyyServerEngineTest {
 		String hotfolderOutput = "file://./src/test/resources/hotfolder/output";
 
 		List<File> listFolders = new ArrayList<File>();
-		hotfolder = new Hotfolder();
+		hotfolder = new Hotfolder(new ConfigParser());
 
 		// copy all files from  errorfolderResult to hotfolderError 
 		errorfolderResult = parseString(errorfolderResult);

@@ -18,12 +18,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import java.net.URL;
+
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
 public class AbbyyOCROutput extends AbstractOCROutput {
 
 	protected String remoteLocation;
+	protected URL remoteUrl;
 
 	public AbbyyOCROutput(OCROutput ocrOutput) {
 		super(ocrOutput);
@@ -46,6 +49,21 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	 */
 	public void setRemoteLocation (String remoteLocation) {
 		this.remoteLocation = remoteLocation;
+	}
+
+	/**
+	 * @return the remoteUrl
+	 */
+	public URL getRemoteUrl () {
+		return remoteUrl;
+	}
+
+	/**
+	 * @param remoteUrl
+	 *            the remoteUrl to set
+	 */
+	public void setRemoteUrl (URL remoteUrl) {
+		this.remoteUrl = remoteUrl;
 	}
 
 }

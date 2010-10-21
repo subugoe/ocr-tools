@@ -18,7 +18,9 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -35,6 +37,7 @@ import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
@@ -45,14 +48,14 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
  */
 public class AbbyyServerEngine implements OCREngine {
 
-	/** The max threads. */
-	protected static Integer maxThreads = 5;
+	// The max threads.
+	protected static Integer maxThreads;
 	// protected ExecutorService pool = new OCRExecuter(maxThreads);
 	/** The Constant logger. */
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerEngine.class);
 
 	// The configuration.
-	protected ConfigParser config;
+	protected static ConfigParser config;
 
 	/** The hotfolder. */
 	protected Hotfolder hotfolder;
@@ -70,10 +73,10 @@ public class AbbyyServerEngine implements OCREngine {
 	// internal tweaking variables
 	// Variables used for process management
 	// The max size, default is currently 50 MB
-	protected static Long maxSize = 1024l * 1024 * 50l;
+	protected static Long maxSize;
 
 	// The max files, default is currently 5000 files
-	protected static Long maxFiles = 5000l;
+	protected static Long maxFiles;
 
 	// The check server state.
 	protected static Boolean checkServerState = true;
@@ -97,18 +100,11 @@ public class AbbyyServerEngine implements OCREngine {
 	public AbbyyServerEngine() throws FileSystemException, ConfigurationException {
 		config = new ConfigParser().loadConfig();
 		hotfolder = new Hotfolder(config);
-		
+
 		maxSize = config.getMaxSize();
 		maxFiles = config.getMaxFiles();
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
-
-		//TODO: remove this
-		hotfolder.setErrorFolder(config.errorFolder);
-		hotfolder.setInputFolder(config.inputFolder);
-		hotfolder.setOutputFolder(config.outputFolder);
-		hotfolder.setServerURL(config.getServerURL());
-
 	}
 
 	/**
@@ -125,15 +121,15 @@ public class AbbyyServerEngine implements OCREngine {
 			}
 		}
 
-		ExecutorService pool = new OCRExecuter(maxThreads);
+		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder);
 
 		//TODO: Check if this can be just one loop
 		for (OCRProcess process : getOcrProcess()) {
 			processes.add((AbbyyProcess) process);
 		}
 
-		for (OCRProcess proces : processes) {
-			pool.execute((Runnable) proces);
+		for (OCRProcess process : processes) {
+			pool.execute((Runnable) process);
 		}
 
 		pool.shutdown();
@@ -186,9 +182,9 @@ public class AbbyyServerEngine implements OCREngine {
 			Map<URL, Long> sizeMap = new LinkedHashMap<URL, Long>() {
 				{
 					//TODO: There is an error in here
-					put(new URL(serverUrl.toString() + config.getInputFolder() + "/"), 0l);
-					put(new URL(serverUrl.toString() + config.getOutoutFolder() + "/"), 0l);
-					put(new URL(serverUrl.toString() + config.getErrorFolder() + "/"), 0l);
+					put(new URL(serverUrl.toString() + config.getInput() + "/"), 0l);
+					put(new URL(serverUrl.toString() + config.getOutput() + "/"), 0l);
+					put(new URL(serverUrl.toString() + config.getError() + "/"), 0l);
 				}
 			};
 
@@ -234,7 +230,7 @@ public class AbbyyServerEngine implements OCREngine {
 
 	@Override
 	public OCRProcess newProcess () {
-		return new AbbyyProcess();
+		return new AbbyyProcess(config);
 	}
 
 	@Override
@@ -250,4 +246,25 @@ public class AbbyyServerEngine implements OCREngine {
 		return null;
 	}
 
+	public static AbbyyProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
+		AbbyyProcess ap = new AbbyyProcess(config);
+		List<File> imageDirs = AbstractOCRProcess.getImageDirectories(directory, extension);
+
+		for (File id : imageDirs) {
+			if (imageDirs.size() > 1) {
+				logger.error("Directory " + directory.getAbsolutePath() + " contains more then one image directories");
+				throw new OCRException("createProcessFromDir can currently create only one AbbyyProcess!");
+			}
+			String jobName = id.getName();
+			for (File imageFile : AbstractOCRProcess.makeFileList(id, extension)) {
+				ap.setName(jobName);
+				//Remote URL isn't set here because we don't know it yet. 
+				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI().toURL());
+				aoi.setSize(imageFile.length());
+				ap.addImage(aoi);
+			}
+		}
+
+		return ap;
+	}
 }
