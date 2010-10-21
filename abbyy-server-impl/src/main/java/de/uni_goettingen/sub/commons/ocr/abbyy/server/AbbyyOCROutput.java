@@ -33,6 +33,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	//This is used, if we don't create the result in single file mode
 	protected List<URL> resultFragments;
 
+	//This calls a copy constructor
 	public AbbyyOCROutput(OCROutput ocrOutput) {
 		super(ocrOutput);
 	}

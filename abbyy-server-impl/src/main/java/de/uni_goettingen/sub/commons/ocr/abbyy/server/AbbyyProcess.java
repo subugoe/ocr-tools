@@ -225,6 +225,7 @@ public class AbbyyProcess extends Ticket implements OCRProcess, Runnable {
 						logger.debug("Copy from " + remoteUrl + " to " + localUrl);
 						hotfolder.copyFile(remoteUrl, localUrl);
 						logger.debug("Getting result descriptor");
+						//TODO: Use AbbyyOCRResult here
 						hotfolder.copyFile(remoteUrl + config.reportSuffix, localUrl + config.reportSuffix);
 					}
 				}

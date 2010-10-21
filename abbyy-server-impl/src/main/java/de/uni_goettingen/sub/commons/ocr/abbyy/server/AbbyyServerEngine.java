@@ -172,7 +172,6 @@ public class AbbyyServerEngine implements OCREngine {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	//TODO: this should be part of the Hotfolder.
-	//TODO: There is a problem in her somewhere in here, a Malformed URL Exception is thrown
 	@SuppressWarnings("serial")
 	public void checkServerState () throws IOException {
 		if (maxSize != 0 && maxFiles != 0) {

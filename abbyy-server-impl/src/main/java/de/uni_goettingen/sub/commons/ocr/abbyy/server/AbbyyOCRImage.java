@@ -46,6 +46,7 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	 * @param imageUrl
 	 *            the image url
 	 */
+	//This calls a copy constructor
 	public AbbyyOCRImage(URL imageUrl) {
 		super(imageUrl);
 	}
@@ -74,8 +75,6 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 		this.remoteURL = remoteURL;
 		this.remoteFileName = remoteFileName;
 	}
-
-	//TODO: Add a copy contructor for OCRFile.
 
 	/**
 	 * Gets the remote file name.
