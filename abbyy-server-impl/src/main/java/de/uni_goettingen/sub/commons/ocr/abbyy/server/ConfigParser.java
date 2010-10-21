@@ -19,7 +19,7 @@ import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 public class ConfigParser {
 	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 	protected Configuration config;
-	public final static String DEFAULT_CONFIG = "/abbyyServer.properties";
+	public final static String DEFAULT_CONFIG = "/AbbyyServerOCREngine.properties";
 	public final static String DEBUG_PROPERTY = "ocr.finereader.server.debug.auth";
 
 	//Default is 100 MB of storage

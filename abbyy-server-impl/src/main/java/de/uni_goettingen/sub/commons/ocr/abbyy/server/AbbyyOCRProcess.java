@@ -55,6 +55,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	//TODO: Make sure that the Executor reads the size and count of the remote server
 	//TODO: Save the stats of the remote system in a hidden file there
 	//TODO: check if the OCRResult stuff is used correctly
+	//TODO: check if orientatio is handled properly
 
 	// The Constant logger.
 	public final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcess.class);
