@@ -198,6 +198,12 @@ public class ConfigParser {
 			logger.trace("User: " + "*hidden* - enable debugAuth to log login data");
 			logger.trace("Password: " + "*hidden* - enable debugAuth to log login data");
 		}
+		
+		if (username != null && password != null && serverURL.startsWith("http")) {
+			//Construct the login part.
+			serverURL = serverURL.replace("https://", "webdavs://" + username + ":" + password + "@");
+			serverURL = serverURL.replace("http://", "webdav://" + username + ":" + password + "@");
+		}
 
 		logger.trace("Input folder: " + input);
 		logger.trace("Output Folder: " + output);

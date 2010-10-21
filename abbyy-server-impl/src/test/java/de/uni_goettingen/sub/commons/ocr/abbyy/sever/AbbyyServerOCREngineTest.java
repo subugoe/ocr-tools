@@ -81,7 +81,6 @@ public class AbbyyServerOCREngineTest {
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
 		
-
 		for (String book : AbbyyOCRProcessTest.TEST_FOLDERS) {
 			File testDir = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
@@ -133,7 +132,7 @@ public class AbbyyServerOCREngineTest {
 		hotfolderError = hotfolderErrorpath.getAbsolutePath() + "/" + errorfolderResultpath.getName();
 		File[] filess = errorfolderResultpath.listFiles();
 		assertNotNull(filess);
-		hotfolder.mkDir(new File(hotfolderError).toURI().toURL());
+		hotfolder.mkDir(new File(hotfolderError).toURI());
 		for (File currentFile : filess) {
 			String currentFileString = currentFile.getName();
 			if (!currentFileString.startsWith(".")) {

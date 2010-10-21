@@ -80,7 +80,8 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * @param singleFile the singleFile to set
+	 * @param singleFile
+	 *            the singleFile to set
 	 */
 	public void setSingleFile (Boolean singleFile) {
 		this.singleFile = singleFile;
@@ -92,13 +93,14 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	public List<URL> getResultFragments () {
 		return resultFragments;
 	}
-	
+
 	public void addResultFragment (URL url) {
 		this.resultFragments.add(url);
 	}
 
 	/**
-	 * @param resultFragments the resultFragments to set
+	 * @param resultFragments
+	 *            the resultFragments to set
 	 */
 	public void setResultFragments (List<URL> resultFragments) {
 		this.resultFragments = resultFragments;
@@ -112,7 +114,8 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * @param reportUrl the reportUrl to set
+	 * @param reportUrl
+	 *            the reportUrl to set
 	 */
 	public void setReportUrl (URL reportUrl) {
 		this.reportUrl = reportUrl;
