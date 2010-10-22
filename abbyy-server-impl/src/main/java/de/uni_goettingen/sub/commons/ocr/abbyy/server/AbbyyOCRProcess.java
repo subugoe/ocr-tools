@@ -19,7 +19,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -33,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
@@ -620,7 +617,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			}
 		}
 	}
-	
+
 	public Long getDuration () {
 		if (done) {
 			return endTime - startTime;

@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 /**
- * The Class ApacheVFSHotfolderImpl is used to control the hotfolders used by the Abbyy
- * Recognition Server.
+ * The Class ApacheVFSHotfolderImpl is used to control the hotfolders used by
+ * the Abbyy Recognition Server.
  */
 //TODO: Make this a real singleton
 public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
@@ -233,7 +233,6 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 
 		copyFile(config.ticketTmpStore + tmpFile, to.toString());
 	}
-
 
 	public static Hotfolder newInstace (ConfigParser config) {
 		if (_instance == null) {
