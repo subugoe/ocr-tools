@@ -35,6 +35,7 @@ import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.jackrabbit.webdav.client.methods.DavMethod;
 import org.apache.jackrabbit.webdav.client.methods.DeleteMethod;
@@ -75,6 +76,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	 */
 	@Override
 	public void checkServerState () throws IOException, URISyntaxException {
+		throw new NotImplementedException();
 		// TODO Auto-generated method stub
 
 	}
@@ -84,6 +86,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	 */
 	@Override
 	public void copyFile (String from, String to) throws FileSystemException {
+		throw new NotImplementedException();
 		//Wehave two methods that must be called here, one for local to remote and the other way arround
 
 	}

@@ -199,7 +199,8 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	 * @throws MalformedURLException
 	 *             the malformed url exception
 	 */
-	//TODO: Check if this is still needed
+	//TODO: Check if this is still needed (it's not)
+	//TODO: Change this into amethod to list files and add it to the interface
 	private List<AbbyyOCRImage> getUrlList (URI imageDirectory) throws FileSystemException, MalformedURLException {
 		List<AbbyyOCRImage> imageList = new ArrayList<AbbyyOCRImage>();
 		FileObject getUrlImage = fsManager.resolveFile(imageDirectory.toString());
