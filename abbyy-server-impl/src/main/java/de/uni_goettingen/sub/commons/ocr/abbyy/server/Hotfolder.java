@@ -18,42 +18,42 @@ public interface Hotfolder {
 	 * @param to
 	 *            , an URL representing the local file, it should be resolveable
 	 *            from the local Server.
-	 * @throws FileSystemException
+	 * @throws IOException
 	 *             the file system exception
 	 */
 	//TODO: Use URLs
 	//TODO: This is dangerous, check if the file exists!
-	public abstract void copyFile (String from, String to) throws FileSystemException;
+	public abstract void copyFile (String from, String to) throws IOException;
 
 	/**
 	 * Delete a resource at the specified url
 	 * 
 	 * @param url
 	 *            the url
-	 * @throws FileSystemException
+	 * @throws IOException
 	 *             the file system exception
 	 */
-	public abstract void delete (URI uri) throws FileSystemException;
+	public abstract void delete (URI uri) throws IOException;
 
 	/**
 	 * Delete a resource at the specified i if exists.
 	 * 
 	 * @param url
 	 *            the url
-	 * @throws FileSystemException
+	 * @throws IOException
 	 *             the file system exception
 	 */
-	public abstract void deleteIfExists (URI uri) throws FileSystemException;
+	public abstract void deleteIfExists (URI uri) throws IOException;
 
 	/**
 	 * to create a directory at the specified url
 	 * 
 	 * @param url
 	 *            the url
-	 * @throws FileSystemException
+	 * @throws IOException
 	 *             the file system exception
 	 */
-	public abstract void mkDir (URI uri) throws FileSystemException;
+	public abstract void mkDir (URI uri) throws IOException;
 
 	/**
 	 * check if a resource at the specified url.
@@ -64,11 +64,11 @@ public interface Hotfolder {
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public abstract Boolean exists (URI uri) throws FileSystemException;
+	public abstract Boolean exists (URI uri) throws IOException;
 
-	public abstract OutputStream createTmpFile (String name) throws FileSystemException, URISyntaxException;
+	public abstract OutputStream createTmpFile (String name) throws IOException, URISyntaxException;
 
-	public abstract void copyTmpFile (String tmpFile, URI to) throws FileSystemException;
+	public abstract void copyTmpFile (String tmpFile, URI to) throws IOException;
 
 	@SuppressWarnings("serial")
 	public abstract void checkServerState () throws IOException, URISyntaxException;

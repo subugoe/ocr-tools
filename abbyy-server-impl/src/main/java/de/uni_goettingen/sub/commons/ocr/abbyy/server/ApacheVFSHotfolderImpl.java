@@ -50,8 +50,6 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(ApacheVFSHotfolderImpl.class);
 
-	//protected String serverURL, inputFolder, outputFolder, errorFolder;
-
 	protected ConfigParser config;
 
 	private static Hotfolder _instance;
@@ -202,7 +200,7 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	 *             the malformed url exception
 	 */
 	//TODO: Check if this is still needed
-	protected List<AbbyyOCRImage> getUrlList (URI imageDirectory) throws FileSystemException, MalformedURLException {
+	private List<AbbyyOCRImage> getUrlList (URI imageDirectory) throws FileSystemException, MalformedURLException {
 		List<AbbyyOCRImage> imageList = new ArrayList<AbbyyOCRImage>();
 		FileObject getUrlImage = fsManager.resolveFile(imageDirectory.toString());
 		FileObject[] children = getUrlImage.getChildren();
@@ -254,6 +252,7 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#checkServerState()
 	 */
+	//TODO: Remove dependency to config here
 	@SuppressWarnings("serial")
 	public void checkServerState () throws IOException, URISyntaxException {
 		if (maxSize != 0 && maxFiles != 0) {
@@ -262,7 +261,6 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 			final URI serverUri = new URI(config.getServerURL());
 			Map<URI, Long> sizeMap = new LinkedHashMap<URI, Long>() {
 				{
-					//TODO: There is an error in here
 					put(new URI(serverUri.toString() + config.getInput() + "/"), 0l);
 					put(new URI(serverUri.toString() + config.getOutput() + "/"), 0l);
 					put(new URI(serverUri.toString() + config.getError() + "/"), 0l);
