@@ -37,8 +37,10 @@ public interface OCREngine {
 	 */
 	//public void setObserver (Observer observer);
 
-	public OCRImage newImage ();
+	public OCRImage newOCRImage ();
 	
-	public OCRProcess newProcess();
+	public OCRProcess newOCRProcess();
+	
+	public OCROutput newOCROutput();
 	
 }
