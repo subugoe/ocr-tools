@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,12 +62,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	// The server url.
 	protected static URI serverUri;
 
-	URI inputUri;
-
-	URI outputUri;
-
 	// The folder URLs.
-	protected URI errorUri;
+	protected URI inputUri, outputUri, errorUri;
 
 	// The fix remote path.
 	protected Boolean fixRemotePath = false;
@@ -96,8 +93,15 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	Set<String> ocrOutFormatFile = new LinkedHashSet<String>();
 
 	//TODO: Add calculation of timeout, set it in the ticket.
-
 	protected Long maxOCRTimeout;
+
+	protected Long maxSize;
+
+	protected Long maxFiles;
+
+	private Long totalFileCount;
+
+	private Long totalFileSize;
 
 	/**
 	 * Instantiates a new process.
@@ -130,6 +134,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 		//TODO: move this into an init method
 		config = new ConfigParser().parse();
+		maxSize = config.getMaxSize();
+		maxFiles = config.getMaxFiles();
 
 		if (hotfolder == null) {
 			hotfolder = ApacheVFSHotfolderImpl.newInstance(config);
@@ -236,13 +242,15 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				if (waitForResults(expectedResults, timeout)) {
 					//Everything should be ok, get the files
 					for (OCRFormat output : outputs.keySet()) {
-						String remoteUrl = ((AbbyyOCROutput) outputs.get(output)).getRemoteUrl().toString();
-						String localUrl = outputs.get(output).getUrl().toString();
+						URI remoteUrl = ((AbbyyOCROutput) outputs.get(output)).getRemoteUrl().toURI();
+						URI localUrl = outputs.get(output).getUrl().toURI();
 						logger.debug("Copy from " + remoteUrl + " to " + localUrl);
 						hotfolder.copyFile(remoteUrl, localUrl);
 						logger.debug("Getting result descriptor");
 						//TODO: Use AbbyyOCRResult here
-						hotfolder.copyFile(remoteUrl + config.reportSuffix, localUrl + config.reportSuffix);
+						URI from = new URI(remoteUrl + config.reportSuffix);
+						URI to = new URI(localUrl + config.reportSuffix);
+						hotfolder.copyFile(from, to);
 					}
 				}
 			} catch (TimeoutExcetion e) {
@@ -512,16 +520,16 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 * @throws URISyntaxException
 	 */
 	//TODO: Use OCROutput here
-	protected void copyAllFiles (Set<String> checkfile, String url, String localfile) throws IOException, URISyntaxException {
+	private void copyAllFiles (Set<String> checkfile, String url, String localfile) throws IOException, URISyntaxException {
 		File urlpath = new File(url);
 		hotfolder.mkDir(new URI(localfile + "/" + getName()));
-		hotfolder.copyFile(urlpath.getAbsolutePath() + "/" + getName() + config.reportSuffix, localfile + "/"
-				+ getName()
-				+ "/"
-				+ getName()
-				+ config.reportSuffix);
+		URI reportFrom = new URI(urlpath.getAbsolutePath() + "/" + getName() + config.reportSuffix);
+		URI reportTo = new URI(localfile + "/" + getName() + "/" + getName() + config.reportSuffix);
+		hotfolder.copyFile(reportFrom, reportTo);
 		for (String fileName : checkfile) {
-			hotfolder.copyFile(urlpath.getAbsolutePath() + "/" + fileName, localfile + "/" + getName() + "/" + fileName);
+			URI fileFrom = new URI(urlpath.getAbsolutePath() + "/" + fileName);
+			URI fileTo = new URI(localfile + "/" + getName() + "/" + fileName);
+			hotfolder.copyFile(fileFrom, fileTo);
 			logger.debug("Copy File From " + urlpath.getAbsolutePath() + "/" + fileName + " To" + localfile);
 		}
 	}
@@ -601,9 +609,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *             Signals that an I/O exception has occurred.
 	 * @throws InterruptedException
 	 *             the interrupted exception
+	 * @throws URISyntaxException
 	 * @throws FileSystemException
 	 */
-	public void copyFilesToServer (List<AbbyyOCRImage> fileInfos) throws InterruptedException, IOException {
+	public void copyFilesToServer (List<AbbyyOCRImage> fileInfos) throws InterruptedException, IOException, URISyntaxException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (AbbyyOCRImage info : fileInfos) {
 			if (info.toString().endsWith("/")) {
@@ -613,7 +622,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			} else {
 				String to = info.getRemoteURI().toString().replace(config.password, "***");
 				logger.trace("Copy from " + info.getUrl().toString() + " to " + to);
-				hotfolder.copyFile(info.getUrl().toString(), info.getRemoteURI().toString());
+				hotfolder.copyFile(info.getUrl().toURI(), info.getRemoteURI());
 			}
 		}
 	}
@@ -623,6 +632,46 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			return endTime - startTime;
 		}
 		return null;
+	}
+
+	public void checkServerState () throws IOException, URISyntaxException {
+		if (maxSize != 0 && maxFiles != 0) {
+
+			// check if a slash is already appended
+			final URI serverUri = new URI(config.getServerURL());
+			Map<URI, Long> sizeMap = new HashMap<URI, Long>() {
+				{
+					put(new URI(serverUri.toString() + config.getInput() + "/"), 0l);
+					put(new URI(serverUri.toString() + config.getOutput() + "/"), 0l);
+					put(new URI(serverUri.toString() + config.getError() + "/"), 0l);
+				}
+			};
+
+			for (URI uri : sizeMap.keySet()) {
+				sizeMap.put(uri, hotfolder.getTotalSize(uri));
+			}
+			totalFileCount = Integer.valueOf(sizeMap.size()).longValue();
+			for (Long size : sizeMap.values()) {
+				if (size != null) {
+					totalFileSize += size;
+				}
+			}
+			logger.debug("TotalFileSize = " + totalFileSize);
+
+			if (maxFiles != 0 && totalFileCount > maxFiles) {
+				logger.error("Too much files. Max number of files is " + maxFiles + ". Number of files on server: " + totalFileCount + ".\nExit program.");
+				throw new IllegalStateException("Max number of files exeded");
+			}
+			if (maxSize != 0 && totalFileSize > maxSize) {
+				logger.error("Size of files is too much files. Max size of all files is " + maxSize
+						+ ". Size of files on server: "
+						+ totalFileSize
+						+ ".\nExit program.");
+				throw new IllegalStateException("Max size of files exeded");
+			}
+		} else {
+			logger.warn("Server state checking is disabled.");
+		}
 	}
 
 	/**

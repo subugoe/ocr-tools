@@ -25,9 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileContent;
@@ -53,14 +51,6 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	protected ConfigParser config;
 
 	private static Hotfolder _instance;
-
-	// internal tweaking variables
-	// Variables used for process management
-	// The max size, default is defined in ConfigParser
-	protected static Long maxSize;
-
-	// The max files,  default is defined in ConfigParser
-	protected static Long maxFiles;
 
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;
@@ -96,11 +86,10 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.lang.String, java.lang.String)
 	 */
-	//TODO: Use URLs
 	//TODO: This is dangerous, check if the file exists!
-	public void copyFile (String from, String to) throws FileSystemException {
-		FileObject remoteFile = fsManager.resolveFile(from);
-		FileObject localFile = fsManager.resolveFile(to);
+	public void copyFile (URI from, URI to) throws FileSystemException {
+		FileObject remoteFile = fsManager.resolveFile(from.toString());
+		FileObject localFile = fsManager.resolveFile(to.toString());
 		localFile.copyFrom(remoteFile, new AllFileSelector());
 	}
 
@@ -227,11 +216,16 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyTmpFile(java.lang.String, java.net.URI)
 	 */
-	public void copyTmpFile (String tmpFile, URI to) throws FileSystemException {
+	public void copyTmpFile (String tmpFile, URI to) throws IOException {
 		if (!fsManager.resolveFile(config.ticketTmpStore + tmpFile).exists()) {
 			logger.error(config.ticketTmpStore + tmpFile + "doesn't exist!");
 		}
-		copyFile(config.ticketTmpStore + tmpFile, to.toString());
+		try {
+			copyFile(new URI(config.ticketTmpStore + tmpFile), to);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static Hotfolder newInstance (ConfigParser config) {
@@ -243,54 +237,6 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 
 	public void setConfig (ConfigParser config) {
 		this.config = config;
-		maxSize = config.getMaxSize();
-		maxFiles = config.getMaxFiles();
-
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#checkServerState()
-	 */
-	//TODO: Remove dependency to config here
-	@SuppressWarnings("serial")
-	public void checkServerState () throws IOException, URISyntaxException {
-		if (maxSize != 0 && maxFiles != 0) {
-
-			// check if a slash is already appended
-			final URI serverUri = new URI(config.getServerURL());
-			Map<URI, Long> sizeMap = new LinkedHashMap<URI, Long>() {
-				{
-					put(new URI(serverUri.toString() + config.getInput() + "/"), 0l);
-					put(new URI(serverUri.toString() + config.getOutput() + "/"), 0l);
-					put(new URI(serverUri.toString() + config.getError() + "/"), 0l);
-				}
-			};
-
-			for (URI uri : sizeMap.keySet()) {
-				sizeMap.put(uri, getTotalSize(uri));
-			}
-			totalFileCount = Integer.valueOf(sizeMap.size()).longValue();
-			for (Long size : sizeMap.values()) {
-				if (size != null) {
-					totalFileSize += size;
-				}
-			}
-			logger.debug("TotalFileSize = " + totalFileSize);
-
-			if (maxFiles != 0 && totalFileCount > maxFiles) {
-				logger.error("Too much files. Max number of files is " + maxFiles + ". Number of files on server: " + totalFileCount + ".\nExit program.");
-				throw new IllegalStateException("Max number of files exeded");
-			}
-			if (maxSize != 0 && totalFileSize > maxSize) {
-				logger.error("Size of files is too much files. Max size of all files is " + maxSize
-						+ ". Size of files on server: "
-						+ totalFileSize
-						+ ".\nExit program.");
-				throw new IllegalStateException("Max size of files exeded");
-			}
-		} else {
-			logger.warn("Server state checking is disabled.");
-		}
 	}
 
 }
