@@ -20,10 +20,8 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -183,21 +181,30 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	 * @param imageDirectory
 	 *            the image directory
 	 * @return the url list
-	 * @throws FileSystemException
-	 *             the file system exception
-	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 * @throws IOException
 	 *             the malformed url exception
 	 */
-	//TODO: Check if this is still needed (it's not)
-	//TODO: Change this into amethod to list files and add it to the interface
-	private List<AbbyyOCRImage> getUrlList (URI imageDirectory) throws FileSystemException, MalformedURLException {
-		List<AbbyyOCRImage> imageList = new ArrayList<AbbyyOCRImage>();
-		FileObject getUrlImage = fsManager.resolveFile(imageDirectory.toString());
-		FileObject[] children = getUrlImage.getChildren();
-		for (int i = 0; i < children.length; i++) {
-			imageList.add(new AbbyyOCRImage(new URL(children[i].getName().toString())));
+	//TODO: Change this into a method to list files and add it to the interface
+	@Override
+	public List<URI> listURIs (URI uri) throws IOException, URISyntaxException {
+		List<URI> uriList = new ArrayList<URI>();
+		if (isDirectory(uri)) {
+			FileObject directory = fsManager.resolveFile(uri.toString());
+			FileObject[] children = directory.getChildren();
+			for (int i = 0; i < children.length; i++) {
+				uriList.add(new URI(children[i].getName().toString()));
+			}
 		}
-		return imageList;
+		return uriList;
+	}
+
+	@Override
+	public Boolean isDirectory (URI uri) throws IOException {
+		if (fsManager.resolveFile(uri.toString()).getType() == FileType.FOLDER) {
+			return true;
+		}
+		return false;
 	}
 
 	protected OutputStream getOutputStream (URI uri) throws FileSystemException {
