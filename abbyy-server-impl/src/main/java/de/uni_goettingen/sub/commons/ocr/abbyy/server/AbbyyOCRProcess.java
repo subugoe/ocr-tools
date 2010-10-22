@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -129,10 +130,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	public void run () {
 		//TODO Break up this method
 		startTime = System.currentTimeMillis();
-		
+
 		//TODO: move this into an init method
 		config = new ConfigParser().parse();
-		
+
 		if (hotfolder == null) {
 			hotfolder = new Hotfolder(config);
 		}
@@ -216,7 +217,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			} else {
 				return;
 			}
-			
+
 			if (config.copyOnly) {
 				logger.info("Process is in copy only mode, don't wait for results");
 				return;
@@ -535,7 +536,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *            the url, wich are all images
 	 * @throws FileSystemException
 	 *             the file system exception
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	//TODO: Remove this, it works with diretories
 	private void deleteAllFiles (Set<String> checkfile, String url) throws FileSystemException, URISyntaxException {

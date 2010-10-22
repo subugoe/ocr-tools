@@ -66,7 +66,7 @@ public class Hotfolder extends Thread {
 
 	// The max files,  default is defined in ConfigParser
 	protected static Long maxFiles;
-	
+
 	// The fsmanager.
 	protected FileSystemManager fsManager = null;
 
@@ -77,7 +77,6 @@ public class Hotfolder extends Thread {
 	// The total file size.
 	protected static Long totalFileSize = 0l;
 
-	
 	/**
 	 * Instantiates a new hotfolder.
 	 * 
@@ -211,7 +210,7 @@ public class Hotfolder extends Thread {
 	 * @return the total size
 	 * @throws FileSystemException
 	 *             the file system exception
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	public Long getTotalSize (URI testImageUri) throws FileSystemException, URISyntaxException {
 		FileObject urlFile = fsManager.resolveFile(testImageUri.toString());
@@ -398,7 +397,7 @@ public class Hotfolder extends Thread {
 		maxFiles = config.getMaxFiles();
 
 	}
-	
+
 	@SuppressWarnings("serial")
 	public void checkServerState () throws IOException, URISyntaxException {
 		if (maxSize != 0 && maxFiles != 0) {

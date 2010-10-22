@@ -80,7 +80,7 @@ public class AbbyyServerOCREngineTest {
 	public void testRecognize () throws IOException {
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
-		
+
 		for (String book : AbbyyOCRProcessTest.TEST_FOLDERS) {
 			File testDir = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
