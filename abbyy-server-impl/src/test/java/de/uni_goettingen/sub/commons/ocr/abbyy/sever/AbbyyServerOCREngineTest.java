@@ -180,10 +180,10 @@ public class AbbyyServerOCREngineTest {
 		for (File files : directories) {
 			fileListimage = null; // makeFileList(files, extension);
 			System.out.println(fileListimage);
-			OCRProcess p = abbyy.newProcess();
+			OCRProcess p = abbyy.newOCRProcess();
 			p.setName(files.getName());
 			for (File fileImage : fileListimage) {
-				OCRImage image = abbyy.newImage();
+				OCRImage image = abbyy.newOCRImage();
 				//	System.out.println("fehler "+ fileImage.getAbsolutePath());
 
 				image.setUrl(fileImage.toURI().toURL());

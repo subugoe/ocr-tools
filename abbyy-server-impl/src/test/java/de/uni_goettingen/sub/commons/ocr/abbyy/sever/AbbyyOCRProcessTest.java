@@ -107,7 +107,7 @@ public class AbbyyOCRProcessTest {
 	public void createProcessViaAPI () throws MalformedURLException {
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
-		OCRProcess op = ase.newProcess();
+		OCRProcess op = ase.newOCRProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
 			OCRImage ocri = mock(OCRImage.class);
@@ -130,7 +130,7 @@ public class AbbyyOCRProcessTest {
 		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
-		OCRProcess op = ase.newProcess();
+		OCRProcess op = ase.newOCRProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
 			OCRImage ocri = mock(OCRImage.class);

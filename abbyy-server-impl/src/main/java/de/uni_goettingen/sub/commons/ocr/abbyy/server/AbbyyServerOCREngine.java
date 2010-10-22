@@ -37,6 +37,7 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
@@ -150,13 +151,18 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	//TODO: this should be part of the Hotfolder.
 
 	@Override
-	public OCRImage newImage () {
+	public OCRImage newOCRImage () {
 		return new AbbyyOCRImage();
 	}
 
 	@Override
-	public OCRProcess newProcess () {
+	public OCRProcess newOCRProcess () {
 		return new AbbyyOCRProcess(config, hotfolder);
+	}
+	
+	@Override
+	public OCROutput newOCROutput () {
+		return new AbbyyOCROutput();
 	}
 
 	@Override
