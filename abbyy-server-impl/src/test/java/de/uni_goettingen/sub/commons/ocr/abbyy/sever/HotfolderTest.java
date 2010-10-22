@@ -21,6 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ApacheVFSHotfolderImpl;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
 
 public class HotfolderTest {
 	final static Logger logger = LoggerFactory.getLogger(HotfolderTest.class);
@@ -53,7 +55,7 @@ public class HotfolderTest {
 	protected static URI testDirUri, testImageUri, testImageTargetUri;
 	protected static String dirName = "testDir";
 	protected static String target;
-	protected static ApacheVFSHotfolderImpl apacheVFSHotfolderImpl;
+	protected static Hotfolder apacheVFSHotfolderImpl;
 
 	static {
 		TEST_INPUT_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + INPUT);
@@ -65,7 +67,7 @@ public class HotfolderTest {
 	}
 
 	@BeforeClass
-	public static void init () throws MalformedURLException, FileSystemException {
+	public static void init () throws MalformedURLException {
 		testDirFile = new File(TEST_HOTFOLDER_FILE.getAbsolutePath() + File.separator + dirName + File.separator);
 		testDirUri = testDirFile.toURI();
 		logger.info("testDirUri is " + testDirUri);
@@ -81,18 +83,18 @@ public class HotfolderTest {
 		logger.info("testImageTargetUri is " + testImageTargetUri);
 
 		target = testDirUri.toString() + "/" + getFileName(testImageUri);
-		apacheVFSHotfolderImpl = new ApacheVFSHotfolderImpl(new ConfigParser());
+		apacheVFSHotfolderImpl = ApacheVFSHotfolderImpl.newInstance(new ConfigParser());
 	}
 
 	@Test
-	public void testMkDir () throws MalformedURLException, FileSystemException {
+	public void testMkDir () throws MalformedURLException, IOException {
 		logger.debug("Checking if " + testDirUri.toString() + " can be created.");
 		apacheVFSHotfolderImpl.mkDir(testDirUri);
 		assertTrue(testDirFile.exists());
 	}
 
 	@Test
-	public void checkSize () throws FileSystemException, URISyntaxException {
+	public void checkSize () throws IOException, URISyntaxException {
 		logger.debug("Checking size of " + testImageUri.toString());
 		Long size = apacheVFSHotfolderImpl.getTotalSize(testImageUri);
 		logger.debug("Size is " + size.toString());
@@ -100,7 +102,7 @@ public class HotfolderTest {
 	}
 
 	@Test
-	public void testCopy () throws FileSystemException, MalformedURLException, URISyntaxException {
+	public void testCopy () throws IOException, URISyntaxException {
 		logger.debug("Copy " + testImageUri.toString() + " to " + target);
 		apacheVFSHotfolderImpl.copyFile(testImageUri.toString(), target);
 		assertTrue("File can't be found.", new File(new URL(target).toURI()).exists());
@@ -112,13 +114,13 @@ public class HotfolderTest {
 	}
 
 	@Test
-	public void testExists () throws FileSystemException, URISyntaxException {
+	public void testExists () throws IOException, URISyntaxException {
 		logger.debug("Checking if " + target + " exists.");
 		assertTrue(apacheVFSHotfolderImpl.exists(new URI(target)));
 	}
 
 	@Test
-	public void testDelete () throws FileSystemException, URISyntaxException {
+	public void testDelete () throws IOException, URISyntaxException {
 		apacheVFSHotfolderImpl.delete(new URI(target));
 		assertTrue(!new File(target).exists());
 	}
