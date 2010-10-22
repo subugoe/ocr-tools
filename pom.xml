@@ -8,9 +8,7 @@
 		<module>abbyy-server-impl</module>
 		<module>ocr-cli</module>
 		<module>ocr-api</module>
-		<!-- 
 		<module>abbyy-cli-impl</module>
-		 -->
 		<module>ocrutil</module>
 	</modules>
 	<developers>
