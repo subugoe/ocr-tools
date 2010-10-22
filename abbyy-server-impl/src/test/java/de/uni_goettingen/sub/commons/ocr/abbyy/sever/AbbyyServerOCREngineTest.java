@@ -120,7 +120,7 @@ public class AbbyyServerOCREngineTest {
 		String hotfolderOutput = "file://./src/test/resources/apacheVFSHotfolderImpl/output";
 
 		List<File> listFolders = new ArrayList<File>();
-		hotfolder = new ApacheVFSHotfolderImpl(new ConfigParser());
+		hotfolder = ApacheVFSHotfolderImpl.newInstance(new ConfigParser());
 
 		// copy all files from  errorfolderResult to hotfolderError 
 		errorfolderResult = parseString(errorfolderResult);

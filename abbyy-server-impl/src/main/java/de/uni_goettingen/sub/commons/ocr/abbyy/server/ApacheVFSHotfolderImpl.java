@@ -149,7 +149,7 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	 *             the file system exception
 	 * @throws URISyntaxException
 	 */
-	public Long getTotalSize (URI testImageUri) throws FileSystemException, URISyntaxException {
+	public Long getTotalSize (URI testImageUri) throws IOException, URISyntaxException {
 		FileObject urlFile = fsManager.resolveFile(testImageUri.toString());
 
 		Long size = 0l;
@@ -170,7 +170,7 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 		}
 	}
 
-	public Long getTotalCount (URI uri) throws FileSystemException, URISyntaxException {
+	public Long getTotalCount (URI uri) throws IOException, URISyntaxException {
 		FileObject uriFile = fsManager.resolveFile(uri.toString());
 		Long count = 0l;
 		if (uriFile.getType() == FileType.FOLDER) {
