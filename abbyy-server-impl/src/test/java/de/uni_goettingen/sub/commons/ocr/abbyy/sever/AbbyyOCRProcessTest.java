@@ -36,8 +36,6 @@ import java.util.List;
 
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs.provider.webdav.WebdavFileProvider;
 import org.apache.xmlbeans.XmlException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -143,8 +141,7 @@ public class AbbyyOCRProcessTest {
 		}
 		op.setOcrImages(imgList);
 	}
-	
-	
+
 	@Ignore
 	@Test
 	public void testUrlSchemaResolver () throws URISyntaxException, FileSystemException {
@@ -160,7 +157,7 @@ public class AbbyyOCRProcessTest {
 		}
 		assertTrue(mue);
 		mue = false;
-		
+
 		//This shouldn't fail
 		//DefaultFileSystemManager fsm = new DefaultFileSystemManager();
 		//fsm.addProvider("webdav", new WebdavFileProvider());
