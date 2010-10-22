@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.ApacheVFSHotfolderImpl;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
@@ -51,7 +51,7 @@ import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 public class AbbyyServerOCREngineTest {
 	public static OCREngine abbyy;
-	public IHotfolder hotfolder;
+	public Hotfolder hotfolder;
 	protected List<File> directories = new ArrayList<File>();
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngineTest.class);
 	protected static AbbyyServerSimulator ass = null;
@@ -88,7 +88,7 @@ public class AbbyyServerOCREngineTest {
 			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutput(AbbyyTicketTest.OUTPUT_DEFINITIONS);
-			//TODO: set the inout folder to new File(hotfolder.getAbsolutePath() + File.separator + INPUT_NAME);
+			//TODO: set the inout folder to new File(apacheVFSHotfolderImpl.getAbsolutePath() + File.separator + INPUT_NAME);
 			File testTicket = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator
 					+ HotfolderTest.INPUT
 					+ File.separator
@@ -106,7 +106,7 @@ public class AbbyyServerOCREngineTest {
 	@Ignore
 	@Test
 	public void testCli () throws IOException, ConfigurationException {
-		//TODO: Move this to a @Before class, start a thread for the hotfolder
+		//TODO: Move this to a @Before class, start a thread for the apacheVFSHotfolderImpl
 		//and just use recognize as test
 
 		//TODO: Extract the variables to be reused in other tests as well.
@@ -114,13 +114,13 @@ public class AbbyyServerOCREngineTest {
 		String inputfile = "file://./src/test/resources/input";
 
 		String errorfolderResult = "file://./src/test/resources/error/PPN129323640_0010";
-		String hotfolderError = "file://./src/test/resources/hotfolder/error/";
+		String hotfolderError = "file://./src/test/resources/apacheVFSHotfolderImpl/error/";
 
 		String resultFolder = "file://./src/test/resources/result";
-		String hotfolderOutput = "file://./src/test/resources/hotfolder/output";
+		String hotfolderOutput = "file://./src/test/resources/apacheVFSHotfolderImpl/output";
 
 		List<File> listFolders = new ArrayList<File>();
-		hotfolder = new Hotfolder(new ConfigParser());
+		hotfolder = new ApacheVFSHotfolderImpl(new ConfigParser());
 
 		// copy all files from  errorfolderResult to hotfolderError 
 		errorfolderResult = parseString(errorfolderResult);
@@ -143,7 +143,7 @@ public class AbbyyServerOCREngineTest {
 			}
 		}
 
-		// copy all files from  folder move to hotfolder output 	
+		// copy all files from  folder move to apacheVFSHotfolderImpl output 	
 		resultFolder = parseString(resultFolder);
 		hotfolderOutput = parseString(hotfolderOutput);
 		File moveFolderpath = new File(resultFolder);
@@ -226,7 +226,7 @@ public class AbbyyServerOCREngineTest {
 		File inputDir = new File(inputfile);
 		for (File f : Arrays.asList(inputDir.listFiles())) {
 			if (f.isDirectory()) {
-				//There shouldn't be any directories inside the hotfolder
+				//There shouldn't be any directories inside the apacheVFSHotfolderImpl
 				assertTrue(false);
 			}
 		}
