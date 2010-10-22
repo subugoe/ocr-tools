@@ -53,13 +53,14 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	final static Logger logger = LoggerFactory.getLogger(JackrabbitHotfolderImpl.class);
 	private long mkColWait = 300l;
 	protected static HttpClient client = null;
+	private static Hotfolder _instance;
 
 	protected Map<String, File> tmpfiles = new HashMap<String, File>();
 
 	/**
 	 * 
 	 */
-	public JackrabbitHotfolderImpl(ConfigParser config) {
+	private JackrabbitHotfolderImpl(ConfigParser config) {
 		try {
 			client = initConnection(config.serverURL, config.username, config.password);
 		} catch (GeneralSecurityException e) {
@@ -258,8 +259,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 			InputStream is = method.getResponseBodyAsStream();
 			BufferedInputStream bis = new BufferedInputStream(is);
 
-			// String name = getName(url).toString();
-
+			//TODO: Use the stream helper class from util here
 			FileOutputStream fos = new FileOutputStream(outdir + localfilename);
 			byte[] bytes = new byte[8192];
 			int count = bis.read(bytes);
@@ -287,5 +287,17 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 			method.releaseConnection();
 		}
 	}
+	
+	protected Boolean isLocal (URI uri) {
+		return false;
+	}
+	
+	public static Hotfolder newInstace (ConfigParser config) {
+		if (_instance == null) {
+			_instance = new JackrabbitHotfolderImpl(config);
+		}
+		return _instance;
+	}
+
 
 }

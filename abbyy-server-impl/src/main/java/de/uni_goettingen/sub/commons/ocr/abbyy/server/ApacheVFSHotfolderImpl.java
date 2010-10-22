@@ -88,7 +88,7 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 		}
 	}
 
-	public ApacheVFSHotfolderImpl(ConfigParser config) {
+	private ApacheVFSHotfolderImpl(ConfigParser config) {
 		this();
 		this.config = config;
 	}
@@ -231,11 +231,10 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 		if (!fsManager.resolveFile(config.ticketTmpStore + tmpFile).exists()) {
 			logger.error(config.ticketTmpStore + tmpFile + "doesn't exist!");
 		}
-
 		copyFile(config.ticketTmpStore + tmpFile, to.toString());
 	}
 
-	public static Hotfolder newInstace (ConfigParser config) {
+	public static Hotfolder newInstance (ConfigParser config) {
 		if (_instance == null) {
 			_instance = new ApacheVFSHotfolderImpl(config);
 		}

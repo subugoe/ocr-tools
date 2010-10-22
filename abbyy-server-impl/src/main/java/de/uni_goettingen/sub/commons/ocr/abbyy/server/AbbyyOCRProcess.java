@@ -108,7 +108,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 	public AbbyyOCRProcess(OCRProcess p) {
 		super(p);
-		hotfolder = new ApacheVFSHotfolderImpl(config);
+		hotfolder = ApacheVFSHotfolderImpl.newInstance(config);
 	}
 
 	protected AbbyyOCRProcess(ConfigParser config, Hotfolder hotfolder) {
@@ -132,7 +132,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		config = new ConfigParser().parse();
 
 		if (hotfolder == null) {
-			hotfolder = new ApacheVFSHotfolderImpl(config);
+			hotfolder = ApacheVFSHotfolderImpl.newInstance(config);
 		}
 
 		try {
