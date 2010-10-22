@@ -46,18 +46,15 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
  * Recognition Server.
  */
 //TODO: Make this a real singleton
-public class Hotfolder extends Thread {
+public class Hotfolder extends Thread implements IHotfolder {
 	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(Hotfolder.class);
 
-	// The errror, input, output folder.
-	protected URI inFolder, outFolder, errrorFolder;
-
-	protected String serverURL, inputFolder, outputFolder, errorFolder;
+	//protected String serverURL, inputFolder, outputFolder, errorFolder;
 
 	protected ConfigParser config;
 
-	private static Hotfolder _instance;
+	private static IHotfolder _instance;
 
 	// internal tweaking variables
 	// Variables used for process management
@@ -98,45 +95,8 @@ public class Hotfolder extends Thread {
 		this.config = config;
 	}
 
-	/**
-	 * Copy a url from source to destination. Assumes overwrite.
-	 * 
-	 * @param fileInfos
-	 *            is a List of The Class AbbyyOCRImage. Is a representation of
-	 *            an OCRImage suitable for holding references to remote files as
-	 *            used by the Abbyy Recognition Server
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 * @throws FileSystemException
-	 */
-	public void copyFilesToServer (List<AbbyyOCRImage> fileInfos) throws InterruptedException, FileSystemException {
-		// iterate over all Files and put them to Abbyy-server inputFolder:
-		for (AbbyyOCRImage info : fileInfos) {
-			if (info.toString().endsWith("/")) {
-				logger.trace("Creating new directory " + info.getRemoteURI().toString() + "!");
-				// Create the directory
-				mkDir(info.getRemoteURI());
-			} else {
-				String to = info.getRemoteURI().toString().replace(config.password, "***");
-				logger.trace("Copy from " + info.getUrl().toString() + " to " + to);
-				copyFile(info.getUrl().toString(), info.getRemoteURI().toString());
-			}
-		}
-	}
-
-	/**
-	 * Copy a files from remotefile to localfile. Assumes overwrite.
-	 * 
-	 * @param from
-	 *            , the url of the file name as used on the remote system,
-	 *            usally a relative file name and thus represented as a String
-	 * @param to
-	 *            , an URL representing the local file, it should be resolveable
-	 *            from the local Server.
-	 * @throws FileSystemException
-	 *             the file system exception
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder#copyFile(java.lang.String, java.lang.String)
 	 */
 	//TODO: Use URLs
 	//TODO: This is dangerous, check if the file exists!
@@ -146,25 +106,15 @@ public class Hotfolder extends Thread {
 		localFile.copyFrom(remoteFile, new AllFileSelector());
 	}
 
-	/**
-	 * Delete a resource at the specified url
-	 * 
-	 * @param url
-	 *            the url
-	 * @throws FileSystemException
-	 *             the file system exception
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder#delete(java.net.URI)
 	 */
 	public void delete (URI uri) throws FileSystemException {
 		fsManager.resolveFile(uri.toString()).delete();
 	}
 
-	/**
-	 * Delete a resource at the specified i if exists.
-	 * 
-	 * @param url
-	 *            the url
-	 * @throws FileSystemException
-	 *             the file system exception
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder#deleteIfExists(java.net.URI)
 	 */
 	public void deleteIfExists (URI uri) throws FileSystemException {
 		if (fsManager.resolveFile(uri.toString()).delete()) {
@@ -172,27 +122,16 @@ public class Hotfolder extends Thread {
 		}
 	}
 
-	/**
-	 * to create a directory at the specified url
-	 * 
-	 * @param url
-	 *            the url
-	 * @throws FileSystemException
-	 *             the file system exception
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder#mkDir(java.net.URI)
 	 */
 	public void mkDir (URI uri) throws FileSystemException {
 		fsManager.resolveFile(uri.toString()).createFolder();
 		logger.debug("Directory " + uri.toString() + " created");
 	}
 
-	/**
-	 * check if a resource at the specified url.
-	 * 
-	 * @param url
-	 *            the url
-	 * @return true, if successful
-	 * @throws FileSystemException
-	 *             the file system exception
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder#exists(java.net.URI)
 	 */
 	public Boolean exists (URI uri) throws FileSystemException {
 		if (fsManager.resolveFile(uri.toString()).exists()) {
@@ -278,11 +217,17 @@ public class Hotfolder extends Thread {
 		return out.getContent().getOutputStream();
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder#createTmpFile(java.lang.String)
+	 */
 	public OutputStream createTmpFile (String name) throws FileSystemException, URISyntaxException {
 		String tmpTicket = config.ticketTmpStore + name;
 		return getOutputStream(new URI(tmpTicket));
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder#copyTmpFile(java.lang.String, java.net.URI)
+	 */
 	public void copyTmpFile (String tmpFile, URI to) throws FileSystemException {
 		if (!fsManager.resolveFile(config.ticketTmpStore + tmpFile).exists()) {
 			logger.error(config.ticketTmpStore + tmpFile + "doesn't exist!");
@@ -291,96 +236,8 @@ public class Hotfolder extends Thread {
 		copyFile(config.ticketTmpStore + tmpFile, to.toString());
 	}
 
-	/**
-	 * Gets the in folder.
-	 * 
-	 * @return the in folder
-	 */
-	public URI getInFolder () {
-		return inFolder;
-	}
 
-	/**
-	 * Sets the in folder.
-	 * 
-	 * @param inFolder
-	 *            the new in folder
-	 */
-	public void setInFolder (URI inFolder) {
-		this.inFolder = inFolder;
-	}
-
-	/**
-	 * Gets the out folder.
-	 * 
-	 * @return the out folder
-	 */
-	public URI getOutFolder () {
-		return outFolder;
-	}
-
-	/**
-	 * Sets the out folder.
-	 * 
-	 * @param outFolder
-	 *            the new out folder
-	 */
-	public void setOutFolder (URI outFolder) {
-		this.outFolder = outFolder;
-	}
-
-	/**
-	 * Gets the errror folder.
-	 * 
-	 * @return the errror folder
-	 */
-	public URI getErrrorFolder () {
-		return errrorFolder;
-	}
-
-	/**
-	 * Sets the errror folder.
-	 * 
-	 * @param errrorFolder
-	 *            the new errror folder
-	 */
-	public void setErrrorFolder (URI errrorFolder) {
-		this.errrorFolder = errrorFolder;
-	}
-
-	public String getServerURL () {
-		return serverURL;
-	}
-
-	public void setServerURL (String serverURL) {
-		this.serverURL = serverURL;
-	}
-
-	public String getInputFolder () {
-		return inputFolder;
-	}
-
-	public void setInputFolder (String inputFolder) {
-		this.inputFolder = inputFolder;
-	}
-
-	public String getOutputFolder () {
-		return outputFolder;
-	}
-
-	public void setOutputFolder (String outputFolder) {
-		this.outputFolder = outputFolder;
-	}
-
-	public String getErrorFolder () {
-		return errorFolder;
-	}
-
-	public void setErrorFolder (String errorFolder) {
-		this.errorFolder = errorFolder;
-	}
-
-	public static Hotfolder newInstace (ConfigParser config) {
+	public static IHotfolder newInstace (ConfigParser config) {
 		if (_instance == null) {
 			_instance = new Hotfolder(config);
 		}
@@ -389,15 +246,14 @@ public class Hotfolder extends Thread {
 
 	public void setConfig (ConfigParser config) {
 		this.config = config;
-		setErrorFolder(config.error);
-		setInputFolder(config.input);
-		setOutputFolder(config.output);
-		setServerURL(config.getServerURL());
 		maxSize = config.getMaxSize();
 		maxFiles = config.getMaxFiles();
 
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder#checkServerState()
+	 */
 	@SuppressWarnings("serial")
 	public void checkServerState () throws IOException, URISyntaxException {
 		if (maxSize != 0 && maxFiles != 0) {

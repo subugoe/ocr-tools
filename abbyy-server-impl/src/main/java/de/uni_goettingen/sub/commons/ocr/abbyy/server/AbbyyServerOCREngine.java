@@ -56,7 +56,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	protected static ConfigParser config;
 
 	// The hotfolder.
-	protected Hotfolder hotfolder;
+	protected IHotfolder hotfolder;
 
 	/** single instance of AbbyyServerOCREngine. */
 	private static AbbyyServerOCREngine _instance;

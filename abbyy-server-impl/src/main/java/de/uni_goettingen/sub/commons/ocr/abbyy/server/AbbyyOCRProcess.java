@@ -88,7 +88,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	protected Long endTime = null;
 
 	// The hotfolder.
-	protected Hotfolder hotfolder;
+	protected IHotfolder hotfolder;
 
 	//TODO: Remove this
 	// The ocr error format file.
@@ -114,7 +114,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		hotfolder = new Hotfolder(config);
 	}
 
-	protected AbbyyOCRProcess(ConfigParser config, Hotfolder hotfolder) {
+	protected AbbyyOCRProcess(ConfigParser config, IHotfolder hotfolder) {
 		super();
 		this.hotfolder = hotfolder;
 	}
@@ -213,7 +213,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				//Copy the ticket
 				hotfolder.copyTmpFile(tmpTicket, new URI(inputUri.toString() + tmpTicket));
 				//Copy the files
-				hotfolder.copyFilesToServer(fileInfos);
+				copyFilesToServer(fileInfos);
 			} else {
 				return;
 			}
@@ -591,6 +591,34 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		return true;
 	}
 
+	/**
+	 * Copy a url from source to destination. Assumes overwrite.
+	 * 
+	 * @param fileInfos
+	 *            is a List of The Class AbbyyOCRImage. Is a representation of
+	 *            an OCRImage suitable for holding references to remote files as
+	 *            used by the Abbyy Recognition Server
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws InterruptedException
+	 *             the interrupted exception
+	 * @throws FileSystemException
+	 */
+	public void copyFilesToServer (List<AbbyyOCRImage> fileInfos) throws InterruptedException, FileSystemException {
+		// iterate over all Files and put them to Abbyy-server inputFolder:
+		for (AbbyyOCRImage info : fileInfos) {
+			if (info.toString().endsWith("/")) {
+				logger.trace("Creating new directory " + info.getRemoteURI().toString() + "!");
+				// Create the directory
+				hotfolder.mkDir(info.getRemoteURI());
+			} else {
+				String to = info.getRemoteURI().toString().replace(config.password, "***");
+				logger.trace("Copy from " + info.getUrl().toString() + " to " + to);
+				hotfolder.copyFile(info.getUrl().toString(), info.getRemoteURI().toString());
+			}
+		}
+	}
+	
 	public Long getDuration () {
 		if (done) {
 			return endTime - startTime;

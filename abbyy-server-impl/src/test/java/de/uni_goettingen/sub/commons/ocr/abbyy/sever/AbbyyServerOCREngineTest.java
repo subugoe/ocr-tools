@@ -43,6 +43,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.IHotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
@@ -50,7 +51,7 @@ import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 public class AbbyyServerOCREngineTest {
 	public static OCREngine abbyy;
-	public Hotfolder hotfolder;
+	public IHotfolder hotfolder;
 	protected List<File> directories = new ArrayList<File>();
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngineTest.class);
 	protected static AbbyyServerSimulator ass = null;
