@@ -159,7 +159,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	public OCRProcess newOCRProcess () {
 		return new AbbyyOCRProcess(config, hotfolder);
 	}
-	
+
 	@Override
 	public OCROutput newOCROutput () {
 		return new AbbyyOCROutput();
