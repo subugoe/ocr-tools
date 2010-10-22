@@ -299,5 +299,19 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 		return _instance;
 	}
 
+	@Override
+	public Long getTotalCount (URI uri) throws IOException, URISyntaxException {
+		throw new NotImplementedException();
+
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public Long getTotalSize (URI testImageUri) throws IOException, URISyntaxException {
+		throw new NotImplementedException();
+
+		// TODO Auto-generated method stub
+	}
+
 
 }
