@@ -3,6 +3,24 @@
  */
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+/*
+
+© 2009,2010, SUB Göttingen. All rights reserved.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -73,20 +91,10 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#checkServerState()
-	 */
-	@Override
-	public void checkServerState () throws IOException, URISyntaxException {
-		throw new NotImplementedException();
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void copyFile (String from, String to) throws FileSystemException {
+	public void copyFile (URI from, URI to) throws FileSystemException {
 		throw new NotImplementedException();
 		//Wehave two methods that must be called here, one for local to remote and the other way arround
 
@@ -98,11 +106,10 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	@Override
 	public void copyTmpFile (String tmpFile, URI to) throws IOException {
 		if (tmpfiles.containsKey(tmpFile)) {
-			copyFile(tmpfiles.get(tmpFile).toURI().toString(), to.toString());
+			copyFile(tmpfiles.get(tmpFile).toURI(), to);
 		} else {
 			throw new IOException("Tmp file not registred at hotfolder");
 		}
-
 	}
 
 	/* (non-Javadoc)
@@ -129,11 +136,10 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	 */
 	@Override
 	public void deleteIfExists (URI uri) throws IOException {
-		if (head(uri) == 200) {
+		if (head(uri) == HttpStatus.SC_OK) {
 			delete(uri);
 			logger.debug("Deleted " + uri);
 		}
-
 	}
 
 	/* (non-Javadoc)
@@ -141,7 +147,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	 */
 	@Override
 	public Boolean exists (URI uri) throws IOException {
-		if (head(uri) == 200) {
+		if (head(uri) == HttpStatus.SC_OK) {
 			return true;
 		}
 		return false;

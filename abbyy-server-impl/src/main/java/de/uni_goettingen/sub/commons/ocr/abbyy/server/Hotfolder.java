@@ -24,9 +24,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             the file system exception
 	 */
-	//TODO: Use URLs
-	//TODO: This is dangerous, check if the file exists!
-	public abstract void copyFile (String from, String to) throws IOException;
+	public abstract void copyFile (URI from, URI to) throws IOException;
 
 	/**
 	 * Delete a resource at the specified url
@@ -73,8 +71,6 @@ public interface Hotfolder {
 
 	public abstract void copyTmpFile (String tmpFile, URI to) throws IOException;
 
-	public abstract void checkServerState () throws IOException, URISyntaxException;
-	
 	public abstract Long getTotalSize (URI testImageUri) throws IOException, URISyntaxException;
 
 	public abstract Long getTotalCount (URI uri) throws IOException, URISyntaxException;
