@@ -260,12 +260,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				//Delete failed processes
 			}
 
-		} catch (FileSystemException e) {
-			failed = true;
-			logger.error("Couldn't write files to server URL", e);
 		} catch (IOException e) {
 			failed = true;
-			logger.error("Error writing ticket", e);
+			logger.error("Error writing files or ticket", e);
 		} catch (InterruptedException e) {
 			failed = true;
 			logger.error("OCR Process was interrupted while coping files to server or waiting for result.", e);

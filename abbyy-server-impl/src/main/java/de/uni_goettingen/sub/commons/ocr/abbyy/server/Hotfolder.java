@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
-import org.apache.commons.vfs.FileContent;
-import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileType;
 
 public interface Hotfolder {
 
@@ -74,5 +72,9 @@ public interface Hotfolder {
 	public abstract Long getTotalSize (URI testImageUri) throws IOException, URISyntaxException;
 
 	public abstract Long getTotalCount (URI uri) throws IOException, URISyntaxException;
+
+	public abstract Boolean isDirectory (URI uri) throws IOException;
+
+	List<URI> listURIs (URI directory) throws IOException, URISyntaxException;
 
 }

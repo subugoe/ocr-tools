@@ -33,7 +33,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.Credentials;
@@ -55,10 +58,17 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.vfs.FileSystemException;
+import org.apache.jackrabbit.webdav.DavConstants;
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.MultiStatus;
+import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.DavMethod;
 import org.apache.jackrabbit.webdav.client.methods.DeleteMethod;
 import org.apache.jackrabbit.webdav.client.methods.MkColMethod;
+import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 import org.apache.jackrabbit.webdav.client.methods.PutMethod;
+import org.apache.jackrabbit.webdav.property.DavPropertyName;
+import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +106,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	@Override
 	public void copyFile (URI from, URI to) throws FileSystemException {
 		throw new NotImplementedException();
-		//Wehave two methods that must be called here, one for local to remote and the other way arround
+		//We have two methods that must be called here, one for local to remote and the other way arround
 
 	}
 
@@ -293,11 +303,11 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 			method.releaseConnection();
 		}
 	}
-	
+
 	protected Boolean isLocal (URI uri) {
 		return false;
 	}
-	
+
 	public static Hotfolder newInstace (ConfigParser config) {
 		if (_instance == null) {
 			_instance = new JackrabbitHotfolderImpl(config);
@@ -307,17 +317,124 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 
 	@Override
 	public Long getTotalCount (URI uri) throws IOException, URISyntaxException {
-		throw new NotImplementedException();
-
-		// TODO Auto-generated method stub
+		if (!isDirectory(uri)) {
+			return 1l;
+		}
+		Long count = 0l;
+		for (URI u : listURIs(uri)) {
+			if (isDirectory(uri)) {
+				count += getTotalCount(u);
+			} else {
+				count += 1l;
+			}
+		}
+		return count;
 	}
 
 	@Override
-	public Long getTotalSize (URI testImageUri) throws IOException, URISyntaxException {
-		throw new NotImplementedException();
-
-		// TODO Auto-generated method stub
+	public Long getTotalSize (URI uri) throws IOException, URISyntaxException {
+		Long size = 0l;
+		for (URI u : listURIs(uri)) {
+			MultiStatus multiStatus;
+			try {
+				multiStatus = propFind(u);
+			} catch (DavException e) {
+				throw new IOException("Could not execute MultiStatus method", e);
+			}
+			List<MultiStatusResponse> responses = Arrays.asList(multiStatus.getResponses());
+			for (MultiStatusResponse response : responses) {
+				DavPropertySet props = response.getProperties(200);
+				if (props.contains(DavPropertyName.GETCONTENTLENGTH) && props.get(DavPropertyName.GETCONTENTLENGTH).getValue() != null) {
+					size += Long.parseLong((String) props.get(DavPropertyName.GETCONTENTLENGTH).getValue());
+				}
+			}
+		}
+		return size;
 	}
 
+	@Override
+	public Boolean isDirectory (URI uri) throws IOException {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<URI> listURIs (URI uri) throws IOException, URISyntaxException {
+		List<URI> uriList = new ArrayList<URI>();
+		MultiStatus multiStatus;
+		try {
+			multiStatus = propFind(uri);
+		} catch (DavException e) {
+			throw new IOException("Could not execute MultiStatus method", e);
+		}
+		List<MultiStatusResponse> responses = Arrays.asList(multiStatus.getResponses());
+		for (MultiStatusResponse response : responses) {
+			String path = response.getHref();
+			uriList.add(new URI(path));
+		}
+		return uriList;
+	}
+
+	/*
+	protected void copyServerFiles(Map<String, String> copyFiles) throws InterruptedException {
+		//This is a bit odd, the Server returns 200 for a head but the files ared really there already, so wait we a bit.
+		//This is probably the reason why the remote cleanup fails as well
+		Thread.sleep(checkInterval);
+		for (String from : copyFiles.keySet()) {
+			OCRStreamHandler handler;
+			//				getOCRResults(from, "", copyFiles.get(from));
+			GetMethod get = null;
+			try {
+				get = new GetMethod(from);
+				get.setFollowRedirects(true);
+				this.client.executeMethod(get);
+				InputStream in = get.getResponseBodyAsStream();
+
+				handler = new SaveFileStreamHandler(new File(copyFiles.get(from)), in);
+
+				
+				handler.handle();
+				logger.info("Trying to handle " + from + " to output " + copyFiles.get(from));
+				delete(from);
+				logger.debug("Deleted " + from);
+			
+			} catch (HttpException e) {
+				logger.error("HttpException: Failed to get file: " + from + " to " + copyFiles.get(from), e);
+			} catch (IOException e) {
+				logger.error("IOException: Failed to get file: " + from + " to " + copyFiles.get(from), e);
+			} finally {
+				get.releaseConnection();
+			}
+			
+		
+		}
+	}
+	*/
+
+	/*
+	protected Map<String, Long> getRemoteSizes(String uri) throws HttpException, IOException, DavException {
+		Map<String, Long> infoMap = new LinkedHashMap<String, Long>();
+		MultiStatus multiStatus = propFind(uri);
+		List<MultiStatusResponse> responses = Arrays.asList(multiStatus.getResponses());
+
+		for (MultiStatusResponse response : responses) {
+			String path = response.getHref();
+			DavPropertySet props = response.getProperties(200);
+			if (props.contains(DavPropertyName.GETCONTENTLENGTH) && props.get(DavPropertyName.GETCONTENTLENGTH).getValue() != null) {
+				infoMap.put(path, Long.parseLong((String) props.get(DavPropertyName.GETCONTENTLENGTH).getValue()));
+			} else {
+				infoMap.put(path, null);
+			}
+		}
+		return infoMap;
+	}
+	*/
+
+	private MultiStatus propFind (URI uri) throws IOException, DavException {
+		DavMethod probFind = new PropFindMethod(uri.toString(), DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
+		executeMethod(client, probFind);
+		//TODO: Check if this realy works since the connection is already closed if executed by the static methos
+		return probFind.getResponseBodyAsMultiStatus();
+	}
 
 }
