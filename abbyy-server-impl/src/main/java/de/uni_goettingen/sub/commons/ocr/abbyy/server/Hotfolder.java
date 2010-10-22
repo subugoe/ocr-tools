@@ -70,7 +70,6 @@ public interface Hotfolder {
 
 	public abstract void copyTmpFile (String tmpFile, URI to) throws IOException;
 
-	@SuppressWarnings("serial")
 	public abstract void checkServerState () throws IOException, URISyntaxException;
 
 }
