@@ -55,8 +55,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	// The configuration.
 	protected static ConfigParser config;
 
-	// The hotfolder.
-	protected IHotfolder hotfolder;
+	// The apacheVFSHotfolderImpl.
+	protected Hotfolder hotfolder;
 
 	/** single instance of AbbyyServerOCREngine. */
 	private static AbbyyServerOCREngine _instance;
@@ -76,7 +76,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 *             the configuration exception
 	 */
 	private AbbyyServerOCREngine() throws FileSystemException, ConfigurationException {
-		hotfolder = new Hotfolder(config);
+		hotfolder = new ApacheVFSHotfolderImpl(config);
 		config = new ConfigParser().parse();
 
 		maxThreads = config.getMaxThreads();
@@ -148,7 +148,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	//TODO: this should be part of the Hotfolder.
+	//TODO: this should be part of the ApacheVFSHotfolderImpl.
 
 	@Override
 	public OCRImage newOCRImage () {

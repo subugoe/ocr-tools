@@ -87,8 +87,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	// The done date.
 	protected Long endTime = null;
 
-	// The hotfolder.
-	protected IHotfolder hotfolder;
+	// The apacheVFSHotfolderImpl.
+	protected Hotfolder hotfolder;
 
 	//TODO: Remove this
 	// The ocr error format file.
@@ -111,10 +111,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 	public AbbyyOCRProcess(OCRProcess p) {
 		super(p);
-		hotfolder = new Hotfolder(config);
+		hotfolder = new ApacheVFSHotfolderImpl(config);
 	}
 
-	protected AbbyyOCRProcess(ConfigParser config, IHotfolder hotfolder) {
+	protected AbbyyOCRProcess(ConfigParser config, Hotfolder hotfolder) {
 		super();
 		this.hotfolder = hotfolder;
 	}
@@ -135,7 +135,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		config = new ConfigParser().parse();
 
 		if (hotfolder == null) {
-			hotfolder = new Hotfolder(config);
+			hotfolder = new ApacheVFSHotfolderImpl(config);
 		}
 
 		try {

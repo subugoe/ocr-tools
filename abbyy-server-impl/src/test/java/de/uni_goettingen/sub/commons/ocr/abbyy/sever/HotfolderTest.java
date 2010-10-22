@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.ApacheVFSHotfolderImpl;
 
 public class HotfolderTest {
 	final static Logger logger = LoggerFactory.getLogger(HotfolderTest.class);
@@ -43,7 +43,7 @@ public class HotfolderTest {
 	public static URI TEST_INPUT_URI, TEST_HOTFOLDER_URI, TEST_EXPECTED_URI;
 	public static String INPUT = "input";
 	public static String OUTPUT = "output";
-	public static String HOTFOLDER = "hotfolder";
+	public static String HOTFOLDER = "apacheVFSHotfolderImpl";
 	public static String EXPECTED = "expected";
 
 	public static String IMAGE_NAME = "00000001.tif";
@@ -53,7 +53,7 @@ public class HotfolderTest {
 	protected static URI testDirUri, testImageUri, testImageTargetUri;
 	protected static String dirName = "testDir";
 	protected static String target;
-	protected static Hotfolder hotfolder;
+	protected static ApacheVFSHotfolderImpl apacheVFSHotfolderImpl;
 
 	static {
 		TEST_INPUT_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + File.separator + INPUT);
@@ -81,20 +81,20 @@ public class HotfolderTest {
 		logger.info("testImageTargetUri is " + testImageTargetUri);
 
 		target = testDirUri.toString() + "/" + getFileName(testImageUri);
-		hotfolder = new Hotfolder(new ConfigParser());
+		apacheVFSHotfolderImpl = new ApacheVFSHotfolderImpl(new ConfigParser());
 	}
 
 	@Test
 	public void testMkDir () throws MalformedURLException, FileSystemException {
 		logger.debug("Checking if " + testDirUri.toString() + " can be created.");
-		hotfolder.mkDir(testDirUri);
+		apacheVFSHotfolderImpl.mkDir(testDirUri);
 		assertTrue(testDirFile.exists());
 	}
 
 	@Test
 	public void checkSize () throws FileSystemException, URISyntaxException {
 		logger.debug("Checking size of " + testImageUri.toString());
-		Long size = hotfolder.getTotalSize(testImageUri);
+		Long size = apacheVFSHotfolderImpl.getTotalSize(testImageUri);
 		logger.debug("Size is " + size.toString());
 		assertTrue(IMAGE_SIZE.equals(size));
 	}
@@ -102,7 +102,7 @@ public class HotfolderTest {
 	@Test
 	public void testCopy () throws FileSystemException, MalformedURLException, URISyntaxException {
 		logger.debug("Copy " + testImageUri.toString() + " to " + target);
-		hotfolder.copyFile(testImageUri.toString(), target);
+		apacheVFSHotfolderImpl.copyFile(testImageUri.toString(), target);
 		assertTrue("File can't be found.", new File(new URL(target).toURI()).exists());
 	}
 
@@ -114,12 +114,12 @@ public class HotfolderTest {
 	@Test
 	public void testExists () throws FileSystemException, URISyntaxException {
 		logger.debug("Checking if " + target + " exists.");
-		assertTrue(hotfolder.exists(new URI(target)));
+		assertTrue(apacheVFSHotfolderImpl.exists(new URI(target)));
 	}
 
 	@Test
 	public void testDelete () throws FileSystemException, URISyntaxException {
-		hotfolder.delete(new URI(target));
+		apacheVFSHotfolderImpl.delete(new URI(target));
 		assertTrue(!new File(target).exists());
 	}
 
