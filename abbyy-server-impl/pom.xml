@@ -82,6 +82,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>ca.juliusdavies </groupId>
+			<artifactId>not-yet-commons-ssl </artifactId>
+			<version>0.3.11</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
