@@ -21,6 +21,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+//TODO: Make this work
+//TODO: Write a test for it
+//TODO: check if all connections are closed after usage
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,7 +61,6 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.MultiStatus;
@@ -104,10 +107,19 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void copyFile (URI from, URI to) throws FileSystemException {
-		throw new NotImplementedException();
+	public void copyFile (URI from, URI to) throws IOException {
 		//We have two methods that must be called here, one for local to remote and the other way arround
-
+		if (isLocal(from) && !isLocal(to)) {
+			//This should be an upload
+			put(to.toString(), new File(from));
+		} else if (!isLocal(from) && isLocal(to)) {
+			//This should be a download
+			getWebdavFile(from.toString(), new File(to));
+		} else if (isLocal(from) && isLocal(to)) {
+			//Just copy local files
+			//TODO: Finish this.
+			throw new NotImplementedException();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -189,10 +201,9 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 				throw new IllegalStateException("Got HTTP Code " + status);
 			}
 		}
-
 	}
 
-	protected void put (String uri, File file) throws HttpException, IOException {
+	private void put (String uri, File file) throws HttpException, IOException {
 		if (!file.exists()) {
 			throw new IllegalArgumentException("File " + file + " doesn't exist.");
 		}
@@ -203,22 +214,32 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 		executeMethod(client, put);
 	}
 
-	protected int head (URI uri) throws HttpException, IOException {
+	private Integer head (URI uri) throws HttpException, IOException {
 		HeadMethod head = new HeadMethod(uri.toString());
-		Integer status = client.executeMethod(head);
-		head.releaseConnection();
+		Integer status;
+		try {
+			status = client.executeMethod(head);
+		} finally {
+			head.releaseConnection();
+		}
 		return status;
 	}
 
-	protected static void executeMethod (HttpClient client, DavMethod method) throws HttpException, IOException {
-		Integer responseCode = client.executeMethod(method);
-		method.releaseConnection();
+	private static Integer executeMethod (HttpClient client, DavMethod method) throws IOException {
+		Integer responseCode;
+		try {
+			responseCode = client.executeMethod(method);
+		} finally {
+			method.releaseConnection();
+		}
 		logger.trace("Response code: " + responseCode);
 		if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
 			throw new IllegalStateException("Got HTTP Code " + responseCode + " for " + method.getURI());
 		}
+		return responseCode;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static HttpClient initConnection (String webdavURL, String webdavUsername, String webdavPassword) throws GeneralSecurityException, IOException {
 		Protocol easyhttps = new Protocol("https", new EasySSLProtocolSocketFactory(), 443);
 		Protocol.registerProtocol("https", easyhttps);
@@ -254,8 +275,9 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 		return client;
 	}
 
-	protected void getWebdavFile (String url, String outdir, String localfilename) {
-		outdir = outdir.endsWith(File.separator) ? outdir : outdir + File.separator;
+	private void getWebdavFile (String url, File localFile) {
+		//outdir = outdir.endsWith(File.separator) ? outdir : outdir + File.separator;
+		//File localFile = new File(outdir + localfilename);
 		logger.info("URL:" + url);
 
 		// Create a method instance.
@@ -266,7 +288,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 
 		try {
 			// Execute the method.
-			int statusCode = client.executeMethod(method);
+			Integer statusCode = client.executeMethod(method);
 
 			if (statusCode != HttpStatus.SC_OK) {
 				logger.error("Method failed: " + method.getStatusLine());
@@ -276,7 +298,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 			BufferedInputStream bis = new BufferedInputStream(is);
 
 			//TODO: Use the stream helper class from util here
-			FileOutputStream fos = new FileOutputStream(outdir + localfilename);
+			FileOutputStream fos = new FileOutputStream(localFile);
 			byte[] bytes = new byte[8192];
 			int count = bis.read(bytes);
 			while (count != -1 && count <= 8192) {
@@ -290,22 +312,17 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 			bis.close();
 
 			// Deal with the response.
-			// Use caution: ensure correct character encoding and is not binary
-			// data
-		} catch (HttpException e) {
-			logger.error("Fatal protocol violation: ", e);
-
+			// Use caution: ensure correct character encoding and is not binary data
 		} catch (IOException e) {
 			logger.error("Fatal transport error: ", e);
-
 		} finally {
 			// Release the connection.
 			method.releaseConnection();
 		}
 	}
 
-	protected Boolean isLocal (URI uri) {
-		return false;
+	private Boolean isLocal (URI uri) {
+		return uri.getScheme().equals("file");
 	}
 
 	public static Hotfolder newInstace (ConfigParser config) {

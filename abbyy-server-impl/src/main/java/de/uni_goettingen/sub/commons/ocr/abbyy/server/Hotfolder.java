@@ -6,15 +6,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.apache.commons.vfs.FileSystemException;
-
 public interface Hotfolder {
 
 	/**
-	 * Copy a files from remotefile to localfile. Assumes overwrite.
+	 * Copy a files from remotefile to localfile. This method should raises an
+	 * IOException if the file already exists.
 	 * 
 	 * @param from
-	 *            , the url of the file name as used on the remote system,
+	 *            , the uri of the file name as used on the remote system,
 	 *            usally a relative file name and thus represented as a String
 	 * @param to
 	 *            , an URL representing the local file, it should be resolveable
@@ -60,8 +59,6 @@ public interface Hotfolder {
 	 * @param url
 	 *            the url
 	 * @return true, if successful
-	 * @throws FileSystemException
-	 *             the file system exception
 	 */
 	public abstract Boolean exists (URI uri) throws IOException;
 
@@ -75,6 +72,6 @@ public interface Hotfolder {
 
 	public abstract Boolean isDirectory (URI uri) throws IOException;
 
-	List<URI> listURIs (URI directory) throws IOException, URISyntaxException;
+	public abstract List<URI> listURIs (URI directory) throws IOException, URISyntaxException;
 
 }

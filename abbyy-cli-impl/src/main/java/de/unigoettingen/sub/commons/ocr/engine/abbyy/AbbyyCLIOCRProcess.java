@@ -62,10 +62,10 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		this.cmd = cmd;
 	}
 
-	protected List<String> buildInputFileListString (String param) throws URISyntaxException {
+	private List<String> buildInputFileListString (String param) throws URISyntaxException {
 		ArrayList<String> arglist = new ArrayList<String>();
 		for (OCRImage image : getOcrImages()) {
-			File file = new File(image.getUrl().toURI());
+			File file = new File(image.getUri());
 			arglist.add(param);
 			arglist.add(file.getAbsolutePath());
 			logger.trace("Datei " + file + "hinzugefügt");
@@ -74,10 +74,10 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		return arglist;
 	}
 
-	protected List<String> buildInputFileList (String param) throws URISyntaxException {
+	private List<String> buildInputFileList (String param) throws URISyntaxException {
 		ArrayList<String> arglist = new ArrayList<String>();
 		for (OCRImage image : getOcrImages()) {
-			File file = new File(image.getUrl().toURI());
+			File file = new File(image.getUri());
 			arglist.add(param);
 			arglist.add(file.getAbsolutePath());
 			if (setOrientation && image.getOrientation() != OCRImage.Orientation.PORTRAIT) {
@@ -142,7 +142,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 			}
 
 			arglist.add("-of");
-			String outFile = new File(getOcrOutput().get(ef).getUrl().toURI()).getAbsolutePath();
+			String outFile = new File(getOcrOutput().get(ef).getUri()).getAbsolutePath();
 			arglist.add(outFile);
 
 		}

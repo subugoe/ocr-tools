@@ -1,29 +1,33 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractOCROutput implements OCROutput {
+public abstract class AbstractOCROutput implements OCROutput {	
+	protected URI outputUri;
+	
 	protected Map<String, String> params = new HashMap<String, String>();
 	
-	protected URL outputUrl;
-	
-	public AbstractOCROutput () {
+	protected AbstractOCROutput () {
 		
 	}
 	
 	public AbstractOCROutput (OCROutput ocrOutput) {
-		this.outputUrl = ocrOutput.getUrl();
-		this.params = ocrOutput.getParams();
+		this(ocrOutput.getUri(), ocrOutput.getParams());
+	}
+	
+	public AbstractOCROutput(URI uri, Map<String, String> params) {
+		this.outputUri = uri;
+		this.params = params;
 	}
 
 	public Map<String, String> getParams () {
 		return this.params;
 	}
 
-	public URL getUrl () {
-		return this.outputUrl;
+	public URI getUri () {
+		return this.outputUri;
 	}
 
 	public void setParams (Map<String, String> params) {
@@ -31,8 +35,8 @@ public abstract class AbstractOCROutput implements OCROutput {
 		
 	}
 
-	public void setUrl (URL url) {
-		this.outputUrl = url;
+	public void setUri (URI uri) {
+		this.outputUri = uri;
 		
 	}
 

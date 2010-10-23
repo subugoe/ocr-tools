@@ -29,13 +29,14 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.SimpleBookmark;
 
 public class FileMerger {
-	public static void mergeAbbyyXML (List<String> files, String outFile, Integer pageCount) throws XMLStreamException, FileNotFoundException {
+	public static void mergeAbbyyXML(List<InputStream> iss, OutputStream os) throws XMLStreamException {
+		
+		Integer pageCount = iss.size();
 		//Output
-		OutputStream out = new FileOutputStream(outFile);
 		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
 		//outFactory.setProperty("javax.xml.stream.isPrefixDefaulting",Boolean.TRUE);
 		
-		XMLStreamWriter writer = outFactory.createXMLStreamWriter(out);
+		XMLStreamWriter writer = outFactory.createXMLStreamWriter(os);
 		
 		Integer f = 0;
 		HashMap<String, String> nsPrefixes = new HashMap<String, String>(); 
@@ -44,10 +45,10 @@ public class FileMerger {
 		Boolean headerWriten = false;
 		String rootTag = "document";
 		
-		while (f < files.size()) {
+		while (f < iss.size()) {
 			
 			//Eingang
-			InputStream in = new FileInputStream(new File(files.get(f))); 
+			InputStream in = iss.get(f); 
 			XMLInputFactory inFactory = XMLInputFactory.newInstance();
 			XMLStreamReader parser = inFactory.createXMLStreamReader(in);
 			
@@ -108,7 +109,7 @@ public class FileMerger {
 					}
 				} else if (event == XMLStreamConstants.END_DOCUMENT) {
 					//writer.writeEndElement();
-					if (f == files.size() - 1) {
+					if (f == iss.size() - 1) {
 						writer.writeEndDocument();
 					}
 			    	break;
@@ -124,30 +125,37 @@ public class FileMerger {
 		writer.writeEndDocument();
 		writer.flush();
 		writer.close();
-	
-	
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static void mergePDF (List<String> files, String outFile) throws IOException, DocumentException {
+	public static void mergeAbbyyXML (List<String> files, File outFile) throws XMLStreamException, FileNotFoundException {
+		OutputStream os = new FileOutputStream(outFile);
+		List<InputStream> iss = new ArrayList<InputStream>();
+		int f = 0;
+		while (f < files.size()) {
+			iss.add(new FileInputStream(files.get(f)));
+		}
+	}
+	
+	public static void mergePDF (List<InputStream> iss, OutputStream os) throws IOException, DocumentException {
 		//Stolen from itext (com.lowagie.tools.concat_pdf) 
 		
 		int pageOffset = 0;
-		ArrayList master = new ArrayList();
+		List master = new ArrayList();
 		int f = 0;
 		//String outFile = args[args.length - 1];
 		Document document = null;
 		PdfCopy writer = null;
-		while (f < files.size()) {
+		while (f < iss.size()) {
 			// we create a reader for a certain document
-			PdfReader reader = new PdfReader(files.get(f));
+			PdfReader reader = new PdfReader(iss.get(f));
 			reader.consolidateNamedDestinations();
 			// we retrieve the total number of pages
 			int n = reader.getNumberOfPages();
 			List bookmarks = SimpleBookmark.getBookmark(reader);
 			if (bookmarks != null) {
-				if (pageOffset != 0)
+				if (pageOffset != 0) {
 					SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);
+				}
 				master.addAll(bookmarks);
 			}
 			pageOffset += n;
@@ -156,7 +164,7 @@ public class FileMerger {
 				// step 1: creation of a document-object
 				document = new Document(reader.getPageSizeWithRotation(1));
 				// step 2: we create a writer that listens to the document
-				writer = new PdfCopy(document, new FileOutputStream(outFile));
+				writer = new PdfCopy(document, os);
 				// step 3: we open the document
 				document.open();
 			}
@@ -176,17 +184,26 @@ public class FileMerger {
 		}
 		// step 5: we close the document
 		document.close();
+	}
 	
+	public static void mergePDF (List<String> files, File outFile) throws IOException, DocumentException {
+		OutputStream os = new FileOutputStream(outFile);
+		List<InputStream> iss = new ArrayList<InputStream>();
+		int f = 0;
+		while (f < files.size()) {
+			iss.add(new FileInputStream(files.get(f)));
+		}
+		mergePDF(iss, os);
 	}
 
-	public static void mergeTXT (List<String> files, String outFile) throws IOException {
-		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(new File(outFile)), "UTF-8");
-		//Ascii page break dec 12 hex 0c
+	public static void mergeTXT (List<InputStream> iss, OutputStream os) throws IOException {
+		OutputStreamWriter osw = new OutputStreamWriter(os);
+		//Ascii page break dec 12 hex 0c		
 		char pb = (char) 12;
 		
 		int f = 0;
-		while (f < files.size()) {
-			InputStreamReader isr = new InputStreamReader(new FileInputStream(new File(files.get(f))), "UTF-8");
+		while (f < iss.size()) {
+			InputStreamReader isr = new InputStreamReader(iss.get(f), "UTF-8");
 			BufferedReader br = new BufferedReader(isr);
 			String line;
 			while ((line = br.readLine()) != null) {
@@ -199,5 +216,16 @@ public class FileMerger {
 			f++;
 		}
 		osw.close();
+	}
+	
+	
+	public static void mergeTXT (List<String> files, File outFile) throws IOException {
+		OutputStream os = new FileOutputStream(outFile);
+		List<InputStream> iss = new ArrayList<InputStream>();
+		int f = 0;
+		while (f < files.size()) {
+			iss.add(new FileInputStream(files.get(f)));
+		}
+		mergeTXT (iss, os);
 	}
 }

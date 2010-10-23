@@ -20,7 +20,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Observer;
 import java.util.Queue;
@@ -179,7 +178,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		return null;
 	}
 
-	public static AbbyyOCRProcess createProcessFromDir (File directory, String extension) throws MalformedURLException {
+	public static AbbyyOCRProcess createProcessFromDir (File directory, String extension) {
 		AbbyyOCRProcess ap = new AbbyyOCRProcess(config);
 		List<File> imageDirs = AbstractOCRProcess.getImageDirectories(directory, extension);
 
@@ -192,12 +191,40 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 			for (File imageFile : AbstractOCRProcess.makeFileList(id, extension)) {
 				ap.setName(jobName);
 				//Remote URL isn't set here because we don't know it yet. 
-				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI().toURL());
+				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI());
 				aoi.setSize(imageFile.length());
 				ap.addImage(aoi);
 			}
 		}
 
 		return ap;
+	}
+
+	@Override
+	public Boolean init () {
+		//TODO: check server connection here
+		return true;
+	}
+
+	@Override
+	public Observer recognize () {
+		if (!started && !processes.isEmpty()) {
+			start();
+		} else if (processes.isEmpty()) {
+			throw new IllegalStateException("Queue is empty!");
+		}
+		return null;
+	}
+
+	@Override
+	public Observer addOcrProcess (OCRProcess ocrp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean stop () {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

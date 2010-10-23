@@ -1,24 +1,28 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
-import java.net.URL;
+import java.net.URI;
 
 public abstract class AbstractOCRImage implements OCRImage {
-	protected URL imageUrl = null;
-	
+	protected URI imageUri = null;
+
 	/** rotation of the image. */
 	protected Orientation orientation;
 
-	public AbstractOCRImage(URL imageUrl) {
-		this.imageUrl = imageUrl;
+	public AbstractOCRImage(URI imageUri) {
+		this.imageUri = imageUri;
 	}
 
-	protected AbstractOCRImage () {
-		
+	protected AbstractOCRImage() {
+
 	}
-	
+
 	public AbstractOCRImage(OCRImage i) {
-		this.imageUrl = i.getUrl();
-		this.orientation = i.getOrientation();
+		this(i.getUri(), i.getOrientation());
+	}
+
+	public AbstractOCRImage(URI imageUri, Orientation orientation) {
+		this.imageUri = imageUri;
+		this.orientation = orientation;
 	}
 
 	/**
@@ -26,8 +30,8 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * 
 	 * @return the url
 	 */
-	public URL getUrl () {
-		return this.imageUrl;
+	public URI getUri () {
+		return this.imageUri;
 	}
 
 	/**
@@ -36,8 +40,8 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * @param url
 	 *            the new url
 	 */
-	public void setUrl (URL url) {
-		this.imageUrl= url;
+	public void setUri (URI uri) {
+		this.imageUri = uri;
 	}
 
 	/**

@@ -26,7 +26,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	//TODO: Make sure that the Executor reads the size and count of the remote server
 	//TODO: Save the stats of the remote system in a hidden file there
 	//TODO: check if the OCRResult stuff is used correctly
-	//TODO: check if orientatio is handled properly
+	//TODO: check if orientation is handled properly
 
 	// The Constant logger.
 	public final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcess.class);
@@ -83,14 +82,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 	// The apacheVFSHotfolderImpl.
 	protected Hotfolder hotfolder;
-
-	//TODO: Remove this
-	// The ocr error format file.
-	Set<String> ocrErrorFormatFile = new LinkedHashSet<String>();
-
-	//TODO: Remove this
-	// The ocr out format file.
-	Set<String> ocrOutFormatFile = new LinkedHashSet<String>();
 
 	//TODO: Add calculation of timeout, set it in the ticket.
 	protected Long maxOCRTimeout;
@@ -173,9 +164,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		String tmpTicket = name + ".xml";
 		//Create ticket, copy files and ticket
 
-		//If we use the static method to create a process some fields aren't set correctly (remoteUrl, remoteFileName)
+		//If we use the static method to create a process some fields aren't set correctly (remoteUri, remoteFileName)
 		for (AbbyyOCRImage aoi : fileInfos) {
-			String remoteFileName = aoi.getUrl().toString();
+			String remoteFileName = aoi.getUri().toString();
 			remoteFileName = name + "-" + remoteFileName.substring(remoteFileName.lastIndexOf("/") + 1, remoteFileName.length());
 			if (aoi.getRemoteFileName() == null) {
 				aoi.setRemoteFileName(remoteFileName);
@@ -187,8 +178,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				logger.error("Error contructing remote URL.");
 				throw new OCRException(e);
 			}
-			if (aoi.getRemoteURI() == null) {
-				aoi.setRemoteURI(remoteUri);
+			if (aoi.getRemoteUri() == null) {
+				aoi.setRemoteUri(remoteUri);
 			}
 			if (!config.dryRun) {
 				try {
@@ -233,21 +224,21 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			List<URI> expectedResults = new ArrayList<URI>();
 			Map<OCRFormat, OCROutput> outputs = getOcrOutput();
 			for (OCRFormat output : outputs.keySet()) {
-				String remoteUrl = ((AbbyyOCROutput) outputs.get(output)).getRemoteUrl().toString();
-				expectedResults.add(new URI(remoteUrl));
-				expectedResults.add(new URI(remoteUrl + config.reportSuffix));
+				String remoteUri = ((AbbyyOCROutput) outputs.get(output)).getRemoteUri().toString();
+				expectedResults.add(new URI(remoteUri));
+				expectedResults.add(new URI(remoteUri + config.reportSuffix));
 			}
 			Long timeout = getOcrImages().size() * config.maxMillisPerFile;
 			try {
 				if (waitForResults(expectedResults, timeout)) {
 					//Everything should be ok, get the files
 					for (OCRFormat output : outputs.keySet()) {
-						URI remoteUrl = ((AbbyyOCROutput) outputs.get(output)).getRemoteUrl().toURI();
-						URI localUrl = outputs.get(output).getUrl().toURI();
+						URI remoteUrl = ((AbbyyOCROutput) outputs.get(output)).getRemoteUri();
+						URI localUrl = outputs.get(output).getUri();
 						logger.debug("Copy from " + remoteUrl + " to " + localUrl);
 						hotfolder.copyFile(remoteUrl, localUrl);
 						logger.debug("Getting result descriptor");
-						//TODO: Use AbbyyOCRResult here
+						//TODO: Use AbbyyOCROutput here
 						URI from = new URI(remoteUrl + config.reportSuffix);
 						URI to = new URI(localUrl + config.reportSuffix);
 						hotfolder.copyFile(from, to);
@@ -382,21 +373,21 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		LinkedList<AbbyyOCRImage> newList = new LinkedList<AbbyyOCRImage>();
 		for (AbbyyOCRImage info : fileInfos) {
 			//TODO: Check why remote URL is null here
-			if (info.getRemoteURI().toString() != null) {
+			if (info.getRemoteUri().toString() != null) {
 				try {
 					// Rewrite remote name
 					Pattern pr = Pattern.compile(".*\\\\(.*)");
-					Matcher mr = pr.matcher(info.getRemoteURI().toString());
+					Matcher mr = pr.matcher(info.getRemoteUri().toString());
 					mr.find();
 					//TODO: this is a dirty hack
 					if (mr.group(1) == null) {
 						throw new IllegalStateException();
 					}
 					String newRemoteName = name + "-" + mr.group(1);
-					logger.trace("Rewiting " + info.getRemoteURI().toString() + " to " + newRemoteName);
+					logger.trace("Rewiting " + info.getRemoteUri().toString() + " to " + newRemoteName);
 
 					try {
-						info.setRemoteURI(new URI(newRemoteName));
+						info.setRemoteUri(new URI(newRemoteName));
 					} catch (URISyntaxException e) {
 						//TODO: Use a logger
 						e.printStackTrace();
@@ -553,7 +544,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		hotfolder.deleteIfExists(new URI(base));
 	}
 
-	protected static List<AbbyyOCRImage> convertList (List<OCRImage> ocrImages) {
+	private static List<AbbyyOCRImage> convertList (List<OCRImage> ocrImages) {
 		List<AbbyyOCRImage> images = new LinkedList<AbbyyOCRImage>();
 		for (OCRImage i : ocrImages) {
 			images.add((AbbyyOCRImage) i);
@@ -569,7 +560,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		return done;
 	}
 
-	protected Boolean waitForResults (List<URI> expectedFiles, Long timeout) throws TimeoutExcetion, InterruptedException, IOException {
+	private Boolean waitForResults (List<URI> expectedFiles, Long timeout) throws TimeoutExcetion, InterruptedException, IOException {
 		Boolean check = true;
 		while (check) {
 			Integer successCounter = 0;
@@ -613,13 +604,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (AbbyyOCRImage info : fileInfos) {
 			if (info.toString().endsWith("/")) {
-				logger.trace("Creating new directory " + info.getRemoteURI().toString() + "!");
+				logger.trace("Creating new directory " + info.getRemoteUri().toString() + "!");
 				// Create the directory
-				hotfolder.mkDir(info.getRemoteURI());
+				hotfolder.mkDir(info.getRemoteUri());
 			} else {
-				String to = info.getRemoteURI().toString().replace(config.password, "***");
-				logger.trace("Copy from " + info.getUrl().toString() + " to " + to);
-				hotfolder.copyFile(info.getUrl().toURI(), info.getRemoteURI());
+				String to = info.getRemoteUri().toString().replace(config.password, "***");
+				logger.trace("Copy from " + info.getUri().toString() + " to " + to);
+				hotfolder.copyFile(info.getUri(), info.getRemoteUri());
 			}
 		}
 	}

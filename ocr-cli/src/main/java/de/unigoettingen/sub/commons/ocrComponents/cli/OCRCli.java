@@ -7,7 +7,6 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
@@ -146,13 +146,8 @@ public class OCRCli {
 				//	OCRProcess p = engine.newProcess(new File(dir));
 				OCRImage img = null;
 				for (File file : newFiles) {
-					img = engine.newImage();
-					try {
-						img.setUrl(file.toURI().toURL());
-					} catch (MalformedURLException e) {
-						logger.error("This should never happen");
-					}
-					//	p.addImage(img);
+					img = engine.newOCRImage();
+					img.setUri(file.toURI());
 				}
 				//list of the directory as process
 				//	engine.addOcrProcess(p);
@@ -216,8 +211,6 @@ public class OCRCli {
 		initOpts();
 
 	}
-
-
 
 	/**
 	 * getordinal. checks whether format already gives in enum OCRFormat Class
@@ -348,10 +341,12 @@ public class OCRCli {
 			if (cmd.getOptionValue("o") != null && !cmd.getOptionValue("o").equals("")) {
 				localOutputDir = cmd.getOptionValue("o");
 				for (OCRFormat of : f) {
+					OCROutput output = engine.newOCROutput();
 					//TODO: Finish this
-					//OCRResult 
+					output.setUri(new File(localOutputDir + "this-should-be-the-name-of-the-folder." + of.toString().toLowerCase()).toURI());
+					
 				}
-
+				//TODO: Add this to the process
 				//process.setOutputLocation(localOutputDir);
 			}
 		}
