@@ -18,8 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -27,19 +28,38 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 public class AbbyyOCROutput extends AbstractOCROutput {
 
 	protected String remoteLocation;
-	protected URL remoteUrl;
-	protected URL reportUrl;
+	protected URI remoteUri;
+	protected URI reportUri;
 	protected Boolean singleFile = true;
 	//This is used, if we don't create the result in single file mode
-	protected List<URL> resultFragments;
+	protected List<URI> resultFragments;
 
-	//This calls a copy constructor
+	public AbbyyOCROutput(URI uri) {
+		super(uri, null);
+	}
+
+	//This calls a copy constructor for the base class
 	public AbbyyOCROutput(OCROutput ocrOutput) {
 		super(ocrOutput);
 	}
 
-	public AbbyyOCROutput() {
+	protected AbbyyOCROutput() {
 
+	}
+
+	//More copy constructors
+	public AbbyyOCROutput(URI uri, Map<String, String> params, URI remoteUri, String remoteLocation, URI reportUri, Boolean singleFile, List<URI> resultFragments) {
+		this.outputUri = uri;
+		this.params = params;
+		this.remoteUri = remoteUri;
+		this.remoteLocation = remoteLocation;
+		this.reportUri = reportUri;
+		this.singleFile = singleFile;
+		this.resultFragments = resultFragments;
+	}
+
+	public AbbyyOCROutput(AbbyyOCROutput aoo) {
+		this(aoo.outputUri, aoo.params, aoo.remoteUri, aoo.remoteLocation, aoo.reportUri, aoo.singleFile, aoo.resultFragments);
 	}
 
 	/**
@@ -58,18 +78,18 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * @return the remoteUrl
+	 * @return the remoteUri
 	 */
-	public URL getRemoteUrl () {
-		return remoteUrl;
+	public URI getRemoteUri () {
+		return remoteUri;
 	}
 
 	/**
-	 * @param remoteUrl
-	 *            the remoteUrl to set
+	 * @param remoteUri
+	 *            the remoteUri to set
 	 */
-	public void setRemoteUrl (URL remoteUrl) {
-		this.remoteUrl = remoteUrl;
+	public void setRemoteUri (URI remoteUri) {
+		this.remoteUri = remoteUri;
 	}
 
 	/**
@@ -90,35 +110,35 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	/**
 	 * @return the resultFragments
 	 */
-	public List<URL> getResultFragments () {
+	public List<URI> getResultFragments () {
 		return resultFragments;
 	}
 
-	public void addResultFragment (URL url) {
-		this.resultFragments.add(url);
+	public void addResultFragment (URI uri) {
+		this.resultFragments.add(uri);
 	}
 
 	/**
 	 * @param resultFragments
 	 *            the resultFragments to set
 	 */
-	public void setResultFragments (List<URL> resultFragments) {
+	public void setResultFragments (List<URI> resultFragments) {
 		this.resultFragments = resultFragments;
 	}
 
 	/**
-	 * @return the reportUrl
+	 * @return the reportUri
 	 */
-	public URL getReportUrl () {
-		return reportUrl;
+	public URI getReportUrl () {
+		return reportUri;
 	}
 
 	/**
-	 * @param reportUrl
-	 *            the reportUrl to set
+	 * @param reportUri
+	 *            the reportUri to set
 	 */
-	public void setReportUrl (URL reportUrl) {
-		this.reportUrl = reportUrl;
+	public void setReportUrl (URI reportUri) {
+		this.reportUri = reportUri;
 	}
 
 }

@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +57,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+
+//TODO: Handle params of OCROutput
 
 @SuppressWarnings("serial")
 public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
@@ -282,14 +285,12 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	@Override
 	public void addImage (OCRImage ocrImage) {
 		AbbyyOCRImage aoi = new AbbyyOCRImage(ocrImage);
-		String[] urlParts = ocrImage.getUrl().toString().split("/");
-		if (getName() != null) {
-			aoi.setRemoteFileName(getName() + "-" + urlParts[urlParts.length - 1]);
-		} else {
-			logger.error("Name for process not set, expect error if your using parallel processes");
-			//TODO: Raise an Exception here
-			aoi.setRemoteFileName(urlParts[urlParts.length - 1]);
+		String[] urlParts = ocrImage.getUri().toString().split("/");
+		if (getName() == null) {
+			logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
+			setName(UUID.randomUUID().toString());
 		}
+		aoi.setRemoteFileName(getName() + "-" + urlParts[urlParts.length - 1]);
 		super.addImage(aoi);
 
 	}

@@ -19,7 +19,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.net.URI;
-import java.net.URL;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -37,23 +36,36 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	protected String remoteFileName;
 
 	//This represents the URL to the remote system
-	protected URI remoteURI = null;
+	protected URI remoteUri;
 
 	protected Long size = 0l;
 
 	/**
 	 * Instantiates a new abbyy ocr file.
 	 * 
-	 * @param imageUrl
-	 *            the image url
+	 * @param imageUri
+	 *            the image uri
 	 */
-	//This calls a copy constructor
-	public AbbyyOCRImage(URL imageUrl) {
-		super(imageUrl);
+
+	public AbbyyOCRImage(URI imageUri) {
+		super(imageUri);
 	}
 
+	public AbbyyOCRImage(URI uri, Orientation orientation, URI remoteUri, String remoteFileName, Long size) {
+		this.imageUri = uri;
+		this.orientation = orientation;
+		this.remoteUri = remoteUri;
+		this.remoteFileName = remoteFileName;
+		this.size = size;
+	}
+
+	//This calls a copy constructor
 	public AbbyyOCRImage(OCRImage i) {
 		super(i);
+	}
+
+	public AbbyyOCRImage(AbbyyOCRImage i) {
+		this(i.imageUri, i.orientation, i.remoteUri, i.remoteFileName, i.size);
 	}
 
 	protected AbbyyOCRImage() {
@@ -70,10 +82,10 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	 * @param remoteFileName
 	 *            the remote file name
 	 */
-	public AbbyyOCRImage(URL imageUrl, URI remoteURI, String remoteFileName) {
-		super(imageUrl);
-		this.imageUrl = imageUrl;
-		this.remoteURI = remoteURI;
+	public AbbyyOCRImage(URI imageUri, URI remoteUri, String remoteFileName) {
+		super(imageUri);
+		this.imageUri = imageUri;
+		this.remoteUri = remoteUri;
 		this.remoteFileName = remoteFileName;
 	}
 
@@ -97,22 +109,22 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	}
 
 	/**
-	 * Gets the remote url.
+	 * Gets the remote uri.
 	 * 
-	 * @return the remote url
+	 * @return the remote uri
 	 */
-	public URI getRemoteURI () {
-		return this.remoteURI;
+	public URI getRemoteUri () {
+		return this.remoteUri;
 	}
 
 	/**
-	 * Sets the remote url.
+	 * Sets the remote uri.
 	 * 
 	 * @param remoteURL
-	 *            the new remote url
+	 *            the new remote uri
 	 */
-	public void setRemoteURI (URI remoteURI) {
-		this.remoteURI = remoteURI;
+	public void setRemoteUri (URI remoteUri) {
+		this.remoteUri = remoteUri;
 	}
 
 	public Long getSize () {

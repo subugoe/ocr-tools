@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class AbbyyTicketTest {
 	public static String EXTENSION = "tif";
 	public static File BASEFOLDER_FILE;
 	public static String OUTPUT_LOCATION = "D:\\Recognition\\GDZ\\output";
+	public static String RESULTS = "results";
 	public static File TICKET_FILE;
 	public static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 
@@ -91,7 +93,15 @@ public class AbbyyTicketTest {
 		});
 		TICKET_FILE = new File(BASEFOLDER_FILE.getAbsolutePath() + "abbyyTicket.xml");
 
-		final AbbyyOCROutput aoo = new AbbyyOCROutput();
+		URI resultUri = null;
+		try {
+			resultUri = new URI(BASEFOLDER_FILE.getAbsolutePath() + File.separator + RESULTS + File.separator + "result");
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		final AbbyyOCROutput aoo = new AbbyyOCROutput(resultUri);
 		aoo.setRemoteLocation(OUTPUT_LOCATION);
 
 		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>() {
@@ -103,7 +113,7 @@ public class AbbyyTicketTest {
 	}
 
 	@BeforeClass
-	public static void init () throws FileNotFoundException, MalformedURLException {
+	public static void init () throws FileNotFoundException, MalformedURLException, URISyntaxException {
 
 		//This s just here to display the works of the mocking framework
 		assertTrue("This should never happen", ocrp.getLangs().contains(Locale.GERMAN));
@@ -113,10 +123,10 @@ public class AbbyyTicketTest {
 		for (int i = 0; i < 10; i++) {
 			ocri = mock(OCRImage.class);
 			String imageUrl = BASEFOLDER_FILE.toURI().toURL().toString() + i;
-			when(ocri.getUrl()).thenReturn(new URL(imageUrl));
+			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 			logger.debug("Added url to list: " + imageUrl);
 			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
-			assertTrue(imageUrl.equals(aoi.getUrl().toString()));
+			assertTrue(imageUrl.equals(aoi.getUri().toString()));
 			aoi.setRemoteFileName("remoteName" + i);
 			imgList.add(aoi);
 		}
@@ -125,11 +135,9 @@ public class AbbyyTicketTest {
 		when(ocrp.getOcrImages()).thenReturn(imgList);
 		assertTrue(ocrp.getOcrImages().size() == 10);
 
-		try {
-			when(ocri.getUrl()).thenReturn(new File("/tmp").toURI().toURL());
-		} catch (MalformedURLException e) {
-			logger.debug("This should never happen", e);
-		}
+		
+		when(ocri.getUri()).thenReturn(new File("/tmp").toURI());
+		
 
 		when(ocrp.getOcrOutput()).thenReturn(OUTPUT_DEFINITIONS);
 

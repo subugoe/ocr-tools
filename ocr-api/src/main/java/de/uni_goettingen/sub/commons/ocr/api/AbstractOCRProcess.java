@@ -16,14 +16,11 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 
 	protected String name;
 		
-	/** The image directory. */
-	//protected String imageDirectory;
-	/** The langs. The languages which are supported */
-	protected Set<Locale> langs = new HashSet<Locale>();
-
-
 	/** The ocr image. The Images which should be converted */
 	protected List<OCRImage> ocrImages = new ArrayList<OCRImage>();
+	
+	/** The langs. The languages which are supported */
+	protected Set<Locale> langs = new HashSet<Locale>();
 
 	/** The ocr output. The Images converted are put in this Output Folder */
 	protected Map<OCRFormat, OCROutput> ocrOutput;
@@ -31,7 +28,7 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	/**
 	 * Instantiates a new oCR process.
 	 */
-	public AbstractOCRProcess() {
+	protected AbstractOCRProcess() {
 	}
 
 	/**
@@ -42,9 +39,13 @@ public abstract class AbstractOCRProcess implements OCRProcess {
 	 */
 	public AbstractOCRProcess(OCRProcess process) {
 		//Copy Constructor
-		this.ocrImages = process.getOcrImages();
-		this.langs = process.getLangs();
-		this.ocrOutput = process.getOcrOutput();
+		this(process.getOcrImages(), process.getLangs(), process.getOcrOutput());
+	}
+	
+	public AbstractOCRProcess (List<OCRImage> ocrImages, Set<Locale> langs, Map<OCRFormat, OCROutput> output) {
+		this.ocrImages = ocrImages;
+		this.langs = langs;
+		this.ocrOutput = output;
 	}
 
 	/**

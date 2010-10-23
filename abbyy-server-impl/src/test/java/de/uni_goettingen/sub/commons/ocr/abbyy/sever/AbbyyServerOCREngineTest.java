@@ -105,7 +105,7 @@ public class AbbyyServerOCREngineTest {
 
 	@Ignore
 	@Test
-	public void testCli () throws IOException, ConfigurationException {
+	public void testCli () throws IOException, ConfigurationException, URISyntaxException {
 		//TODO: Move this to a @Before class, start a thread for the apacheVFSHotfolderImpl
 		//and just use recognize as test
 
@@ -137,7 +137,7 @@ public class AbbyyServerOCREngineTest {
 		for (File currentFile : filess) {
 			String currentFileString = currentFile.getName();
 			if (!currentFileString.startsWith(".")) {
-				hotfolder.copyFile(currentFile.getAbsolutePath(), hotfolderError + "/" + currentFile.getName());
+				hotfolder.copyFile(new URI(currentFile.getAbsolutePath()), new URI(hotfolderError + "/" + currentFile.getName()));
 			} else {
 				System.out.println("meine liste file start with " + currentFile.getName());
 			}
@@ -156,7 +156,7 @@ public class AbbyyServerOCREngineTest {
 		for (File currentFiles : folder) {
 			String currentFilesString = currentFiles.getName();
 			if (!currentFilesString.startsWith(".")) {
-				hotfolder.copyFile(currentFiles.getAbsolutePath(), hotfolderOutput + "/" + currentFiles.getName());
+				hotfolder.copyFile(new URI(currentFiles.getAbsolutePath()), new URI(hotfolderOutput + "/" + currentFiles.getName()));
 			} else {
 				System.out.println("meine liste file start with " + currentFiles.getName());
 			}
@@ -187,7 +187,7 @@ public class AbbyyServerOCREngineTest {
 				OCRImage image = abbyy.newOCRImage();
 				//	System.out.println("fehler "+ fileImage.getAbsolutePath());
 
-				image.setUrl(fileImage.toURI().toURL());
+				image.setUri(fileImage.toURI());
 				p.addImage(image);
 			}
 			//p.setImageDirectory(files.getAbsolutePath());

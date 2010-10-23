@@ -104,7 +104,7 @@ public class AbbyyOCRProcessTest {
 	}
 
 	@Test
-	public void createProcessViaAPI () throws MalformedURLException {
+	public void createProcessViaAPI () throws MalformedURLException, URISyntaxException {
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
 		OCRProcess op = ase.newOCRProcess();
@@ -112,10 +112,10 @@ public class AbbyyOCRProcessTest {
 		for (int i = 0; i < 10; i++) {
 			OCRImage ocri = mock(OCRImage.class);
 			String imageUrl = BASEFOLDER_FILE.toURI().toURL().toString() + i;
-			when(ocri.getUrl()).thenReturn(new URL(imageUrl));
+			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 			logger.debug("Added url to list: " + imageUrl);
 			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
-			assertTrue(imageUrl.equals(aoi.getUrl().toString()));
+			assertTrue(imageUrl.equals(aoi.getUri().toString()));
 			aoi.setRemoteFileName("remoteName" + i);
 			imgList.add(aoi);
 		}
@@ -126,7 +126,7 @@ public class AbbyyOCRProcessTest {
 	}
 
 	@Test
-	public void createUrlBasedProcess () throws MalformedURLException {
+	public void createUrlBasedProcess () throws MalformedURLException, URISyntaxException {
 		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
@@ -135,7 +135,7 @@ public class AbbyyOCRProcessTest {
 		for (int i = 0; i < 10; i++) {
 			OCRImage ocri = mock(OCRImage.class);
 			String imageUrl = "http://127.0.0.1:8080/image-" + i;
-			when(ocri.getUrl()).thenReturn(new URL(imageUrl));
+			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 			logger.debug("Added url to list: " + imageUrl);
 			imgList.add(ocri);
 		}

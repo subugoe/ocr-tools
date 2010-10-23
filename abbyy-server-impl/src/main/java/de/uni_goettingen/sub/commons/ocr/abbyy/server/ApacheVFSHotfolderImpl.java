@@ -41,7 +41,6 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
  * The Class ApacheVFSHotfolderImpl is used to control the hotfolders used by
  * the Abbyy Recognition Server.
  */
-//TODO: Make this a real singleton
 public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(ApacheVFSHotfolderImpl.class);
@@ -85,8 +84,11 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.lang.String, java.lang.String)
 	 */
 	//TODO: This is dangerous, check if the file exists!
-	public void copyFile (URI from, URI to) throws FileSystemException {
+	public void copyFile (URI from, URI to) throws IOException {
 		FileObject remoteFile = fsManager.resolveFile(from.toString());
+		if (remoteFile.exists()) {
+			throw new IOException("Remote file allready exists!");
+		}
 		FileObject localFile = fsManager.resolveFile(to.toString());
 		localFile.copyFrom(remoteFile, new AllFileSelector());
 	}
@@ -185,7 +187,6 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	 * @throws IOException
 	 *             the malformed url exception
 	 */
-	//TODO: Change this into a method to list files and add it to the interface
 	@Override
 	public List<URI> listURIs (URI uri) throws IOException, URISyntaxException {
 		List<URI> uriList = new ArrayList<URI>();
@@ -207,7 +208,7 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 		return false;
 	}
 
-	protected OutputStream getOutputStream (URI uri) throws FileSystemException {
+	private OutputStream getOutputStream (URI uri) throws FileSystemException {
 		FileObject out = fsManager.resolveFile(uri.toString());
 		return out.getContent().getOutputStream();
 	}

@@ -7,7 +7,7 @@ import java.util.Map;
  * The Enum OCRFormat. The formats which are supported.
  */
 public enum OCRFormat {
-	TXT("TXT"), PDF("PDF"), XML("XML"), PDFA("PDFA"), DOC("DOC"), HTML("HTML"), XHTML("XHTML");
+	TXT("TXT"), PDF("PDF"), XML("XML"), PDFA("PDFA"), DOC("DOC"), HTML("HTML"), XHTML("XHTML"), HOCR("HOCR");
 
 	private final String name;
 

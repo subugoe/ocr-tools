@@ -104,7 +104,7 @@ public class HotfolderTest {
 	@Test
 	public void testCopy () throws IOException, URISyntaxException {
 		logger.debug("Copy " + testImageUri.toString() + " to " + target);
-		apacheVFSHotfolderImpl.copyFile(testImageUri.toString(), target);
+		apacheVFSHotfolderImpl.copyFile(testImageUri, new URI(target));
 		assertTrue("File can't be found.", new File(new URL(target).toURI()).exists());
 	}
 

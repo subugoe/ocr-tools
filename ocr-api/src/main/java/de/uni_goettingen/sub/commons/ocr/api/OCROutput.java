@@ -1,5 +1,6 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 
@@ -9,16 +10,16 @@ import java.util.Map;
 public interface OCROutput {
 
 	/**
-	 * Gets the url.
+	 * Gets the uri.
 	 * 
 	 */
-	public URL getUrl ();
+	public URI getUri ();
 
 	/**
 	 * Sets the url.
 	 * 
 	 */
-	public void setUrl (URL url);
+	public void setUri (URI uri);
 
 	/**
 	 * Sets the params.
