@@ -3,6 +3,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
 import java.util.List;
 import java.util.Observer;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface OCREngine.
  */
@@ -10,6 +11,9 @@ public interface OCREngine {
 
 	/**
 	 * Recognize. Start
+	 *
+	 * @param process the process
+	 * @return the observer
 	 */
 	public Observer recognize (OCRProcess process);
 	
@@ -23,14 +27,16 @@ public interface OCREngine {
 	
 	/**
 	 * Stops a running recognizer. Returns false if the recognizer isn't running.
+	 *
+	 * @return the boolean
 	 */
 	public Boolean stop ();
 
 	/**
 	 * Adds a oCR process.
-	 * 
-	 * @param process
-	 *            the new oCR process
+	 *
+	 * @param ocrp the ocrp
+	 * @return the observer
 	 */
 
 	public Observer addOcrProcess(OCRProcess ocrp);
@@ -42,10 +48,25 @@ public interface OCREngine {
 	 */
 	public List<OCRProcess> getOcrProcess();
 
+	/**
+	 * New ocr image.
+	 *
+	 * @return the oCR image
+	 */
 	public OCRImage newOCRImage ();
 	
+	/**
+	 * New ocr process.
+	 *
+	 * @return the oCR process
+	 */
 	public OCRProcess newOCRProcess();
 	
+	/**
+	 * New ocr output.
+	 *
+	 * @return the oCR output
+	 */
 	public OCROutput newOCROutput();
 	
 	/**
