@@ -1,5 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>de.unigoettingen.sub.commons</groupId>
+		<artifactId>commons-parent</artifactId>
+		<version>0.0.2-SNAPSHOT</version>
+	</parent>
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>ocr-tools</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -10,6 +15,9 @@
 		<module>ocr-api</module>
 		<module>abbyy-cli-impl</module>
 		<module>ocrutil</module>
+		<!-- 
+		<module>GoobiOCRServlet</module>
+		 -->
 	</modules>
 	<developers>
 		<developer>
