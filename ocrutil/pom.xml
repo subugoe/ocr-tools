@@ -11,6 +11,11 @@
 	<name>SUB Commons OCR Utilities</name>
 	<dependencies>
 		<dependency>
+			<groupId>de.uni-goettingen.sub</groupId>
+			<artifactId>ocr-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.lowagie</groupId>
 			<artifactId>itext</artifactId>
 			<version>2.1.7</version>

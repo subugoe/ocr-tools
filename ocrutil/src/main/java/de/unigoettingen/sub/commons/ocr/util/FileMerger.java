@@ -3,16 +3,18 @@ package de.unigoettingen.sub.commons.ocr.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -28,30 +30,71 @@ import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.SimpleBookmark;
 
+import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+
 public class FileMerger {
-	public static void mergeAbbyyXML(List<InputStream> iss, OutputStream os) throws XMLStreamException {
-		
+	public final static List<OCRFormat> SEGMENTABLE_FORMATS;
+	private final static Map<OCRFormat, Method> fileMergers;
+	private final static Map<OCRFormat, Method> streamMergers;
+
+	static {
+
+		SEGMENTABLE_FORMATS = new ArrayList<OCRFormat>();
+		SEGMENTABLE_FORMATS.add(OCRFormat.PDF);
+		SEGMENTABLE_FORMATS.add(OCRFormat.XML);
+		SEGMENTABLE_FORMATS.add(OCRFormat.TXT);
+
+		fileMergers = new HashMap<OCRFormat, Method>();
+		streamMergers = new HashMap<OCRFormat, Method>();
+
+		//And now: Some black magic!
+		try {
+			//This are the methods for handling files
+			Class<?> fileParams[] = new Class[2];
+
+			fileParams[0] = List.class;
+			fileParams[1] = File.class;
+
+			fileMergers.put(OCRFormat.PDF, FileMerger.class.getMethod("mergeAbbyyPDF", fileParams));
+			fileMergers.put(OCRFormat.XML, FileMerger.class.getMethod("mergeAbbyyXML", fileParams));
+			fileMergers.put(OCRFormat.TXT, FileMerger.class.getMethod("mergeAbbyyTXT", fileParams));
+
+			//This are the methods for handling files
+			Class<?> streamParams[] = new Class[2];
+			streamParams[0] = List.class;
+			streamParams[1] = OutputStream.class;
+
+			streamMergers.put(OCRFormat.PDF, FileMerger.class.getMethod("mergeAbbyyPDF", streamParams));
+			streamMergers.put(OCRFormat.XML, FileMerger.class.getMethod("mergeAbbyyXML", streamParams));
+			streamMergers.put(OCRFormat.TXT, FileMerger.class.getMethod("mergeAbbyyTXT", streamParams));
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void mergeAbbyyXML (List<InputStream> iss, OutputStream os) throws XMLStreamException {
+
 		Integer pageCount = iss.size();
 		//Output
 		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
 		//outFactory.setProperty("javax.xml.stream.isPrefixDefaulting",Boolean.TRUE);
-		
+
 		XMLStreamWriter writer = outFactory.createXMLStreamWriter(os);
-		
+
 		Integer f = 0;
-		HashMap<String, String> nsPrefixes = new HashMap<String, String>(); 
+		HashMap<String, String> nsPrefixes = new HashMap<String, String>();
 
 		Boolean docStarted = false;
 		Boolean headerWriten = false;
 		String rootTag = "document";
-		
+
 		while (f < iss.size()) {
-			
+
 			//Eingang
-			InputStream in = iss.get(f); 
+			InputStream in = iss.get(f);
 			XMLInputFactory inFactory = XMLInputFactory.newInstance();
 			XMLStreamReader parser = inFactory.createXMLStreamReader(in);
-			
+
 			while (true) {
 				int event = parser.getEventType();
 				if (event == XMLStreamConstants.START_DOCUMENT) {
@@ -74,14 +117,14 @@ public class FileMerger {
 						nsPrefixes.put(prefix, uri);
 					}
 					if (!headerWriten || !parser.getLocalName().equalsIgnoreCase(rootTag)) {
-						if (parser.getNamespaceURI() != null) { 
+						if (parser.getNamespaceURI() != null) {
 							writer.writeStartElement(parser.getNamespaceURI(), parser.getLocalName());
 						} else {
 							writer.writeStartElement(parser.getLocalName());
 						}
 						if (!headerWriten) {
 							writer.writeDefaultNamespace(nsPrefixes.get("default"));
-							for (String namespace: nsPrefixes.keySet()) {
+							for (String namespace : nsPrefixes.keySet()) {
 								if (!namespace.equalsIgnoreCase("default")) {
 									writer.writeNamespace(namespace, nsPrefixes.get(namespace));
 								}
@@ -94,7 +137,7 @@ public class FileMerger {
 								value = pageCount.toString();
 								headerWriten = true;
 							}
-							if (parser.getAttributeNamespace(i) != null) { 
+							if (parser.getAttributeNamespace(i) != null) {
 								writer.writeAttribute(parser.getAttributeNamespace(i), name, value);
 							} else {
 								writer.writeAttribute(name, value);
@@ -112,8 +155,8 @@ public class FileMerger {
 					if (f == iss.size() - 1) {
 						writer.writeEndDocument();
 					}
-			    	break;
-			    }
+					break;
+				}
 				if (!parser.hasNext()) {
 					break;
 				}
@@ -126,21 +169,22 @@ public class FileMerger {
 		writer.flush();
 		writer.close();
 	}
-	
-	public static void mergeAbbyyXML (List<String> files, File outFile) throws XMLStreamException, FileNotFoundException {
+
+	public static void mergeAbbyyXML (List<File> files, File outFile) throws IOException, XMLStreamException {
 		OutputStream os = new FileOutputStream(outFile);
 		List<InputStream> iss = new ArrayList<InputStream>();
 		int f = 0;
 		while (f < files.size()) {
 			iss.add(new FileInputStream(files.get(f)));
 		}
+		mergeAbbyyXML(iss, os);
 	}
-	
+
 	public static void mergePDF (List<InputStream> iss, OutputStream os) throws IOException, DocumentException {
 		//Stolen from itext (com.lowagie.tools.concat_pdf) 
-		
+
 		int pageOffset = 0;
-		List master = new ArrayList();
+		List<HashMap<String,Object>> master = new ArrayList<HashMap<String,Object>>();
 		int f = 0;
 		//String outFile = args[args.length - 1];
 		Document document = null;
@@ -151,7 +195,7 @@ public class FileMerger {
 			reader.consolidateNamedDestinations();
 			// we retrieve the total number of pages
 			int n = reader.getNumberOfPages();
-			List bookmarks = SimpleBookmark.getBookmark(reader);
+			List<HashMap<String,Object>> bookmarks = SimpleBookmark.getBookmark(reader);
 			if (bookmarks != null) {
 				if (pageOffset != 0) {
 					SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);
@@ -185,8 +229,8 @@ public class FileMerger {
 		// step 5: we close the document
 		document.close();
 	}
-	
-	public static void mergePDF (List<String> files, File outFile) throws IOException, DocumentException {
+
+	public static void mergePDF (List<File> files, File outFile) throws IOException, DocumentException {
 		OutputStream os = new FileOutputStream(outFile);
 		List<InputStream> iss = new ArrayList<InputStream>();
 		int f = 0;
@@ -200,32 +244,46 @@ public class FileMerger {
 		OutputStreamWriter osw = new OutputStreamWriter(os);
 		//Ascii page break dec 12 hex 0c		
 		char pb = (char) 12;
-		
+
 		int f = 0;
 		while (f < iss.size()) {
 			InputStreamReader isr = new InputStreamReader(iss.get(f), "UTF-8");
 			BufferedReader br = new BufferedReader(isr);
 			String line;
 			while ((line = br.readLine()) != null) {
-				  osw.write(line);
-				  osw.write(System.getProperty("line.separator"));
+				osw.write(line);
+				osw.write(System.getProperty("line.separator"));
 			}
 			osw.write(pb);
-			
+
 			isr.close();
 			f++;
 		}
 		osw.close();
 	}
-	
-	
-	public static void mergeTXT (List<String> files, File outFile) throws IOException {
+
+	public static void mergeTXT (List<File> files, File outFile) throws IOException {
 		OutputStream os = new FileOutputStream(outFile);
 		List<InputStream> iss = new ArrayList<InputStream>();
 		int f = 0;
 		while (f < files.size()) {
 			iss.add(new FileInputStream(files.get(f)));
 		}
-		mergeTXT (iss, os);
+		mergeTXT(iss, os);
+	}
+
+	public static Boolean isSegmentable (OCRFormat f) {
+		if (SEGMENTABLE_FORMATS.contains(f)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static void mergeFiles (OCRFormat format, List<File> files, File outFile) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		fileMergers.get(format).invoke(null, new Object[] { files, outFile });
+	}
+
+	public static void mergeStreams (OCRFormat format, List<InputStream> iss, OutputStream os) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		streamMergers.get(format).invoke(null, new Object[] { iss, os });
 	}
 }
