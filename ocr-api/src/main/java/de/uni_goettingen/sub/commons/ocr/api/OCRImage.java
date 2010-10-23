@@ -2,6 +2,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 import java.net.URI;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface OCRImage. This Interface represents the a single image file to
  * be recognized. Images are referenced by URI.
@@ -32,9 +33,8 @@ public interface OCRImage {
 
 	/**
 	 * Sets the rotation.
-	 * 
-	 * @param rotation
-	 *            the new rotation
+	 *
+	 * @param orientation the new orientation
 	 */
 	public void setOrientation (Orientation orientation);
 
@@ -42,14 +42,33 @@ public interface OCRImage {
 	 * The Enum Orientation.
 	 */
 	public enum Orientation {
-		PORTRAIT(0), LANDSCAPE(90), COUNTER_PORTRAIT(180), COUNTER_LANDSCAPE(270);
+		
+		/** The PORTRAIT. */
+		PORTRAIT(0), 
+ /** The LANDSCAPE. */
+ LANDSCAPE(90), 
+ /** The COUNTE r_ portrait. */
+ COUNTER_PORTRAIT(180), 
+ /** The COUNTE r_ landscape. */
+ COUNTER_LANDSCAPE(270);
 
+		/** The DEGREE. */
 		public final Integer DEGREE;
 
+		/**
+		 * Instantiates a new orientation.
+		 *
+		 * @param degree the degree
+		 */
 		Orientation(Integer degree) {
 			this.DEGREE = degree;
 		}
 
+		/**
+		 * Gets the degree.
+		 *
+		 * @return the degree
+		 */
 		public Integer getDegree () {
 			return DEGREE;
 		}

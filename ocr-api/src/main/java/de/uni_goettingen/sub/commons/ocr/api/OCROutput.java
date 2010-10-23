@@ -1,9 +1,9 @@
 package de.uni_goettingen.sub.commons.ocr.api;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.Map;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface OCROutput.
  */
@@ -11,13 +11,15 @@ public interface OCROutput {
 
 	/**
 	 * Gets the uri.
-	 * 
+	 *
+	 * @return the uri
 	 */
 	public URI getUri ();
 
 	/**
 	 * Sets the url.
-	 * 
+	 *
+	 * @param uri the new uri
 	 */
 	public void setUri (URI uri);
 

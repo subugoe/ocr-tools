@@ -2,7 +2,11 @@ package de.uni_goettingen.sub.commons.ocr.api.exceptions;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class OCRException.
+ * The Class OCRException is a {@link RuntimeException} to signal OCR related errors.
+ * <b>Please note: The API isn't using any checked exceptions.</b> 
+ * @version 0.9
+ * @author abergna
+ * @author cmahnke
  */
 public class OCRException extends RuntimeException {
 
@@ -19,18 +23,28 @@ public class OCRException extends RuntimeException {
 	/**
 	 * Instantiates a new OCRException.
 	 *
-	 * @param e, a wrapped Exception.
+	 * @param e the wrapped Throwable
 	 */
-	public OCRException (Exception e) {
-		super(e);
+	public OCRException (Throwable t) {
+		super(t);
 	}
 	
 	/**
 	 * Instantiates a new OCRException.
 	 *
-	 * @param str, a message as String.
+	 * @param str the message as String.
 	 */
 	public OCRException (String str) {
 		super(str);
+	}
+	
+	/**
+	 * Instantiates a new OCRException.
+	 *
+	 * @param str the message as String.
+	 * @param e the wrapped Throwable
+	 */
+	public OCRException (String str, Throwable t) {
+		super(str, t);
 	}
 }

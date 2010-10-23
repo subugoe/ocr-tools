@@ -21,22 +21,45 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * The Class AbstractOCREngine is a abstract super class for {@link OCREngine} implementations.
+ * It adds two methods to be able to provide metadata for the different implementations
+ * {@link #getName()} and {@link #getVersion()}.
+ * 
+ * @version 0.9
+ * @author abergna
+ * @author cmahnke
+ */
 public abstract class AbstractOCREngine implements OCREngine {
 	
+	/** A simple list containing {@link OCRProcess} that will be processed */
 	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
 
+	/** Indicates if the processing of the engine has started. */
 	protected Boolean started = false;
 	
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#getOcrProcess()
+	 */
 	public List<OCRProcess> getOcrProcess () {
 		return ocrProcess;
 	}
 
-	public String getName () {
-		return null;
-	}
+	/**
+	 * Gets the name of this engine, if this is just a wrapper around an external
+	 * implementation this should also state the name of the underlying engine
+	 *
+	 * @return the name
+	 */
+	abstract String getName ();
 	
-	public String getVersion () {
-		return null;
-	}
+	/**
+	 * Gets the version of the implementation. If the implementation is just a
+	 * wrapper consider to state both versions, maybe separated by a space character.
+	 *
+	 * @return the version
+	 */
+	abstract String getVersion ();
 
 }

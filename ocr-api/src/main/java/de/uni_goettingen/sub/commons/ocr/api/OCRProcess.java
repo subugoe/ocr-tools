@@ -51,18 +51,37 @@ public interface OCRProcess {
 
 	/**
 	 * Adds the image.
-	 * 
-	 * @param ocrImages
-	 *            the ocr image
+	 *
+	 * @param ocrImage the ocr image
 	 */
 	public void addImage (OCRImage ocrImage);
 
+	/**
+	 * Sets the ocr output.
+	 *
+	 * @param ocrOutput the ocr output
+	 */
 	public void setOcrOutput (Map<OCRFormat, OCROutput> ocrOutput);
 	
+	/**
+	 * Gets the ocr output.
+	 *
+	 * @return the ocr output
+	 */
 	public Map<OCRFormat, OCROutput> getOcrOutput ();
 	
+	/**
+	 * Sets the name.
+	 *
+	 * @param name the new name
+	 */
 	public void setName (String name);
 
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
 	public String getName () ;
 	
 }
