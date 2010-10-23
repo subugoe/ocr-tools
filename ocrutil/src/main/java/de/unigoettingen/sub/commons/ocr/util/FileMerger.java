@@ -50,7 +50,6 @@ import com.lowagie.text.pdf.SimpleBookmark;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class FileMerger is a container for several static methods that can be used 
  * to merge several types of OCR output
