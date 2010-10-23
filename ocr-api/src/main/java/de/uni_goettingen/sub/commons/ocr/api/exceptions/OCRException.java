@@ -23,7 +23,7 @@ public class OCRException extends RuntimeException {
 	/**
 	 * Instantiates a new OCRException.
 	 *
-	 * @param e the wrapped Throwable
+	 * @param t the wrapped Throwable
 	 */
 	public OCRException (Throwable t) {
 		super(t);
@@ -42,7 +42,7 @@ public class OCRException extends RuntimeException {
 	 * Instantiates a new OCRException.
 	 *
 	 * @param str the message as String.
-	 * @param e the wrapped Throwable
+	 * @param t the wrapped Throwable
 	 */
 	public OCRException (String str, Throwable t) {
 		super(str, t);

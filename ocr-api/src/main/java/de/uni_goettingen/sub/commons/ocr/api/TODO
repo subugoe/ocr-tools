@@ -1,7 +1,7 @@
 This is the TODO File for the OCR API
 - Maybe we need a common Interface for configuring an OCREngine (default languages and formats)
 - There should be a common method to get metadata for a finished process or result
-- Add a Boolean to OCROutput to indicate that it contains results of a finisher Process
-- Add a Factory for the different Engines
 - Finish JavaDoc
 - add a method to observe an OCREngine - this can be later used with JMX
+- split abstract classes and interfaces to seperate dependencies
+- add an OCRengineFactory including discovery of engines at runtime
