@@ -73,7 +73,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	public AbstractOCRProcess(OCRProcess process) {
 		//Copy Constructor
-		this(process.getOcrImages(), process.getLangs(), process.getOcrOutput());
+		this(process.getOcrImages(), process.getLanguages(), process.getOcrOutput());
 	}
 
 	/**
@@ -114,29 +114,29 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 		langs.remove(locale);
 	}
 
-	/**
-	 * Gets the langs.
-	 * 
-	 * @return the List of languages as {@link Locale}
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getLanguages()
 	 */
-	public Set<Locale> getLangs () {
+	public Set<Locale> getLanguages () {
 		return langs;
 	}
 
-	/**
-	 * Gets the ocr image.
-	 * 
-	 * @return the ocr image
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setLanguages(java.util.Set)
+	 */
+	public void setLanguages (Set<Locale> langs) {
+		this.langs = langs;
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrImages()
 	 */
 	public List<OCRImage> getOcrImages () {
 		return ocrImages;
 	}
 
-	/**
-	 * Sets the ocr image.
-	 * 
-	 * @param ocrImage
-	 *            the new ocr images
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setOcrImages(java.util.List)
 	 */
 	public void setOcrImages (List<OCRImage> ocrImage) {
 		this.ocrImages = ocrImage;
@@ -200,5 +200,12 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	public Boolean isFinished () {
 		return isFinished();
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrProcessMetadata()
+	 */
+	public OCRProcessMetadata getOcrProcessMetadata () {
+		throw new UnsupportedOperationException();
 	}
 }
