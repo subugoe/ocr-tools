@@ -40,7 +40,7 @@ public abstract class AbstractOCROutput implements OCROutput {
 	 * This is a simple copy constructor that can be used by subclasses. It can
 	 * be used to convert different subclasses into each other
 	 * 
-	 * @param ocrOutputs
+	 * @param ocrOutput
 	 *            the ocr output
 	 */
 	public AbstractOCROutput(OCROutput ocrOutput) {

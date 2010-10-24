@@ -86,7 +86,7 @@ public interface OCRProcess {
 	 *            the ocr output
 	 * @see OCROutput
 	 */
-	abstract public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutput);
+	abstract public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutputs);
 
 	/**
 	 * Gets the ocr output as a Map. The keys of this map represent the
