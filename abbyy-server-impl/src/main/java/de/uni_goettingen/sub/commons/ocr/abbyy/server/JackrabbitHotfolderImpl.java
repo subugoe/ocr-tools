@@ -79,7 +79,7 @@ import org.slf4j.LoggerFactory;
  * @author cmahnke
  * 
  */
-public class JackrabbitHotfolderImpl implements Hotfolder {
+public class JackrabbitHotfolderImpl extends AbstractHotfolder implements Hotfolder {
 	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(JackrabbitHotfolderImpl.class);
 	private long mkColWait = 300l;
@@ -138,7 +138,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#createTmpFile(java.lang.String)
 	 */
 	@Override
-	public OutputStream createTmpFile (String name) throws IOException, URISyntaxException {
+	public OutputStream createTmpFile (String name) throws IOException {
 		File tmpFile = File.createTempFile(name, null);
 		tmpfiles.put(name, tmpFile);
 		return new FileOutputStream(tmpFile);
@@ -151,17 +151,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	public void delete (URI uri) throws IOException {
 		DavMethod delete = new DeleteMethod(uri.toString());
 		executeMethod(client, delete);
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#deleteIfExists(java.net.URI)
-	 */
-	@Override
-	public void deleteIfExists (URI uri) throws IOException {
-		if (head(uri) == HttpStatus.SC_OK) {
-			delete(uri);
-			logger.debug("Deleted " + uri);
-		}
+		logger.debug("Deleted " + uri);
 	}
 
 	/* (non-Javadoc)
@@ -333,23 +323,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	}
 
 	@Override
-	public Long getTotalCount (URI uri) throws IOException, URISyntaxException {
-		if (!isDirectory(uri)) {
-			return 1l;
-		}
-		Long count = 0l;
-		for (URI u : listURIs(uri)) {
-			if (isDirectory(uri)) {
-				count += getTotalCount(u);
-			} else {
-				count += 1l;
-			}
-		}
-		return count;
-	}
-
-	@Override
-	public Long getTotalSize (URI uri) throws IOException, URISyntaxException {
+	public Long getTotalSize (URI uri) throws IOException {
 		Long size = 0l;
 		for (URI u : listURIs(uri)) {
 			MultiStatus multiStatus;
@@ -376,7 +350,7 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	}
 
 	@Override
-	public List<URI> listURIs (URI uri) throws IOException, URISyntaxException {
+	public List<URI> listURIs (URI uri) throws IOException {
 		List<URI> uriList = new ArrayList<URI>();
 		MultiStatus multiStatus;
 		try {
@@ -387,7 +361,12 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 		List<MultiStatusResponse> responses = Arrays.asList(multiStatus.getResponses());
 		for (MultiStatusResponse response : responses) {
 			String path = response.getHref();
-			uriList.add(new URI(path));
+			try {
+				uriList.add(new URI(path));
+			} catch (URISyntaxException e) {
+				logger.error("Error while coverting URI.");
+				throw new RuntimeException(e);
+			}
 		}
 		return uriList;
 	}
@@ -450,8 +429,20 @@ public class JackrabbitHotfolderImpl implements Hotfolder {
 	private MultiStatus propFind (URI uri) throws IOException, DavException {
 		DavMethod probFind = new PropFindMethod(uri.toString(), DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
 		executeMethod(client, probFind);
-		//TODO: Check if this realy works since the connection is already closed if executed by the static methos
+		//TODO: Check if this really works since the connection is already closed if executed by the static methos
 		return probFind.getResponseBodyAsMultiStatus();
+	}
+
+	@Override
+	public InputStream openInputStream (URI uri) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long getSize (URI uri) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

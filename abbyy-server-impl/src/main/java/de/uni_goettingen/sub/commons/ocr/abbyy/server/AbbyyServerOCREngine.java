@@ -21,6 +21,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Observable;
 import java.util.Observer;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -39,11 +40,15 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
 /**
  * The Class AbbyyServerOCREngine.
  */
 public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
+	public static final String name = "0.5";
+	public static final String version = AbbyyServerOCREngine.class.getSimpleName();
+	
 
 	// The max threads.
 	protected static Integer maxThreads;
@@ -166,7 +171,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	}
 
 	@Override
-	public Observer recognize (OCRProcess process) {
+	public Observable recognize (OCRProcess process) {
 		//TODO: Check if this instanceof works as expected	
 		if (process instanceof AbbyyOCRProcess) {
 			processes.add((AbbyyOCRProcess) process);
@@ -180,7 +185,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 
 	public static AbbyyOCRProcess createProcessFromDir (File directory, String extension) {
 		AbbyyOCRProcess ap = new AbbyyOCRProcess(config);
-		List<File> imageDirs = AbstractOCRProcess.getImageDirectories(directory, extension);
+		List<File> imageDirs = OCRUtil.getTargetDirectories(directory, extension);
 
 		for (File id : imageDirs) {
 			if (imageDirs.size() > 1) {
@@ -188,7 +193,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 				throw new OCRException("createProcessFromDir can currently create only one AbbyyOCRProcess!");
 			}
 			String jobName = id.getName();
-			for (File imageFile : AbstractOCRProcess.makeFileList(id, extension)) {
+			for (File imageFile : OCRUtil.makeFileList(id, extension)) {
 				ap.setName(jobName);
 				//Remote URL isn't set here because we don't know it yet. 
 				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI());
@@ -207,7 +212,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	}
 
 	@Override
-	public Observer recognize () {
+	public Observable recognize () {
 		if (!started && !processes.isEmpty()) {
 			start();
 		} else if (processes.isEmpty()) {
@@ -217,7 +222,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	}
 
 	@Override
-	public Observer addOcrProcess (OCRProcess ocrp) {
+	public Observable addOcrProcess (OCRProcess ocrp) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -226,5 +231,15 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	public Boolean stop () {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getName () {
+		return name;
+	}
+
+	@Override
+	public String getVersion () {
+		return version;
 	}
 }
