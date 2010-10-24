@@ -27,6 +27,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +39,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyTicket;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
@@ -52,26 +55,27 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 
 	//Internal state variables
 	private Integer progress;
-	
-	protected AbbyyCLIOCRProcess (OCRProcess process) {
+
+	protected AbbyyCLIOCRProcess(OCRProcess process) {
 		super(process);
 	}
-	
-	public AbbyyCLIOCRProcess (List<String> cmd) {
-		super();
-		this.cmd = cmd;
+
+	protected AbbyyCLIOCRProcess(AbbyyCLIOCRProcess process) {
+		this(process.getOcrImages(), process.getLanguages(), process.getOcrOutput(), process.cmd, process.setOrientation, process.traceEngine);
 	}
 
-	private List<String> buildInputFileListString (String param) throws URISyntaxException {
-		ArrayList<String> arglist = new ArrayList<String>();
-		for (OCRImage image : getOcrImages()) {
-			File file = new File(image.getUri());
-			arglist.add(param);
-			arglist.add(file.getAbsolutePath());
-			logger.trace("Datei " + file + "hinzugefügt");
-		}
-		logger.trace("Argumentlist: " + arglist);
-		return arglist;
+	protected AbbyyCLIOCRProcess(List<OCRImage> ocrImages, Set<Locale> langs, Map<OCRFormat, OCROutput> output, List<String> cmd, Boolean setOrientation, Boolean traceEngine) {
+		this.ocrImages = ocrImages;
+		this.langs = langs;
+		this.ocrOutput = output;
+		this.cmd = cmd;
+		this.setOrientation = setOrientation;
+		this.traceEngine = traceEngine;
+	}
+
+	public AbbyyCLIOCRProcess(List<String> cmd) {
+		super();
+		this.cmd = cmd;
 	}
 
 	private List<String> buildInputFileList (String param) throws URISyntaxException {
@@ -115,7 +119,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		//Language
 		arglist.add("-rl");
 		//TODO: add default languages to config
-		for (Locale l : getLangs()) {
+		for (Locale l : getLanguages()) {
 
 			if (AbbyyTicket.LANGUAGE_MAP.get(l) == null) {
 				throw new OCRException();
@@ -203,6 +207,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 			throw new OCRException(e);
 		}
 	}
+
 	private void calculateProgress (String output) {
 		Pattern p = Pattern.compile(".*?page (\\d*)\\..*");
 		Matcher m = p.matcher(output);
@@ -219,7 +224,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 			logger.warn("Failed to get progress: ", e);
 		}
 	}
-	
+
 	protected int getProgress () {
 		return progress;
 	}

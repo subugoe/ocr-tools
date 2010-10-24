@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>ocr-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -48,13 +48,6 @@
 			<version>1.5.6</version>
 		</dependency>
 		<dependency>
-			<groupId>com.lowagie</groupId>
-			<artifactId>itext</artifactId>
-			<version>2.1.7</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>abbyy-server-impl</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -62,7 +55,7 @@
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>ocrutil</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
