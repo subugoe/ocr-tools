@@ -57,6 +57,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	//TODO: Save the stats of the remote system in a hidden file there
 	//TODO: check if the OCRResult stuff is used correctly
 	//TODO: check if orientation is handled properly
+	//TODO: the hotfolder should be passed by the caller
+	//TODO: add a locking method to the hotfolder
+	//TODO: move hotfolder stuff into a seperate directory
 
 	// The Constant logger.
 	public final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcess.class);
@@ -107,7 +110,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 	public AbbyyOCRProcess(OCRProcess p) {
 		super(p);
-		hotfolder = ApacheVFSHotfolderImpl.newInstance(config);
+		hotfolder = ApacheVFSHotfolderImpl.getInstance(config);
 	}
 
 	protected AbbyyOCRProcess(ConfigParser config, Hotfolder hotfolder) {
@@ -133,7 +136,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		maxFiles = config.getMaxFiles();
 
 		if (hotfolder == null) {
-			hotfolder = ApacheVFSHotfolderImpl.newInstance(config);
+			hotfolder = ApacheVFSHotfolderImpl.getInstance(config);
 		}
 
 		try {
@@ -226,7 +229,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			Thread.sleep(wait);
 			//Create a list of the files to check for
 			List<URI> expectedResults = new ArrayList<URI>();
-			Map<OCRFormat, OCROutput> outputs = getOcrOutput();
+			Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
 			for (OCRFormat output : outputs.keySet()) {
 				String remoteUri = ((AbbyyOCROutput) outputs.get(output)).getRemoteUri().toString();
 				expectedResults.add(new URI(remoteUri));
@@ -625,7 +628,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		}
 		return null;
 	}
-
+	/**
+	 * Check server state. check all three folders since the limits are for the
+	 * whole system.
+	 * 
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	public void checkServerState () throws IOException, URISyntaxException {
 		if (maxSize != 0 && maxFiles != 0) {
 
@@ -665,7 +674,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			logger.warn("Server state checking is disabled.");
 		}
 	}
-	
+
 	@SuppressWarnings("serial")
 	protected void mergeResultStreams (Map<OCRFormat, AbbyyOCROutput> outputs) throws IOException {
 		Map<OCRFormat, Exception> exceptions = new HashMap<OCRFormat, Exception>();

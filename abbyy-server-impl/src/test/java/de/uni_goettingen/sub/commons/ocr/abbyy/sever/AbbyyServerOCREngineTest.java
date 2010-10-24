@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
@@ -87,7 +88,7 @@ public class AbbyyServerOCREngineTest {
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
 			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
 			assertNotNull(aop);
-			aop.setOcrOutput(AbbyyTicketTest.OUTPUT_DEFINITIONS);
+			aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			//TODO: set the inout folder to new File(apacheVFSHotfolderImpl.getAbsolutePath() + File.separator + INPUT_NAME);
 			File testTicket = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + File.separator
 					+ HotfolderTest.INPUT
@@ -120,7 +121,7 @@ public class AbbyyServerOCREngineTest {
 		String hotfolderOutput = "file://./src/test/resources/apacheVFSHotfolderImpl/output";
 
 		List<File> listFolders = new ArrayList<File>();
-		hotfolder = ApacheVFSHotfolderImpl.newInstance(new ConfigParser());
+		hotfolder = ApacheVFSHotfolderImpl.getInstance(new ConfigParser());
 
 		// copy all files from  errorfolderResult to hotfolderError 
 		errorfolderResult = parseString(errorfolderResult);
@@ -181,10 +182,10 @@ public class AbbyyServerOCREngineTest {
 		for (File files : directories) {
 			fileListimage = null; // makeFileList(files, extension);
 			System.out.println(fileListimage);
-			OCRProcess p = abbyy.newOCRProcess();
+			AbbyyOCRProcess p = (AbbyyOCRProcess) abbyy.newOcrProcess();
 			p.setName(files.getName());
 			for (File fileImage : fileListimage) {
-				OCRImage image = abbyy.newOCRImage();
+				AbbyyOCRImage image = (AbbyyOCRImage) abbyy.newOcrImage();
 				//	System.out.println("fehler "+ fileImage.getAbsolutePath());
 
 				image.setUri(fileImage.toURI());

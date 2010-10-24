@@ -181,7 +181,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 				outputs.put(format, aoo);
 			}
 		}
-		setOcrOutput(outputs);
+		setOcrOutputs(outputs);
 	}
 
 	public void write (OutputStream out, String identifier) throws IOException {
@@ -227,11 +227,11 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		}
 
 		Integer i = 0;
-		if (getOcrOutput() == null || getOcrOutput().size() < 1) {
+		if (getOcrOutputs() == null || getOcrOutputs().size() < 1) {
 			throw new OCRException("No export options given!");
 		}
-		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[getOcrOutput().size()];
-		Map<OCRFormat, OCROutput> output = getOcrOutput();
+		OutputFileFormatSettings[] settings = new OutputFileFormatSettings[getOcrOutputs().size()];
+		Map<OCRFormat, OCROutput> output = getOcrOutputs();
 		for (OCRFormat of : output.keySet()) {
 			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(of);
 			if (exportFormat == null) {

@@ -85,7 +85,7 @@ public class AbbyyTicketTest {
 	static {
 		BASEFOLDER_FILE = getBaseFolderAsFile();
 		ocrp = mock(OCRProcess.class);
-		when(ocrp.getLangs()).thenReturn(new HashSet<Locale>() {
+		when(ocrp.getLanguages()).thenReturn(new HashSet<Locale>() {
 			{
 				add(Locale.GERMAN);
 				add(new Locale("la"));
@@ -116,7 +116,7 @@ public class AbbyyTicketTest {
 	public static void init () throws FileNotFoundException, MalformedURLException, URISyntaxException {
 
 		//This s just here to display the works of the mocking framework
-		assertTrue("This should never happen", ocrp.getLangs().contains(Locale.GERMAN));
+		assertTrue("This should never happen", ocrp.getLanguages().contains(Locale.GERMAN));
 
 		//Create some mock images
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
@@ -139,7 +139,7 @@ public class AbbyyTicketTest {
 		when(ocri.getUri()).thenReturn(new File("/tmp").toURI());
 		
 
-		when(ocrp.getOcrOutput()).thenReturn(OUTPUT_DEFINITIONS);
+		when(ocrp.getOcrOutputs()).thenReturn(OUTPUT_DEFINITIONS);
 
 	}
 

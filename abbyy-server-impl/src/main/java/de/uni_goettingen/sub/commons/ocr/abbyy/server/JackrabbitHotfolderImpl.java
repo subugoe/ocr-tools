@@ -23,7 +23,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 //TODO: Make this work
 //TODO: Write a test for it
-//TODO: check if all connections are closed after usage
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -114,6 +113,8 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements Hotfol
 			put(to.toString(), new File(from));
 		} else if (!isLocal(from) && isLocal(to)) {
 			//This should be a download
+			//outdir = outdir.endsWith(File.separator) ? outdir : outdir + File.separator;
+			//File localFile = new File(outdir + localfilename);
 			getWebdavFile(from.toString(), new File(to));
 		} else if (isLocal(from) && isLocal(to)) {
 			//Just copy local files
@@ -126,12 +127,13 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements Hotfol
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyTmpFile(java.lang.String, java.net.URI)
 	 */
 	@Override
-	public void copyTmpFile (String tmpFile, URI to) throws IOException {
+	public Boolean copyTmpFile (String tmpFile, URI to) throws IOException {
 		if (tmpfiles.containsKey(tmpFile)) {
 			copyFile(tmpfiles.get(tmpFile).toURI(), to);
 		} else {
-			throw new IOException("Tmp file not registred at hotfolder");
+			return false;
 		}
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -266,8 +268,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements Hotfol
 	}
 
 	private void getWebdavFile (String url, File localFile) {
-		//outdir = outdir.endsWith(File.separator) ? outdir : outdir + File.separator;
-		//File localFile = new File(outdir + localfilename);
+
 		logger.info("URL:" + url);
 
 		// Create a method instance.
@@ -315,7 +316,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements Hotfol
 		return uri.getScheme().equals("file");
 	}
 
-	public static Hotfolder newInstace (ConfigParser config) {
+	public static Hotfolder getInstace (ConfigParser config) {
 		if (_instance == null) {
 			_instance = new JackrabbitHotfolderImpl(config);
 		}
