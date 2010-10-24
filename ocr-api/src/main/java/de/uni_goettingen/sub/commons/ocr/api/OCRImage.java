@@ -36,14 +36,16 @@ import java.net.URI;
 public interface OCRImage {
 
 	/**
-	 * Get an URI of an image.
+	 * Gets the {@link URI} of the image. URI is used to be able to use different
+	 * resolvers to return an {@link java.io.InputStream}.
 	 * 
 	 * @return the uri
 	 */
 	abstract public URI getUri ();
 
 	/**
-	 * Sets the URI of an image.
+	 * Sets the {@link URI} of the image. URI is used to be able to use different
+	 * resolvers to return an {@link java.io.InputStream}.
 	 * 
 	 * @param uri
 	 *            the new uri
@@ -53,16 +55,18 @@ public interface OCRImage {
 	/**
 	 * Gets the {@link Orientation} of an image. Not all engines support this
 	 * setting and may return garbage. If in doubt rotate the image files before
-	 * recognizing them.
+	 * recognizing them. this can be used to ensure that images are
+	 * recognized in the right viewing direction
 	 * 
 	 * @return the rotation
 	 */
 	abstract public Orientation getOrientation ();
 
 	/**
-	 * Sets the rotation of an image. Not all engines support this setting and
+	 * Sets the {@link Orientation} of an image. Not all engines support this setting and
 	 * may return garbage. If in doubt rotate the image files before recognizing
-	 * them.
+	 * them. This can be used to ensure that images are
+	 * recognized in the right viewing direction
 	 * 
 	 * @param orientation
 	 *            the new {@link Orientation}

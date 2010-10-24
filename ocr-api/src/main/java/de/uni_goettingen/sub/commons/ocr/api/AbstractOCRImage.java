@@ -60,41 +60,29 @@ public abstract class AbstractOCRImage implements OCRImage {
 		this.orientation = orientation;
 	}
 
-	/**
-	 * get an Uri for a image.
-	 * 
-	 * @return the uri
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#getUri()
 	 */
 	public URI getUri () {
 		return this.imageUri;
 	}
 
-	/**
-	 * Sets the {@link URI} of an image. URI is used to be able to use different
-	 * resolvers to return an {@link java.io.InputStream}.
-	 * 
-	 * @param uri
-	 *            the new uri
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#setUri(java.net.URI)
 	 */
 	public void setUri (URI uri) {
 		this.imageUri = uri;
 	}
 
-	/**
-	 * Gets the rotation of an image.
-	 * 
-	 * @return the {@link OCRImage.Orientation}
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#getOrientation()
 	 */
 	public Orientation getOrientation () {
 		return orientation;
 	}
 
-	/**
-	 * Sets the rotation of an image, this can be used to ensure that images are
-	 * recognized in the right viewing direction
-	 * 
-	 * @param orientation
-	 *            the new the {@link OCRImage.Orientation}
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#setOrientation(OCRImage.Orientation)
 	 */
 	public void setOrientation (Orientation orientation) {
 		this.orientation = orientation;
