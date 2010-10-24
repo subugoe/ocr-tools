@@ -50,7 +50,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 * The images that should be converted, are stored in the given format at
 	 * the given location
 	 */
-	protected Map<OCRFormat, OCROutput> ocrOutput;
+	protected Map<OCRFormat, OCROutput> ocrOutputs;
 
 	/** The params that should be used adjust the recognition process. */
 	protected Map<String, String> params = new HashMap<String, String>();
@@ -73,7 +73,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	public AbstractOCRProcess(OCRProcess process) {
 		//Copy Constructor
-		this(process.getOcrImages(), process.getLanguages(), process.getOcrOutput());
+		this(process.getOcrImages(), process.getLanguages(), process.getOcrOutputs());
 	}
 
 	/**
@@ -91,7 +91,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	public AbstractOCRProcess(List<OCRImage> ocrImages, Set<Locale> langs, Map<OCRFormat, OCROutput> output) {
 		this.ocrImages = ocrImages;
 		this.langs = langs;
-		this.ocrOutput = output;
+		this.ocrOutputs = output;
 	}
 
 	/**
@@ -138,8 +138,8 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setOcrImages(java.util.List)
 	 */
-	public void setOcrImages (List<OCRImage> ocrImage) {
-		this.ocrImages = ocrImage;
+	public void setOcrImages (List<OCRImage> ocrImages) {
+		this.ocrImages = ocrImages;
 	}
 
 	/**
@@ -169,16 +169,15 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setOcrOutput(java.util.Map)
 	 */
-	public void setOcrOutput (Map<OCRFormat, OCROutput> ocrOutput) {
-		this.ocrOutput = ocrOutput;
-
+	public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutputs) {
+		this.ocrOutputs = ocrOutputs;
 	}
 
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrOutput()
 	 */
-	public Map<OCRFormat, OCROutput> getOcrOutput () {
-		return this.ocrOutput;
+	public Map<OCRFormat, OCROutput> getOcrOutputs () {
+		return this.ocrOutputs;
 	}
 
 	/* (non-Javadoc)

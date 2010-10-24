@@ -86,23 +86,53 @@ public interface OCREngine {
 	/**
 	 * New OCRImage. This method should return an engine specific implementation
 	 * of {@link OCRImage}. Lazy implementers can choose to return an anonymous
-	 * class that extends {@link AbstractOCRImage}, if it fits their needs.
+	 * class that extends {@link AbstractOCRImage}, if it fits their needs:
+	 * 
+	 * <pre>
+	 * {@code 
+	 * return new AbstractOCRImage() {
+	 * 	public void setUri (URI uri) {
+	 * 		super.setUri(uri);
+	 * 	}
+	 * };
+	 * }
+	 * </pre>
 	 * 
 	 * @return the new created OCR image
 	 * @see OCRImage
 	 */
-	abstract public OCRImage newOCRImage ();
+	abstract public OCRImage newOcrImage ();
 
 	/**
 	 * New OCRProcess. This method should return an engine specific
 	 * implementation of {@link OCRProcess}. Lazy implementers can choose to
 	 * return an anonymous class that extends {@link AbstractOCRProcess}, if it
-	 * fits their needs.
+	 * fits their needs:
+	 * 
+	 * <pre>
+	 * {@code 
+	 * return new AbstractOCRProcess() {
+	 * 	@Override
+	 * 	public void setName (String name) {
+	 * 		super.setName(name);
+	 * 	}
+	 * 	public void addLanguage (Locale lang) {
+	 * 		super.addLanguage(lang);
+	 * 	}
+	 * 	public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutput) {
+	 * 		super.setOcrOutputs(ocrOutput);
+	 * 	}
+	 * 	public void setOcrImages (List<OCRImage> ocrImages) {
+	 * 		super.setOcrImages(ocrImages);
+	 * 	}
+	 * };
+	 * }
+	 * </pre>
 	 * 
 	 * @return the new created OCR process
 	 * @see OCRProcess
 	 */
-	abstract public OCRProcess newOCRProcess ();
+	abstract public OCRProcess newOcrProcess ();
 
 	/**
 	 * New OCROutput. This method should return an engine specific
@@ -110,10 +140,20 @@ public interface OCREngine {
 	 * return an anonymous class that extends {@link AbstractOCROutput}, if it
 	 * fits their needs.
 	 * 
+	 * <pre>
+	 * {@code 
+	 * return new AbstractOCROutput() {
+	 * 	public void setUri (URI uri) {
+	 * 		super.setUri(uri);
+	 * 	}
+	 * };
+	 * }
+	 * </pre>
+	 * 
 	 * @return the new created OCR output
 	 * @see OCROutput
 	 */
-	abstract public OCROutput newOCROutput ();
+	abstract public OCROutput newOcrOutput ();
 
 	/**
 	 * Inits the OCREngine. This an be used to check if the engine is

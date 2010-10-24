@@ -82,11 +82,11 @@ public interface OCRProcess {
 	 * Sets the ocr output. This Map contains settings for the creation of a
 	 * output format.
 	 * 
-	 * @param ocrOutput
+	 * @param ocrOutputs
 	 *            the ocr output
 	 * @see OCROutput
 	 */
-	abstract public void setOcrOutput (Map<OCRFormat, OCROutput> ocrOutput);
+	abstract public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutput);
 
 	/**
 	 * Gets the ocr output as a Map. The keys of this map represent the
@@ -95,7 +95,7 @@ public interface OCRProcess {
 	 * @return the ocr output
 	 * @see OCROutput
 	 */
-	abstract public Map<OCRFormat, OCROutput> getOcrOutput ();
+	abstract public Map<OCRFormat, OCROutput> getOcrOutputs ();
 
 	/**
 	 * Sets the name of this {@link OCRProcess}. The nmae can be used by

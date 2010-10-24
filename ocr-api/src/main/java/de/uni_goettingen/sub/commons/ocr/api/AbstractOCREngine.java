@@ -18,8 +18,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * The Class AbstractOCREngine is a abstract super class for {@link OCREngine}
@@ -62,5 +65,58 @@ public abstract class AbstractOCREngine implements OCREngine {
 	 * @return the version
 	 */
 	public abstract String getVersion ();
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#newOcrImage()
+	 */
+	public OCRImage newOcrImage () {
+		return new AbstractOCRImage() {
+			@Override
+			public void setUri (URI uri) {
+				super.setUri(uri);
+			}
+		};
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#newOcrOutput()
+	 */
+	public OCROutput newOcrOutput () {
+		return new AbstractOCROutput() {
+			@Override
+			public void setUri (URI uri) {
+				super.setUri(uri);
+			}
+		};
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#newOcrProcess()
+	 */
+	public OCRProcess newOcrProcess () {
+		return new AbstractOCRProcess() {
+			@Override
+			public void setName (String name) {
+				super.setName(name);
+			}
+
+			@Override
+			public void addLanguage (Locale lang) {
+				super.addLanguage(lang);
+			}
+
+			@Override
+			public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutput) {
+				super.setOcrOutputs(ocrOutput);
+			}
+
+			@Override
+			public void setOcrImages (List<OCRImage> ocrImages) {
+				super.setOcrImages(ocrImages);
+			}
+		};
+	}
+	
+	//TODO: check if we can add the getInstance stuff here
 
 }

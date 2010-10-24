@@ -25,6 +25,9 @@ import java.util.Map;
 
 /**
  * The Enum OCRFormat. The formats which are supported.
+ * @version 0.9
+ * @author abergna
+ * @author cmahnke
  */
 public enum OCRFormat {
 
