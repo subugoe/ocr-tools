@@ -127,7 +127,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	public void setLanguages (Set<Locale> langs) {
 		this.langs = langs;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrImages()
 	 */
@@ -201,7 +201,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	public Boolean isFinished () {
 		return isFinished();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrProcessMetadata()
 	 */

@@ -147,14 +147,14 @@ public interface OCRProcess {
 	 *         otherwise
 	 */
 	abstract public Boolean isFinished ();
-	
+
 	/**
-	 * Gets the OCR output metadata for this {@link OCRProcess}. This can be used
-	 * to filter the results for accuracy or to save it for further processing.
-	 * Implementations not generating this information should throw a
-	 * {@link java.lang.UnsupportedOperationException}. The location and / or name
-	 * of this method may change in future releases.
-	 *
+	 * Gets the OCR output metadata for this {@link OCRProcess}. This can be
+	 * used to filter the results for accuracy or to save it for further
+	 * processing. Implementations not generating this information should throw
+	 * a {@link java.lang.UnsupportedOperationException}. The location and / or
+	 * name of this method may change in future releases.
+	 * 
 	 * @return the OCR output metadata
 	 * @see OCRProcessMetadata
 	 */
