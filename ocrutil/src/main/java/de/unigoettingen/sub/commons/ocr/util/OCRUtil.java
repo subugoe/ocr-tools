@@ -63,7 +63,7 @@ public class OCRUtil {
 	 * For example consider a list of "tif", "tiff" and "TIF".
 	 * 
 	 * @param dir the directory to search in
-	 * @param extension the file extensions
+	 * @param extensions the file extensions
 	 * @return the target directories
 	 */
 	
@@ -108,9 +108,9 @@ public class OCRUtil {
 	 * makeFileList is a simple static method to create a list of files ending
 	 * with the given extension.
 	 * 
-	 * @param inputFile
+	 * @param dir
 	 *            the directory that is searched for files
-	 * @param filter the file extension to look for
+	 * @param extension the file extension to look for
 	 * @return the list of all files have "filter" as ending
 	 */
 	public static List<File> makeFileList (File dir, String extension) {

@@ -375,9 +375,9 @@ public class FileMerger {
 	 * Merge files of the given format. Look at the used methods below
 	 * for remarks on the different merge implementations.
 	 * 
-	 * @see {@link #mergeAbbyyXML(List, File)}
-	 * @see {@link #mergePDF(List, File)}
-	 * @see {@link #mergeTXT(List, File)}
+	 * @see #mergeAbbyyXML(List, File)
+	 * @see #mergePDF(List, File)
+	 * @see #mergeTXT(List, File)
 	 *
 	 * @param format the {@link OCRFormat} to merge
 	 * @param files the File's to merge
@@ -395,9 +395,9 @@ public class FileMerger {
 	 * suitable for processing over WebDAV for example. Look at the used methods below
 	 * for remarks on the different merge implementations.
 	 * 
-	 * @see {@link #mergeAbbyyXML(List, OutputStream)}
-	 * @see {@link #mergePDF(List, OutputStream)}
-	 * @see {@link #mergeTXT(List, OutputStream)}
+	 * @see #mergeAbbyyXML(List, OutputStream)
+	 * @see #mergePDF(List, OutputStream)
+	 * @see #mergeTXT(List, OutputStream)
 	 *
 	 * @param format the {@link OCRFormat} to merge
 	 * @param iss the List of InputStreams
