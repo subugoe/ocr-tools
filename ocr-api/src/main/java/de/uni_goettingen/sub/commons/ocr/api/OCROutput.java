@@ -25,7 +25,9 @@ import java.util.Map;
 
 /**
  * The Interface OCROutput represents the expected results before processing and
- * references to the resutls if the processing is done.
+ * references to the results if the processing is done. Implementations should
+ * extend {@link AbstractOCROutput} to add further methods for example for
+ * handling Streams. It's also possible to add preconfigured params there.
  * 
  * @version 0.9
  * @author abergna
@@ -34,8 +36,8 @@ import java.util.Map;
 public interface OCROutput {
 
 	/**
-	 * Gets the uri where the results should be stored. If {@link #isResult()} is
-	 * true, the result should be at this location.
+	 * Gets the uri where the results should be stored. If {@link #isResult()}
+	 * is true, the result should be at this location.
 	 * 
 	 * @return the uri
 	 */
@@ -51,18 +53,20 @@ public interface OCROutput {
 	public void setUri (URI uri);
 
 	/**
-	 * Gets the params that should be used for creation of output files. Since these a
-	 * specific to a {@link OCRFormat} and the used engine, they should only be used to adjust the
-	 * output, not for recognition options.
+	 * Gets the params that should be used for creation of output files. Since
+	 * these a specific to a {@link OCRFormat} and the used engine, they should
+	 * only be used to adjust the output, not for recognition options. This can
+	 * be used to set variants of the output like different versions of PDF.
 	 * 
 	 * @return a {@link Map} with the options
 	 */
 	public Map<String, String> getParams ();
 
 	/**
-	 * Sets the params that should be used for creation of output files. Since these a
-	 * specific to a {@link OCRFormat} and the used engine, they should only be used to adjust the
-	 * output, not for recognition options.
+	 * Sets the params that should be used for creation of output files. Since
+	 * these a specific to a {@link OCRFormat} and the used engine, they should
+	 * only be used to adjust the output, not for recognition options. This can
+	 * be used to set variants of the output like different versions of PDF.
 	 * 
 	 * @param params
 	 *            the {@link Map} params with the options
@@ -71,10 +75,12 @@ public interface OCROutput {
 
 	/**
 	 * Checks if this OCROutout represents a result. If this isn't set this
-	 * {@link OCRResult} is just a description what the caller expects to be the
-	 * result.
+	 * {@link OCROutput} is just a description what the caller expects to be the
+	 * result. Note: This indicates that the results <u>should</u> exist. The
+	 * API doesn't guarantee this to be true.
 	 * 
-	 * @return true if this {@OCROutput} represents a result, false otherwise
+	 * @return true if this {@link OCROutput} represents a result, false
+	 *         otherwise
 	 */
 	public Boolean isResult ();
 

@@ -23,7 +23,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Enum OCRFormat. The formats which are supported.
  */
@@ -32,32 +31,32 @@ public enum OCRFormat {
 	/** The Format for Text, UTF-8 is assumed. */
 	TXT("TXT"),
 	/**
-	 * The Format for PDF. Note that different Implementations may generate
+	 * The Format for PDF, note that different Implementations may generate
 	 * different Versions of PDF.
 	 */
 	PDF("PDF"),
 	/** The Format for XML, UTF-8 is assumed. */
 	XML("XML"),
 	/**
-	 * The Format PDF/a. Don't use this without proper validations, there are
+	 * The Format PDF/a, don't use this without proper validations, there are
 	 * some severe errors in some implementations.
 	 */
 	PDFA("PDFA"),
 	/**
 	 * The Format for Microsoft Word Doc files, version 2003 should be assumed -
-	 * deprecated.
+	 * try to avoid this.
 	 */
 	DOC("DOC"),
 	/**
-	 * The Format for HTML. ISO 8859-1 and HTML 4.01 should be expected -
-	 * deprecated.
+	 * The Format for HTML, ISO 8859-1 and HTML 4.01 should be expected - try to
+	 * avoid this.
 	 */
 	HTML("HTML"),
 	/** The Format for XHTML, UTF-8 is assumed. */
 	XHTML("XHTML"),
 	/**
-	 * The Format for hOCR, UTF-8 is assumed. Implementations should expect the
-	 * crap based on HTML 4.01
+	 * The Format for hOCR, UTF-8 is assumed, implementations should expect the
+	 * worse, based on HTML 4.01
 	 */
 	HOCR("HOCR");
 

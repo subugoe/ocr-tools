@@ -27,7 +27,6 @@ import java.util.List;
  * different implementations {@link #getName()} and {@link #getVersion()}.
  * 
  * @version 0.9
- * @author abergna
  * @author cmahnke
  */
 public abstract class AbstractOCREngine implements OCREngine {
@@ -35,6 +34,7 @@ public abstract class AbstractOCREngine implements OCREngine {
 	/** A simple list containing {@link OCRProcess} that will be processed */
 	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
 
+	//State variables
 	/** Indicates if the processing of the engine has started. */
 	protected Boolean started = false;
 

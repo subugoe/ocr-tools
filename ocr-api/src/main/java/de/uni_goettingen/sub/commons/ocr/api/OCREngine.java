@@ -21,83 +21,109 @@ package de.uni_goettingen.sub.commons.ocr.api;
  */
 
 import java.util.List;
-import java.util.Observer;
+import java.util.Observable;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface OCREngine.
+ * The Interface OCREngine is the main entry point for each engine. It also
+ * works as simple factory for engine specific implementations of the API
+ * interfaces. Note that this may change before version 1.0 will be published.
+ * The return types for the {@link #recognize()} methods isn't also set in stone
+ * yet since {@link java.util.Observable} isn't optimal.
  */
 public interface OCREngine {
 
 	/**
-	 * Recognize. Start
+	 * Recognize. Starts the recognition of the {@link OCRProcess} hold in the
+	 * internal queue. The returned {@link java.util.Observable} can be used to
+	 * track the progress of the recognition process.
 	 * 
 	 * @param process
 	 *            the process
-	 * @return the observer
+	 * @return the observable
 	 */
-	public Observer recognize (OCRProcess process);
+	public Observable recognize (OCRProcess process);
 
 	/**
 	 * Recognize the list of given OCRProcess. Throws an IllegalStateException
 	 * if no process was added. Does nothing the recognizer is already working.
+	 * The returned {@link java.util.Observable} can be used to track the
+	 * progress of the recognition process.
 	 * 
 	 * @return the observer
+	 * @see OCRProcess
 	 */
-	public Observer recognize ();
+	public Observable recognize ();
 
 	/**
-	 * Stops a running recognizer. Returns false if the recognizer isn't
-	 * running.
+	 * Stops a running recognizer. Returns false if the recognizer isn't running
+	 * or waits for a {@link OCRProcess} to finish.
 	 * 
-	 * @return the boolean
+	 * @return true if the engine starts to shut down or already is shut down,
+	 *         false otherwise.
 	 */
 	public Boolean stop ();
 
 	/**
-	 * Adds a OCR process.
+	 * Adds a OCR process. The returned {@link java.util.Observable} can be used
+	 * to track the progress of the recognition process.
 	 * 
 	 * @param ocrp
 	 *            the ocrp
 	 * @return the observer
+	 * @see OCRProcess
 	 */
 
-	public Observer addOcrProcess (OCRProcess ocrp);
+	public Observable addOcrProcess (OCRProcess ocrp);
 
 	/**
-	 * Gets the OCR process.
+	 * Adds OCR process.
 	 * 
-	 * @return the oCR process
+	 * @return the OCR process
+	 * @see OCRProcess
 	 */
 	public List<OCRProcess> getOcrProcess ();
 
 	/**
-	 * New ocr image.
+	 * New OCRImage. This method should return an engine specific implementation
+	 * of {@link OCRImage}. Lazy implementers can choose to return an anonymous
+	 * class that extends {@link AbstractOCRImage}, if it fits their needs.
 	 * 
-	 * @return the OCR image
+	 * @return the new created OCR image
+	 * @see OCRImage
 	 */
 	public OCRImage newOCRImage ();
 
 	/**
-	 * New ocr process.
+	 * New OCRProcess. This method should return an engine specific
+	 * implementation of {@link OCRProcess}. Lazy implementers can choose to
+	 * return an anonymous class that extends {@link AbstractOCRProcess}, if it
+	 * fits their needs.
 	 * 
-	 * @return the OCR process
+	 * @return the new created OCR process
+	 * @see OCRProcess
 	 */
 	public OCRProcess newOCRProcess ();
 
 	/**
-	 * New ocr output.
+	 * New OCROutput. This method should return an engine specific
+	 * implementation of {@link OCROutput}. Lazy implementers can choose to
+	 * return an anonymous class that extends {@link AbstractOCROutput}, if it
+	 * fits their needs.
 	 * 
-	 * @return the oCR output
+	 * @return the new created OCR output
+	 * @see OCROutput
 	 */
 	public OCROutput newOCROutput ();
 
 	/**
 	 * Inits the OCREngine. This an be used to check if the engine is
-	 * operational. Implementtions should implement this metho to chek if an
-	 * Engine is licenced or a server component can be reached.
+	 * operational. Implementations should implement this method to check if an
+	 * Engine is licensed or a server component can be reached. Note the the API
+	 * doesn't prohibit the usage of an engine that failed to initialize. Use it
+	 * on your own risk. If the engine was already initialized this also returns
+	 * true.
 	 * 
-	 * @return the boolean
+	 * @return true if the engine could be initialized, false otherwise
 	 */
 	public Boolean init ();
 
