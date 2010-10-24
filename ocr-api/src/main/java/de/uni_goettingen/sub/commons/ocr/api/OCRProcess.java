@@ -46,7 +46,7 @@ public interface OCRProcess {
 	 * @return the langs
 	 * @see java.util.Locale
 	 */
-	public Set<Locale> getLangs ();
+	abstract public Set<Locale> getLangs ();
 
 	/**
 	 * Sets the languages set for this process as List. These languages will be
@@ -57,7 +57,7 @@ public interface OCRProcess {
 	 *            the language
 	 * @see java.util.Locale
 	 */
-	public void setLangs (Set<Locale> langs);
+	abstract public void setLangs (Set<Locale> langs);
 
 	/**
 	 * Gets a List of {@link OCRImage}. These are the images that will be
@@ -66,7 +66,7 @@ public interface OCRProcess {
 	 * @return the ocr image
 	 * @see OCRImage
 	 */
-	public List<OCRImage> getOcrImages ();
+	abstract public List<OCRImage> getOcrImages ();
 
 	/**
 	 * Sets a List of {@link OCRImage}. These are the images that will be
@@ -76,7 +76,7 @@ public interface OCRProcess {
 	 *            the new ocr images
 	 * @see OCRImage
 	 */
-	public void setOcrImages (List<OCRImage> ocrImages);
+	abstract public void setOcrImages (List<OCRImage> ocrImages);
 
 	/**
 	 * Sets the ocr output. This Map contains settings for the creation of a
@@ -86,7 +86,7 @@ public interface OCRProcess {
 	 *            the ocr output
 	 * @see OCROutput
 	 */
-	public void setOcrOutput (Map<OCRFormat, OCROutput> ocrOutput);
+	abstract public void setOcrOutput (Map<OCRFormat, OCROutput> ocrOutput);
 
 	/**
 	 * Gets the ocr output as a Map. The keys of this map represent the
@@ -95,7 +95,7 @@ public interface OCRProcess {
 	 * @return the ocr output
 	 * @see OCROutput
 	 */
-	public Map<OCRFormat, OCROutput> getOcrOutput ();
+	abstract public Map<OCRFormat, OCROutput> getOcrOutput ();
 
 	/**
 	 * Sets the name of this {@link OCRProcess}. The nmae can be used by
@@ -107,7 +107,7 @@ public interface OCRProcess {
 	 * @param name
 	 *            the new name
 	 */
-	public void setName (String name);
+	abstract public void setName (String name);
 
 	/**
 	 * Gets the nameof this {@link OCRProcess}. The nae can be used by
@@ -118,7 +118,7 @@ public interface OCRProcess {
 	 * 
 	 * @return the name
 	 */
-	public String getName ();
+	abstract public String getName ();
 
 	/**
 	 * Gets the params that should be used for recognition. Since these a
@@ -127,7 +127,7 @@ public interface OCRProcess {
 	 * 
 	 * @return the params
 	 */
-	public Map<String, String> getParams ();
+	abstract public Map<String, String> getParams ();
 
 	/**
 	 * Sets the params that should be used for recognition. Since these a
@@ -137,7 +137,7 @@ public interface OCRProcess {
 	 * @param params
 	 *            the params
 	 */
-	public void setParams (Map<String, String> params);
+	abstract public void setParams (Map<String, String> params);
 
 	/**
 	 * Checks if this {@link OCRProcess} is finished. This method may throw an
@@ -146,6 +146,18 @@ public interface OCRProcess {
 	 * @return true if this {@link OCROutput} represents a result, false
 	 *         otherwise
 	 */
-	public Boolean isFinished ();
+	abstract public Boolean isFinished ();
+	
+	/**
+	 * Gets the OCR output metadata for this {@link OCRProcess}. This can be used
+	 * to filter the results for accuracy or to save it for further processing.
+	 * Implementations not generating this information should throw a
+	 * {@link java.lang.UnsupportedOperationException}. The location and / or name
+	 * of this method may change in future releases.
+	 *
+	 * @return the OCR output metadata
+	 * @see OCRProcessMetadata
+	 */
+	abstract OCRProcessMetadata getOCRProcessMetadata ();
 
 }

@@ -41,7 +41,7 @@ public interface OCROutput {
 	 * 
 	 * @return the uri
 	 */
-	public URI getUri ();
+	abstract public URI getUri ();
 
 	/**
 	 * Sets the uri for the result. If {@link #isResult()} is true, the result
@@ -50,7 +50,7 @@ public interface OCROutput {
 	 * @param uri
 	 *            the new uri
 	 */
-	public void setUri (URI uri);
+	abstract public void setUri (URI uri);
 
 	/**
 	 * Gets the params that should be used for creation of output files. Since
@@ -60,7 +60,7 @@ public interface OCROutput {
 	 * 
 	 * @return a {@link Map} with the options
 	 */
-	public Map<String, String> getParams ();
+	abstract public Map<String, String> getParams ();
 
 	/**
 	 * Sets the params that should be used for creation of output files. Since
@@ -71,7 +71,7 @@ public interface OCROutput {
 	 * @param params
 	 *            the {@link Map} params with the options
 	 */
-	public void setParams (Map<String, String> params);
+	abstract public void setParams (Map<String, String> params);
 
 	/**
 	 * Checks if this OCROutout represents a result. If this isn't set this
@@ -82,6 +82,6 @@ public interface OCROutput {
 	 * @return true if this {@link OCROutput} represents a result, false
 	 *         otherwise
 	 */
-	public Boolean isResult ();
-
+	abstract public Boolean isResult ();
+	
 }
