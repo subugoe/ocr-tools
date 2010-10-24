@@ -41,7 +41,7 @@ public interface OCREngine {
 	 *            the process
 	 * @return the observable
 	 */
-	public Observable recognize (OCRProcess process);
+	abstract public Observable recognize (OCRProcess process);
 
 	/**
 	 * Recognize the list of given OCRProcess. Throws an IllegalStateException
@@ -52,7 +52,7 @@ public interface OCREngine {
 	 * @return the observer
 	 * @see OCRProcess
 	 */
-	public Observable recognize ();
+	abstract public Observable recognize ();
 
 	/**
 	 * Stops a running recognizer. Returns false if the recognizer isn't running
@@ -61,7 +61,7 @@ public interface OCREngine {
 	 * @return true if the engine starts to shut down or already is shut down,
 	 *         false otherwise.
 	 */
-	public Boolean stop ();
+	abstract public Boolean stop ();
 
 	/**
 	 * Adds a OCR process. The returned {@link java.util.Observable} can be used
@@ -73,7 +73,7 @@ public interface OCREngine {
 	 * @see OCRProcess
 	 */
 
-	public Observable addOcrProcess (OCRProcess ocrp);
+	abstract public Observable addOcrProcess (OCRProcess ocrp);
 
 	/**
 	 * Adds OCR process.
@@ -81,7 +81,7 @@ public interface OCREngine {
 	 * @return the OCR process
 	 * @see OCRProcess
 	 */
-	public List<OCRProcess> getOcrProcess ();
+	abstract public List<OCRProcess> getOcrProcess ();
 
 	/**
 	 * New OCRImage. This method should return an engine specific implementation
@@ -91,7 +91,7 @@ public interface OCREngine {
 	 * @return the new created OCR image
 	 * @see OCRImage
 	 */
-	public OCRImage newOCRImage ();
+	abstract public OCRImage newOCRImage ();
 
 	/**
 	 * New OCRProcess. This method should return an engine specific
@@ -102,7 +102,7 @@ public interface OCREngine {
 	 * @return the new created OCR process
 	 * @see OCRProcess
 	 */
-	public OCRProcess newOCRProcess ();
+	abstract public OCRProcess newOCRProcess ();
 
 	/**
 	 * New OCROutput. This method should return an engine specific
@@ -113,7 +113,7 @@ public interface OCREngine {
 	 * @return the new created OCR output
 	 * @see OCROutput
 	 */
-	public OCROutput newOCROutput ();
+	abstract public OCROutput newOCROutput ();
 
 	/**
 	 * Inits the OCREngine. This an be used to check if the engine is
@@ -125,6 +125,6 @@ public interface OCREngine {
 	 * 
 	 * @return true if the engine could be initialized, false otherwise
 	 */
-	public Boolean init ();
+	abstract public Boolean init ();
 
 }

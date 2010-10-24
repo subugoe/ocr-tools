@@ -40,7 +40,7 @@ public interface OCRImage {
 	 * 
 	 * @return the uri
 	 */
-	public URI getUri ();
+	abstract public URI getUri ();
 
 	/**
 	 * Sets the URI of an image.
@@ -48,7 +48,7 @@ public interface OCRImage {
 	 * @param uri
 	 *            the new uri
 	 */
-	public void setUri (URI uri);
+	abstract public void setUri (URI uri);
 
 	/**
 	 * Gets the {@link Orientation} of an image. Not all engines support this
@@ -57,7 +57,7 @@ public interface OCRImage {
 	 * 
 	 * @return the rotation
 	 */
-	public Orientation getOrientation ();
+	abstract public Orientation getOrientation ();
 
 	/**
 	 * Sets the rotation of an image. Not all engines support this setting and
@@ -67,7 +67,7 @@ public interface OCRImage {
 	 * @param orientation
 	 *            the new {@link Orientation}
 	 */
-	public void setOrientation (Orientation orientation);
+	abstract public void setOrientation (Orientation orientation);
 
 	/**
 	 * The Enum Orientation. Orientation is expressed clockwise. For
