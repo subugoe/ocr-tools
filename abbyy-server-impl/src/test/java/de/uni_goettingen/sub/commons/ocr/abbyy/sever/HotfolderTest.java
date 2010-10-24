@@ -83,7 +83,7 @@ public class HotfolderTest {
 		logger.info("testImageTargetUri is " + testImageTargetUri);
 
 		target = testDirUri.toString() + "/" + getFileName(testImageUri);
-		apacheVFSHotfolderImpl = ApacheVFSHotfolderImpl.newInstance(new ConfigParser());
+		apacheVFSHotfolderImpl = ApacheVFSHotfolderImpl.getInstance(new ConfigParser());
 	}
 
 	@Test

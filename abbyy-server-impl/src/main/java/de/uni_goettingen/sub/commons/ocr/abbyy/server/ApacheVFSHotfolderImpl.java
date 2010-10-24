@@ -83,6 +83,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.net.URI, java.net.URI)
 	 */
 	//TODO: This is dangerous, check if the file exists!
+	@Override
 	public void copyFile (URI from, URI to) throws IOException {
 		FileObject remoteFile = fsManager.resolveFile(from.toString());
 		if (remoteFile.exists()) {
@@ -95,6 +96,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#delete(java.net.URI)
 	 */
+	@Override
 	public void delete (URI uri) throws FileSystemException {
 		fsManager.resolveFile(uri.toString()).delete();
 	}
@@ -102,6 +104,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#mkDir(java.net.URI)
 	 */
+	@Override
 	public void mkDir (URI uri) throws FileSystemException {
 		fsManager.resolveFile(uri.toString()).createFolder();
 		logger.debug("Directory " + uri.toString() + " created");
@@ -110,6 +113,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#exists(java.net.URI)
 	 */
+	@Override
 	public Boolean exists (URI uri) throws FileSystemException {
 		if (fsManager.resolveFile(uri.toString()).exists()) {
 			return true;
@@ -118,15 +122,6 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 		}
 	}
 
-	/**
-	 * Gets the uri list.
-	 * 
-	 * @param uri
-	 *            the uri
-	 * @return the uri list
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
 	@Override
 	public List<URI> listURIs (URI uri) throws IOException {
 		List<URI> uriList = new ArrayList<URI>();
@@ -164,6 +159,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#createTmpFile(java.lang.String)
 	 */
+	@Override
 	public OutputStream createTmpFile (String name) throws FileSystemException {
 		String tmpTicket = config.ticketTmpStore + name;
 		try {
@@ -177,9 +173,12 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyTmpFile(java.lang.String, java.net.URI)
 	 */
-	public void copyTmpFile (String tmpFile, URI to) throws IOException {
+	@Override
+	public Boolean copyTmpFile (String tmpFile, URI to) throws IOException {
 		if (!fsManager.resolveFile(config.ticketTmpStore + tmpFile).exists()) {
 			logger.error(config.ticketTmpStore + tmpFile + "doesn't exist!");
+		} else {
+			return false;
 		}
 		try {
 			copyFile(new URI(config.ticketTmpStore + tmpFile), to);
@@ -187,6 +186,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	 *            the config
 	 * @return the hotfolder
 	 */
-	public static Hotfolder newInstance (ConfigParser config) {
+	public static Hotfolder getInstance (ConfigParser config) {
 		if (_instance == null) {
 			_instance = new ApacheVFSHotfolderImpl(config);
 		}

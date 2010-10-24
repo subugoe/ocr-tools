@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -34,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -48,7 +46,6 @@ import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
 	public static final String name = "0.5";
 	public static final String version = AbbyyServerOCREngine.class.getSimpleName();
-	
 
 	// The max threads.
 	protected static Integer maxThreads;
@@ -80,7 +77,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 *             the configuration exception
 	 */
 	private AbbyyServerOCREngine() throws FileSystemException, ConfigurationException {
-		hotfolder = ApacheVFSHotfolderImpl.newInstance(config);
+		hotfolder = ApacheVFSHotfolderImpl.getInstance(config);
 		;
 		config = new ConfigParser().parse();
 
@@ -146,27 +143,19 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		return _instance;
 	}
 
-	/**
-	 * Check server state. check all three folders since the limits are for the
-	 * whole system.
-	 * 
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
-	//TODO: this should be part of the ApacheVFSHotfolderImpl.
 
 	@Override
-	public OCRImage newOCRImage () {
+	public OCRImage newOcrImage () {
 		return new AbbyyOCRImage();
 	}
 
 	@Override
-	public OCRProcess newOCRProcess () {
+	public OCRProcess newOcrProcess () {
 		return new AbbyyOCRProcess(config, hotfolder);
 	}
 
 	@Override
-	public OCROutput newOCROutput () {
+	public OCROutput newOcrOutput () {
 		return new AbbyyOCROutput();
 	}
 

@@ -81,7 +81,7 @@ public class AbbyyOCRProcessTest {
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
 			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
 			assertNotNull(aop);
-			aop.setOcrOutput(AbbyyTicketTest.OUTPUT_DEFINITIONS);
+			aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
 			aop.write(testTicket, testDir.getName());
 			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
@@ -95,7 +95,7 @@ public class AbbyyOCRProcessTest {
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
 			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
 			assertNotNull(aop);
-			aop.setOcrOutput(AbbyyTicketTest.OUTPUT_DEFINITIONS);
+			aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
 			aop.write(testTicket, testDir.getName());
 			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
@@ -107,7 +107,7 @@ public class AbbyyOCRProcessTest {
 	public void createProcessViaAPI () throws MalformedURLException, URISyntaxException {
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
-		OCRProcess op = ase.newOCRProcess();
+		OCRProcess op = ase.newOcrProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
 			OCRImage ocri = mock(OCRImage.class);
@@ -130,7 +130,7 @@ public class AbbyyOCRProcessTest {
 		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		assertNotNull(ase);
-		OCRProcess op = ase.newOCRProcess();
+		OCRProcess op = ase.newOcrProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
 			OCRImage ocri = mock(OCRImage.class);
