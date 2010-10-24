@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +33,6 @@ import java.util.Set;
  * creation of processes.
  * 
  * @version 0.9
- * @author abergna
  * @author cmahnke
  */
 public abstract class AbstractOCRProcess extends Observable implements OCRProcess {
@@ -40,17 +40,24 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/** The name of this process, this is needed for serialization of a process */
 	protected String name;
 
-	/** The ocr image. The Images which should be converted */
+	/** The Images which should be converted */
 	protected List<OCRImage> ocrImages = new ArrayList<OCRImage>();
 
-	/** The langs. The languages which should be recognized */
+	/** The languages which should be recognized */
 	protected Set<Locale> langs = new HashSet<Locale>();
 
 	/**
-	 * The ocr output. The images that should be converted, are stored in the
-	 * given format at the given location
+	 * The images that should be converted, are stored in the given format at
+	 * the given location
 	 */
 	protected Map<OCRFormat, OCROutput> ocrOutput;
+
+	/** The params that should be used adjust the recognition process. */
+	protected Map<String, String> params = new HashMap<String, String>();
+
+	//State variables
+	/** This indicates that process has failed. */
+	protected Boolean isFinished = false;
 
 	/**
 	 * Instantiates a new abstract OCR process.
@@ -174,4 +181,24 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 		return this.ocrOutput;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getParams()
+	 */
+	public Map<String, String> getParams () {
+		return this.params;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setParams(java.util.Map)
+	 */
+	public void setParams (Map<String, String> params) {
+		this.params = params;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#isFinished()
+	 */
+	public Boolean isFinished () {
+		return isFinished();
+	}
 }

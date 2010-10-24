@@ -10,18 +10,22 @@ import java.util.Map;
  * implementations parameters can set as a simple {@link Map}.
  * 
  * @version 0.9
- * @author abergna
  * @author cmahnke
  * 
  */
 public abstract class AbstractOCROutput implements OCROutput {
 
-	/** The uri whre the output file should be stored. */
+	/** The URI where the output file should be stored. */
 	protected URI outputUri;
 
 	/** The params that should be used to generate this output representation. */
 	protected Map<String, String> params = new HashMap<String, String>();
 
+	//State variables
+	/**
+	 * This indicates that the results <u>should</u> exist, the API doesn't
+	 * guarantee this to be true.
+	 */
 	protected Boolean isResult = false;
 
 	/**
@@ -75,7 +79,6 @@ public abstract class AbstractOCROutput implements OCROutput {
 	 */
 	public void setParams (Map<String, String> params) {
 		this.params = params;
-
 	}
 
 	/* (non-Javadoc)

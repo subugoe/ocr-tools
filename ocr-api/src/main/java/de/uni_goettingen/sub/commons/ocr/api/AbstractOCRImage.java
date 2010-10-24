@@ -8,7 +8,6 @@ import java.net.URI;
  * reference and a orientation.
  * 
  * @version 0.9
- * @author abergna
  * @author cmahnke
  */
 public abstract class AbstractOCRImage implements OCRImage {
@@ -72,7 +71,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 
 	/**
 	 * Sets the {@link URI} of an image. URI is used to be able to use different
-	 * resolvers to return an {@link InputStream}.
+	 * resolvers to return an {@link java.io.InputStream}.
 	 * 
 	 * @param uri
 	 *            the new uri
@@ -84,7 +83,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 	/**
 	 * Gets the rotation of an image.
 	 * 
-	 * @return the {@link Orientation}
+	 * @return the {@link OCRImage.Orientation}
 	 */
 	public Orientation getOrientation () {
 		return orientation;
@@ -95,7 +94,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * recognized in the right viewing direction
 	 * 
 	 * @param orientation
-	 *            the new the {@link Orientation}
+	 *            the new the {@link OCRImage.Orientation}
 	 */
 	public void setOrientation (Orientation orientation) {
 		this.orientation = orientation;
