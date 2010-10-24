@@ -83,5 +83,5 @@ public interface OCROutput {
 	 *         otherwise
 	 */
 	abstract public Boolean isResult ();
-	
+
 }
