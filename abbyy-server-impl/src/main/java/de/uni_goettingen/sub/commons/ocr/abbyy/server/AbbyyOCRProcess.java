@@ -19,8 +19,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,6 +45,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 
 /**
  * The Class AbbyyOCRProcess.
@@ -659,6 +663,38 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			}
 		} else {
 			logger.warn("Server state checking is disabled.");
+		}
+	}
+	
+	@SuppressWarnings("serial")
+	protected void mergeResultStreams (Map<OCRFormat, AbbyyOCROutput> outputs) throws IOException {
+		Map<OCRFormat, Exception> exceptions = new HashMap<OCRFormat, Exception>();
+		for (OCRFormat f : outputs.keySet()) {
+			if (FileMerger.isSegmentable(f)) {
+				throw new OCRException("Format " + f.toString() + " isn't mergable!");
+			}
+			final AbbyyOCROutput o = outputs.get(f);
+			OutputStream os = new FileOutputStream(new File(o.getUri()));
+			//Convert URI list to File list, the hardly readable way ;-)
+			List<InputStream> inputFiles = new ArrayList<InputStream>() {
+				{
+					for (URI u : o.getResultFragments()) {
+						add(hotfolder.openInputStream(u));
+					}
+				}
+			};
+			try {
+				FileMerger.mergeStreams(f, inputFiles, os);
+			} catch (IllegalArgumentException e) {
+				exceptions.put(f, e);
+			} catch (IllegalAccessException e) {
+				exceptions.put(f, e);
+			} catch (InvocationTargetException e) {
+				exceptions.put(f, e);
+			}
+		}
+		if (!exceptions.isEmpty()) {
+			throw new OCRException("Error while merging files.");
 		}
 	}
 

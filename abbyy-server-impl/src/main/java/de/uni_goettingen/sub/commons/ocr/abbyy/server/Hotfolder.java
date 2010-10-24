@@ -1,10 +1,13 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+
+import org.apache.commons.vfs.FileSystemException;
 
 public interface Hotfolder {
 
@@ -56,22 +59,36 @@ public interface Hotfolder {
 	/**
 	 * check if a resource at the specified url.
 	 * 
-	 * @param url
-	 *            the url
+	 * @param uri
+	 *            the uri
 	 * @return true, if successful
 	 */
 	public abstract Boolean exists (URI uri) throws IOException;
 
-	public abstract OutputStream createTmpFile (String name) throws IOException, URISyntaxException;
+	public abstract OutputStream createTmpFile (String name) throws IOException;
 
 	public abstract void copyTmpFile (String tmpFile, URI to) throws IOException;
 
-	public abstract Long getTotalSize (URI testImageUri) throws IOException, URISyntaxException;
+	/**
+	 * Gets the total size for a uri.
+	 * 
+	 * @param testImageUrl
+	 *            the uri
+	 * @return the total size
+	 * @throws FileSystemException
+	 *             the file system exception
+	 * @throws URISyntaxException
+	 */
+	public abstract Long getTotalSize (URI testImageUri) throws IOException;
 
-	public abstract Long getTotalCount (URI uri) throws IOException, URISyntaxException;
+	public abstract Long getTotalCount (URI uri) throws IOException;
+	
+	public abstract Long getSize (URI uri) throws IOException; 
 
 	public abstract Boolean isDirectory (URI uri) throws IOException;
 
-	public abstract List<URI> listURIs (URI directory) throws IOException, URISyntaxException;
+	public abstract List<URI> listURIs (URI directory) throws IOException;
+	
+	public abstract InputStream openInputStream (URI uri) throws IOException;
 
 }

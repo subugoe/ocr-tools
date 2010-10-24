@@ -19,6 +19,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
  */
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.vfs.AllFileSelector;
-import org.apache.commons.vfs.FileContent;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
@@ -35,13 +35,12 @@ import org.apache.commons.vfs.VFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
-
+// TODO: Auto-generated Javadoc
 /**
  * The Class ApacheVFSHotfolderImpl is used to control the hotfolders used by
  * the Abbyy Recognition Server.
  */
-public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
+public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfolder {
 	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(ApacheVFSHotfolderImpl.class);
 
@@ -71,7 +70,7 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 			fsManager = VFS.getManager();
 		} catch (FileSystemException e) {
 			logger.error("Can't get file system manager", e);
-			throw new OCRException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -81,7 +80,7 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.lang.String, java.lang.String)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.net.URI, java.net.URI)
 	 */
 	//TODO: This is dangerous, check if the file exists!
 	public void copyFile (URI from, URI to) throws IOException {
@@ -98,15 +97,6 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	 */
 	public void delete (URI uri) throws FileSystemException {
 		fsManager.resolveFile(uri.toString()).delete();
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#deleteIfExists(java.net.URI)
-	 */
-	public void deleteIfExists (URI uri) throws FileSystemException {
-		if (fsManager.resolveFile(uri.toString()).delete()) {
-			logger.trace(uri.toString() + " exists already, but now deleted");
-		}
 	}
 
 	/* (non-Javadoc)
@@ -129,77 +119,35 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	}
 
 	/**
-	 * Gets the total size for a url.
+	 * Gets the uri list.
 	 * 
-	 * @param testImageUrl
-	 *            the url
-	 * @return the total size
-	 * @throws FileSystemException
-	 *             the file system exception
-	 * @throws URISyntaxException
-	 */
-	public Long getTotalSize (URI testImageUri) throws IOException, URISyntaxException {
-		FileObject urlFile = fsManager.resolveFile(testImageUri.toString());
-
-		Long size = 0l;
-		if (urlFile.getType() == FileType.FOLDER) {
-			FileObject[] children = urlFile.getChildren();
-			for (int j = 0; j < children.length; j++) {
-				if (children[j].getType() == FileType.FOLDER) {
-					size += getTotalSize(children[j].getURL().toURI());
-				} else {
-					FileContent contentFile = children[j].getContent();
-					size += contentFile.getSize();
-				}
-			}
-			return size;
-		} else {
-			FileContent content = urlFile.getContent();
-			return content.getSize();
-		}
-	}
-
-	public Long getTotalCount (URI uri) throws IOException, URISyntaxException {
-		FileObject uriFile = fsManager.resolveFile(uri.toString());
-		Long count = 0l;
-		if (uriFile.getType() == FileType.FOLDER) {
-			FileObject[] children = uriFile.getChildren();
-			for (int j = 0; j < children.length; j++) {
-				if (children[j].getType() == FileType.FOLDER) {
-					count += getTotalCount(children[j].getURL().toURI());
-				} else {
-					count += 1l;
-				}
-			}
-			return count;
-		} else {
-			return 1l;
-		}
-	}
-
-	/**
-	 * Gets the url list.
-	 * 
-	 * @param imageDirectory
-	 *            the image directory
-	 * @return the url list
-	 * @throws URISyntaxException
+	 * @param uri
+	 *            the uri
+	 * @return the uri list
 	 * @throws IOException
-	 *             the malformed url exception
+	 *             Signals that an I/O exception has occurred.
 	 */
 	@Override
-	public List<URI> listURIs (URI uri) throws IOException, URISyntaxException {
+	public List<URI> listURIs (URI uri) throws IOException {
 		List<URI> uriList = new ArrayList<URI>();
 		if (isDirectory(uri)) {
 			FileObject directory = fsManager.resolveFile(uri.toString());
 			FileObject[] children = directory.getChildren();
 			for (int i = 0; i < children.length; i++) {
-				uriList.add(new URI(children[i].getName().toString()));
+				try {
+					uriList.add(new URI(children[i].getName().toString()));
+				} catch (URISyntaxException e) {
+					logger.error("Error while coverting URI.");
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		return uriList;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#isDirectory(java.net.URI)
+	 */
 	@Override
 	public Boolean isDirectory (URI uri) throws IOException {
 		if (fsManager.resolveFile(uri.toString()).getType() == FileType.FOLDER) {
@@ -216,9 +164,14 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#createTmpFile(java.lang.String)
 	 */
-	public OutputStream createTmpFile (String name) throws FileSystemException, URISyntaxException {
+	public OutputStream createTmpFile (String name) throws FileSystemException {
 		String tmpTicket = config.ticketTmpStore + name;
-		return getOutputStream(new URI(tmpTicket));
+		try {
+			return getOutputStream(new URI(tmpTicket));
+		} catch (URISyntaxException e) {
+			logger.error("Error while coverting URI.");
+			throw new RuntimeException(e);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -236,6 +189,13 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 		}
 	}
 
+	/**
+	 * New instance.
+	 * 
+	 * @param config
+	 *            the config
+	 * @return the hotfolder
+	 */
 	public static Hotfolder newInstance (ConfigParser config) {
 		if (_instance == null) {
 			_instance = new ApacheVFSHotfolderImpl(config);
@@ -243,8 +203,35 @@ public class ApacheVFSHotfolderImpl extends Thread implements Hotfolder {
 		return _instance;
 	}
 
+	/**
+	 * Sets the config.
+	 * 
+	 * @param config
+	 *            the new config
+	 */
 	public void setConfig (ConfigParser config) {
 		this.config = config;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#openInputStream(java.net.URI)
+	 */
+	@Override
+	public InputStream openInputStream (URI uri) throws IOException {
+		FileObject uriFile = fsManager.resolveFile(uri.toString());
+		return uriFile.getContent().getInputStream();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#getSize(java.net.URI)
+	 */
+	@Override
+	public Long getSize (URI uri) throws IOException {
+		FileObject uriFile = fsManager.resolveFile(uri.toString());
+		if (uriFile.getType() != FileType.FOLDER) {
+			return uriFile.getContent().getSize();
+		}
+		return 0l;
 	}
 
 }
