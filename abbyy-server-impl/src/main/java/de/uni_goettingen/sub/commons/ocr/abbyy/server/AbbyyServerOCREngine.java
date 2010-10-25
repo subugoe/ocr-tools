@@ -231,4 +231,10 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	public String getVersion () {
 		return version;
 	}
+	
+	//This should be only used for unit testing
+	//TODO: Removes this
+	protected void setHotfolder (Hotfolder hotfolder) {
+		this.hotfolder = hotfolder;
+	}
 }
