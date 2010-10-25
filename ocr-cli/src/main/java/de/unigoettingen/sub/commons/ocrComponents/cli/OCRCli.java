@@ -146,7 +146,7 @@ public class OCRCli {
 				//	OCRProcess p = engine.newProcess(new File(dir));
 				OCRImage img = null;
 				for (File file : newFiles) {
-					img = engine.newOCRImage();
+					img = engine.newOcrImage();
 					img.setUri(file.toURI());
 				}
 				//list of the directory as process
@@ -341,7 +341,7 @@ public class OCRCli {
 			if (cmd.getOptionValue("o") != null && !cmd.getOptionValue("o").equals("")) {
 				localOutputDir = cmd.getOptionValue("o");
 				for (OCRFormat of : f) {
-					OCROutput output = engine.newOCROutput();
+					OCROutput output = engine.newOcrOutput();
 					//TODO: Finish this
 					output.setUri(new File(localOutputDir + "this-should-be-the-name-of-the-folder." + of.toString().toLowerCase()).toURI());
 					
