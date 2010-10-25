@@ -61,13 +61,13 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 	}
 
 	protected AbbyyCLIOCRProcess(AbbyyCLIOCRProcess process) {
-		this(process.getOcrImages(), process.getLanguages(), process.getOcrOutput(), process.cmd, process.setOrientation, process.traceEngine);
+		this(process.getOcrImages(), process.getLanguages(), process.getOcrOutputs(), process.cmd, process.setOrientation, process.traceEngine);
 	}
 
 	protected AbbyyCLIOCRProcess(List<OCRImage> ocrImages, Set<Locale> langs, Map<OCRFormat, OCROutput> output, List<String> cmd, Boolean setOrientation, Boolean traceEngine) {
 		this.ocrImages = ocrImages;
 		this.langs = langs;
-		this.ocrOutput = output;
+		this.ocrOutputs = output;
 		this.cmd = cmd;
 		this.setOrientation = setOrientation;
 		this.traceEngine = traceEngine;
@@ -134,7 +134,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		//options | format | file
 		//-xca -xeca | -f XML | -of
 
-		for (OCRFormat ef : getOcrOutput().keySet()) {
+		for (OCRFormat ef : getOcrOutputs().keySet()) {
 
 			arglist.add("-f");
 			arglist.add(AbbyyCLIOCREngine.FORMAT_MAPPING.get(ef));
@@ -146,7 +146,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 			}
 
 			arglist.add("-of");
-			String outFile = new File(getOcrOutput().get(ef).getUri()).getAbsolutePath();
+			String outFile = new File(getOcrOutputs().get(ef).getUri()).getAbsolutePath();
 			arglist.add(outFile);
 
 		}
