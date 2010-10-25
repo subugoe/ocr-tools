@@ -10,6 +10,16 @@
 	<artifactId>abbyy-server-impl</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Abbyy Recognition Server implementation</name>
+	<repositories>
+		<repository>
+			<id>milton</id>
+			<name>Ettrema Repository</name>
+			<url>http://www.ettrema.com/maven2/com/ettrema/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>de.unigoettingen.sub.commons</groupId>
@@ -19,12 +29,12 @@
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>ocr-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>ocrutil</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
