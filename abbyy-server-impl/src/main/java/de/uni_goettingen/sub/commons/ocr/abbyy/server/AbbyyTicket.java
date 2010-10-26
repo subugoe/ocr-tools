@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -250,6 +252,20 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			}
 			settings[i] = exportFormat;
 			i++;
+			//If single files should be created hese need to be added to the OCROuput object
+			//TODO: Change the name of the files
+			if (!singleFile) {
+				for (OCRImage aoi : getOcrImages()) {
+					String file = ((AbbyyOCRImage) aoi).getRemoteUri().toString() + "." + of.toString().toLowerCase();
+					try {
+						aoo.setSingleFile(true);
+						aoo.addResultFragment(new URI(file));
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 
 		exportParams.setExportFormatArray(settings);
