@@ -77,10 +77,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 *             the configuration exception
 	 */
 	private AbbyyServerOCREngine() throws FileSystemException, ConfigurationException {
-		hotfolder = ApacheVFSHotfolderImpl.getInstance(config);
-		;
 		config = new ConfigParser().parse();
-
+		hotfolder = ApacheVFSHotfolderImpl.getInstance(config);
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
 	}
@@ -212,7 +210,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 
 	@Override
 	public Observable addOcrProcess (OCRProcess ocrp) {
-		// TODO Auto-generated method stub
+		processes.add((AbbyyOCRProcess) ocrp);
 		return null;
 	}
 
