@@ -27,6 +27,7 @@ import java.util.Set;
 
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class OCRProcess represent an {@link OCRProcess}. Implementations should
  * extend {@link AbstractOCRProcess} to add further methods for example for
@@ -141,10 +142,9 @@ public interface OCRProcess {
 
 	/**
 	 * Checks if this {@link OCRProcess} is finished. This method may throw an
-	 * {@link OCRException} if the process failed
 	 * 
 	 * @return true if this {@link OCROutput} represents a result, false
-	 *         otherwise
+	 *         otherwise {@link OCRException} if the process failed
 	 */
 	abstract public Boolean isFinished ();
 
@@ -159,5 +159,47 @@ public interface OCRProcess {
 	 * @see OCRProcessMetadata
 	 */
 	abstract OCRProcessMetadata getOcrProcessMetadata ();
+
+	/**
+	 * Gets the quality that should be produced by an engine while processing
+	 * this process. Engine specific implementations of OCRProcess might throw a
+	 * {@link java.lang.UnsupportedOperationException} it it's not possible to
+	 * use this setting.
+	 * 
+	 * @return the quality setting thats currently used.
+	 */
+	abstract OCRQuality getQuality ();
+
+	/**
+	 * Sets the quality that should be produced by an engine while processing
+	 * this process. Engine specific implementations of OCRProcess might throw a
+	 * {@link java.lang.UnsupportedOperationException} it it's not possible to
+	 * use this setting. Note: It's noramlly not possible to change the quality
+	 * of a running process, calls to this method will be ignored in this case.
+	 * 
+	 * @param q
+	 *            the new ocr quality
+	 */
+	abstract void setQuality (OCRQuality q);
+
+	/**
+	 * The Enum OCRQuality. This enum represents three states of different
+	 * quality settings: BEST, BALANCED and FAST.
+	 */
+	public enum OCRQuality {
+
+		/** The BEST available quality, usually takes longer to create */
+		BEST,
+		/**
+		 * The BALANCED quality, this represents an engine specific tradeoff
+		 * between speed and quality.
+		 */
+		BALANCED,
+		/**
+		 * The FAST "quality", this should the engine to work as fast as
+		 * possible
+		 */
+		FAST;
+	}
 
 }

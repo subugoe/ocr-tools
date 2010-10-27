@@ -116,7 +116,7 @@ public abstract class AbstractOCREngine implements OCREngine {
 			}
 		};
 	}
-	
+
 	//TODO: check if we can add the getInstance stuff here
 
 }
