@@ -54,6 +54,9 @@ public class ConfigParser {
 	public final static String PARAMETER_ERROR = "error";
 	public final static String DEFAULT_ERROR = "error";
 	protected String serverURL, input, output, error;
+	
+	public final static String PARAMETER_HOTFOLDERCLASS = "hotfolderClass";
+	protected String hotfolderClass;
 
 	//The different timeouts:
 	//Assume at least 1 second per file
@@ -163,6 +166,8 @@ public class ConfigParser {
 		output = config.getString(PARAMETER_OUTPUT, DEFAULT_OUTPUT);
 		error = config.getString(PARAMETER_ERROR, DEFAULT_ERROR);
 
+		hotfolderClass = config.getString(PARAMETER_HOTFOLDERCLASS, null);
+		
 		checkServerState = config.getBoolean(PARAMETER_CHECKSERVERSTATE, DEFAULT_CHECKSERVERSTATE);
 
 		maxThreads = config.getInteger(PARAMETER_MAXTHREADS, DEFAULT_MAXTHREADS);
@@ -197,12 +202,6 @@ public class ConfigParser {
 			logger.trace("URL: " + "*hidden* - enable debugAuth to log login data");
 			logger.trace("User: " + "*hidden* - enable debugAuth to log login data");
 			logger.trace("Password: " + "*hidden* - enable debugAuth to log login data");
-		}
-
-		if (username != null && password != null && serverURL.startsWith("http")) {
-			//Construct the login part.
-			serverURL = serverURL.replace("https://", "webdavs://" + username + ":" + password + "@");
-			serverURL = serverURL.replace("http://", "webdav://" + username + ":" + password + "@");
 		}
 
 		logger.trace("Input folder: " + input);
@@ -331,4 +330,20 @@ public class ConfigParser {
 		return output;
 	}
 
+	/**
+	 * @return the username
+	 */
+	public String getUsername () {
+		return username;
+	}
+
+	/**
+	 * @return the password
+	 */
+	public String getPassword () {
+		return password;
+	}
+
+	
+	
 }
