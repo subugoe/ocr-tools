@@ -25,6 +25,7 @@ import java.util.Map;
 
 /**
  * The Enum OCRFormat. The formats which are supported.
+ * 
  * @version 0.9
  * @author abergna
  * @author cmahnke
@@ -61,7 +62,13 @@ public enum OCRFormat {
 	 * The Format for hOCR, UTF-8 is assumed, implementations should expect the
 	 * worse, based on HTML 4.01
 	 */
-	HOCR("HOCR");
+	HOCR("HOCR"),
+	/**
+	 * The Format for METADATA can be used as wrapper for engine specific
+	 * metadata, this should be mapped to the right filename and type inside the
+	 * engine implementation.
+	 */
+	METADATA("METADATA");
 
 	/** The name. */
 	private final String name;
