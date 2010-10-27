@@ -252,9 +252,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			}
 			settings[i] = exportFormat;
 			i++;
-			//If single files should be created hese need to be added to the OCROuput object
+			//If single files should be created, te result files need to be added to the OCROuput object
 			//TODO: Change the name of the files
-			if (!singleFile) {
+			if (singleFile) {
 				for (OCRImage aoi : getOcrImages()) {
 					String file = ((AbbyyOCRImage) aoi).getRemoteUri().toString() + "." + of.toString().toLowerCase();
 					try {
