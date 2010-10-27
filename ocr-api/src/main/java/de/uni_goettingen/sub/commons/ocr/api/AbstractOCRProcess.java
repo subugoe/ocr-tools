@@ -46,6 +46,9 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/** The languages which should be recognized */
 	protected Set<Locale> langs = new HashSet<Locale>();
 
+	/** The quality that the implementing process should create, default is FAST */
+	protected OCRQuality quality = OCRQuality.FAST;
+
 	/**
 	 * The images that should be converted, are stored in the given format at
 	 * the given location
@@ -206,5 +209,35 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	public OCRProcessMetadata getOcrProcessMetadata () {
 		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getQuality()
+	 */
+	public OCRQuality getQuality () {
+		return quality;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setQuality(de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRQuality)
+	 */
+	public void setQuality (OCRQuality quality) {
+		this.quality = quality;
+	}
+
+	/**
+	 * Adds the output for the given format, this might be a helpful utility
+	 * method when working with Lists
+	 * 
+	 * @param format
+	 *            the format to add
+	 * @param output
+	 *            the output, the output settings for the given format
+	 * @see OCRFormat
+	 * @see OCROutput
+	 * @see #setOcrOutputs(Map);
+	 */
+	public void addOutput (OCRFormat format, OCROutput output) {
+		ocrOutputs.put(format, output);
 	}
 }
