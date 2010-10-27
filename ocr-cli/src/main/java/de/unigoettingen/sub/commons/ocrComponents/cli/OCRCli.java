@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
+import de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -112,8 +113,10 @@ public class OCRCli {
 	 *             the exception
 	 */
 	public static void main (String[] args) {
-		logger.info("Creating OCRCli instance");
+		logger.debug("Creating OCRCli instance");
 		OCRCli ocr = OCRCli.getInstance();
+		logger.debug("Creating OCREngineFactory instance");
+		engine = OCREngineFactory.getInstance().newOcrEngine();
 		ocr.configureFromArgs(args);
 		for (OCRProcess p : processes) {
 			engine.recognize(p);
