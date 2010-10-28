@@ -30,13 +30,15 @@ public class ConfigParser {
 	public final static Long DEFAULT_MAXFILES = 10000l;
 	public final static String PARAMETER_MAXFILES = "maxFiles";
 	protected Long maxFiles;
-	//
+	//How many Threads should be used
 	public final static Integer DEFAULT_MAXTHREADS = 10;
 	public final static String PARAMETER_MAXTHREADS = "maxThreads";
 	protected Integer maxThreads;
+	//Should the server state should be checked?
 	public final static Boolean DEFAULT_CHECKSERVERSTATE = true;
 	public final static String PARAMETER_CHECKSERVERSTATE = "checkServerState";
 	protected Boolean checkServerState;
+	//Should the authentification data be shown in logs?
 	public final static Boolean DEFAULT_DEBUGAUTH = false;
 	public final static String PARAMETER_DEBUGAUTH = "debugAuth";
 	protected Boolean debugAuth;
@@ -46,6 +48,7 @@ public class ConfigParser {
 	public final static String PARAMETER_PASSWORD = "password";
 	protected String username, password;
 
+	//URL and Path specific settings
 	public final static String PARAMETER_SERVERURL = "serverUrl";
 	public final static String PARAMETER_INPUT = "input";
 	public final static String DEFAULT_INPUT = "input";
@@ -54,7 +57,7 @@ public class ConfigParser {
 	public final static String PARAMETER_ERROR = "error";
 	public final static String DEFAULT_ERROR = "error";
 	protected String serverURL, input, output, error;
-	
+
 	public final static String PARAMETER_HOTFOLDERCLASS = "hotfolderClass";
 	protected String hotfolderClass;
 
@@ -97,13 +100,16 @@ public class ConfigParser {
 	public final static Long DEFAULT_CHECKINTERVAL = 20000l;
 	public final static String PARAMETER_CHECKINTERVAL = "checkInterval";
 	protected Long checkInterval;
-	public final static String DEFAULT_REPORTSUFFIX = ".xml.result.xml";
+	public final static String DEFAULT_REPORTSUFFIX = ".result.xml";
 	public final static String PARAMETER_REPORTSUFFIX = "reportSuffix";
 	protected String reportSuffix;
 	public final static String PARAMETER_DEFAULTLANGS = "defaultLangs";
 	protected List<Locale> defaultLangs;
 
 	protected URL configUrl;
+
+	//State variable
+	private Boolean parsed = false;
 
 	public ConfigParser() {
 		this.configUrl = getClass().getResource(DEFAULT_CONFIG);
@@ -167,7 +173,7 @@ public class ConfigParser {
 		error = config.getString(PARAMETER_ERROR, DEFAULT_ERROR);
 
 		hotfolderClass = config.getString(PARAMETER_HOTFOLDERCLASS, null);
-		
+
 		checkServerState = config.getBoolean(PARAMETER_CHECKSERVERSTATE, DEFAULT_CHECKSERVERSTATE);
 
 		maxThreads = config.getInteger(PARAMETER_MAXTHREADS, DEFAULT_MAXTHREADS);
@@ -185,7 +191,7 @@ public class ConfigParser {
 		ticketTmpStore = config.getString(PARAMETER_TICKETTMPSTORE, DEFAULT_TICKETTMPSTORE);
 		validateTicket = config.getBoolean(PARAMETER_VALIDATETICKET, DEFAULT_VALIDATETICKET);
 		singleFile = config.getBoolean(PARAMETER_SINGLEFILE, DEFAULT_SINGLEFILE);
-		config.getString(PARAMETER_REPORTSUFFIX, DEFAULT_REPORTSUFFIX);
+		reportSuffix = config.getString(PARAMETER_REPORTSUFFIX, DEFAULT_REPORTSUFFIX);
 		if (config.getString(PARAMETER_DEFAULTLANGS, null) != null) {
 			defaultLangs = OCRUtil.parseLangs(config.getString(PARAMETER_DEFAULTLANGS, null));
 		}
@@ -214,6 +220,7 @@ public class ConfigParser {
 
 		logger.debug("Check server state: " + checkServerState);
 
+		parsed = true;
 		return this;
 	}
 
@@ -331,19 +338,45 @@ public class ConfigParser {
 	}
 
 	/**
-	 * @return the username
+	 * @return the username used for external file systems, the implementations
+	 *         decide how this is given to the underlaying libraries.
 	 */
 	public String getUsername () {
 		return username;
 	}
 
 	/**
-	 * @return the password
+	 * @return the password used for external file systems, the implementations
+	 *         decide how this is given to the underlaying libraries.
 	 */
 	public String getPassword () {
 		return password;
 	}
 
-	
-	
+	/**
+	 * @return the hotfolderClass
+	 */
+	public String getHotfolderClass () {
+		return hotfolderClass;
+	}
+
+	/**
+	 * @param hotfolderClass
+	 *            the hotfolderClass to set
+	 */
+	public void setHotfolderClass (String hotfolderClass) {
+		this.hotfolderClass = hotfolderClass;
+	}
+
+	public Boolean isParsed () {
+		return parsed;
+	}
+
+	/**
+	 * @return the ticketTmpStore
+	 */
+	public String getTicketTmpStore () {
+		return ticketTmpStore;
+	}
+
 }
