@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,11 +29,12 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 public class AbbyyOCROutput extends AbstractOCROutput {
 
 	protected String remoteLocation;
+	protected String remoteFilename;
 	protected URI remoteUri;
 	protected URI reportUri;
 	protected Boolean singleFile = true;
 	//This is used, if we don't create the result in single file mode
-	protected List<URI> resultFragments;
+	protected List<URI> resultFragments = new ArrayList<URI>();
 
 	public AbbyyOCROutput(URI uri) {
 		super(uri, null);
@@ -44,11 +46,12 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	protected AbbyyOCROutput() {
-
+		super();
 	}
 
 	//More copy constructors
 	public AbbyyOCROutput(URI uri, Map<String, String> params, URI remoteUri, String remoteLocation, URI reportUri, Boolean singleFile, List<URI> resultFragments) {
+		super();
 		this.outputUri = uri;
 		this.params = params;
 		this.remoteUri = remoteUri;
@@ -60,6 +63,8 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 
 	public AbbyyOCROutput(AbbyyOCROutput aoo) {
 		this(aoo.outputUri, aoo.params, aoo.remoteUri, aoo.remoteLocation, aoo.reportUri, aoo.singleFile, aoo.resultFragments);
+		//TODO: This ist full of nulls, can't dereference the map and list
+		//this(aoo.outputUri, new HashMap<String, String>(aoo.params), aoo.remoteUri, aoo.remoteLocation, aoo.reportUri, aoo.singleFile, new ArrayList<URI>(aoo.resultFragments));
 	}
 
 	/**
@@ -127,18 +132,18 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * @return the reportUri
+	 * @return the remoteFilename
 	 */
-	public URI getReportUrl () {
-		return reportUri;
+	public String getRemoteFilename () {
+		return remoteFilename;
 	}
 
 	/**
-	 * @param reportUri
-	 *            the reportUri to set
+	 * @param remoteFilename
+	 *            the remoteFilename to set
 	 */
-	public void setReportUrl (URI reportUri) {
-		this.reportUri = reportUri;
+	public void setRemoteFilename (String remoteFilename) {
+		this.remoteFilename = remoteFilename;
 	}
 
 }
