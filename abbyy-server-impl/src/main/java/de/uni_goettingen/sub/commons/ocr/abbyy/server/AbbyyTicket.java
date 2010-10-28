@@ -88,6 +88,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	protected ConfigParser config;
 
 	protected static XmlOptions opts = new XmlOptions();
+	
+	public final static Map<OCRFormat, String> FORMAT_MAPPING;
 
 	static {
 		//TODO: Add more values to this map.
@@ -132,6 +134,14 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		FORMAT_FRAGMENTS.put(OCRFormat.HTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.PDFA, null);
+		
+		FORMAT_MAPPING = new HashMap<OCRFormat, String>();
+		FORMAT_MAPPING.put(OCRFormat.DOC, "DOC");
+		FORMAT_MAPPING.put(OCRFormat.HTML, "HTML");
+		FORMAT_MAPPING.put(OCRFormat.XHTML, "HTML");
+		FORMAT_MAPPING.put(OCRFormat.PDF, "PDF");
+		FORMAT_MAPPING.put(OCRFormat.XML, "XML");
+		FORMAT_MAPPING.put(OCRFormat.TXT, "Text");
 	}
 
 	public AbbyyTicket(OCRProcess process) {
@@ -240,7 +250,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 				continue;
 			}
 			exportFormat.setOutputFlowType("SharedFolder");
-			exportFormat.setOutputFileFormat(of.name());
+			exportFormat.setOutputFileFormat(FORMAT_MAPPING.get(of));
+		
 			//TODO: Use OCR Output here.
 			String name = identifier + "." + of.name().toLowerCase();
 			exportFormat.setNamingRule(name);
