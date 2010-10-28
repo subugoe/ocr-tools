@@ -27,7 +27,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.commons.vfs.FileSystemException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,8 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.ApacheVFSHotfolderImpl;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ApacheVFSHotfolderImpl;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 
 public class HotfolderTest {
 	final static Logger logger = LoggerFactory.getLogger(HotfolderTest.class);
