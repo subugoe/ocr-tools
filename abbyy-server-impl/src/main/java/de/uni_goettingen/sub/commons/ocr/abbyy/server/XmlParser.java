@@ -21,7 +21,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -39,7 +42,7 @@ public class XmlParser {
 	public final static Logger logger = LoggerFactory.getLogger(XmlParser.class);
 
 	//These are just wrappers, they will be removed...
-	@Deprecated
+	/*@Deprecated
 	protected static Set<String> xmlresultOutputparse (File file) throws FileNotFoundException, XMLStreamException {
 		return xmlresultOutputparse(new FileInputStream(file));
 	}
@@ -47,7 +50,7 @@ public class XmlParser {
 	@Deprecated
 	protected static Set<String> xmlresultErrorparse (File file, String identifier) throws FileNotFoundException, XMLStreamException {
 		return xmlresultErrorparse(new FileInputStream(file), identifier);
-	}
+	}*/
 
 	/**
 	 * parse Xml result in output folder.
@@ -90,13 +93,13 @@ public class XmlParser {
 	 * @param file
 	 *            xml result in error folder
 	 * @return the sets of all files Name, wich are in the xml file
-	 * @throws FileNotFoundException
-	 *             the file not found exception
 	 * @throws XMLStreamException
 	 *             the xML stream exception
+	 * @throws IOException 
 	 */
-	protected static Set<String> xmlresultErrorparse (InputStream is, String identifier) throws FileNotFoundException, XMLStreamException {
-		Set<String> ocrErrorFile = new LinkedHashSet<String>();
+//	protected static Set<String> xmlresultErrorparse (InputStream is, String identifier) throws FileNotFoundException, XMLStreamException {
+	protected void xmlresultErrorparse (InputStream is, String identifier) throws XMLStreamException, IOException {
+	//	Set<String> ocrErrorFile = new LinkedHashSet<String>();
 		String error = null;
 
 		//final InputStream osmHamburgInStream = new FileInputStream(file);
@@ -111,7 +114,7 @@ public class XmlParser {
 						error = xmlStreamReader.getElementText();
 					}
 					// bilder die in verzeichnis befinden
-					if (xmlStreamReader.getName().toString().equals("InputFile")) {
+					/*if (xmlStreamReader.getName().toString().equals("InputFile")) {
 						// ber alle Attribute
 						for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++) {
 							String attributeName = xmlStreamReader.getAttributeName(i).toString();
@@ -130,13 +133,27 @@ public class XmlParser {
 								}
 							}
 						}
-					}
+					}*/
 				}
 			}
 		} finally {
 			xmlStreamReader.close();
 		}
-		logger.debug("Band Name " + identifier + " Error :" + error);
-		return ocrErrorFile;
+		writeReport(identifier, error);
+		logger.debug("Band Name " + identifier + " Error Reports: " + error);
+		
 	}
+	
+	public static void writeReport(String str, String error) throws IOException {
+		Date cDate = new Date();
+		File f = new File ("ReportForErrorResult.txt");
+	      
+	        	FileWriter  writer = new FileWriter(f, true);
+	        	writer.write("[" +cDate+ "] " + str + " [Error]: " + error + System.getProperty("line.separator"));
+	            writer.flush();
+	            writer.close();
+      
+		
+	}
+	
 }
