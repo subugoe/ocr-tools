@@ -316,7 +316,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements Hotfol
 		return uri.getScheme().equals("file");
 	}
 
-	public static Hotfolder getInstace (ConfigParser config) {
+	public static Hotfolder getInstance (ConfigParser config) {
 		if (_instance == null) {
 			_instance = new JackrabbitHotfolderImpl(config);
 		}
