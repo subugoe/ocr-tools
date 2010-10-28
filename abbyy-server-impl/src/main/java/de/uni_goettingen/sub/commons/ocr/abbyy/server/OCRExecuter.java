@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
+
 /**
  * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
  * execution of tasks on the Recognition Server with respect of the resource
@@ -32,8 +34,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	//TODO: Also document the differences to the overridden methods.
+	//TODO: There is a bug in here currently only one process per time is started
 
-	public Integer maxThreads;
+	protected Integer maxThreads;
 
 	private Boolean isPaused = false;
 	private ReentrantLock pauseLock = new ReentrantLock();
@@ -108,11 +111,10 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	}
 
 	//TODO: Check if this stops only the processing of the pool or all threads containt in it
-	//TODO: Check if this needs to be public.
 	/**
 	 * this method pauses the execution.
 	 */
-	public void pause () {
+	protected void pause () {
 		pauseLock.lock();
 		try {
 			isPaused = true;
@@ -121,12 +123,10 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
-	//TODO: Check if this needs to be public.
-
 	/**
 	 * This Method resumes the execution of the executor.
 	 */
-	public void resume () {
+	protected void resume () {
 		pauseLock.lock();
 		try {
 			isPaused = false;
