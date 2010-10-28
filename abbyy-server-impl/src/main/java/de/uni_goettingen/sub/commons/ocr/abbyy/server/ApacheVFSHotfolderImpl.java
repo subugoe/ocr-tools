@@ -66,7 +66,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	 */
 	private ApacheVFSHotfolderImpl() {
 		try {
-			VFS.setUriStyle(true);
+		//	VFS.setUriStyle(true);
 			fsManager = VFS.getManager();
 		} catch (FileSystemException e) {
 			logger.error("Can't get file system manager", e);
@@ -79,18 +79,21 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 		this.config = config;
 	}
 
+	
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.net.URI, java.net.URI)
 	 */
 	//TODO: This is dangerous, check if the file exists!
 	@Override
 	public void copyFile (URI from, URI to) throws IOException {
+	//	 FileSystemManager fsManager = VFS.getManager();
 		FileObject remoteFile = fsManager.resolveFile(from.toString());
-		if (remoteFile.exists()) {
+		/*if (remoteFile.exists()) {
 			throw new IOException("Remote file allready exists!");
-		}
+		}*/
 		FileObject localFile = fsManager.resolveFile(to.toString());
 		localFile.copyFrom(remoteFile, new AllFileSelector());
+		
 	}
 
 	/* (non-Javadoc)
@@ -175,8 +178,8 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	 */
 	@Override
 	public Boolean copyTmpFile (String tmpFile, URI to) throws IOException {
-		if (!fsManager.resolveFile(config.ticketTmpStore + tmpFile).exists()) {
-			logger.error(config.ticketTmpStore + tmpFile + "doesn't exist!");
+		if (fsManager.resolveFile(config.ticketTmpStore + tmpFile).exists()) {
+			logger.error(config.ticketTmpStore + tmpFile + " doesn't exist!");
 		} else {
 			return false;
 		}
@@ -197,6 +200,9 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	 * @return the hotfolder
 	 */
 	public static Hotfolder getInstance (ConfigParser config) {
+		if (config == null) {
+			throw new IllegalStateException();
+		}
 		if (_instance == null) {
 			_instance = new ApacheVFSHotfolderImpl(config);
 		}
