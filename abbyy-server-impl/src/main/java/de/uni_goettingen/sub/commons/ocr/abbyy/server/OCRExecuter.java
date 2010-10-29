@@ -27,6 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 
+
 /**
  * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
  * execution of tasks on the Recognition Server with respect of the resource
