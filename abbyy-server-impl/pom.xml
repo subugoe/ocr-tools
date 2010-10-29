@@ -14,10 +14,23 @@
 		<repository>
 			<id>milton</id>
 			<name>Ettrema Repository</name>
-			<url>http://www.ettrema.com/maven2/com/ettrema/</url>
+			<url>http://www.ettrema.com/maven2/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>kantega</id>
+			<name>Kantega Repository</name>
+			<url>http://opensource.kantega.no/nexus/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>sardine-google-svn-repo</id>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<name>Sardine maven repo at Google Code</name>
+			<url>http://sardine.googlecode.com/svn/maven/</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -81,9 +94,8 @@
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 		<!--
-			TODO: Enable these if we have a WebDAV test case. <dependency> <groupId>org.mortbay.jetty</groupId> <artifactId>jetty-servlet-tester</artifactId> <version>6.1.6</version> <scope>test</scope> </dependency> <dependency>
-			<groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-core</artifactId> <version>2.1.1</version> <scope>test</scope> </dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-webdav</artifactId>
-			<version>2.1.1</version> <type>jar</type> <scope>test</scope> </dependency>
+			TODO: Enable these if we have a WebDAV test case. <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-core</artifactId> <version>2.1.1</version> <scope>test</scope> </dependency> <dependency>
+			<groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-webdav</artifactId> <version>2.1.1</version> <type>jar</type> <scope>test</scope> </dependency>
 		-->
 		<dependency>
 			<groupId>stax</groupId>
@@ -113,6 +125,37 @@
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>jackrabbit-webdav</artifactId>
 			<version>1.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty</artifactId>
+			<version>6.1.24</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.ettrema</groupId>
+			<artifactId>milton-servlet</artifactId>
+			<version>1.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.sardine</groupId>
+			<artifactId>sardine</artifactId>
+			<version>129</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>
