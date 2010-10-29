@@ -59,37 +59,44 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
-//TODO: one locale might represent multiple langueages: <Language>GermanNewSpelling</Language>
+//TODO: one Locale might represent multiple langueages: <Language>GermanNewSpelling</Language>
 
 @SuppressWarnings("serial")
 public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyTicket.class);
 
-	//TODO: add a test for this
-	//The timeout for the process
-	protected Long processTimeout = null;
-
-	//This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy
+	/** This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy */
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
+
+	/** The namespace used for the AbbyyTicket files. */
+	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
+
+	/** A Map containing predefined fragments (read settings) for different formats */
+	protected final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
+
+	/** A Map containing mappings from the internal Enums to engine specific quality settings */
+	protected final static Map<OCRQuality, String> QUALITY_MAP;
+
+	/** A Map containing mappings from the internal Enums to engine specific format settings */
+	public final static Map<OCRFormat, String> FORMAT_MAPPING;
+	
+	/** Predefined recognition parameters */
+	protected final static RecognitionParams recognitionSettings;
+
+	/** Predefined image processing parameters */
+	protected final static ImageProcessingParams imageProcessingSettings;
 
 	//TODO: get this parameter from ConfigParser
 	protected Boolean singleFile = false;
 
 	protected Boolean convertToBW = true;
-
-	//The namespace used for the AbbyyTicket files.
-	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
-
-	protected final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
-
-	protected final static Map<OCRQuality, String> QUALITY_MAP;
-
-	protected final static RecognitionParams recognitionSettings;
-
-	protected final static ImageProcessingParams imageProcessingSettings;
-
+	
 	//TODO: Add priorities: Low, BelowNormal, Normal, AboveNormal, High
 	protected String priority = "Normal";
+	
+	//TODO: add a test for this
+	//The timeout for the process
+	protected Long processTimeout = null;
 	
 	// is represents the InputStream for files being read
 	private InputStream is;
@@ -98,8 +105,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	protected ConfigParser config;
 
 	protected static XmlOptions opts = new XmlOptions();
-	
-	public final static Map<OCRFormat, String> FORMAT_MAPPING;
 
 	static {
 		//TODO: Add more values to this map.
