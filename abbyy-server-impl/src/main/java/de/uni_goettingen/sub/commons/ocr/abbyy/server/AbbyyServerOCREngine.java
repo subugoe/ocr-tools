@@ -19,7 +19,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
  */
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Queue;
@@ -32,6 +31,7 @@ import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.AbstractHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -42,8 +42,14 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
 /**
- * The Class AbbyyServerOCREngine.
+ * The Class AbbyyServerOCREngine. The Engine is also the entry point for
+ * different Hotfolder implementations, You can change the implementation
+ * indirectly by changing the given configuration. Just construct an empty
+ * configuration or create one from a configuration file and call the method
+ * {@link ConfigParser.setHotfolderClass()}.
  */
+
+//TODO: Get the tread pooling right
 public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
 	public static final String name = "0.5";
 	public static final String version = AbbyyServerOCREngine.class.getSimpleName();
@@ -51,13 +57,13 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	// The max threads.
 	protected static Integer maxThreads;
 	// protected ExecutorService pool = new OCRExecuter(maxThreads);
+	
 	/** The Constant logger. */
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngine.class);
 
 	// The configuration.
 	protected static ConfigParser config;
 
-	// The apacheVFSHotfolderImpl.
 	protected Hotfolder hotfolder;
 
 	/** single instance of AbbyyServerOCREngine. */
@@ -77,9 +83,9 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	private AbbyyServerOCREngine() throws FileSystemException, ConfigurationException {
+	private AbbyyServerOCREngine() throws ConfigurationException {
 		config = new ConfigParser().parse();
-		//hotfolder = ApacheVFSHotfolderImpl.getInstance(config);
+		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass, config);
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
 	}
@@ -88,7 +94,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 * Start the threadPooling
 	 * 
 	 */
-	public void start () {
+	protected void start () {
+		started = true;
 		/*
 		if (checkServerState) {
 			try {
@@ -101,13 +108,18 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		*/
 		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder);
 
-		//TODO: Check if this can be just one loop
 		for (OCRProcess process : getOcrProcess()) {
-			processes.add((AbbyyOCRProcess) process);
+			AbbyyOCRProcess p = (AbbyyOCRProcess) process;
+			
+			processes.add(p);
+			
 		}
-
-		for (OCRProcess process : processes) {
-			pool.execute((Runnable) process);
+		//pool.e
+		
+		//TODO: Try to use only one loop
+		//TODO: check if we really need the Queue here
+		for (AbbyyOCRProcess p: processes) {
+			pool.execute(p);
 		}
 
 		pool.shutdown();
@@ -131,9 +143,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		if (_instance == null) {
 			try {
 				_instance = new AbbyyServerOCREngine();
-			} catch (FileSystemException e) {
-				logger.error("Can't get file system", e);
-				throw new OCRException(e);
 			} catch (ConfigurationException e) {
 				logger.error("Can't read configuration", e);
 				throw new OCRException(e);
@@ -141,7 +150,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		}
 		return _instance;
 	}
-
 
 	@Override
 	public OCRImage newOcrImage () {
@@ -160,16 +168,33 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 
 	@Override
 	public Observable recognize (OCRProcess process) {
+		Observable o = addOcrProcess(process);
+		//TODO: Get an Observer from somewhere, probably use a Future
+		recognize();
+		return o;
+	}
+	
+	@Override
+	public Observable recognize () {
+		if (!started && !processes.isEmpty()) {
+			start();
+		} else if (processes.isEmpty()) {
+			throw new IllegalStateException("Queue is empty!");
+		}
+		return null;
+	}
+	
+	@Override
+	public Observable addOcrProcess (OCRProcess process) {
 		//TODO: Check if this instanceof works as expected	
 		if (process instanceof AbbyyOCRProcess) {
 			processes.add((AbbyyOCRProcess) process);
+		} else {
+			processes.add(new AbbyyOCRProcess(process, config));
 		}
-		if (!started) {
-			start();
-		}
-		//TODO: Get an Observer from somewhere, probably use a Future
 		return null;
 	}
+	
 
 	public static AbbyyOCRProcess createProcessFromDir (File directory, String extension) {
 		AbbyyOCRProcess ap = new AbbyyOCRProcess(config);
@@ -200,22 +225,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	}
 
 	@Override
-	public Observable recognize () {
-		if (!started && !processes.isEmpty()) {
-			start();
-		} else if (processes.isEmpty()) {
-			throw new IllegalStateException("Queue is empty!");
-		}
-		return null;
-	}
-
-	@Override
-	public Observable addOcrProcess (OCRProcess ocrp) {
-		processes.add((AbbyyOCRProcess) ocrp);
-		return null;
-	}
-
-	@Override
 	public Boolean stop () {
 		// TODO Auto-generated method stub
 		return null;
@@ -230,10 +239,5 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	public String getVersion () {
 		return version;
 	}
-	
-	//This should be only used for unit testing
-	//TODO: Removes this
-	protected void setHotfolder (Hotfolder hotfolder) {
-		this.hotfolder = hotfolder;
-	}
+
 }
