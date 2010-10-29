@@ -28,14 +28,28 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
 public class AbbyyOCROutput extends AbstractOCROutput {
 
+	/** The remote location represents the location on the remote system, something like D\:\\Recognition\\GDZ\\output */
 	protected String remoteLocation;
+	
+	/** The local file name on the remote system. */
 	protected String remoteFilename;
+	
+	/** The URI of the file, need to be resolvable from the local machine. */
 	protected URI remoteUri;
-	protected URI reportUri;
+	
+
+	/** If this is set the process is split into separate files  */
 	protected Boolean singleFile = true;
 	//This is used, if we don't create the result in single file mode
 	protected List<URI> resultFragments = new ArrayList<URI>();
 
+	//Add some informations about the location of error files
+	/** The URIs to expect in case an error has happened on the server */
+	protected List<URI> errorImages = new ArrayList<URI>();
+	//TODO: This should be part of AbbyyTicket
+	//protected URI errorTicket;
+	
+	
 	public AbbyyOCROutput(URI uri) {
 		super(uri, null);
 	}
@@ -50,19 +64,17 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	//More copy constructors
-	public AbbyyOCROutput(URI uri, Map<String, String> params, URI remoteUri, String remoteLocation, URI reportUri, Boolean singleFile, List<URI> resultFragments) {
+	public AbbyyOCROutput(URI uri, Map<String, String> params, URI remoteUri, String remoteLocation, Boolean singleFile, List<URI> resultFragments) {
 		super();
 		this.outputUri = uri;
 		this.params = params;
 		this.remoteUri = remoteUri;
 		this.remoteLocation = remoteLocation;
-		this.reportUri = reportUri;
-		this.singleFile = singleFile;
 		this.resultFragments = resultFragments;
 	}
 
 	public AbbyyOCROutput(AbbyyOCROutput aoo) {
-		this(aoo.outputUri, aoo.params, aoo.remoteUri, aoo.remoteLocation, aoo.reportUri, aoo.singleFile, aoo.resultFragments);
+		this(aoo.outputUri, aoo.params, aoo.remoteUri, aoo.remoteLocation, aoo.singleFile, aoo.resultFragments);
 		//TODO: This ist full of nulls, can't dereference the map and list
 		//this(aoo.outputUri, new HashMap<String, String>(aoo.params), aoo.remoteUri, aoo.remoteLocation, aoo.reportUri, aoo.singleFile, new ArrayList<URI>(aoo.resultFragments));
 	}
