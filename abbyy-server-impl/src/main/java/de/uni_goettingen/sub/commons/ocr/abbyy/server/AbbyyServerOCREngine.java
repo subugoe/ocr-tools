@@ -32,6 +32,7 @@ import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -78,7 +79,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 */
 	private AbbyyServerOCREngine() throws FileSystemException, ConfigurationException {
 		config = new ConfigParser().parse();
-		hotfolder = ApacheVFSHotfolderImpl.getInstance(config);
+		//hotfolder = ApacheVFSHotfolderImpl.getInstance(config);
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
 	}
