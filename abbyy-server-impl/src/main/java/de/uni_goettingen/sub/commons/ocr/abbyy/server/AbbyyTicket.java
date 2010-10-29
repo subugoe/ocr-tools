@@ -406,4 +406,14 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
+	public ConfigParser getConfig() {
+		return config;
+	}
+
+	public void setConfig(ConfigParser config) {
+		this.config = config;
+	}
+	
+	
+
 }
