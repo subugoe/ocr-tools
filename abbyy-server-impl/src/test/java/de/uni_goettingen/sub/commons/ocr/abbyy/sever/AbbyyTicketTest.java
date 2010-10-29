@@ -57,6 +57,7 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCROutput;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyTicket;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -95,7 +96,7 @@ public class AbbyyTicketTest {
 
 		URI resultUri = null;
 		try {
-			resultUri = new URI(BASEFOLDER_FILE.getAbsolutePath() + File.separator + RESULTS + File.separator + "result");
+			resultUri = new URI(BASEFOLDER_FILE.toURI() + "/" + RESULTS + "/" + "result");
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -103,6 +104,7 @@ public class AbbyyTicketTest {
 		
 		final AbbyyOCROutput aoo = new AbbyyOCROutput(resultUri);
 		aoo.setRemoteLocation(OUTPUT_LOCATION);
+		aoo.setRemoteFilename("result");
 
 		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>() {
 			{
@@ -147,7 +149,8 @@ public class AbbyyTicketTest {
 	public void writeTicket () throws IOException {
 		assertNotNull("base path is null", BASEFOLDER_FILE);
 		abbyyTicket = new AbbyyTicket(ocrp);
-
+		abbyyTicket.setConfig(new ConfigParser().parse());
+		
 		//Use a stream to check if we to write it directly into a Stream
 		ticketStream = new FileOutputStream(TICKET_FILE);
 		abbyyTicket.write(ticketStream, name);
