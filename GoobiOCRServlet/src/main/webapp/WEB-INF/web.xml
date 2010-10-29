@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+ <servlet>
+  <display-name>SimpleOCR</display-name>
+  <servlet-name>SimpleOCR</servlet-name>
+  <servlet-class>de.unigoettingen.sub.gdz.ocr.simple.servlet.SimpleOCRServlet</servlet-class>
+  <init-param>
+   <description>Default language</description>
+   <param-name>defaultLang</param-name>
+   <param-value>German</param-value>
+  </init-param>
+  <init-param>
+   <description>Cache location</description>
+   <param-name>cacheDir</param-name>
+   <param-value>e:\\tmp\\</param-value>
+  </init-param>
+  <init-param>
+   <description>Directory prefix for matching given paths</description>
+   <param-name>dirPrefix</param-name>
+   <param-value>\\\\gdz-wrk1\\goobi-ocr$\\</param-value>
+  </init-param>
+  <init-param>
+   <description>THe program to call to do the OCR</description>
+   <param-name>ocrScript</param-name>
+   <param-value>c:\\Programme\\Abbyy FineReader Engine 8.1\\Samples\\Visual C++ (Raw)\\CLEI2\\Release\\clei.exe</param-value>
+  </init-param>
+  <init-param>
+   <description>Suffix for results.</description>
+   <param-name>suffix</param-name>
+   <param-value>.txt</param-value>
+  </init-param>
+ </servlet>
+ <servlet-mapping>
+  <servlet-name>SimpleOCR</servlet-name>
+  <url-pattern>/*</url-pattern>
+ </servlet-mapping>
+ <login-config>
+  <auth-method>BASIC</auth-method>
+ </login-config>
+</web-app>
