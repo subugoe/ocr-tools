@@ -86,7 +86,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	/** Predefined image processing parameters */
 	protected final static ImageProcessingParams imageProcessingSettings;
 
-	//TODO: get this parameter from ConfigParser
+	//TODO: get this two parameters from ConfigParser
 	protected Boolean singleFile = false;
 
 	protected Boolean convertToBW = true;
@@ -261,7 +261,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		}
 
 		//Use predefined variables here
-		//TODO: Check why language isn't witten anymore
 		RecognitionParams recognitionParams = (RecognitionParams) recognitionSettings.copy();
 
 		if (langs == null) {
@@ -368,7 +367,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		this.processTimeout = oCRTimeOut;
 	}
 
-	//TODO: Check if this is called id a List of OCRImage is set
+	//TODO: Check if this is called if a List of OCRImage is set
 	@Override
 	public void addImage (OCRImage ocrImage) {
 		AbbyyOCRImage aoi = new AbbyyOCRImage(ocrImage);
