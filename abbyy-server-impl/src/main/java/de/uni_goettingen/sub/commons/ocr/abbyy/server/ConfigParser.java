@@ -83,6 +83,9 @@ public class ConfigParser {
 	public final Boolean DEFAULT_SINGLEFILE = false;
 	public final String PARAMETER_SINGLEFILE = "singleFile";
 	protected Boolean singleFile;
+	public final Boolean DEFAULT_CONVERTTOBW = false;
+	public final String PARAMETER_CONVERTTOBW = "convertToBW";
+	protected Boolean convertToBW;
 
 	//The output location on the server, needed to generate tickets
 	public final static String PARAMETER_SERVEROUTPUTLOCATION = "serverOutputLocation";
@@ -191,6 +194,7 @@ public class ConfigParser {
 		ticketTmpStore = config.getString(PARAMETER_TICKETTMPSTORE, DEFAULT_TICKETTMPSTORE);
 		validateTicket = config.getBoolean(PARAMETER_VALIDATETICKET, DEFAULT_VALIDATETICKET);
 		singleFile = config.getBoolean(PARAMETER_SINGLEFILE, DEFAULT_SINGLEFILE);
+		convertToBW = config.getBoolean(PARAMETER_CONVERTTOBW, DEFAULT_CONVERTTOBW);
 		reportSuffix = config.getString(PARAMETER_REPORTSUFFIX, DEFAULT_REPORTSUFFIX);
 		if (config.getString(PARAMETER_DEFAULTLANGS, null) != null) {
 			defaultLangs = OCRUtil.parseLangs(config.getString(PARAMETER_DEFAULTLANGS, null));
