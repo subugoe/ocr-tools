@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.xmlbeans.XmlException;
@@ -87,11 +85,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	/** Predefined image processing parameters */
 	protected final static ImageProcessingParams imageProcessingSettings;
 
-	//TODO: get this two parameters from ConfigParser
-	protected Boolean singleFile = false;
-
-	protected Boolean convertToBW = true;
-	
 	//TODO: Add priorities: Low, BelowNormal, Normal, AboveNormal, High
 	protected String priority = "Normal";
 	
@@ -99,13 +92,13 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	//The timeout for the process
 	protected Long processTimeout = null;
 	
-	// is represents the InputStream for files being read
+	/** is represents the InputStream for files being read */
 	private InputStream is;
 
 	// The configuration.
 	protected ConfigParser config;
 
-	protected static XmlOptions opts = new XmlOptions();
+	private static XmlOptions opts = new XmlOptions();
 
 	static {
 		//TODO: Add more values to this map.
@@ -227,14 +220,12 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 	public void write (OutputStream out, String identifier) throws IOException {
 		//Sanity checks
-		if (out == null) {
+		if (out == null || config == null) {
+			logger.error("OutputStream and / or configuration is not set!");
 			throw new IllegalStateException();
 		}
 		if (getOcrOutputs().size() < 1) {
 			throw new IllegalStateException("no outputs defined!");
-		}
-		if (config == null) {
-			throw new IllegalStateException();
 		}
 
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.newInstance(opts);
@@ -251,7 +242,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		}
 		//Use predefined variables here
 		ImageProcessingParams imageProcessingParams = (ImageProcessingParams) imageProcessingSettings.copy();
-		if (convertToBW) {
+		if (config.convertToBW) {
 			imageProcessingParams.setConvertToBWFormat(true);
 		}
 		imageProcessingParams.setDeskew(false);
@@ -282,7 +273,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		ticket.setRecognitionParams(recognitionParams);
 		ExportParams exportParams = ticket.addNewExportParams();
 		//TODO: check if we need to set a different string if we want seperate files
-		if (!singleFile) {
+		if (!config.singleFile) {
 			exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
 		}
 
@@ -317,9 +308,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 				exportFormat.setOutputLocation(aoo.getRemoteLocation());
 			}
 			settings.add(exportFormat);
-			//If single files should be created, te result files need to be added to the OCROuput object
+			//If single files should be created, the result files need to be added to the OCROuput object
 			//TODO: Change the name of the files
-			if (singleFile) {
+			if (!config.singleFile) {
 				for (OCRImage aoi : getOcrImages()) {
 					String file = ((AbbyyOCRImage) aoi).getRemoteUri().toString() + "." + of.toString().toLowerCase();
 					try {
@@ -350,13 +341,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
-	/*
-	@Deprecated
-	public void write (File ticketFile, String identifier) throws IOException {
-		write(new FileOutputStream(ticketFile), identifier);
-	}
-	*/
-
 	/**
 	 * @return the processTimeout
 	 */
@@ -383,32 +367,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		}
 		aoi.setRemoteFileName(getName() + "-" + urlParts[urlParts.length - 1]);
 		super.addImage(aoi);
-	}
-
-	//TODO: Try to remove this
-	private static class TicketHelper {
-
-		static Pattern p = Pattern.compile("(.*)\\\\(.*)");
-		static Pattern n = Pattern.compile("(\\d.\\d*)");
-
-		static public String getOutputName (String str) {
-			Matcher m = n.matcher(str);
-			m.find();
-			return m.group(1);
-		}
-
-		static public String getName (String str) {
-			Matcher m = p.matcher(str);
-			m.find();
-			return m.group(2);
-		}
-
-		static public String getLocation (String str) {
-			Matcher m = p.matcher(str);
-			m.find();
-			return m.group(1);
-		}
-
 	}
 
 	protected ConfigParser getConfig() {
