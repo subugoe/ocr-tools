@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,21 +51,27 @@ import com.lowagie.text.pdf.SimpleBookmark;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 
 /**
- * The Class FileMerger is a container for several static methods that can be used 
- * to merge several types of OCR output
+ * The Class FileMerger is a container for several static methods that can be
+ * used to merge several types of OCR output
  * 
  * @version 0.9
  * @author cmahnke
  */
 public class FileMerger {
-	
+
 	/** This list contains the SEGMENTABLE_FORMATS. */
 	public final static List<OCRFormat> SEGMENTABLE_FORMATS;
-	
-	/** This list the mapping from {@link OCRFormat} to methods for File based merging. */
+
+	/**
+	 * This list the mapping from {@link OCRFormat} to methods for File based
+	 * merging.
+	 */
 	private final static Map<OCRFormat, Method> fileMergers;
-	
-	/** This list the mapping from {@link OCRFormat} to methods for Stream based merging. */
+
+	/**
+	 * This list the mapping from {@link OCRFormat} to methods for Stream based
+	 * merging.
+	 */
 	private final static Map<OCRFormat, Method> streamMergers;
 
 	static {
@@ -96,19 +101,22 @@ public class FileMerger {
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
-		
+
 		//Get the public formats from the internal Map
 		SEGMENTABLE_FORMATS = new ArrayList<OCRFormat>();
 		SEGMENTABLE_FORMATS.addAll(fileMergers.keySet());
 	}
 
 	/**
-	 * Merge Abbyy XML Streams. This operates directly on Streams and should be 
+	 * Merge Abbyy XML Streams. This operates directly on Streams and should be
 	 * suitable for processing over WebDAV for example
-	 *
-	 * @param iss the List of InputStreams
-	 * @param os the OutputStram to write to.
-	 * @throws XMLStreamException the xML stream exception
+	 * 
+	 * @param iss
+	 *            the List of InputStreams
+	 * @param os
+	 *            the OutputStram to write to.
+	 * @throws XMLStreamException
+	 *             the xML stream exception
 	 */
 	public static void mergeAbbyyXML (List<InputStream> iss, OutputStream os) throws XMLStreamException {
 
@@ -211,11 +219,15 @@ public class FileMerger {
 
 	/**
 	 * Merge Abbyy XML files.
-	 *
-	 * @param files the File's to merge
-	 * @param outFile the result file to write to
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 * @throws XMLStreamException the XML stream exception
+	 * 
+	 * @param files
+	 *            the File's to merge
+	 * @param outFile
+	 *            the result file to write to
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws XMLStreamException
+	 *             the XML stream exception
 	 */
 	public static void mergeAbbyyXML (List<File> files, File outFile) throws IOException, XMLStreamException {
 		OutputStream os = new FileOutputStream(outFile);
@@ -228,21 +240,25 @@ public class FileMerger {
 	}
 
 	/**
-	 * Merge PDF Streams. This operates directly on Streams and should be 
-	 * suitable for processing over WebDAV for example.  The iText library is 
+	 * Merge PDF Streams. This operates directly on Streams and should be
+	 * suitable for processing over WebDAV for example. The iText library is
 	 * used to perform this task.
-	 *
-	 * @param iss the List of InputStreams
-	 * @param os the OutputStram to write to.
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 * @throws DocumentException the document exception
+	 * 
+	 * @param iss
+	 *            the List of InputStreams
+	 * @param os
+	 *            the OutputStram to write to.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws DocumentException
+	 *             the document exception
 	 */
 	@SuppressWarnings("unchecked")
 	public static void mergePDF (List<InputStream> iss, OutputStream os) throws IOException, DocumentException {
 		//Stolen from itext (com.lowagie.tools.concat_pdf) 
 
 		int pageOffset = 0;
-		List<HashMap<String,Object>> master = new ArrayList<HashMap<String,Object>>();
+		List<HashMap<String, Object>> master = new ArrayList<HashMap<String, Object>>();
 		int f = 0;
 		Document document = null;
 		PdfCopy writer = null;
@@ -252,7 +268,7 @@ public class FileMerger {
 			reader.consolidateNamedDestinations();
 			// we retrieve the total number of pages
 			int n = reader.getNumberOfPages();
-			List<HashMap<String,Object>> bookmarks = SimpleBookmark.getBookmark(reader);
+			List<HashMap<String, Object>> bookmarks = SimpleBookmark.getBookmark(reader);
 			if (bookmarks != null) {
 				if (pageOffset != 0) {
 					SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);
@@ -289,11 +305,15 @@ public class FileMerger {
 
 	/**
 	 * Merge pdf. The iText library is used to perform this task.
-	 *
-	 * @param files the files to merge
-	 * @param outFile the out file
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 * @throws DocumentException the document exception
+	 * 
+	 * @param files
+	 *            the files to merge
+	 * @param outFile
+	 *            the out file
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws DocumentException
+	 *             the document exception
 	 */
 	public static void mergePDF (List<File> files, File outFile) throws IOException, DocumentException {
 		OutputStream os = new FileOutputStream(outFile);
@@ -306,15 +326,17 @@ public class FileMerger {
 	}
 
 	/**
-	 * Merge TXT Streams. This operates directly on Streams and should be 
-	 * suitable for processing over WebDAV for example. Note that the result isn't
-	 * platform independent, the line ending different on each. Look 
-	 * at the property "line.separator".
-	 * the page break is encoded as ASCII DEC 12.
-	 *
-	 * @param iss the List of InputStreams
-	 * @param os the OutputStram to write to.
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * Merge TXT Streams. This operates directly on Streams and should be
+	 * suitable for processing over WebDAV for example. Note that the result
+	 * isn't platform independent, the line ending different on each. Look at
+	 * the property "line.separator". the page break is encoded as ASCII DEC 12.
+	 * 
+	 * @param iss
+	 *            the List of InputStreams
+	 * @param os
+	 *            the OutputStram to write to.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public static void mergeTXT (List<InputStream> iss, OutputStream os) throws IOException {
 		OutputStreamWriter osw = new OutputStreamWriter(os);
@@ -322,7 +344,7 @@ public class FileMerger {
 		char pb = (char) 12;
 		//Use the platform dependent separator here
 		String seperator = System.getProperty("line.separator");
-		
+
 		int f = 0;
 		while (f < iss.size()) {
 			InputStreamReader isr = new InputStreamReader(iss.get(f), "UTF-8");
@@ -341,13 +363,16 @@ public class FileMerger {
 	}
 
 	/**
-	 * Merge TXT.  Note that the result isn't plattform independent, the line ending
-	 * different on each. Look at the property "line.separator".
-	 * the page break is encoded as ASCII DEC 12.
-	 *
-	 * @param files the files to merge
-	 * @param outFile the out file
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * Merge TXT. Note that the result isn't plattform independent, the line
+	 * ending different on each. Look at the property "line.separator". the page
+	 * break is encoded as ASCII DEC 12.
+	 * 
+	 * @param files
+	 *            the files to merge
+	 * @param outFile
+	 *            the out file
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public static void mergeTXT (List<File> files, File outFile) throws IOException {
 		OutputStream os = new FileOutputStream(outFile);
@@ -361,8 +386,9 @@ public class FileMerger {
 
 	/**
 	 * Checks if the given {@link OCRFormat} is segmentable.
-	 *
-	 * @param f the {@link OCRFormat} to check
+	 * 
+	 * @param f
+	 *            the {@link OCRFormat} to check
 	 * @return true if {@link OCRFormat} can be segmented, false otherwise
 	 */
 	public static Boolean isSegmentable (OCRFormat f) {
@@ -374,55 +400,90 @@ public class FileMerger {
 
 	/**
 	 * Checks if all of the given {@link OCRFormat}'s are segmentable.
-	 *
-	 * @param f the Set of {@link OCRFormat}'s to check
-	 * @return true if the whole Set of{@link OCRFormat}'scan be segmented, false otherwise
+	 * 
+	 * @param f
+	 *            the Set of {@link OCRFormat}'s to check
+	 * @return true if the whole Set of{@link OCRFormat}'scan be segmented,
+	 *         false otherwise
 	 */
 	public static Boolean isSegmentable (Set<OCRFormat> sf) {
-		for (OCRFormat f: sf) {
+		for (OCRFormat f : sf) {
 			if (!isSegmentable(f)) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	/**
-	 * Merge files of the given format. Look at the used methods below
-	 * for remarks on the different merge implementations.
+	 * Merge files of the given format. Look at the used methods below for
+	 * remarks on the different merge implementations.
 	 * 
+	 * @param format
+	 *            the {@link OCRFormat} to merge
+	 * @param files
+	 *            the File's to merge
+	 * @param outFile
+	 *            the result file to write to
+	 * @throws MergeException
+	 *             if something went wrong, the MergeException is just a wrapper
 	 * @see #mergeAbbyyXML(List, File)
 	 * @see #mergePDF(List, File)
 	 * @see #mergeTXT(List, File)
-	 *
-	 * @param format the {@link OCRFormat} to merge
-	 * @param files the File's to merge
-	 * @param outFile the result file to write to
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws IllegalAccessException the illegal access exception
-	 * @throws InvocationTargetException the invocation target exception
 	 */
-	public static void mergeFiles (OCRFormat format, List<File> files, File outFile) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		fileMergers.get(format).invoke(null, new Object[] { files, outFile });
+	public static void mergeFiles (OCRFormat format, List<File> files, File outFile) throws MergeException {
+		try {
+			fileMergers.get(format).invoke(null, new Object[] { files, outFile });
+		} catch (Exception e) {
+			throw new MergeException(e);
+		}
 	}
 
 	/**
-	 * Merge Streams of the given format. This operates directly on Streams and should be 
-	 * suitable for processing over WebDAV for example. Look at the used methods below
-	 * for remarks on the different merge implementations.
+	 * Merge Streams of the given format. This operates directly on Streams and
+	 * should be suitable for processing over WebDAV for example. Look at the
+	 * used methods below for remarks on the different merge implementations.
 	 * 
+	 * @param format
+	 *            the {@link OCRFormat} to merge
+	 * @param iss
+	 *            the List of InputStreams
+	 * @param os
+	 *            the OutputStram to write to.
+	 * @throws MergeException
+	 *             if something went wrong, the MergeException is just a wrapper
 	 * @see #mergeAbbyyXML(List, OutputStream)
 	 * @see #mergePDF(List, OutputStream)
 	 * @see #mergeTXT(List, OutputStream)
-	 *
-	 * @param format the {@link OCRFormat} to merge
-	 * @param iss the List of InputStreams
-	 * @param os the OutputStram to write to.
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws IllegalAccessException the illegal access exception
-	 * @throws InvocationTargetException the invocation target exception
 	 */
-	public static void mergeStreams (OCRFormat format, List<InputStream> iss, OutputStream os) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		streamMergers.get(format).invoke(null, new Object[] { iss, os });
+	public static void mergeStreams (OCRFormat format, List<InputStream> iss, OutputStream os) throws MergeException {
+		try {
+			streamMergers.get(format).invoke(null, new Object[] { iss, os });
+		} catch (Exception e) {
+			throw new MergeException(e);
+		}
+	}
+
+	/**
+	 * The Class MergeException is a wrapper for other exceptions that may occur
+	 * during the merge of files or streams
+	 */
+	public static class MergeException extends RuntimeException {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2699212824820823674L;
+
+		/**
+		 * Instantiates a new MergeException.
+		 * 
+		 * @param t
+		 *            the wrapped Throwable
+		 */
+		public MergeException(Throwable t) {
+			super(t);
+		}
+
 	}
 }
