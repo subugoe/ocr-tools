@@ -32,11 +32,14 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
  * the local Server.
  */
 public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
-	//This represents the filename that should be written to the ticket.
+	/** This represents the filename that should be written to the ticket. */
 	protected String remoteFileName;
 
-	/** This represents the URL to the remote system */
+	/** This represents the URI to the remote system */
 	protected URI remoteUri;
+	
+	/** This represents the URI if the images is part of a failed process. */
+	protected URI errorUri;
 
 	/** the size of the image, if known */
 	protected Long size = 0l;
@@ -135,4 +138,13 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	public void setSize (Long size) {
 		this.size = size;
 	}
+
+	public URI getErrorUri () {
+		return errorUri;
+	}
+
+	public void setErrorUri (URI errorUri) {
+		this.errorUri = errorUri;
+	}
+	
 }
