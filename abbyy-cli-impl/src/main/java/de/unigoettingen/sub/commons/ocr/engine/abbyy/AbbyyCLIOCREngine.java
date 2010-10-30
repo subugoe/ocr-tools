@@ -348,10 +348,6 @@ public class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OCREngi
 				FileMerger.mergeFiles(f, inputFiles, file);
 			} catch (IllegalArgumentException e) {
 				exceptions.put(f, e);
-			} catch (IllegalAccessException e) {
-				exceptions.put(f, e);
-			} catch (InvocationTargetException e) {
-				exceptions.put(f, e);
 			}
 		}
 		if (!exceptions.isEmpty()) {
