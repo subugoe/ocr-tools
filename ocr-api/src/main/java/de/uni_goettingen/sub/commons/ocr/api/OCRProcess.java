@@ -27,7 +27,8 @@ import java.util.Set;
 
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
-// TODO: Auto-generated Javadoc
+//TODO: Look at http://sites.google.com/site/openjdklocale/Home for language and script representation.
+// Or use http://icu-project.org/apiref/icu4j/com/ibm/icu/lang/UScript.html for scripts
 /**
  * The Class OCRProcess represent an {@link OCRProcess}. Implementations should
  * extend {@link AbstractOCRProcess} to add further methods for example for
