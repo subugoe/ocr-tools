@@ -8,6 +8,7 @@
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>abbyy-cli-impl</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>Abbyy CLEI Wrapper Engine</name>
 	<dependencies>
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
