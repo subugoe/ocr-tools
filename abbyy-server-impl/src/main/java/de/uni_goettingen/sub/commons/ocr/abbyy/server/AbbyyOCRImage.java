@@ -33,16 +33,16 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
  */
 public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	/** This represents the filename that should be written to the ticket. */
-	protected String remoteFileName;
+	private String remoteFileName;
 
 	/** This represents the URI to the remote system */
-	protected URI remoteUri;
+	private URI remoteUri;
 	
 	/** This represents the URI if the images is part of a failed process. */
-	protected URI errorUri;
+	private URI errorUri;
 
 	/** the size of the image, if known */
-	protected Long size = 0l;
+	private Long size = 0l;
 
 	/**
 	 * Instantiates a new abbyy ocr file.
