@@ -76,7 +76,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	public AbstractOCRProcess(OCRProcess process) {
 		//Copy Constructor
-		this(process.getOcrImages(), process.getLanguages(), process.getOcrOutputs());
+		this(process.getOcrImages(), new HashSet<Locale>(process.getLanguages()), new HashMap<OCRFormat, OCROutput> (process.getOcrOutputs()));
 	}
 
 	/**
@@ -235,7 +235,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 *            the output, the output settings for the given format
 	 * @see OCRFormat
 	 * @see OCROutput
-	 * @see #setOcrOutputs(Map);
+	 * @see setOcrOutputs(Map);
 	 */
 	public void addOutput (OCRFormat format, OCROutput output) {
 		ocrOutputs.put(format, output);
