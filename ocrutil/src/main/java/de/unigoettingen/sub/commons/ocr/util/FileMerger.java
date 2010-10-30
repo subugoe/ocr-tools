@@ -401,7 +401,7 @@ public class FileMerger {
 	/**
 	 * Checks if all of the given {@link OCRFormat}'s are segmentable.
 	 * 
-	 * @param f
+	 * @param sf
 	 *            the Set of {@link OCRFormat}'s to check
 	 * @return true if the whole Set of{@link OCRFormat}'scan be segmented,
 	 *         false otherwise
