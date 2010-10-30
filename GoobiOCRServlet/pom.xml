@@ -8,6 +8,7 @@
 	<groupId>org.goobi</groupId>
 	<artifactId>GoobiOCRServlet</artifactId>
 	<version>0.3-SNAPSHOT</version>
+	<name>Goobi OCR Servlet</name>
 	<packaging>war</packaging>
 	<dependencies>
 		<dependency>
