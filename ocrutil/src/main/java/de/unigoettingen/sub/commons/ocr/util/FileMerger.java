@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -371,6 +372,21 @@ public class FileMerger {
 		return false;
 	}
 
+	/**
+	 * Checks if all of the given {@link OCRFormat}'s are segmentable.
+	 *
+	 * @param f the Set of {@link OCRFormat}'s to check
+	 * @return true if the whole Set of{@link OCRFormat}'scan be segmented, false otherwise
+	 */
+	public static Boolean isSegmentable (Set<OCRFormat> sf) {
+		for (OCRFormat f: sf) {
+			if (!isSegmentable(f)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * Merge files of the given format. Look at the used methods below
 	 * for remarks on the different merge implementations.
