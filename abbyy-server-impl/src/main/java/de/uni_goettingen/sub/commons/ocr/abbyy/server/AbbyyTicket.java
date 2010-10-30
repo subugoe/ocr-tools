@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
@@ -329,6 +330,10 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 						throw new OCRException(e);
 					}
 				}
+			} else {
+				aoo.setSingleFile(true);
+				//TODO: Finish this
+				throw new NotImplementedException();
 			}
 		}
 		
@@ -406,14 +411,12 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 	}
 
-	public ConfigParser getConfig() {
+	protected ConfigParser getConfig() {
 		return config;
 	}
 
-	public void setConfig(ConfigParser config) {
+	protected void setConfig(ConfigParser config) {
 		this.config = config;
 	}
 	
-	
-
 }
