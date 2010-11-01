@@ -98,6 +98,9 @@ public class XmlParser {
 	 * @throws IOException 
 	 */
 //	protected static Set<String> xmlresultErrorparse (InputStream is, String identifier) throws FileNotFoundException, XMLStreamException {
+	
+	//Replace this with the library at https://develop.sub.uni-goettingen.de/repos/sub-commons/ocrComponents/trunk/abbyySchemas/abbyyResult/
+	@Deprecated
 	protected void xmlresultErrorparse (InputStream is, String identifier) throws XMLStreamException, IOException {
 	//	Set<String> ocrErrorFile = new LinkedHashSet<String>();
 		String error = null;
