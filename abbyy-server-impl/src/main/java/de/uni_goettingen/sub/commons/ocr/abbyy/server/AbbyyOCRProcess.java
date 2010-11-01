@@ -387,15 +387,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			}
 		}
 		
-		//Integer expectedFileCount;
-		//expectedFileCount = results.size();
 		while (check) {
-			//Integer successCounter = 0;
-			//for (OCRFormat of: results.keySet()) {
 			for (URI u: expectedUris.keySet()) {
-				//URI u = results.get(of).getUri();
 				if (!expectedUris.get(u) && hotfolder.exists(u)) {
-					//successCounter++;
 					logger.trace(u.toString() + " is available");
 					expectedUris.put(u, true);
 				} else {
@@ -403,9 +397,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				}
 			}
 			if (!expectedUris.containsValue(false)) {
-			//if (successCounter == expectedFileCount) {
 				logger.trace("Got all files.");
-				//logger.trace("Got all " + successCounter + " files.");
 				break;
 			}
 			if (System.currentTimeMillis() > start + timeout) {
