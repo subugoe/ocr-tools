@@ -1,4 +1,4 @@
-package de.uni_goettingen.sub.commons.ocr.abbyy.sever;
+package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 /*
 
