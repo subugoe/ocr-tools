@@ -139,21 +139,10 @@ public class XmlParser {
 		} finally {
 			xmlStreamReader.close();
 		}
-		writeReport(identifier, error);
+		//writeReport(identifier, error);
 		logger.debug("Band Name " + identifier + " Error Reports: " + error);
 		
 	}
 	
-	public static void writeReport(String str, String error) throws IOException {
-		Date cDate = new Date();
-		File f = new File ("ReportForErrorResult.txt");
-	      
-	        	FileWriter  writer = new FileWriter(f, true);
-	        	writer.write("[" +cDate+ "] " + str + " [Error]: " + error + System.getProperty("line.separator"));
-	            writer.flush();
-	            writer.close();
-      
-		
-	}
 	
 }
