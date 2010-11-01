@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
@@ -218,7 +217,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		setOcrOutputs(outputs);
 	}
 
-	public void write (OutputStream out, String identifier) throws IOException {
+	public void write (final OutputStream out, final String identifier) throws IOException {
 		//Sanity checks
 		if (out == null || config == null) {
 			logger.error("OutputStream and / or configuration is not set!");
@@ -310,7 +309,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			settings.add(exportFormat);
 			//If single files should be created, the result files need to be added to the OCROuput object
 			//TODO: Change the name of the files
-			if (!config.singleFile) {
+			if (config.singleFile) {
 				for (OCRImage aoi : getOcrImages()) {
 					String file = ((AbbyyOCRImage) aoi).getRemoteUri().toString() + "." + of.toString().toLowerCase();
 					try {
@@ -321,11 +320,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 						throw new OCRException(e);
 					}
 				}
-			} else {
-				aoo.setSingleFile(true);
-				//TODO: Finish this
-				throw new NotImplementedException();
-			}
+			} 
 		}
 		
 		for (int j = 0; j < settings.size(); j++) {
