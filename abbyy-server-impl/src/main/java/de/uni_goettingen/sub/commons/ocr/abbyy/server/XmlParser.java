@@ -41,16 +41,6 @@ public class XmlParser {
 	/** The Constant logger. */
 	public final static Logger logger = LoggerFactory.getLogger(XmlParser.class);
 
-	//These are just wrappers, they will be removed...
-	/*@Deprecated
-	protected static Set<String> xmlresultOutputparse (File file) throws FileNotFoundException, XMLStreamException {
-		return xmlresultOutputparse(new FileInputStream(file));
-	}
-
-	@Deprecated
-	protected static Set<String> xmlresultErrorparse (File file, String identifier) throws FileNotFoundException, XMLStreamException {
-		return xmlresultErrorparse(new FileInputStream(file), identifier);
-	}*/
 
 	/**
 	 * parse Xml result in output folder.
