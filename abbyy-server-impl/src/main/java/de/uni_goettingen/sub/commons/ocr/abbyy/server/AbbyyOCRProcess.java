@@ -372,12 +372,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
+	//TODO: Check if we look at the right location.
 	private Boolean waitForResults (final Map<OCRFormat, OCROutput> results, Long timeout) throws TimeoutExcetion, InterruptedException, IOException {
 		Long start = System.currentTimeMillis();
 		Boolean check = true;
 		Map<URI,Boolean> expectedUris = new HashMap<URI, Boolean>();
 		for (OCRFormat of: results.keySet()) {
-			if (!((AbbyyOCROutput) results.get(of)).isSingleFile()) {
+			//TODO: The logic is wrong here, isSingleFile is used wrong 
+			if (((AbbyyOCROutput) results.get(of)).isSingleFile()) {
 				URI u = results.get(of).getUri();
 				expectedUris.put(u, false);
 			} else {
