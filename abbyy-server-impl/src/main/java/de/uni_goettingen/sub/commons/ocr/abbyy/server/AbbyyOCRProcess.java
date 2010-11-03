@@ -498,7 +498,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 	@SuppressWarnings("serial")
 	private void mergeResult (final OCRFormat format, final AbbyyOCROutput output) throws IOException, MergeException {
-		if (FileMerger.isSegmentable(format)) {
+		if (!FileMerger.isSegmentable(format)) {
 			throw new OCRException("Format " + format.toString() + " isn't mergable!");
 		}
 		//TODO: Use the hotfolder stuff here, since we can redirect IO in this layer
