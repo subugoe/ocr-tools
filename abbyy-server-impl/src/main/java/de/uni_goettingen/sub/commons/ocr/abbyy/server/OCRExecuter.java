@@ -18,12 +18,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 
@@ -36,7 +42,8 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	//TODO: Also document the differences to the overridden methods.
 	//TODO: There is a bug in here currently only one process per time is started
-
+	// The Constant logger.
+	public final static Logger logger = LoggerFactory.getLogger(OCRExecuter.class);
 	protected Integer maxThreads;
 
 	private Boolean isPaused = false;
@@ -68,7 +75,13 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		super.beforeExecute(t, r);
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
-			//TODO: Refresh server state here
+			try {
+				abbyyOCRProcess.checkServerState();
+			} catch (IOException e) {
+				logger.debug("IOException in Server state: "+ e.getMessage());
+			} catch (URISyntaxException e) {
+				logger.debug("URISyntaxException in Server state:: "+ e.getMessage());
+			}
 			if (maxFiles != 0 && maxSize != 0) {
 				if (abbyyOCRProcess.getOcrImages().size() + totalFileCount > maxFiles || getFileSize(abbyyOCRProcess) + totalFileSize > maxSize) {
 					pause();
@@ -99,7 +112,13 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		super.afterExecute(r, e);
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
-			//TODO: Refresh server state here
+			try {
+				abbyyOCRProcess.checkServerState();
+			} catch (IOException e1) {
+				logger.debug("IOException in Server state: "+ e1.getMessage());
+			} catch (URISyntaxException e1) {
+				logger.debug("URISyntaxException in Server state:: "+ e1.getMessage());
+			}
 			if (maxFiles != 0 && maxSize != 0) {
 				if (abbyyOCRProcess.getOcrImages().size() + totalFileCount < maxFiles || getFileSize(abbyyOCRProcess) + totalFileSize < maxSize) {
 					pause();
