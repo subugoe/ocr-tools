@@ -224,16 +224,16 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			
 			logger.debug("Cleaning Server");
 			//Clean the server here to avoid GUIDs as filenames
-			cleanOutputs(getOcrOutputs());
+//			cleanOutputs(getOcrOutputs());
 			//Remove all files that are part of this process, they shouldn't exist yet.
-			cleanImages(convertList(getOcrImages()));
+//			cleanImages(convertList(getOcrImages()));
 
 			//Copy the ticket
 			logger.debug("Copying tickt to server");
-			hotfolder.copyTmpFile(tmpTicket, ticketUri);
+//			hotfolder.copyTmpFile(tmpTicket, ticketUri);
 			//Copy the files
 			logger.debug("Coping imges to server.");
-			copyFilesToServer(getOcrImages());
+//			copyFilesToServer(getOcrImages());
 
 			if (config.copyOnly) {
 				logger.info("Process is in copy only mode, don't wait for results");
@@ -244,7 +244,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			Long minWait = getOcrImages().size() * config.minMillisPerFile;
 			Long maxWait = getOcrImages().size() * config.maxMillisPerFile;
 			logger.info("Waiting " + minWait + " milli seconds for results");
-			Thread.sleep(minWait);
+//			Thread.sleep(minWait);
 
 			try {
 				Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
@@ -253,7 +253,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 					//Everything should be ok, get the files
 					for (OCRFormat f : outputs.keySet()) {
 						final AbbyyOCROutput o = (AbbyyOCROutput) outputs.get(f);
-						if (!o.isSingleFile()) {
+						if (o.isSingleFile()) {
 							URI remoteUri = o.getRemoteUri();
 							URI localUri = o.getUri();
 							logger.debug("Copy from " + remoteUri + " to " + localUri);
@@ -371,13 +371,26 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *             the interrupted exception
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
+	 * @throws URISyntaxException 
 	 */
 	//TODO: Check if we look at the right location.
-	private Boolean waitForResults (final Map<OCRFormat, OCROutput> results, Long timeout) throws TimeoutExcetion, InterruptedException, IOException {
+	private Boolean waitForResults (final Map<OCRFormat, OCROutput> results, Long timeout) throws TimeoutExcetion, InterruptedException, IOException, URISyntaxException {
 		Long start = System.currentTimeMillis();
 		Boolean check = true;
 		Map<URI,Boolean> expectedUris = new HashMap<URI, Boolean>();
-		for (OCRFormat of: results.keySet()) {
+		for (OCRFormat of : results.keySet()) {
+		  final AbbyyOCROutput o = (AbbyyOCROutput) results.get(of);
+			if (o.isSingleFile()) {
+				URI u = o.getRemoteUri();
+				expectedUris.put(u, false);
+			} else {
+				for (URI u : o.getResultFragments()) {
+					expectedUris.put(u, false);
+				}
+			}
+		}
+		
+		/*for (OCRFormat of: results.keySet()) {
 			//TODO: The logic is wrong here, isSingleFile is used wrong 
 			if (((AbbyyOCROutput) results.get(of)).isSingleFile()) {
 				URI u = results.get(of).getUri();
@@ -387,7 +400,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 					expectedUris.put(u, false);
 				}
 			}
-		}
+		}*/
 		
 		while (check) {
 			for (URI u: expectedUris.keySet()) {
@@ -458,7 +471,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *             Signals that an I/O exception has occurred.
 	 */
 	@SuppressWarnings("serial")
-	private void checkServerState () throws IOException, URISyntaxException {
+	public void checkServerState () throws IOException, URISyntaxException {
 		if (maxSize != 0 && maxFiles != 0) {
 
 			// check if a slash is already appended
@@ -555,10 +568,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 		try {
 			//The remote file name
-			metadata.setRemoteUri(new URI(out.getRemoteUri() + config.reportSuffix));
+			metadata.setRemoteUri(new URI(out.getRemoteUri().toString().replaceAll(lastKey.toString().toLowerCase(), "xml" + config.reportSuffix)) );
 			//The local file name
 			//TODO: make this configurable
-			metadata.setUri(new URI(out.getUri() + config.reportSuffix));
+			metadata.setUri(new URI(out.getUri().toString().replaceAll(lastKey.toString().toLowerCase(), "xml" + config.reportSuffix)));
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs");
 			throw new OCRException(e);
