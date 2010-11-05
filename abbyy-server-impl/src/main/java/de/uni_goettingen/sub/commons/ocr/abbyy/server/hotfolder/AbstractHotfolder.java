@@ -26,7 +26,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 
 /**
@@ -41,6 +42,9 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
  */
 public abstract class AbstractHotfolder implements Hotfolder {
 	
+	/** The Constant logger. */
+	final static Logger logger = LoggerFactory.getLogger(AbstractHotfolder.class);
+
 	//Simple Implementation of tempfile based on a local file.
 	protected Map<String, File> tmpfiles = new HashMap<String, File>();
 
@@ -125,23 +129,17 @@ public abstract class AbstractHotfolder implements Hotfolder {
 			c = Class.forName(cls);
 			return (Hotfolder) c.getMethod("getInstance", new Class[] {ConfigParser.class}).invoke(null, new Object[] {config});
  		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+ 			logger.error("Class Not Found... ", e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Illegal Argument Exception should be thrown ", e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Security Exception ", e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Illegal Access Exception ", e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Invocation Target Exception ", e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Unable to load action: ", e);
 		}
 		return null;
 	}
