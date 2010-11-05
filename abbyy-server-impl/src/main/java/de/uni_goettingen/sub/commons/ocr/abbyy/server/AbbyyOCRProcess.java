@@ -57,7 +57,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 	//TODO: Make sure that the Executor reads the size and count of the remote server
 	//TODO: Save the stats of the remote system in a hidden file there, use the SharedHotfolder interface for this
-	//TODO: check if orientation is handled properly
 	//TODO: add a locking method to the hotfolder, use the SharedHotfolder interface for this
 	//TODO: make the priority configurable
 
@@ -137,7 +136,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		}
 	}
 
-	//TODO: Finish this constructor
 	protected AbbyyOCRProcess(OCRProcess process, ConfigParser config) {
 		super(process);
 		this.config = config;
@@ -151,7 +149,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 */
 	@Override
 	public void run () {
-		//TODO Break up this method
 		
 		startTime = System.currentTimeMillis();
 
@@ -229,7 +226,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			Long maxWait = getOcrImages().size() * config.maxMillisPerFile;
 			logger.info("Waiting " + minWait + " milli seconds for results");
 			Thread.sleep(minWait);
-			while(!failed){
+
 			try {
 				Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
 				logger.debug("Waking up, waiting another " + (maxWait - minWait) + " milli seconds for results");
@@ -245,7 +242,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 							hotfolder.copyFile(remoteUri, localUri);
 							logger.debug("Deleting remote file " + remoteUri);
 							hotfolder.deleteIfExists(remoteUri);
-							failed = true;
 						} else {
 							//The results are fragmented, merge them
 							mergeResult(f, o);
@@ -276,7 +272,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				hotfolder.deleteIfExists(errorResultUri);
 				}
 
-			}
 			}
 		} catch (XMLStreamException e) {
 			//Set failed here since the results isn't worth much without metadata
@@ -594,7 +589,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	//TODO: Remove single files
 	private void cleanOutputs (final Map<OCRFormat, OCROutput> outputs) throws IOException {
 		for (OCRFormat of : outputs.keySet()) {
 			AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(of);
@@ -632,16 +626,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		}
 	}
 	
-	//TODO: Finish this
-	/*
-	@Override
-	public void addImage (OCRImage ocrImage) {
-		super.addImage(ocrImage);
-		AbbyyOCRImage addedImage = (AbbyyOCRImage) getOcrImages().get(getOcrImages().size() - 1);
-		//TODO: Update Image here
-		
-	}
-	*/
+	
 
 	/**
 	 * The Class TimeoutExcetion.
