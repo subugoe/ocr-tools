@@ -38,29 +38,48 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
  * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
  * execution of tasks on the Recognition Server with respect of the resource
  * constrains, like total number of files and used storage.
+ * 
+ * Two of the Templatemethods are used in connection with the 
+ * implementation of an activity by a Pool-Thread.
  */
 public class OCRExecuter extends ThreadPoolExecutor implements Executor {
-	//TODO: Also document the differences to the overridden methods.
 	//TODO: There is a bug in here currently only one process per time is started
 	// The Constant logger.
 	public final static Logger logger = LoggerFactory.getLogger(OCRExecuter.class);
+	
+	// The max threads. 
 	protected Integer maxThreads;
 
+	// The ispaused. 
 	private Boolean isPaused = false;
+	
+	// The pauselock. 
 	private ReentrantLock pauseLock = new ReentrantLock();
+	
+	// The unpaused. 
 	private Condition unpaused = pauseLock.newCondition();
 
-	//TODO: Get this from ConfigParser
+	// The maxsize. 
 	private Long maxSize = 0l;
 
+	// The maxfiles. 
 	private Long maxFiles = 0l;
 
+	// The total file size in Server. 
 	private Long totalFileSize;
 
+	// The total file count. 
 	private Long totalFileCount;
 
+	// The hotfolder. 
 	protected Hotfolder hotfolder;
 
+	/**
+	 * Instantiates a new oCR executer.
+	 *
+	 * @param maxThreads the max threads
+	 * @param hotfolder the hotfolder
+	 */
 	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		this.maxThreads = maxThreads;
@@ -70,6 +89,13 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	/* (non-Javadoc)
 	 * @see java.util.concurrent.ThreadPoolExecutor#beforeExecute(java.lang.Thread, java.lang.Runnable)
 	 */
+	/**
+	 * Before execute. it is called, before the Thread t 
+	 * explains the asynchronous activity r
+	 *
+	 * @param t the Thread
+	 * @param r the activity
+	 */
 	@Override
 	protected void beforeExecute (Thread t, Runnable r) {
 		super.beforeExecute(t, r);
@@ -78,9 +104,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			try {
 				abbyyOCRProcess.checkServerState();
 			} catch (IOException e) {
-				logger.debug("IOException in Server state: "+ e.getMessage());
+				logger.debug("IOException in checkServerState method: "+ e.getMessage());
 			} catch (URISyntaxException e) {
-				logger.debug("URISyntaxException in Server state:: "+ e.getMessage());
+				logger.debug("URISyntaxException in checkServerState method: "+ e.getMessage());
 			}
 			if (maxFiles != 0 && maxSize != 0) {
 				if (abbyyOCRProcess.getOcrImages().size() + totalFileCount > maxFiles || getFileSize(abbyyOCRProcess) + totalFileSize > maxSize) {
@@ -107,6 +133,13 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	/* (non-Javadoc)
 	 * @see java.util.concurrent.ThreadPoolExecutor#afterExecute(java.lang.Runnable, java.lang.Throwable)
 	 */
+	/**
+	 * After execute. it is called, after the Thread has 
+	 * explained the asynchronous activity 
+	 *
+	 * @param r the Runnable
+	 * @param e the Throwable
+	 */
 	@Override
 	protected void afterExecute (Runnable r, Throwable e) {
 		super.afterExecute(r, e);
@@ -115,9 +148,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			try {
 				abbyyOCRProcess.checkServerState();
 			} catch (IOException e1) {
-				logger.debug("IOException in Server state: "+ e1.getMessage());
+				logger.debug("IOException in checkServerState method: "+ e1.getMessage());
 			} catch (URISyntaxException e1) {
-				logger.debug("URISyntaxException in Server state:: "+ e1.getMessage());
+				logger.debug("URISyntaxException in checkServerState method: "+ e1.getMessage());
 			}
 			if (maxFiles != 0 && maxSize != 0) {
 				if (abbyyOCRProcess.getOcrImages().size() + totalFileCount < maxFiles || getFileSize(abbyyOCRProcess) + totalFileSize < maxSize) {
@@ -129,8 +162,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			throw new IllegalStateException("Not a AbbyyOCRProcess object");
 		}
 	}
-
-	//TODO: Check if this stops only the processing of the pool or all threads containt in it
 	/**
 	 * this method pauses the execution.
 	 */
@@ -156,6 +187,12 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
+	/**
+	 * Gets the file size.
+	 *
+	 * @param p the p
+	 * @return the file size
+	 */
 	protected Long getFileSize (AbbyyOCRProcess p) {
 		return p.calculateSize();
 	}
