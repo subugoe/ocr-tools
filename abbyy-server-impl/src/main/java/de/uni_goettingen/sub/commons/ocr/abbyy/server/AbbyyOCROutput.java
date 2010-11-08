@@ -20,12 +20,23 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
+/**
+ * The Class AbbyyOCRImage. Is a representation of an OCROutput.
+ * -remoteFileName, the file name as used on the remote
+ * system, usally a relative file name and thus represented as a String. -
+ * remoteURL, an URL representing the remote file, it should be resolveable from
+ * the local Server.-remoteLocation, The remote location represents the location 
+ * on the remote system, something like D\:\\Recognition\\GDZ\\output. -singleFile,
+ * If this is set the process is split into separate files. -resultFragments, This 
+ * is used, if we don't create the result in single file mode
+ */
 public class AbbyyOCROutput extends AbstractOCROutput {
 
 	/** The remote location represents the location on the remote system, something like D\:\\Recognition\\GDZ\\output */
@@ -61,6 +72,16 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	//More copy constructors
+	/**
+	 * Instantiates a new abbyy ocr output.
+	 *
+	 * @param uri the uri of the local image
+	 * @param params, @see de.uni_goettingen.sub.commons.ocr.api.OCROutput#setParams(java.util.Map)
+	 * @param remoteUri, This represents the URI to the remote system.
+	 * @param remoteLocation, The remote location represents the location on the remote system
+	 * @param singleFile, If this is set the process is split into separate files
+	 * @param resultFragments, This is used, if we don't create the result in single file mode
+	 */
 	public AbbyyOCROutput(URI uri, Map<String, String> params, URI remoteUri, String remoteLocation, Boolean singleFile, List<URI> resultFragments) {
 		super();
 		this.outputUri = uri;
@@ -71,13 +92,17 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 		this.resultFragments = resultFragments;
 	}
 
+	/**
+	 * Instantiates a new abbyy ocr output.
+	 *
+	 * @param aoo the aoo
+	 */
 	public AbbyyOCROutput(AbbyyOCROutput aoo) {
-		this(aoo.outputUri, aoo.params, aoo.remoteUri, aoo.remoteLocation, aoo.singleFile, aoo.resultFragments);
-		//TODO: This is full of nulls, can't dereference the map and list
-		//this(aoo.outputUri, new HashMap<String, String>(aoo.params), aoo.remoteUri, aoo.remoteLocation, aoo.reportUri, aoo.singleFile, new ArrayList<URI>(aoo.resultFragments));
+		this(aoo.outputUri, aoo.params, aoo.remoteUri, aoo.remoteLocation, aoo.singleFile, aoo.resultFragments);		
 	}
 
 	/**
+	 * The remote location represents the location on the remote system
 	 * @return the remoteLocation
 	 */
 	public String getRemoteLocation () {
@@ -85,7 +110,8 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * @param remoteLocation
+	 * The remote location represents the location on the remote system
+	 * @param remoteLocation, 
 	 *            the remoteLocation to set
 	 */
 	public void setRemoteLocation (String remoteLocation) {
@@ -94,6 +120,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 
 	/**
 	 * @return the remoteUri
+	 * 				This represents the URI to the remote system.
 	 */
 	public URI getRemoteUri () {
 		return remoteUri;
@@ -102,6 +129,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	/**
 	 * @param remoteUri
 	 *            the remoteUri to set
+	 *            This represents the URI to the remote system.
 	 */
 	public void setRemoteUri (URI remoteUri) {
 		this.remoteUri = remoteUri;
@@ -109,6 +137,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 
 	/**
 	 * @return the singleFile
+	 * 				If this is set the process is split into separate files
 	 */
 	public Boolean isSingleFile () {
 		return singleFile;
@@ -116,6 +145,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 
 	/**
 	 * @return the resultFragments
+	 * 				This is used, if we don't create the result in single file mode
 	 */
 	public List<URI> getResultFragments () {
 		return resultFragments;
@@ -129,6 +159,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	/**
 	 * @param resultFragments
 	 *            the resultFragments to set
+	 *            This is used, if we don't create the result in single file mode
 	 */
 	public void setResultFragments (List<URI> resultFragments) {
 		this.resultFragments = resultFragments;
@@ -137,6 +168,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 
 	/**
 	 * @return the remoteFilename
+	 * 				The local file name on the remote system.
 	 */
 	public String getRemoteFilename () {
 		return remoteFilename;
@@ -145,6 +177,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	/**
 	 * @param remoteFilename
 	 *            the remoteFilename to set
+	 *            The local file name on the remote system.
 	 */
 	public void setRemoteFilename (String remoteFilename) {
 		this.remoteFilename = remoteFilename;
