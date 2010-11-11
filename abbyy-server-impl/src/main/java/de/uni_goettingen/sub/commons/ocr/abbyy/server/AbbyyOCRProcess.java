@@ -72,6 +72,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 	private URI errorTicketUri;
 	private URI errorResultUri;
+	private URI outputResultUri;
 	private URI ticketUri;
 
 	// State variables.
@@ -123,7 +124,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		//Set constrains
 		maxSize = config.getMaxSize();
 		maxFiles = config.getMaxFiles();
-		processTimeout = config.maxOCRTimeout;
 
 		try {
 			serverUri = new URI(config.getServerURL());
@@ -290,9 +290,19 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			logger.error("Error during OCR Process", e);
 			failed = true;
 		} finally {
-			//TODO: cleanup
 			xmlParser = null;
-			
+			try {
+				cleanImages(convertList(getOcrImages()));
+				cleanOutputs(getOcrOutputs());
+				hotfolder.deleteIfExists(errorResultUri);
+				hotfolder.deleteIfExists(ticketUri);
+				if (outputResultUri != null){
+					hotfolder.deleteIfExists(outputResultUri);
+				}
+			} catch (IOException e) {
+				failed = true;
+				logger.error("Unable to clean up!", e);
+			}		
 		}
 	}
 
@@ -553,7 +563,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 		try {
 			//The remote file name
-			metadata.setRemoteUri(new URI(out.getRemoteUri().toString().replaceAll(lastKey.toString().toLowerCase(), "xml" + config.reportSuffix)) );
+			outputResultUri = new URI(out.getRemoteUri().toString().replaceAll(lastKey.toString().toLowerCase(), "xml" + config.reportSuffix));
+			metadata.setRemoteUri(outputResultUri);
+			
 			//The local file name
 			metadata.setUri(new URI(out.getUri().toString().replaceAll(lastKey.toString().toLowerCase(), "xml" + config.reportSuffix)));
 		} catch (URISyntaxException e) {
