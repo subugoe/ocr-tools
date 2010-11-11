@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
+
+
 /**
  * The Class AbstractOCRProcess is a abstract super class for {@link OCRProcess}
  * implementations. It also adds a few static utility methods for easier
@@ -49,6 +51,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/** The quality that the implementing process should create, default is FAST */
 	protected OCRQuality quality = OCRQuality.FAST;
 
+	protected OCRTextTyp texttyp ;
 	/**
 	 * The images that should be converted, are stored in the given format at
 	 * the given location
@@ -225,6 +228,21 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 		this.quality = quality;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getTextTyp()
+	 */
+	public OCRTextTyp getTextTyp () {
+		return this.texttyp;
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setTextTyp(de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp)
+	 */
+	public void setTextTyp (OCRTextTyp t) {
+		this.texttyp = t ;
+	}
+	
+	
 	/**
 	 * Adds the output for the given format, this might be a helpful utility
 	 * method when working with Lists
