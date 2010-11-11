@@ -49,7 +49,7 @@ import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
  * {@link ConfigParser.setHotfolderClass()}.
  */
 
-//TODO: Get the tread pooling right
+
 public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
 	public static final String name = "0.5";
 	public static final String version = AbbyyServerOCREngine.class.getSimpleName();
@@ -213,6 +213,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 				aoi.setSize(imageFile.length());
 				ap.addImage(aoi);
 			}
+			ap.processTimeout = (long) ap.getOcrImages().size() * ap.config.maxMillisPerFile;
 		}
 
 		return ap;
