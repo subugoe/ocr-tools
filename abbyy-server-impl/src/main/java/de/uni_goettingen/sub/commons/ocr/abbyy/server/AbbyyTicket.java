@@ -87,7 +87,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	//TODO: Add priorities: Low, BelowNormal, Normal, AboveNormal, High
 	protected String priority = "Normal";
 	
-	//TODO: add a test for this
+
 	//The timeout for the process
 	protected Long processTimeout = null;
 	
