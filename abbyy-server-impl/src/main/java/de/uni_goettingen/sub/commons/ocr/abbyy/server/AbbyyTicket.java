@@ -78,8 +78,10 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	/** A Map containing mappings from the internal Enums to engine specific format settings */
 	public final static Map<OCRFormat, String> FORMAT_MAPPING;
 	
+	protected final static Map<OCRTextTyp, String> TEXTTYP_MAP;
+	
 	/** Predefined recognition parameters */
-	protected final static RecognitionParams recognitionSettings;
+	protected  static RecognitionParams recognitionSettings;
 
 	/** Predefined image processing parameters */
 	protected final static ImageProcessingParams imageProcessingSettings;
@@ -269,10 +271,20 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		QUALITY_MAP.put(OCRQuality.BALANCED, "Balanced");
 		QUALITY_MAP.put(OCRQuality.FAST, "Fast");
 
-		//TODO: Use the script map of OCRprocess for this
+		
+		
 		recognitionSettings = RecognitionParams.Factory.newInstance();
 		//Might be Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B, Gothic
-		recognitionSettings.setTextTypeArray(new String[] { "Normal" });
+		TEXTTYP_MAP = new HashMap<OCRTextTyp, String>();
+		TEXTTYP_MAP.put(OCRTextTyp.Normal, "Normal");
+		TEXTTYP_MAP.put(OCRTextTyp.Typewriter, "Typewriter");
+		TEXTTYP_MAP.put(OCRTextTyp.Matrix, "Matrix");
+		TEXTTYP_MAP.put(OCRTextTyp.OCR_A, "OCR_A");
+		TEXTTYP_MAP.put(OCRTextTyp.OCR_B, "OCR_B");
+		TEXTTYP_MAP.put(OCRTextTyp.MICR_E13B, "MICR_E13B");
+		TEXTTYP_MAP.put(OCRTextTyp.Gothic, "Gothic");
+		
+		
 
 		imageProcessingSettings = ImageProcessingParams.Factory.newInstance();
 		
@@ -371,6 +383,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			ticket.setPriority(priority);
 		}
 
+		if(texttyp != null){
+			recognitionSettings.setTextTypeArray(new String[] {TEXTTYP_MAP.get(getTextTyp())});
+		}
 		//Use predefined variables here
 		RecognitionParams recognitionParams = (RecognitionParams) recognitionSettings.copy();
 
@@ -381,6 +396,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
 		}
 		recognitionParams.setRecognitionQuality(QUALITY_MAP.get(quality));
+		
+
 		//Add default languages from config
 		if (config.defaultLangs != null) {
 			for (Locale l : config.defaultLangs) {
