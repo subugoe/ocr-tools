@@ -51,6 +51,10 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/** The quality that the implementing process should create, default is FAST */
 	protected OCRQuality quality = OCRQuality.FAST;
 
+	/** the texttyp. to describe the type of recognized text
+	 * Typ of recognized text: Normal, Typewriter, Matrix, OCR_A, 
+	 * OCR_B, MICR_E13B, Gothic.
+	 *  */
 	protected OCRTextTyp texttyp ;
 	/**
 	 * The images that should be converted, are stored in the given format at
