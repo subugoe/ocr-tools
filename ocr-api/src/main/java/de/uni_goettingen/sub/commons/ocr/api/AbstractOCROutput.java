@@ -51,9 +51,9 @@ public abstract class AbstractOCROutput implements OCROutput {
 	 * Instantiates a new abstract ocr output.
 	 * 
 	 * @param uri
-	 *            the uri
+	 *            the uri where the results should be stored.
 	 * @param params
-	 *            the params
+	 *            the params, set variants of the output like different versions of PDF.
 	 */
 	public AbstractOCROutput(URI uri, Map<String, String> params) {
 		this.outputUri = uri;
