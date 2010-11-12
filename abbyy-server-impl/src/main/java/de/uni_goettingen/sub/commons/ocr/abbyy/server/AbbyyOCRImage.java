@@ -47,10 +47,10 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	private Long size = 0l;
 
 	/**
-	 * Instantiates a new abbyy ocr file.
+	 * Instantiates a new AbbyyOCRImage.
 	 * 
 	 * @param imageUri
-	 *            the image uri
+	 *            the uri of image
 	 */
 
 	public AbbyyOCRImage(URI imageUri) {
@@ -58,13 +58,13 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	}
 
 	/**
-	 * Instantiates a new abbyy ocr image.
+	 * Instantiates a new AbbyyOCRImage.
 	 *
 	 * @param uri The URI of the local file,
 	 * @param orientation {@link Orientation}
 	 * @param remoteUri, The URI of the file, need to be resolvable from the local machine.
 	 * @param remoteFileName, The local file name on the remote system.
-	 * @param size the size
+	 * @param size the size of the file
 	 */
 	public AbbyyOCRImage(URI uri, Orientation orientation, URI remoteUri, String remoteFileName, Long size) {
 		this.imageUri = uri;
@@ -76,9 +76,12 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 
 	//This calls a copy constructor
 	/**
-	 * Instantiates a new abbyy ocr image.
+	 * Instantiates a new AbbyyOCRImage.
 	 *
-	 * @param i the i
+	 * @param i the OCRImage. This represents the a single
+	 *            image file to be recognized. Images are referenced by URI.
+	 *            {@link Orientation} is an Enum representing different possible
+	 *            orientations of an image.
 	 */
 	public AbbyyOCRImage(OCRImage i) {
 		super(i);
@@ -101,9 +104,9 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	}
 
 	/**
-	 * Instantiates a new abbyy ocr file.
+	 * Instantiates a new AbbyyOCRImage.
 	 *
-	 * @param imageUri the image uri
+	 * @param imageUri The URI of the local file
 	 * @param remoteUri, The URI of the file, need to be resolvable from the local machine.
 	 * @param remoteFileName, The local file name on the remote system.
 	 */
@@ -115,44 +118,39 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	}
 
 	/**
-	 * Gets the remote file name.
-	 * 
-	 * @return the remote file name, The local file name on the remote system.
+	 * Gets the remoteFilename is the local file name on the remote system.
+	 * @return the remoteFilename.
 	 */
 	public String getRemoteFileName () {
 		return remoteFileName;
 	}
 
 	/**
-	 * Sets the remote file name from The local file name.
-	 *
-	 * @param remoteFileName the new remote file name
+	 * Sets the remoteFilename is the local file name on the remote system.
+	 * @param remoteFileName
 	 */
 	public void setRemoteFileName (String remoteFileName) {
 		this.remoteFileName = remoteFileName;
 	}
 
 	/**
-	 * Gets the remote uri.
-	 * 
-	 * @return the remote uri
+	 * Gets the remoteUri. The URI of the file, need to be resolvable from the local machine.
+	 * @return the remoteUri
 	 */
 	public URI getRemoteUri () {
 		return this.remoteUri;
 	}
 
 	/**
-	 * Sets the remote uri.
-	 *
-	 * @param remoteUri the new remote uri
+	 * Sets the remoteUri. The URI of the file, need to be resolvable from the local machine.
+	 * @param remoteUri 
 	 */
 	public void setRemoteUri (URI remoteUri) {
 		this.remoteUri = remoteUri;
 	}
 
 	/**
-	 * Gets the size.
-	 *
+	 * Gets the size of file
 	 * @return the size
 	 */
 	public Long getSize () {
@@ -160,27 +158,24 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	}
 
 	/**
-	 * Sets the size.
-	 *
-	 * @param size the new size
+	 * Sets the size of file
+	 * @param size 
 	 */
 	public void setSize (Long size) {
 		this.size = size;
 	}
 
 	/**
-	 * Gets the error uri, This represents the URI if the images is part of a failed process.
-	 *
-	 * @return the error uri
+	 * Gets the errorUri, This represents the URI if the images is part of a failed process.
+	 * @return the errorUri
 	 */
 	public URI getErrorUri () {
 		return errorUri;
 	}
 
 	/**
-	 * Sets the error uri, This represents the URI if the images is part of a failed process.
-	 *
-	 * @param errorUri the new error uri
+	 * Sets the errorUri, This represents the URI if the images is part of a failed process.
+	 * @param errorUri
 	 */
 	public void setErrorUri (URI errorUri) {
 		this.errorUri = errorUri;
