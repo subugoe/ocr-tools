@@ -46,39 +46,62 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	//TODO: There is a bug in here currently only one process per time is started
 	// The Constant logger.
 	public final static Logger logger = LoggerFactory.getLogger(OCRExecuter.class);
-	
-	// The max threads. 
+		 	
+	/** The max number of threads.  */
 	protected Integer maxThreads;
 
-	// The ispaused. 
+	/** The ispaused. paused the execution if true */
 	private Boolean isPaused = false;
 	
-	// The pauselock. 
+	
+	/* (non-Javadoc)
+	 * @see java.util.concurrent.locks.ReentrantLock.html#ReentrantLock()
+	 */
 	private ReentrantLock pauseLock = new ReentrantLock();
 	
-	// The unpaused. 
+	/* (non-Javadoc)
+	 * @see java.util.concurrent.locks.ReentrantLock.html#newCondition()
+	 */
 	private Condition unpaused = pauseLock.newCondition();
 
-	// The maxsize. 
+
+	/** maximum size of all files that can be sent to OCR engine, may not be exceeded*/
 	private Long maxSize = 0l;
 
-	// The maxfiles. 
+
+	/**  maximum number of files that can be sent to the OCR engine, may not be exceeded*/
 	private Long maxFiles = 0l;
 
-	// The total file size in Server. 
+	/** the size of all files in OCR engine */
 	private Long totalFileSize;
 
-	// The total file count. 
+	/** total number of files in the OCR engine*/
 	private Long totalFileCount;
 
-	// The hotfolder. 
+	/** hotfolder is used to access any file system like backend. This
+	 * 	can be used to integrate external systems like Grid storage or WebDAV based
+	 * 	hotfolders. 
+	 * */
 	protected Hotfolder hotfolder;
 
 	/**
-	 * Instantiates a new oCR executer.
+	 * Instantiates a new oCR executer.Creates a new ThreadPoolExecutor with 
+	 * the given initial parameters and default thread factory and handler.
 	 *
-	 * @param maxThreads the max threads
-	 * @param hotfolder the hotfolder
+	 * @param 	maxThreads the max threads
+	 * @param 	hotfolder is used to access any file system like backend. This
+	 * 			can be used to integrate external systems like Grid storage or WebDAV based
+	 * 			hotfolders.
+	 * 
+	 *     	maxThreads - the number of threads to keep in the pool, even if they are idle
+     *		maxThreads - the maximum number of threads to allow in the pool.
+     *		keepAliveTime - when the number of threads is greater than the core, this 
+     *						is the maximum time that excess idle threads will wait for 
+     *						new tasks before terminating.
+     *	TimeUnit.MILLISECONDS - the time unit for the keepAliveTime argument.
+     * 			workQueue - the queue to use for holding tasks before they are executed. 
+     * 						This queue will hold only the Runnable tasks submitted by the 
+     * 						execute method. 
 	 */
 	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
@@ -88,13 +111,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 
 	/* (non-Javadoc)
 	 * @see java.util.concurrent.ThreadPoolExecutor#beforeExecute(java.lang.Thread, java.lang.Runnable)
-	 */
-	/**
-	 * Before execute. it is called, before the Thread t 
-	 * explains the asynchronous activity r
-	 *
-	 * @param t the Thread
-	 * @param r the activity
 	 */
 	@Override
 	protected void beforeExecute (Thread t, Runnable r) {
@@ -132,13 +148,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 
 	/* (non-Javadoc)
 	 * @see java.util.concurrent.ThreadPoolExecutor#afterExecute(java.lang.Runnable, java.lang.Throwable)
-	 */
-	/**
-	 * After execute. it is called, after the Thread has 
-	 * explained the asynchronous activity 
-	 *
-	 * @param r the Runnable
-	 * @param e the Throwable
 	 */
 	@Override
 	protected void afterExecute (Runnable r, Throwable e) {
@@ -188,10 +197,10 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	}
 
 	/**
-	 * Gets the file size.
+	 * Gets the alle filesize representing this process.
 	 *
-	 * @param p the p
-	 * @return the file size
+	 * @param p represent the process
+	 * @return the Calculate size of the OCRImages representing this process
 	 */
 	protected Long getFileSize (AbbyyOCRProcess p) {
 		return p.calculateSize();
