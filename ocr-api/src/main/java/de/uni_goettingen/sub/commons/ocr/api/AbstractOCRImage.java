@@ -20,6 +20,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import java.net.URI;
 
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage.Orientation;
+
 /**
  * The Class AbstractOCRImage is a abstract super class for {@link OCRImage}
  * implementations. {@link OCRImage} represents an image as a {@link URI}
@@ -30,10 +32,13 @@ import java.net.URI;
  */
 public abstract class AbstractOCRImage implements OCRImage {
 
-	/** The image URI. */
+	/**  uri to image wich will be sent to OCR Engine */
 	protected URI imageUri = null;
 
-	/** The orietation of the image. */
+	/** The Enum Orientation. Orientation is expressed clockwise. For
+	 * calculations and display there is a method to get the rotation in
+	 * degrees.
+	 *  */
 	protected Orientation orientation;
 
 	/**
@@ -59,7 +64,12 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * used to convert different subclasses into each other
 	 * 
 	 * @param i
-	 *            the i
+	 *            The OCRImage. This represents the a single
+	 *            image file to be recognized. Images are referenced by URI.
+	 *            {@link Orientation} is an Enum representing different possible
+	 *            orientations of an image. Implementations should extend
+	 *            {@link AbstractOCRImage} to add further methods for example
+	 *            for handling Streams.
 	 */
 	public AbstractOCRImage(OCRImage i) {
 		this(i.getUri(), i.getOrientation());
@@ -69,9 +79,11 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * Instantiates a new abstract ocr image with the given arguments.
 	 * 
 	 * @param imageUri
-	 *            the image uri
+	 *            the image, uri to image wich will be sent to OCR Engine
 	 * @param orientation
-	 *            the orientation
+	 *           	The Enum Orientation. Orientation is expressed clockwise. For
+	 * 				calculations and display there is a method to get the rotation in
+	 * 				degrees.
 	 */
 	public AbstractOCRImage(URI imageUri, Orientation orientation) {
 		this.imageUri = imageUri;
