@@ -20,7 +20,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,8 +92,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * Instantiates a new abbyy ocr output.
-	 *
+	 * Instantiates a new AbbyyOCROutput.
 	 * @param aoo the aoo
 	 */
 	public AbbyyOCROutput(AbbyyOCROutput aoo) {
@@ -102,7 +100,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * The remote location represents the location on the remote system
+	 * Gets The remote location, this represents the location on the remote system
 	 * @return the remoteLocation
 	 */
 	public String getRemoteLocation () {
@@ -110,56 +108,60 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * The remote location represents the location on the remote system
+	 * Sets the remote location, this represents the location on the remote system
 	 * @param remoteLocation, 
-	 *            the remoteLocation to set
 	 */
 	public void setRemoteLocation (String remoteLocation) {
 		this.remoteLocation = remoteLocation;
 	}
 
 	/**
-	 * @return the remoteUri
-	 * 				This represents the URI to the remote system.
+	 * Gets the remoteUri, This represents the URI to the remote system.
+	 * @return the remoteUri		
 	 */
 	public URI getRemoteUri () {
 		return remoteUri;
 	}
 
 	/**
-	 * @param remoteUri
-	 *            the remoteUri to set
-	 *            This represents the URI to the remote system.
+	 * Sets the remoteUri, This represents the URI to the remote system.
+	 * @param remoteUri     
 	 */
 	public void setRemoteUri (URI remoteUri) {
 		this.remoteUri = remoteUri;
 	}
 
 	/**
-	 * @return the singleFile
-	 * 				If this is set the process is split into separate files
+	 * If this is set the process is split into separate files
+	 * @return the singleFile	
 	 */
 	public Boolean isSingleFile () {
 		return singleFile;
 	}
 
 	/**
-	 * @return the resultFragments
-	 * 				This is used, if we don't create the result in single file mode
+	 * Gets ResoltFragments, This is used, if we don't create the 
+	 * result in single file mode
+	 * @return the resultFragments	
 	 */
 	public List<URI> getResultFragments () {
 		return resultFragments;
 	}
 
+	/**
+	 * Adds the resultfragment.This is used, if we don't create the 
+	 * result in single file mode
+	 * @param uri the uri
+	 */
 	public void addResultFragment (URI uri) {
 		this.resultFragments.add(uri);
 		singleFile = false;
 	}
 
 	/**
-	 * @param resultFragments
-	 *            the resultFragments to set
-	 *            This is used, if we don't create the result in single file mode
+	 * Sets the resultFragments, This is used, if we don't create 
+	 * the result in single file mode
+	 * @param resultFragments      
 	 */
 	public void setResultFragments (List<URI> resultFragments) {
 		this.resultFragments = resultFragments;
@@ -167,22 +169,25 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * @return the remoteFilename
-	 * 				The local file name on the remote system.
+	 * Gets the remoteFilename, This is the local file name on the remote system.
+	 * @return the remoteFilename		
 	 */
 	public String getRemoteFilename () {
 		return remoteFilename;
 	}
 
 	/**
+	 * Sets the remoteFilename, This is the local file name on the remote system.
 	 * @param remoteFilename
-	 *            the remoteFilename to set
-	 *            The local file name on the remote system.
 	 */
 	public void setRemoteFilename (String remoteFilename) {
 		this.remoteFilename = remoteFilename;
 	}
 	
+	/**
+	 * Sets the singlefile. 
+	 * @param singleFile, If this is set the process is split into separate files 
+	 */
 	protected void setSingleFile (Boolean singleFile) {
 		this.singleFile = singleFile;
 	}
