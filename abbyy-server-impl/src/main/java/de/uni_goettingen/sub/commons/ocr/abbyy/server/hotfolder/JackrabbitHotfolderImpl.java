@@ -101,7 +101,22 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 					e);
 		}
 	}
-
+	/**
+	 * is just for JUnitTest
+	 */
+	public JackrabbitHotfolderImpl(String local, String user, String pw){
+		try {
+			client = initConnection(local,
+					user, pw);
+		} catch (GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			logger.error(
+					"Got an IOException while initilizing Jackrabbit Hotfolder implementation",
+					e);
+		}
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
