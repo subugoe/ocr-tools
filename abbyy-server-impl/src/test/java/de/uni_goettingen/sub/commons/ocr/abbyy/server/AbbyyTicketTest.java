@@ -62,6 +62,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 @SuppressWarnings("serial")
@@ -153,6 +154,8 @@ public class AbbyyTicketTest {
 		abbyyTicket.setConfig(new ConfigParser().parse());
 		abbyyTicket.processTimeout = abbyyTicket.config.maxMillisPerFile * ocrp.getOcrImages().size();
 		assertTrue((abbyyTicket.config.maxMillisPerFile * ocrp.getOcrImages().size())== 100000);
+		
+		abbyyTicket.setTextTyp(OCRTextTyp.Normal);
 		//Use a stream to check if we to write it directly into a Stream
 		ticketStream = new FileOutputStream(TICKET_FILE);
 		abbyyTicket.write(ticketStream, name);
