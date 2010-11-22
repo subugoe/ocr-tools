@@ -21,7 +21,6 @@ import com.googlecode.sardine.util.SardineException;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SardineHotfolderImpl is a Hotfolder implementation based on Sardine
  */
@@ -32,7 +31,7 @@ public class SardineHotfolderImpl extends AbstractHotfolder implements Hotfolder
 
 	/** The instance of this singleton */
 	private SardineHotfolderImpl _instance = null;
-	/** The sardine instace */
+	/** The sardine instance */
 	private static Sardine sardine;
 
 	/**

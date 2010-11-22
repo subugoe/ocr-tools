@@ -83,7 +83,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 		this.config = config;
 		//Construct the login part.
 		if (config.getUsername() != null && config.getPassword() != null && config.getServerURL().startsWith("https")) {
-			serverUrl = config.getServerURL().replace("https://", "webdavs://" + config.getUsername() + ":" + config.getPassword() + "@");
+			serverUrl = config.getServerURL().replace("https://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
 		} else if (config.getUsername() != null && config.getPassword() != null && config.getServerURL().startsWith("http")) {
 			serverUrl = config.getServerURL().replace("http://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
 		}
