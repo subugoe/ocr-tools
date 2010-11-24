@@ -46,6 +46,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
@@ -91,6 +92,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	protected Hotfolder hotfolder;
 
 	protected XmlParser xmlParser;
+	
+	protected OCRProcessMetadata ocrProcessMetadata;
 
 	private Long maxSize;
 
@@ -111,6 +114,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	protected AbbyyOCRProcess(ConfigParser config) {
 		super();
 		this.config = config;
+		ocrProcessMetadata = new OCRProcessMetadataImpl();
 		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass, config);
 		init();
 	}
@@ -200,8 +204,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			//Write ticket to temp file
 			logger.debug("Creating AbbyyTicket");
 			OutputStream os = hotfolder.createTmpFile(tmpTicket);
-			write(os, name);
+			write(os, name, ocrProcessMetadata);
 			os.close();
+			
 			
 			logger.debug("Cleaning Server");
 			//Clean the server here to avoid GUIDs as filenames
