@@ -395,13 +395,15 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		if (langs == null) {
 			throw new OCRException("No language given!");
 		}
+		// Locale Liste for the OCRProcessMetadaten 
+		List<Locale> metaDatenLangs = new ArrayList<Locale>() ;
 		for (Locale l : langs) {
 			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
+			metaDatenLangs.add(l);		
 		}
+		
 		recognitionParams.setRecognitionQuality(QUALITY_MAP.get(quality));
-		
-		
-		
+			
 		//Add default languages from config
 		if (config.defaultLangs != null) {
 			for (Locale l : config.defaultLangs) {
@@ -421,9 +423,10 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			throw new OCRException("No export options given!");
 		}
 		
-		//setEncoding to the OCRProcessMetadaten 
+		//setEncoding and sets Locale Liste to the OCRProcessMetadaten 
 		if (ocrProcessMetadata != null){
 			ocrProcessMetadata.setEncoding(encoding);
+			ocrProcessMetadata.setLanguages(metaDatenLangs);
 		}
 				
 		//Removed the array stuff here since the continue statements below made trouble by adding empty elements to the list.
