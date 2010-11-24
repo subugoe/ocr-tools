@@ -94,7 +94,7 @@ public class AbbyyServerOCREngineTest {
 					+ File.separator
 					+ book
 					+ ".xml");
-			aop.write(new FileOutputStream(testTicket), testDir.getName());
+			aop.write(new FileOutputStream(testTicket), testDir.getName(), null);
 			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
 			logger.debug("Starting Engine");
 			ase.recognize(aop);
