@@ -174,6 +174,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				remoteUri = new URI(inputUri.toString() + remoteFileName);
 			} catch (URISyntaxException e) {
 				logger.error("Error contructing remote URL.");
+				ocrProcessMetadata.setDuration(0L);
 				throw new OCRException(e);
 			}
 			if (aoi.getRemoteUri() == null) {
@@ -199,7 +200,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				return;
 			}
 			
-			//TODO: calculate the server side timeout and add it to the ticket
 			//Create ticket, copy files and ticket
 			//Write ticket to temp file
 			logger.debug("Creating AbbyyTicket");
@@ -276,24 +276,35 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				xmlParser.xmlresultErrorparse(is, name);
 				hotfolder.deleteIfExists(errorResultUri);
 				}
-
+				endTime = System.currentTimeMillis();
+				ocrProcessMetadata.setDuration(getDuration());
 			}
 		} catch (XMLStreamException e) {
 			//Set failed here since the results isn't worth much without metadata
 			failed = true;
 			logger.error("XML can not Parse, Missing Error Reports for " + name + " : ", e);
+			endTime = System.currentTimeMillis();
+			ocrProcessMetadata.setDuration(getDuration());
 		} catch (IOException e) {
 			failed = true;
 			logger.error("Error writing files or ticket", e);
+			endTime = System.currentTimeMillis();
+			ocrProcessMetadata.setDuration(getDuration());
 		} catch (InterruptedException e) {
 			failed = true;
 			logger.error("OCR Process was interrupted while coping files to server or waiting for result.", e);
+			endTime = System.currentTimeMillis();
+			ocrProcessMetadata.setDuration(getDuration());
 		} catch (URISyntaxException e) {
 			logger.error("Error seting tmp URI for ticket", e);
 			failed = true;
+			endTime = System.currentTimeMillis();
+			ocrProcessMetadata.setDuration(getDuration());
 		} catch (OCRException e) {
 			logger.error("Error during OCR Process", e);
 			failed = true;
+			endTime = System.currentTimeMillis();
+			ocrProcessMetadata.setDuration(getDuration());
 		} finally {
 			xmlParser = null;
 			try {
@@ -304,9 +315,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				if (outputResultUri != null){
 					hotfolder.deleteIfExists(outputResultUri);
 				}
+				endTime = System.currentTimeMillis();
+				ocrProcessMetadata.setDuration(getDuration());
 			} catch (IOException e) {
 				failed = true;
 				logger.error("Unable to clean up!", e);
+				endTime = System.currentTimeMillis();
+				ocrProcessMetadata.setDuration(getDuration());
 			}		
 		}
 	}
@@ -575,6 +590,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			metadata.setUri(new URI(out.getUri().toString().replaceAll(lastKey.toString().toLowerCase(), "xml" + config.reportSuffix)));
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs");
+			ocrProcessMetadata.setDuration(0L);
 			throw new OCRException(e);
 		}
 
