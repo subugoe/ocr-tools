@@ -158,7 +158,7 @@ public class AbbyyTicketTest {
 		abbyyTicket.setTextTyp(OCRTextTyp.Normal);
 		//Use a stream to check if we to write it directly into a Stream
 		ticketStream = new FileOutputStream(TICKET_FILE);
-		abbyyTicket.write(ticketStream, name);
+		abbyyTicket.write(ticketStream, name, null);
 
 		String ticket = StreamUtils.dumpInputStream(new FileInputStream(TICKET_FILE));
 		logger.debug("This is the abbyyTicket\n" + ticket);
