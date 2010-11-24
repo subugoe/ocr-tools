@@ -55,6 +55,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 //TODO: one Locale might represent multiple langueages: <Language>GermanNewSpelling</Language>
@@ -88,6 +89,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 	//TODO: Add priorities: Low, BelowNormal, Normal, AboveNormal, High
 	protected String priority = "Normal";
+	
+	protected static String encoding = "UTF8";
 	
 	/**The timeout for the process */
 	protected Long processTimeout = null;
@@ -255,8 +258,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 		TextExportSettings txtSettings = TextExportSettings.Factory.newInstance(opts);
 
-		txtSettings.setEncodingType("UTF8");
-
+		txtSettings.setEncodingType(encoding);
+		encoding = txtSettings.getEncodingType();
+		
 		FORMAT_FRAGMENTS.put(OCRFormat.TXT, (OutputFileFormatSettings) txtSettings.changeType(OutputFileFormatSettings.type));
 
 		FORMAT_FRAGMENTS.put(OCRFormat.DOC, null);
@@ -348,7 +352,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		setOcrOutputs(outputs);
 	}
 
-	public void write (final OutputStream out, final String identifier) throws IOException {
+	public void write (final OutputStream out, final String identifier, OCRProcessMetadata ocrProcessMetadata) throws IOException {
 		//Sanity checks
 		if (out == null || config == null) {
 			logger.error("OutputStream and / or configuration is not set!");
@@ -396,7 +400,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		}
 		recognitionParams.setRecognitionQuality(QUALITY_MAP.get(quality));
 		
-
+		
+		
 		//Add default languages from config
 		if (config.defaultLangs != null) {
 			for (Locale l : config.defaultLangs) {
@@ -415,6 +420,12 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		if (getOcrOutputs() == null || getOcrOutputs().size() < 1) {
 			throw new OCRException("No export options given!");
 		}
+		
+		//setEncoding to the OCRProcessMetadaten 
+		if (ocrProcessMetadata != null){
+			ocrProcessMetadata.setEncoding(encoding);
+		}
+				
 		//Removed the array stuff here since the continue statements below made trouble by adding empty elements to the list.
 		List<OutputFileFormatSettings> settings = new ArrayList<OutputFileFormatSettings>();
 		
@@ -424,6 +435,14 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			if (of == OCRFormat.METADATA) {
 				continue;
 			}
+			//setFormat whether XML or text as a format were chosen
+			if (ocrProcessMetadata != null){
+				if (of == OCRFormat.TXT || of == OCRFormat.XML){
+					ocrProcessMetadata.setFormat(FORMAT_MAPPING.get(of));
+				}
+			}
+			
+			
 			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(of);
 			//The server can't handle this
 			if (exportFormat == null) {
