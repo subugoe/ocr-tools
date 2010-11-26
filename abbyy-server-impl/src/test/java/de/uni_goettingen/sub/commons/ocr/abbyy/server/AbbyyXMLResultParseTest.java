@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.InputFile;
-import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.OutputFileFormatSettings;
+
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
 
@@ -29,7 +29,7 @@ public class AbbyyXMLResultParseTest {
 	
 	protected static XmlResultDocument xmlResultDocument; 
 	XmlResult xm ;
-	private static InputStream isResult, isXmlDoc;
+	private static InputStream isResult;
 	final static Logger logger = LoggerFactory.getLogger(AbbyyXMLResultParseTest.class);
 	
 	//	private static final Factory NewInstanceInstantiator = null;
@@ -75,6 +75,16 @@ public class AbbyyXMLResultParseTest {
 	    String str = b.toString();
 	    assertTrue(str.equals("1805558") );
 	}
+	
+	@Test
+	public void getCharacterAccuracy() throws Exception {
+		BigDecimal totalChar = new BigDecimal(xm.getStatistics().getTotalCharacters());
+		BigDecimal totalUncerChar = new BigDecimal(xm.getStatistics().getUncertainCharacters());
+	    BigDecimal prozent = (totalUncerChar.divide(totalChar, 4, BigDecimal.ROUND_UP)).multiply(new BigDecimal(100));
+	    System.out.println(prozent);
+	    assertTrue((prozent.toString()).equals("6.3000") );
+	}
+	
 	
 	public static File getBaseFolderAsFile() {
 		File basefolder;
