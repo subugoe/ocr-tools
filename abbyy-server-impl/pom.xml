@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>ocr-tools</artifactId>
@@ -32,6 +33,30 @@
 			<name>Sardine maven repo at Google Code</name>
 			<url>http://sardine.googlecode.com/svn/maven/</url>
 		</repository>
+		<!-- Archive maven -->
+		<repository>
+			<id>archiva.internal.http</id>
+			<name>Archiva Managed Internal Repository</name>
+			<url>http://repository.bibforge.org/archiva/repository/internal</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>archiva.snapshots.http</id>
+			<name>Archiva Managed Snapshot Repository</name>
+			<url>http://repository.bibforge.org/archiva/repository/snapshots</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<!-- ende -->
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -39,6 +64,14 @@
 			<artifactId>abbyyTicket</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>de.unigoettingen.sub.commons</groupId>
+			<artifactId>textmd20</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency> <groupId>de.unigoettingen.sub.commons</groupId> 
+		<artifactId>abbyyResult</artifactId> 
+			<version>1.0.0</version> </dependency> 
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>ocr-api</artifactId>
@@ -73,11 +106,30 @@
 			<version>1.8.5</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- <dependency> <groupId>commons-vfs</groupId> <artifactId>commons-vfs</artifactId> 
+			<version>1.0</version> </dependency> -->
+	
+		<!-- for test Webdav -->
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty</artifactId>
+			<version>6.1.25</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.could</groupId>
+			<artifactId>webdav</artifactId>
+			<version>0.4</version>
+			
+		</dependency>
+		<!-- End -->
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-vfs</artifactId>
 			<version>2.0-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
@@ -93,10 +145,10 @@
 			<artifactId>util</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
-		<!--
-			TODO: Enable these if we have a WebDAV test case. <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-core</artifactId> <version>2.1.1</version> <scope>test</scope> </dependency> <dependency>
-			<groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-webdav</artifactId> <version>2.1.1</version> <type>jar</type> <scope>test</scope> </dependency>
-		-->
+		<!-- TODO: Enable these if we have a WebDAV test case. <dependency> <groupId>org.apache.jackrabbit</groupId> 
+			<artifactId>jackrabbit-core</artifactId> <version>2.1.1</version> <scope>test</scope> 
+			</dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-webdav</artifactId> 
+			<version>2.1.1</version> <type>jar</type> <scope>test</scope> </dependency> -->
 		<dependency>
 			<groupId>stax</groupId>
 			<artifactId>stax-api</artifactId>
@@ -113,7 +165,8 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-			<!-- JCR-683: Exclude bad transitive dependencies, check again when upgrading version -->
+			<!-- JCR-683: Exclude bad transitive dependencies, check again when upgrading 
+				version -->
 			<exclusions>
 				<exclusion>
 					<groupId>junit</groupId>
@@ -133,13 +186,13 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
-			<version>6.1.24</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.mortbay.jetty</groupId>-->
+<!--			<artifactId>jetty</artifactId>-->
+<!--			<version>6.1.24</version>-->
+<!--			<type>jar</type>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>com.ettrema</groupId>
 			<artifactId>milton-servlet</artifactId>
