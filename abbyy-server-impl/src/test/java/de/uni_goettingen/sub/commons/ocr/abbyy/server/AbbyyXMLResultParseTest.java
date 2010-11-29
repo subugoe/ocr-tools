@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 
 import org.apache.log4j.helpers.Loader;
+import org.apache.xmlbeans.XmlOptions;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +34,8 @@ public class AbbyyXMLResultParseTest {
 	private static InputStream isResult;
 	final static Logger logger = LoggerFactory.getLogger(AbbyyXMLResultParseTest.class);
 	
+	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
+	
 	//	private static final Factory NewInstanceInstantiator = null;
 
 	@Before
@@ -39,7 +43,10 @@ public class AbbyyXMLResultParseTest {
 		File fileresult = getBaseFolderAsFile();
 		fileresult = new File(getBaseFolderAsFile().getAbsolutePath()+ "/xmlresult.xml.result.xml");
 		isResult = new FileInputStream(fileresult);
-		xmlResultDocument = XmlResultDocument.Factory.parse(isResult);
+		XmlOptions options = new XmlOptions();
+		// Set the namespace 
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE));		
+		xmlResultDocument = XmlResultDocument.Factory.parse(isResult, options);
 		xm = xmlResultDocument.getXmlResult();
 	}
 	@Test
