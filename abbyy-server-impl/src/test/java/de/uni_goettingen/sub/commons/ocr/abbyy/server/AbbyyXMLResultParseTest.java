@@ -87,9 +87,10 @@ public class AbbyyXMLResultParseTest {
 	public void getCharacterAccuracy() throws Exception {
 		BigDecimal totalChar = new BigDecimal(xm.getStatistics().getTotalCharacters());
 		BigDecimal totalUncerChar = new BigDecimal(xm.getStatistics().getUncertainCharacters());
-	    BigDecimal prozent = (totalUncerChar.divide(totalChar, 4, BigDecimal.ROUND_UP)).multiply(new BigDecimal(100));
+	    BigDecimal prozent = (totalUncerChar.divide(totalChar, 8, BigDecimal.ROUND_UP)).multiply(new BigDecimal(100));
 	    System.out.println(prozent);
-	    assertTrue((prozent.toString()).equals("6.3000") );
+	    assertTrue((prozent.toString()).equals("6.29916100") );
+	 //   System.out.println(xm.toString());
 	}
 	
 	
