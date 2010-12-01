@@ -18,11 +18,29 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
+
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument;
+import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument.Document;
+import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
+import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
+
+
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 
 /**
@@ -36,17 +54,20 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	private String encoding;
 	private String linebrreak;
 	private String format;
-	private String documentType;
 	private String documentTypeVersion;
-	private String softwareName;
-	private String softwareVersion;
 	private List<Locale> langs;
 	private List<String> scripts;
 	private String textNote;
-	private String processingNote;
-	private BigDecimal characterAccuracy;
 	private BigDecimal wordAccuracy;
 	private Long duration;
+	private static InputStream inputStreamprocessingNote;
+	protected static XmlResultDocument xmlResultDocument; 
+	protected static DocumentDocument xmlExportDocument;
+	protected XmlResult xmlResul;
+	protected Document xmlExport;
+	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
+	// The Constant logger.
+	public final static Logger logger = LoggerFactory.getLogger(OCRProcessMetadataImpl.class);
 
 	/**
 	 * Instantiates a new oCR process metadata impl.
@@ -54,6 +75,36 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	public OCRProcessMetadataImpl() {
 	}
 
+	public OCRProcessMetadataImpl(InputStream inputStreamResult){
+		XmlOptions options = new XmlOptions();
+		// Set the namespace 
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE));		
+		try {
+			xmlResultDocument = XmlResultDocument.Factory.parse(inputStreamResult, options);
+		} catch (XmlException e) {
+			logger.error("Error in XML parse", e);
+		} catch (IOException e) {
+			logger.error("Error ", e);
+		}
+		xmlResul = xmlResultDocument.getXmlResult();
+	}
+	
+	public OCRProcessMetadataImpl(InputStream inputStreamResult, InputStream inputStreamXmlExport , InputStream processingNote ){
+		this.inputStreamprocessingNote = processingNote;
+		XmlOptions options = new XmlOptions();
+		// Set the namespace 
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE));		
+		try {
+			xmlExportDocument = DocumentDocument.Factory.parse(inputStreamXmlExport);
+			xmlResultDocument = XmlResultDocument.Factory.parse(inputStreamResult, options);
+		} catch (XmlException e) {
+			logger.error("Error in XML parse", e);
+		} catch (IOException e) {
+			logger.error("Error ", e);
+		}
+		xmlResul = xmlResultDocument.getXmlResult();
+		xmlExport = xmlExportDocument.getDocument();
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -130,20 +181,12 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * ()
 	 */
 	@Override
-	public String getDocumentType() {
-		return documentType;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setDocumentType
-	 * (java.lang.String)
-	 */
-	@Override
-	public void setDocumentType(String documentType) {
-		this.documentType = documentType;
+	public String getDocumentType() {		
+		String xmlexport = xmlExport.toString();
+		String[] splittArray , documentType;
+		splittArray = xmlexport.split("schemaLocation=");
+		documentType = splittArray[1].split(" ");
+		return documentType[0].substring(1);
 	}
 
 	/*
@@ -152,6 +195,7 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#
 	 * getDocumentTypeVersion()
 	 */
+	//TODO
 	@Override
 	public String getDocumentTypeVersion() {
 		return documentTypeVersion;
@@ -163,6 +207,7 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#
 	 * setDocumentTypeVersion(java.lang.String)
 	 */
+	//TODO
 	@Override
 	public void setDocumentTypeVersion(String documentTypeVersion) {
 		this.documentTypeVersion = documentTypeVersion;
@@ -177,19 +222,9 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 */
 	@Override
 	public String getSoftwareName() {
-		return softwareName;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setSoftwareName
-	 * (java.lang.String)
-	 */
-	@Override
-	public void setSoftwareName(String softwareName) {
-		this.softwareName = softwareName;
+		String xmlexport = xmlExport.getProducer();
+		String[] splittArray = xmlexport.split(" ");
+		return splittArray[0];
 	}
 
 	/*
@@ -201,19 +236,9 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 */
 	@Override
 	public String getSoftwareVersion() {
-		return softwareVersion;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setSoftwareVersion
-	 * (java.lang.String)
-	 */
-	@Override
-	public void setSoftwareVersion(String softwareVersion) {
-		this.softwareVersion = softwareVersion;
+		String xmlexport = xmlExport.getProducer();
+		String[] splittArray = xmlexport.split(" ");
+		return splittArray[1];
 	}
 
 	/*
@@ -245,6 +270,7 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * @see
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#getScripts()
 	 */
+	//TODO
 	@Override
 	public List<String> getScripts() {
 		return scripts;
@@ -257,6 +283,7 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setScripts(java
 	 * .util.List)
 	 */
+	//TODO
 	@Override
 	public void setScripts(List<String> scripts) {
 		this.scripts = scripts;
@@ -268,6 +295,7 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * @see
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#getTextNote()
 	 */
+	//TODO
 	@Override
 	public String getTextNote() {
 		return textNote;
@@ -280,6 +308,7 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setTextNote(
 	 * java.lang.String)
 	 */
+	//TODO
 	@Override
 	public void setTextNote(String textNote) {
 		this.textNote = textNote;
@@ -293,21 +322,17 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * ()
 	 */
 	@Override
-	public String getProcessingNote() {
-		return processingNote;
+	public String getProcessingNote() throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStreamprocessingNote));
+	    StringBuilder sb = new StringBuilder();
+	    String line = null;
+	    while ((line = reader.readLine()) != null) {
+	      sb.append(line + "\n");
+	    }
+	    inputStreamprocessingNote.close();
+		return sb.toString();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setProcessingNote
-	 * (java.lang.String)
-	 */
-	@Override
-	public void setProcessingNote(String processingNote) {
-		this.processingNote = processingNote;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -318,19 +343,9 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 */
 	@Override
 	public BigDecimal getCharacterAccuracy() {
-		return characterAccuracy;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setCharacterAccuracy
-	 * (java.math.BigDecimal)
-	 */
-	@Override
-	public void setCharacterAccuracy(BigDecimal characterAccuracy) {
-		this.characterAccuracy = characterAccuracy;
+		BigDecimal totalChar = new BigDecimal(xmlResul.getStatistics().getTotalCharacters());
+		BigDecimal totalUncerChar = new BigDecimal(xmlResul.getStatistics().getUncertainCharacters());
+		return (totalUncerChar.divide(totalChar, 8, BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal(100));
 	}
 
 	/*
@@ -340,9 +355,11 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#getWordAccuracy
 	 * ()
 	 */
+	//TODO
 	@Override
-	public BigDecimal getWordAccuracy() {
-		return wordAccuracy;
+	public BigDecimal getWordAccuracy() throws IOException {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 
 	/*
@@ -352,6 +369,7 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setWordAccuracy
 	 * (java.math.BigDecimal)
 	 */
+	//TODO
 	@Override
 	public void setWordAccuracy(BigDecimal wordAccuracy) {
 		this.wordAccuracy = wordAccuracy;
