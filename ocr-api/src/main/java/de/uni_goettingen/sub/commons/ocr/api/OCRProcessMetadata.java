@@ -20,6 +20,8 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
@@ -63,7 +65,7 @@ public interface OCRProcessMetadata {
 	 * of "CR, "CR/LF" or "LF".
 	 * @param linebrreak the linebrreak
 	 */
-	abstract public void setLinebreak (String linebrreak);
+	abstract public void setLinebreak (String linebreak);
 	
 	/**
 	 * Gets the format of the encoded result, consider using a controled
@@ -92,14 +94,6 @@ public interface OCRProcessMetadata {
 	abstract public String getDocumentType ();
 	
 	/**
-	 * Sets the document type. This is valid for "SGML", "XML", "HTML" and
-	 * "XHTML" and should reference a DTD or schema, if possible by using a URI.
-	 * 
-	 * @param documentType the new document type
-	 */
-	abstract public void setDocumentType (String documentType);
-	
-	/**
 	 * Gets the document type version for the used document type.
 	 * 
 	 * @return the document type version
@@ -121,25 +115,11 @@ public interface OCRProcessMetadata {
 	abstract public String getSoftwareName ();
 	
 	/**
-	 * Sets the name of the software used to encode / recognize the text.
-	 *
-	 * @param softwareName the software name
-	 */
-	abstract public void setSoftwareName (String softwareName);
-	
-	/**
 	 * Gets the version of the software used to encode / recognize the text.
 	 * 
 	 * @return the software version
 	 */
 	abstract public String getSoftwareVersion ();
-	
-	/**
-	 * Sets the version of the software used to encode / recognize the text.
-	 *
-	 * @param softwareVersion the new software version
-	 */
-	abstract public void setSoftwareVersion (String softwareVersion);
 	
 	//Language and script settings
 	/**
@@ -197,17 +177,10 @@ public interface OCRProcessMetadata {
 	 * choose this to encode additional machine readable data as escaped XML.
 	 * 
 	 * @return the processing note
+	 * @throws IOException 
 	 */
-	abstract public String getProcessingNote ();
-	
-	/**
-	 * Sets processing note for the {OCRProcess}. This can be used to add a
-	 * general note to the processing / recognition process. Implementors may
-	 * choose this to encode additional machine readable data as escaped XML.
-	 * 
-	 * @param processingNote the new processing note
-	 */
-	abstract public void setProcessingNote (String processingNote);
+	abstract public String getProcessingNote () throws IOException;
+
 	//Result specific metadata
 	/**
 	 * Gets the character accuracy. This is usually a engine specific setting.
@@ -219,16 +192,6 @@ public interface OCRProcessMetadata {
 	 */
 	abstract public BigDecimal getCharacterAccuracy ();
 	
-	/**
-	 * Gets the character accuracy. This is usually a engine specific setting.
-	 * Implementations should try to convert this into a percentage value. If
-	 * the engine isn't able to report the confidence level based on a process
-	 * an {@link java.lang.UnsupportedOperationException} should be thrown.
-	 * 
-	 * @param characterAccuracy the character accuracy
-	 * @return the character accuracy
-	 */
-	abstract public void setCharacterAccuracy (BigDecimal characterAccuracy);
 
 	/**
 	 * Gets the word accuracy. This is usually a engine specific setting.
@@ -237,8 +200,9 @@ public interface OCRProcessMetadata {
 	 * an {@link java.lang.UnsupportedOperationException} should be thrown.
 	 * 
 	 * @return the word accuracy
+	 * @throws IOException 
 	 */
-	abstract public BigDecimal getWordAccuracy ();
+	abstract public BigDecimal getWordAccuracy () throws IOException;
 	
 	/**
 	 * Sets the word accuracy. This is usually a engine specific setting.
@@ -247,6 +211,7 @@ public interface OCRProcessMetadata {
 	 * an {@link java.lang.UnsupportedOperationException} should be thrown.
 	 * 
 	 * @param wordAccuracy the new word accuracy
+	 * @throws IOException 
 	 */
 	abstract public void setWordAccuracy (BigDecimal wordAccuracy);
 	
