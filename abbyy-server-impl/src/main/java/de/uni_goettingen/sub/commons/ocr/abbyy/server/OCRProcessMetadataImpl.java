@@ -20,10 +20,10 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 
 
-import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +60,6 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	private String textNote;
 	private BigDecimal wordAccuracy;
 	private Long duration;
-	private static InputStream inputStreamprocessingNote;
 	protected static XmlResultDocument xmlResultDocument; 
 	protected static DocumentDocument xmlExportDocument;
 	protected XmlResult xmlResul;
@@ -90,7 +89,6 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	}
 	
 	public OCRProcessMetadataImpl(InputStream inputStreamResult, InputStream inputStreamXmlExport , InputStream processingNote ){
-		this.inputStreamprocessingNote = processingNote;
 		XmlOptions options = new XmlOptions();
 		// Set the namespace 
 		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE));		
