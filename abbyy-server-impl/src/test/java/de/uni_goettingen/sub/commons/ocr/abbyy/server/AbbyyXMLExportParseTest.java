@@ -3,11 +3,14 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Scanner;
@@ -35,12 +38,15 @@ public class AbbyyXMLExportParseTest {
 	
 	@Before
 	public void init() throws XmlException, IOException{
+		 
+		
 		File filexmlExport = getBaseFolderAsFile();
-		filexmlExport = new File(getBaseFolderAsFile().getAbsolutePath()+ "/xmlExport.xml");
+		filexmlExport = new File(getBaseFolderAsFile().getAbsolutePath()+ "/xmlExport.xml");				
 		isDoc = new FileInputStream(filexmlExport);
 		isDocString = new FileInputStream(filexmlExport);
 		documentDocument = DocumentDocument.Factory.parse(isDoc);
 		doc = documentDocument.getDocument();
+
 	}
 	
 	@Test
@@ -63,17 +69,13 @@ public class AbbyyXMLExportParseTest {
 	}
 	
 	@Test
-	public void getProcessingNote() throws IOException{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(isDocString));
-	    StringBuilder sb = new StringBuilder();
-	    String line = null;
-	    while ((line = reader.readLine()) != null) {
-	      sb.append(line + "\n");
-	    }
-	    isDocString.close();
-	    assertTrue(sb.toString()!= "");
-	   // System.out.println(sb.toString());
+	public void getProcessingNote() throws IOException{		
+		String document = doc.toString();
+		assertTrue(document != null);
+		System.out.println(doc.toString());
+
 	}
+	
 	
 	public static File getBaseFolderAsFile() {
 		File basefolder;
