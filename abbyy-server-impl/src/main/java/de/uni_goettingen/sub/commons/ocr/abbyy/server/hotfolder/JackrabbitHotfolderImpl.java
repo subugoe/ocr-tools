@@ -466,7 +466,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			logger.error("Fatal transport error: ", e);
 		} finally {
 			// Release the connection.
-			method.releaseConnection();
+		//	method.releaseConnection();
 		}
 		return null;
 	}

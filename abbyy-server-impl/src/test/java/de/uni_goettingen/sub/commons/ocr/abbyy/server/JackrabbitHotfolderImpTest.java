@@ -25,6 +25,8 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument;
+import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument.Document;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
 
@@ -40,7 +42,8 @@ public class JackrabbitHotfolderImpTest {
 	private static InputStream isResult = null;
 	protected static XmlResultDocument xmlResultDocument; 
 	XmlResult xm ;
-
+	protected static DocumentDocument documentDocument;
+	Document doc;
 	
 	static JackrabbitHotfolderImpl imp;
 	static File WEBDAV;
@@ -100,16 +103,16 @@ public class JackrabbitHotfolderImpTest {
 	
 	@Test
 	public void testOpenInputStream() throws Exception {
-		assertTrue(imp.exists(new URI("http://localhost:8090/xmlresult.xml.result.xml")));
-		isResult = imp.openInputStream(new URI("http://localhost:8090/xmlresult.xml.result.xml"));
-		assertTrue(isResult != null);
-		/*xmlResultDocument = XmlResultDocument.Factory.parse(isResult);
-		xm = xmlResultDocument.getXmlResult();
-		BigDecimal b = new BigDecimal(xm.getStatistics().getTotalCharacters());
-	    String str = b.toString();
-	    System.out.println(str);
-	    assertTrue(str.equals("1805558") );*/
-		
+		assertTrue(imp.exists(new URI("http://localhost:8090/xmlExport.xml")));
+		for (int i = 1 ; i <= 30 ; i++){
+			System.out.println(i);
+			isResult = imp.openInputStream(new URI("http://localhost:8090/xmlExport"+ i + ".xml"));
+			assertTrue(isResult != null);
+			documentDocument = DocumentDocument.Factory.parse(isResult);
+			doc = documentDocument.getDocument();
+		    System.out.println(doc.toString());
+		    isResult = null;
+		}	
 	}
 	
 	
