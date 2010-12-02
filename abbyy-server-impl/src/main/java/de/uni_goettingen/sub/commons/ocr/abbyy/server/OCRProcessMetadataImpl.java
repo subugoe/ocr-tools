@@ -322,15 +322,8 @@ public class OCRProcessMetadataImpl implements OCRProcessMetadata {
 	 * ()
 	 */
 	@Override
-	public String getProcessingNote() throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStreamprocessingNote));
-	    StringBuilder sb = new StringBuilder();
-	    String line = null;
-	    while ((line = reader.readLine()) != null) {
-	      sb.append(line + "\n");
-	    }
-	    inputStreamprocessingNote.close();
-		return sb.toString();
+	public String getProcessingNote(){
+		return xmlExport.toString();
 	}
 
 
