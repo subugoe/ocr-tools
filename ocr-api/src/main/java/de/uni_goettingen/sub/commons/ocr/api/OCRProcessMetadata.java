@@ -179,7 +179,7 @@ public interface OCRProcessMetadata {
 	 * @return the processing note
 	 * @throws IOException 
 	 */
-	abstract public String getProcessingNote () throws IOException;
+	abstract public String getProcessingNote ();
 
 	//Result specific metadata
 	/**
