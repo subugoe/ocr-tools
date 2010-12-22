@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -37,8 +38,12 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.vfs.FileSystemException;
+import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
+import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.AbstractHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
@@ -94,6 +99,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	protected XmlParser xmlParser;
 	
 	protected OCRProcessMetadata ocrProcessMetadata;
+	protected XmlResultDocument xmlResultDocument; 
+	protected XmlResult xmlResultEngine ;
 
 	private Long maxSize;
 
@@ -242,8 +249,19 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 						if (o.isSingleFile()) {
 							URI remoteUri = o.getRemoteUri();
 							URI localUri = o.getUri();
-							logger.debug("Copy from " + remoteUri + " to " + localUri);
 							//TODO Erkennungsrat XMLParser
+							/*if((remoteUri.toString()).endsWith("xml"+ config.reportSuffix)){
+								InputStream isResult = hotfolder.openInputStream(remoteUri);
+								xmlResultDocument = XmlResultDocument.Factory.parse(isResult);
+								xmlResultEngine = xmlResultDocument.getXmlResult();
+								BigDecimal totalChar = new BigDecimal(xmlResultEngine.getStatistics().getTotalCharacters());
+								BigDecimal totalUncerChar = new BigDecimal(xmlResultEngine.getStatistics().getUncertainCharacters());
+							    BigDecimal prozent = (totalUncerChar.divide(totalChar, 4, BigDecimal.ROUND_UP)).multiply(new BigDecimal(100));
+							    ocrProcessMetadata.setCharacterAccuracy(prozent);
+							    System.out.println(prozent);
+								
+							}*/
+							logger.debug("Copy from " + remoteUri + " to " + localUri);
 							hotfolder.copyFile(remoteUri, localUri);
 							logger.debug("Deleting remote file " + remoteUri);
 							hotfolder.deleteIfExists(remoteUri);
@@ -278,7 +296,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				}
 				endTime = System.currentTimeMillis();
 				ocrProcessMetadata.setDuration(getDuration());
-			}
+			} /*catch (XmlException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
 		} catch (XMLStreamException e) {
 			//Set failed here since the results isn't worth much without metadata
 			failed = true;
@@ -390,7 +411,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	private Boolean waitForResults (final Map<OCRFormat, OCROutput> results, Long timeout) throws TimeoutExcetion, InterruptedException, IOException, URISyntaxException {
 		Long start = System.currentTimeMillis();
 		Boolean check = true;
-		Boolean putfalse = true;
+		Boolean putfalse = false;
 		Map<URI,Boolean> expectedUris = new HashMap<URI, Boolean>();
 		for (OCRFormat of : results.keySet()) {
 		  final AbbyyOCROutput o = (AbbyyOCROutput) results.get(of);
@@ -410,10 +431,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 					expectedUris.put(u, true);
 				} else {
 					logger.trace(u.toString() + " is not available");
-					putfalse = false;
+					putfalse = true;
 				}			
 			}
-			if(!putfalse){
+			if(putfalse){
 				for (URI uri: expectedUris.keySet()){
 					expectedUris.put(uri, false);
 				}
@@ -427,6 +448,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				logger.warn("Waited to long - fail");
 				throw new TimeoutExcetion();
 			}
+			System.out.println("jetzt= " +System.currentTimeMillis()+ "Satrt = "+  start + "timeout = "+ timeout + "summe= "+start + timeout);
+			putfalse = false;
 			logger.trace("Waiting for " + config.checkInterval + " milli seconds");
 			Thread.sleep(config.checkInterval);
 		}
