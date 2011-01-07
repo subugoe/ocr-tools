@@ -19,6 +19,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
  */
 
 import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.Observable;
 import java.util.Queue;
@@ -74,7 +75,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 
 	// OCR Processes
 	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
-
+	
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
@@ -155,17 +156,27 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	public OCRImage newOcrImage () {
 		return new AbbyyOCRImage();
 	}
-
+	@Override
+	public OCRImage newOcrImageforCLI (URI imageUri) {
+		return new AbbyyOCRImage(imageUri);
+	}
+	
 	@Override
 	public OCRProcess newOcrProcess () {
 		return new AbbyyOCRProcess(config, hotfolder);
 	}
 
 	@Override
+	public OCRProcess newOcrProcessforCLI () {
+		return new AbbyyOCRProcess(config);
+	}
+	
+	@Override
 	public OCROutput newOcrOutput () {
 		return new AbbyyOCROutput();
 	}
-
+	
+	
 	@Override
 	public Observable recognize (OCRProcess process) {
 		Observable o = addOcrProcess(process);
@@ -218,7 +229,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 
 		return ap;
 	}
-
+	
 	@Override
 	public Boolean init () {
 		//TODO: check server connection here

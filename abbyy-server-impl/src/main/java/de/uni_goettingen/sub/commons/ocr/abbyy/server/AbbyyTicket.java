@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+
 
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
@@ -57,6 +59,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 //TODO: one Locale might represent multiple langueages: <Language>GermanNewSpelling</Language>
 
@@ -97,6 +100,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	
 	/** is represents the InputStream for files being read */
 	private InputStream is;
+
 
 	// The configuration.
 	protected ConfigParser config;
@@ -352,7 +356,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		setOcrOutputs(outputs);
 	}
 
-	public void write (final OutputStream out, final String identifier, OCRProcessMetadata ocrProcessMetadata) throws IOException {
+	public synchronized void write (final OutputStream out, final String identifier, OCRProcessMetadata ocrProcessMetadata) throws IOException {
+
 		//Sanity checks
 		if (out == null || config == null) {
 			logger.error("OutputStream and / or configuration is not set!");
@@ -368,11 +373,12 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		if (processTimeout != null) {
 			ticket.setOCRTimeout(BigInteger.valueOf(processTimeout));
 		}
-
+		String namingsrule = null;
 		for (OCRImage aoi : getOcrImages()) {
 			InputFile inputFile = ticket.addNewInputFile();
 			String file = ((AbbyyOCRImage) aoi).getRemoteFileName();
 			inputFile.setName(file);
+			if(namingsrule == null) namingsrule = file;
 		}
 		//Use predefined variables here
 		ImageProcessingParams imageProcessingParams = (ImageProcessingParams) imageProcessingSettings.copy();
@@ -385,7 +391,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		if (priority != null) {
 			ticket.setPriority(priority);
 		}
-
+	
 		if(texttyp != null){
 			recognitionSettings.setTextTypeArray(new String[] {TEXTTYP_MAP.get(getTextTyp())});
 		}
@@ -457,8 +463,13 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		
 			AbbyyOCROutput aoo = (AbbyyOCROutput) output.get(of);
 			//TODO: Check what we need to set in single file mode
+			if(aoo.getRemoteFilename().equals(identifier + "." + of.toString().toLowerCase())){
 			exportFormat.setNamingRule(aoo.getRemoteFilename());
-
+	//		exportFormat.setNamingRule(namingsrule.substring(0,namingsrule.lastIndexOf("-")) + "." + of.toString().toLowerCase());
+//   		exportFormat.setNamingRule(identifier + "." + of.toString().toLowerCase());
+	//		exportFormat.setNamingRule(getName()+ "." + of.toString().toLowerCase());
+			
+			}
 			if (aoo.getRemoteLocation() == null) {
 				exportFormat.setOutputLocation(config.serverOutputLocation);
 			} else {
@@ -485,8 +496,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			exportParams.addNewExportFormat();
 			exportParams.setExportFormatArray(j, settings.get(j));
 		}
-		
-		ticketDoc.save(out, opts);
+
+		ticketDoc.save(out, opts);	
 		if (config.validateTicket && !ticket.validate()) {
 			logger.error("AbbyyTicket not valid!");
 			throw new OCRException("AbbyyTicket not valid!");

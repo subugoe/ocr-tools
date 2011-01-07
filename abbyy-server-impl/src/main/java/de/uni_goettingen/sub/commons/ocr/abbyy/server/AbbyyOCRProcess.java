@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigDecimal;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 
 import javax.xml.stream.XMLStreamException;
 
@@ -109,6 +110,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	private Long totalFileCount;
 
 	private Long totalFileSize;
+	static Object monitor;
 
 
 	protected AbbyyOCRProcess(ConfigParser config, Hotfolder hotfolder) {
@@ -123,7 +125,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		this.config = config;
 		ocrProcessMetadata = new OCRProcessMetadataImpl();
 		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass, config);
-		init();
+		init();	
+		monitor = new Object();
+
 	}
 
 	private void init () {
@@ -205,15 +209,15 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				//No interaction with the server and IO wanted, just return here
 				logger.info("Process is in dry run mode, don't write anything");
 				return;
-			}
-			
+			}			
 			//Create ticket, copy files and ticket
 			//Write ticket to temp file
+			synchronized ( monitor){
 			logger.debug("Creating AbbyyTicket");
 			OutputStream os = hotfolder.createTmpFile(tmpTicket);
 			write(os, name, ocrProcessMetadata);
 			os.close();
-			
+			}
 			
 			logger.debug("Cleaning Server");
 			//Clean the server here to avoid GUIDs as filenames
@@ -448,7 +452,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				logger.warn("Waited to long - fail");
 				throw new TimeoutExcetion();
 			}
-			System.out.println("jetzt= " +System.currentTimeMillis()+ "Satrt = "+  start + "timeout = "+ timeout + "summe= "+start + timeout);
 			putfalse = false;
 			logger.trace("Waiting for " + config.checkInterval + " milli seconds");
 			Thread.sleep(config.checkInterval);
@@ -584,6 +587,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				throw new OCRException(e);
 			}
 		}
+		processTimeout = (long) getOcrImages().size() * config.maxMillisPerFile;
 		aoo.setRemoteLocation(config.serverOutputLocation);
 		if (aoo.getRemoteFilename() == null) {
 			aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
@@ -598,7 +602,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		}
 	}
 
-	private void addMetadataOutput () {
+	private synchronized void addMetadataOutput () {
 		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
 		OCRFormat lastKey = getLastKey(outputs);
 		AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(lastKey);
