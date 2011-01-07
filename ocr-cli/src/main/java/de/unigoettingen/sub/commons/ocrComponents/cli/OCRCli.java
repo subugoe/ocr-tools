@@ -6,12 +6,23 @@
 package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 import java.io.File;
+
+
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.swing.plaf.metal.OceanTheme;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -21,8 +32,12 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.log4j.helpers.Loader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.ClassPathResource;
+
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory;
@@ -30,8 +45,12 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
+
+
 
 /**
  * The Class OCRCli. command line is special for the input parametres which the
@@ -59,8 +78,8 @@ public class OCRCli {
 	protected List<File> directories = new ArrayList<File>();
 
 	/** The language. */
-	protected static List<Locale> langs;
-
+	protected static Set<Locale> langs;
+	
 	/** The config. */
 	protected HierarchicalConfiguration config;
 	//public String defaultConfig = "server-config.xml";
@@ -79,16 +98,20 @@ public class OCRCli {
 
 	/** The foramt. as example TXT, XML or PDF.. */
 	static List<OCRFormat> f = new ArrayList<OCRFormat>();
+	
+	private static String ocrTextTyp = null;
 
 	/** The inputfiles. list of the images */
 	private static List<File> inputFiles = new ArrayList<File>();
 
 	/** The engine. */
 	protected static OCREngine engine;
+	
+	protected static OCRProcess ocrProcess;
 
 	/** The process. */
 	protected static List<OCRProcess> processes = new ArrayList<OCRProcess>();
-
+	protected static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 	/**
 	 * Inits the opts.
 	 */
@@ -101,6 +124,7 @@ public class OCRCli {
 		opts.addOption("v", false, "Version");
 		opts.addOption("d", true, "Debuglevel");
 		opts.addOption("e", true, "File extension (default \"tif\")");
+		opts.addOption("t", true, "OCRTextTyp");
 		opts.addOption("o", true, "Output folder");
 	}
 
@@ -109,20 +133,86 @@ public class OCRCli {
 	 * 
 	 * @param args
 	 *            the arguments
+	 * @throws URISyntaxException 
+	 * @throws IOException 
 	 * @throws Exception
 	 *             the exception
 	 */
-	public static void main (String[] args) {
+	public static void main (String[] args) throws IOException, URISyntaxException {
 		logger.debug("Creating OCRCli instance");
 		OCRCli ocr = OCRCli.getInstance();
 		logger.debug("Creating OCREngineFactory instance");
-		engine = OCREngineFactory.getInstance().newOcrEngine();
-		ocr.configureFromArgs(args);
-		for (OCRProcess p : processes) {
-			engine.recognize(p);
+		
+		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource("context.xml")); 		
+		OCREngineFactory ocrEngineFactory = (OCREngineFactory)factory.getBean("OCREngineFactory");		
+
+		engine = ocrEngineFactory.newOcrEngine();
+		
+		List<String> files = ocr.defaultOpts(args);
+		if(files.size() > 1){
+			starten(files);
 		}
+		if(files.size() == 1){
+			for (String id : files) {
+				File directory = new File(getBaseFolderAsFile() + "/" + id);
+				List<File> folder = OCRUtil.getTargetDirectories(directory, extension);
+				List<String> idfiles = new ArrayList<String>();
+				for(File idfolder : folder){
+					idfiles.add(idfolder.getName());
+				}
+				starten(idfiles);
+			}
+			
+		}
+		
 	}
 
+	public static void starten(List<String> files) throws URISyntaxException{
+		for (String book : files){
+			File directory = new File(getBaseFolderAsFile() + "/" + book);
+			logger.debug("Creating AbbyyOCRProcess for " + directory.toString());
+			OCRProcess aop =  engine.newOcrProcessforCLI();
+			List<File> imageDirs = OCRUtil.getTargetDirectories(directory, extension);
+			for (File id : imageDirs) {
+				if (imageDirs.size() > 1) {
+					logger.error("Directory " + id.getAbsolutePath() + " contains more then one image directories");
+					throw new OCRException("can currently create only one AbbyyOCRProcess!");
+				}
+				List<OCRImage> imgs = new ArrayList<OCRImage>();
+				String jobName = id.getName();
+				for (File imageFile : OCRUtil.makeFileList(id, extension)) {
+					aop.setName(jobName);
+					OCRImage aoi = engine.newOcrImageforCLI(imageFile.toURI());
+					aoi.setSize(imageFile.length());
+			//		aop.addImage(aoi);
+					String[] urlParts = imageFile.toURI().toString().split("/");
+					if (jobName == null) {
+						logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
+						aop.setName(UUID.randomUUID().toString());
+					}
+					aoi.setRemoteFileName(jobName + "-" + urlParts[urlParts.length - 1]);
+					imgs.add(aoi);
+				}
+				aop.setOcrImages(imgs);
+				
+			}
+			//add format
+			OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();
+			
+			for (OCRFormat ocrformat: f){
+				
+				OCROutput aoo = engine.newOcrOutput();
+				URI uri = new URI(getBaseFolderAsFile().toURI() + localOutputDir + "/" + book + "." + ocrformat.toString().toLowerCase());
+				aoo.setUri(uri);				
+				OUTPUT_DEFINITIONS.put(ocrformat, aoo);
+				aop.addOutput(ocrformat, aoo);
+			}
+			//add language
+			aop.setLanguages(langs);	
+			engine.addOcrProcess(aop);
+		}
+		engine.recognize();
+	}
 	/**
 	 * Configure from args.
 	 * 
@@ -130,32 +220,11 @@ public class OCRCli {
 	 *            the arguments
 	 * @throws IOException
 	 */
-	public void configureFromArgs (String[] args) {
+	public List<String> configureFromArgs (String[] args) {
 		//list of the directory
 		List<String> files = defaultOpts(args);
-
-		if (recursiveMode) {
-
-			for (String dir : files) {
-				List<File> newFiles = new ArrayList<File>();
-				try {
-					//Catch this exception to generate a proper error message
-					newFiles.addAll(getImageDirectories(new File(dir)));
-				} catch (IllegalStateException ise) {
-					System.err.println(new File(dir).getAbsolutePath() + "is not a directory! Exiting");
-					System.exit(5);
-				}
-				//TODO
-				//	OCRProcess p = engine.newProcess(new File(dir));
-				OCRImage img = null;
-				for (File file : newFiles) {
-					img = engine.newOcrImage();
-					img.setUri(file.toURI());
-				}
-				//list of the directory as process
-				//	engine.addOcrProcess(p);
-			}
-		}
+		return files;
+		
 	}
 
 	/**
@@ -178,6 +247,13 @@ public class OCRCli {
 		return files;
 	}
 
+	/**
+	 * Make file list, wich have "filter"  as ending.
+	 *
+	 * @param File, wich are the images
+	 * @param filter as ending 
+	 * @return the list File
+	 */
 	public static List<File> makeFileList (File dir, String filter) {
 		List<File> fileList;
 		if (dir.isDirectory()) {
@@ -235,12 +311,33 @@ public class OCRCli {
 	}
 
 	/**
-	 * Parses the format from the arguments.
+	 * Parse the format from the arguments.
 	 * 
 	 * @param str
 	 *            is the format
 	 * @return the list of the OCRFormat
 	 */
+	public static List<OCRFormat> parseOCRTextTyp (String str) {
+		List<OCRFormat> ocrFormats = new ArrayList<OCRFormat>();
+		//TODO: Add a test for this
+		//TODO: remove the else clause
+		if (str.contains(",")) {
+			for (String ocrTextTyp : Arrays.asList(str.split(","))) {
+
+				//getOrdinal( ocrFormat.toUpperCase(), ocrFormat );
+				ocrFormats.add(OCRFormat.parseOCRFormat(ocrTextTyp.toUpperCase()));
+
+				//process.addOCRFormat(OCRFormat.parseOCRFormat(ocrFormat.toUpperCase()));
+			}
+		} else {
+			//getOrdinal( str.toUpperCase() , str );
+			ocrFormats.add(OCRFormat.parseOCRFormat(str.toUpperCase()));
+			//process.addOCRFormat(OCRFormat.parseOCRFormat(str.toUpperCase()));
+		}
+		return ocrFormats;
+	}
+
+	
 	public static List<OCRFormat> parseOCRFormat (String str) {
 		List<OCRFormat> ocrFormats = new ArrayList<OCRFormat>();
 		//TODO: Add a test for this
@@ -260,7 +357,6 @@ public class OCRCli {
 		}
 		return ocrFormats;
 	}
-
 	/**
 	 * Default opts.
 	 * 
@@ -324,9 +420,9 @@ public class OCRCli {
 
 		// Sprache
 		if (cmd.hasOption("l")) {
-			langs = OCRUtil.parseLangs(cmd.getOptionValue("l"));
+			langs = OCRUtil.parseLang(cmd.getOptionValue("l"));
 		} else {
-			langs = new ArrayList<Locale>();
+			langs = new HashSet<Locale>();
 			langs.add(new Locale("de"));
 		}
 		for (Locale lang : langs) {
@@ -339,24 +435,34 @@ public class OCRCli {
 			recursiveMode = true;
 		}
 
+		//TODO OCRTextTyp
+		if(cmd.hasOption("t")){
+			if (cmd.getOptionValue("t") != null && !cmd.getOptionValue("t").equals("")) {
+				ocrTextTyp = cmd.getOptionValue("o");
+			}
+		}
 		// Output foler
 		if (cmd.hasOption("o")) {
 			if (cmd.getOptionValue("o") != null && !cmd.getOptionValue("o").equals("")) {
 				localOutputDir = cmd.getOptionValue("o");
-				for (OCRFormat of : f) {
-					OCROutput output = engine.newOcrOutput();
-					//TODO: Finish this
-					output.setUri(new File(localOutputDir + "this-should-be-the-name-of-the-folder." + of.toString().toLowerCase()).toURI());
-					
-				}
-				//TODO: Add this to the process
-				//process.setOutputLocation(localOutputDir);
 			}
 		}
 		//List of the directory wich are images
 		return cmd.getArgList();
 	}
 
+	public static File getBaseFolderAsFile () {
+		File basefolder;
+		// TODO: GDZ: Do wee really need to depend on Log4J here? I don't think so...
+		URL url = Loader.getResource("");
+		try {
+			basefolder = new File(url.toURI());
+		} catch (URISyntaxException ue) {
+			basefolder = new File(url.getPath());
+		}
+		return basefolder;
+	}
+	
 	/**
 	 * Gets the file count.
 	 * 

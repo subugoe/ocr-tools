@@ -22,6 +22,11 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>de.uni-goettingen.sub</groupId>
+			<artifactId>abbyy-server-impl</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>1.6</version>
@@ -50,15 +55,14 @@
 			<artifactId>ocrutil</artifactId>
 			<version>0.9-SNAPSHOT</version>
 		</dependency>
-		<!-- 
 		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>jackrabbit-webdav</artifactId>
-			<version>2.1.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>3.0.1.RELEASE</version>
 		</dependency>
-		-->
+
+		<!-- <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-webdav</artifactId> 
+			<version>2.1.1</version> <type>jar</type> <scope>compile</scope> </dependency> -->
 		<dependency>
 			<groupId>de.unigoettingen.sub.commons</groupId>
 			<artifactId>util</artifactId>
@@ -74,18 +78,52 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
+			<version>1.5.6</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
+			<version>1.5.6</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
+	
+	<build>
+		<defaultGoal>package</defaultGoal>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli</mainClass>
+								</transformer>
+							</transformers>
+							<artifactSet>
+								<excludes>
+									<exclude>junit:junit</exclude>
+								</excludes>
+							</artifactSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
 	<repositories>
 		<repository>
 			<id>archiva.internal.http</id>
