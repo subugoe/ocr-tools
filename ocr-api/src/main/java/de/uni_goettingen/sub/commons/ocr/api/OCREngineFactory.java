@@ -30,7 +30,8 @@ public class OCREngineFactory {
 	
 	/** The field _instance contains the reference to this singleton. */
 	private static OCREngineFactory _instance = null;
-	
+	private OCREngine engine;
+
 	/**
 	 * Instantiates a new OCR engine factory.
 	 */
@@ -57,7 +58,14 @@ public class OCREngineFactory {
 	 * @return the OCR engine
 	 */
 	public OCREngine newOcrEngine () {
-		return null;
+		return this.engine;
 	}
+
+	public void setEngine(OCREngine engine) {
+		this.engine = engine;
+	}
+	
+	
+
 
 }

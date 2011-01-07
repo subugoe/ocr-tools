@@ -20,8 +20,12 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
+import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.Observable;
+
+
 
 /**
  * The Interface OCREngine is the main entry point for each engine. It also
@@ -102,6 +106,7 @@ public interface OCREngine {
 	 * @see OCRImage
 	 */
 	abstract public OCRImage newOcrImage ();
+	abstract public OCRImage newOcrImageforCLI (URI imageUri);
 
 	/**
 	 * New OCRProcess. This method should return an engine specific
@@ -134,6 +139,9 @@ public interface OCREngine {
 	 */
 	abstract public OCRProcess newOcrProcess ();
 
+	abstract public OCRProcess newOcrProcessforCLI ();
+	
+	
 	/**
 	 * New OCROutput. This method should return an engine specific
 	 * implementation of {@link OCROutput}. Lazy implementers can choose to
@@ -155,6 +163,7 @@ public interface OCREngine {
 	 */
 	abstract public OCROutput newOcrOutput ();
 
+
 	/**
 	 * Inits the OCREngine. This an be used to check if the engine is
 	 * operational. Implementations should implement this method to check if an
@@ -166,5 +175,5 @@ public interface OCREngine {
 	 * @return true if the engine could be initialized, false otherwise
 	 */
 	abstract public Boolean init ();
-
+	
 }

@@ -259,4 +259,6 @@ public interface OCRProcess {
 		Gothic
 	}
 
+	public void addOutput (OCRFormat format, OCROutput output);
+	
 }
