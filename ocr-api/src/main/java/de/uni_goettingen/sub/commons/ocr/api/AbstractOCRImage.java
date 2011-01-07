@@ -32,6 +32,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage.Orientation;
  */
 public abstract class AbstractOCRImage implements OCRImage {
 
+	private String remoteFileName;
+	
 	/**  uri to image wich will be sent to OCR Engine */
 	protected URI imageUri = null;
 
@@ -40,6 +42,9 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * degrees.
 	 *  */
 	protected Orientation orientation;
+	
+	/** the size of the image, if known. */
+	private Long size = 0l;
 
 	/**
 	 * Instantiates a new abstract OCRImage using a given {@link URI}.
@@ -118,4 +123,34 @@ public abstract class AbstractOCRImage implements OCRImage {
 		this.orientation = orientation;
 	}
 
+	/**
+	 * Gets the size of file
+	 * @return the size
+	 */
+	public Long getSize () {
+		return size;
+	}
+
+	/**
+	 * Sets the size of file
+	 * @param size 
+	 */
+	public void setSize (Long size) {
+		this.size = size;
+	}
+	/**
+	 * Gets the remoteFilename is the local file name on the remote system.
+	 * @return the remoteFilename.
+	 */
+	public String getRemoteFileName () {
+		return remoteFileName;
+	}
+
+	/**
+	 * Sets the remoteFilename is the local file name on the remote system.
+	 * @param remoteFileName
+	 */
+	public void setRemoteFileName (String remoteFileName) {
+		this.remoteFileName = remoteFileName;
+	}
 }

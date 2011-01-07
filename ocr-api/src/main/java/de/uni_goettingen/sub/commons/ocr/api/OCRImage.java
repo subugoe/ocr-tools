@@ -120,5 +120,6 @@ public interface OCRImage {
 		}
 
 	}
-
+	public void setSize (Long size);
+	public void setRemoteFileName (String remoteFileName);
 }
