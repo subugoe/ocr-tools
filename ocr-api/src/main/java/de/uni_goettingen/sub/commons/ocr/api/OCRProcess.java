@@ -258,7 +258,15 @@ public interface OCRProcess {
 		 * */
 		Gothic
 	}
-
+	
+	/**
+	 * Adds the output for the given format 
+	 * @param format
+	 *            the format to add
+	 * @param output
+	 *            the output, the output settings for the given format
+	 * 
+	 */
 	public void addOutput (OCRFormat format, OCROutput output);
 	
 }
