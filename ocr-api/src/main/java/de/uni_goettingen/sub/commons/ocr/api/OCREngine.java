@@ -20,7 +20,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
-import java.io.File;
+
 import java.net.URI;
 import java.util.List;
 import java.util.Observable;
@@ -106,6 +106,25 @@ public interface OCREngine {
 	 * @see OCRImage
 	 */
 	abstract public OCRImage newOcrImage ();
+	
+	/**
+	 * New OCRImage. This method should return an engine specific implementation
+	 * of {@link OCRImage}. Lazy implementers can choose to return an anonymous
+	 * class that extends {@link AbstractOCRImage}, if it fits their needs:
+	 * 
+	 * <pre>
+	 * {@code 
+	 * return new AbstractOCRImage(imageUri) {
+	 * @Override
+	 * public void setUri (URI uri) {
+	 * super.setUri(uri);
+	 * }
+	 * };
+	 * }
+	 * </pre>
+	 * @return the new created OCR image
+	 * @see OCRImage
+	 */
 	abstract public OCRImage newOcrImageforCLI (URI imageUri);
 
 	/**
@@ -139,6 +158,35 @@ public interface OCREngine {
 	 */
 	abstract public OCRProcess newOcrProcess ();
 
+	/**
+	 * New OCRProcess. This method should return an engine specific
+	 * implementation of {@link OCRProcess}. Lazy implementers can choose to
+	 * return an anonymous class that extends {@link AbstractOCRProcess}, if it
+	 * fits their needs:
+	 * 
+	 * <pre>
+	 * {@code 
+	 * return new AbstractOCRProcess() {
+	 * 	@Override
+	 * 	public void setName (String name) {
+	 * 		super.setName(name);
+	 * 	}
+	 * 	public void addLanguage (Locale lang) {
+	 * 		super.addLanguage(lang);
+	 * 	}
+	 * 	public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutput) {
+	 * 		super.setOcrOutputs(ocrOutput);
+	 * 	}
+	 * 	public void setOcrImages (List<OCRImage> ocrImages) {
+	 * 		super.setOcrImages(ocrImages);
+	 * 	}
+	 * };
+	 * }
+	 * </pre>
+	 * 
+	 * @return the new created OCR process
+	 * @see OCRProcess
+	 */
 	abstract public OCRProcess newOcrProcessforCLI ();
 	
 	
