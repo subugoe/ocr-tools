@@ -1,7 +1,8 @@
-username: gdz
-password: ***REMOVED***
+username: 
+password: 
 remoteURL: file://./src/test/resources/hotfolder/
 moveToLocal: file://./src/test/resources/move/
+reportSuffix: .xml.result.xml
 input: input
 output: output
 error: error
