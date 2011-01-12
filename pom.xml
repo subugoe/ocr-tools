@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>de.unigoettingen.sub.commons</groupId>
@@ -16,9 +17,7 @@
 		<module>abbyy-cli-impl</module>
 		<module>ocrutil</module>
 		<module>GoobiOCRServlet</module>
-		<!-- 
-		<module>dummy-impl</module>
-		-->
+		<!-- <module>dummy-impl</module> -->
 	</modules>
 	<developers>
 		<developer>
@@ -105,10 +104,17 @@
 					<testFailureIgnore>false</testFailureIgnore>
 				</configuration>
 			</plugin>
-			<!--
-				<plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>argouml-maven-plugin</artifactId> <version>1.0-SNAPSHOT</version> <executions> <execution> <phase>pre-site</phase> <goals> <goal>transform</goal> </goals> </execution>
-				</executions> <configuration> <inputFiles> <file>${project.basedir}/src/main/resources</file> </inputFiles> <outputDirectory>${project.build.directory}/site/images</outputDirectory> </configuration> </plugin>
-			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>argouml-maven-plugin</artifactId> 
+				<version>1.0-SNAPSHOT</version> <executions> <execution> <phase>pre-site</phase> 
+				<goals> <goal>transform</goal> </goals> </execution> </executions> <configuration> 
+				<inputFiles> <file>${project.basedir}/src/main/resources</file> </inputFiles> 
+				<outputDirectory>${project.build.directory}/site/images</outputDirectory> 
+				</configuration> </plugin> -->
 		</plugins>
 	</build>
 	<dependencies>
@@ -130,9 +136,15 @@
 			<name>Internal Snapshot Repository</name>
 			<url>https://repository.bibforge.org/archiva/repository/snapshots</url>
 		</snapshotRepository>
-		<site>
+		<!--<site>
 			<id>site.server</id>
 			<url>dav:http://develop.sub.uni-goettingen.de/maven-sites/${project.groupId}/ocr-tools-${project.version}</url>
+		</site>
+	-->
+	<site>
+			<id>local-site</id>
+			<name>Local deployed site</name>
+			<url>file://${user.dir}/target/site-deploy</url>
 		</site>
 	</distributionManagement>
 	<pluginRepositories>
