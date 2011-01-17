@@ -12,6 +12,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Abbyy Recognition Server implementation</name>
 	<repositories>
+	<!-- 
 		<repository>
 			<id>milton</id>
 			<name>Ettrema Repository</name>
@@ -20,6 +21,7 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+		 -->
 		<repository>
 			<id>kantega</id>
 			<name>Kantega Repository</name>
@@ -64,12 +66,12 @@
 			<artifactId>abbyyTicket</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>de.unigoettingen.sub.commons</groupId>
 			<artifactId>textmd20</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<dependency>
+		--><dependency>
 			<groupId>de.unigoettingen.sub.commons</groupId>
 			<artifactId>abbyyResult</artifactId>
 			<version>1.0.0</version>
