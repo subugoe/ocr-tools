@@ -86,6 +86,13 @@ public interface OCRProcessMetadata {
 	abstract public void setFormat (String format);
 	
 	/**
+	 * Sets the document type. This is valid for "SGML", "XML", "HTML" and
+	 * "XHTML" and should reference a DTD or schema, if possible by using a URI.
+	 * 
+	 * @return the document type
+	 */
+	abstract public void setDocumentType(String documentType);
+	/**
 	 * Gets the document type. This is valid for "SGML", "XML", "HTML" and
 	 * "XHTML" and should reference a DTD or schema, if possible by using a URI.
 	 * 
@@ -107,6 +114,19 @@ public interface OCRProcessMetadata {
 	 */
 	abstract public void setDocumentTypeVersion (String documentTypeVersion);
 	//Creator settings
+	/**
+	 * Sets the name of the software used to encode / recognize the text.
+	 * 
+	 * @return the software name
+	 */
+	abstract public void setSoftwareName(String softwareName);
+	/**
+	 * Sets the name of the software used to encode / recognize the text.
+	 * 
+	 * @return the software name
+	 */
+	abstract public void setSoftwareVersion(String softwareVersion);
+	
 	/**
 	 * Gets the name of the software used to encode / recognize the text.
 	 * 
@@ -171,6 +191,8 @@ public interface OCRProcessMetadata {
 	 */
 	abstract public void setTextNote (String textNote);
 
+	abstract public void setProcessingNote(String processingNote);
+	
 	/**
 	 * Gets processing note for the {OCRProcess}. This can be used to add a
 	 * general note to the processing / recognition process. Implementors may
@@ -182,6 +204,7 @@ public interface OCRProcessMetadata {
 	abstract public String getProcessingNote ();
 
 	//Result specific metadata
+	abstract public void setCharacterAccuracy(BigDecimal totalChar, BigDecimal totalUncerChar);
 	/**
 	 * Gets the character accuracy. This is usually a engine specific setting.
 	 * Implementations should try to convert this into a percentage value. If
