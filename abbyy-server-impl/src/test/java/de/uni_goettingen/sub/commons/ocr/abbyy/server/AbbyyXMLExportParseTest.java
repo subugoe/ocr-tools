@@ -41,7 +41,7 @@ public class AbbyyXMLExportParseTest {
 		 
 		
 		File filexmlExport = getBaseFolderAsFile();
-		filexmlExport = new File(getBaseFolderAsFile().getAbsolutePath()+ "/xmlExport.xml");				
+		filexmlExport = new File(System.getProperty("user.dir") + File.separator +"src/test/resources/hotfolder/"+ "xmlExport.xml");				
 		isDoc = new FileInputStream(filexmlExport);
 		isDocString = new FileInputStream(filexmlExport);
 		documentDocument = DocumentDocument.Factory.parse(isDoc);
