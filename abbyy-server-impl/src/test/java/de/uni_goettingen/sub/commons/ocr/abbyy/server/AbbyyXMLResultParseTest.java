@@ -41,7 +41,7 @@ public class AbbyyXMLResultParseTest {
 	@Before
 	public void init() throws Exception {
 		File fileresult = getBaseFolderAsFile();
-		fileresult = new File(getBaseFolderAsFile().getAbsolutePath()+ "/xmlresult.xml.result.xml");
+		fileresult = new File(System.getProperty("user.dir") + File.separator +"src/test/resources/hotfolder/"+ "xmlresult.xml.result.xml");
 		isResult = new FileInputStream(fileresult);
 		XmlOptions options = new XmlOptions();
 		// Set the namespace 
@@ -56,14 +56,14 @@ public class AbbyyXMLResultParseTest {
 			BigDecimal bd = new BigDecimal(l.getStatistics().getTotalCharacters());
 			a = a.add(bd);			
 		}
-		assertTrue(a.equals(new BigDecimal(1805558)) );		
+		assertTrue(a.equals(new BigDecimal(719)) );		
 	}
 	
 	@Test
 	public void getTotalUncertainCharacters() throws Exception {
 		BigDecimal c = new BigDecimal(xm.getStatistics().getUncertainCharacters());
 	    String strr = c.toString();
-	    assertTrue(strr.equals("113735") );
+	    assertTrue(strr.equals("101") );
 	}
 	
 	@Test
@@ -73,14 +73,16 @@ public class AbbyyXMLResultParseTest {
 			BigDecimal bd = new BigDecimal(l.getStatistics().getUncertainCharacters());
 			d = d.add(bd);	
 		}
-		assertTrue(d.equals(new BigDecimal(113735)) );	
+		System.out.println("ssss" +d);
+		assertTrue(d.equals(new BigDecimal(101)) );	
 	}
 	
 	@Test
 	public void getTotalCharacters() throws Exception {
 		BigDecimal b = new BigDecimal(xm.getStatistics().getTotalCharacters());
 	    String str = b.toString();
-	    assertTrue(str.equals("1805558") );
+	    System.out.println(str);
+	    assertTrue(str.equals("719") );
 	}
 	
 	@Test
@@ -89,7 +91,7 @@ public class AbbyyXMLResultParseTest {
 		BigDecimal totalUncerChar = new BigDecimal(xm.getStatistics().getUncertainCharacters());
 	    BigDecimal prozent = (totalUncerChar.divide(totalChar, 8, BigDecimal.ROUND_UP)).multiply(new BigDecimal(100));
 	    System.out.println(prozent);
-	    assertTrue((prozent.toString()).equals("6.29916100") );
+	    assertTrue((prozent.toString()).equals("14.04728800") );
 	 //   System.out.println(xm.toString());
 	}
 	
