@@ -69,14 +69,14 @@ public class AbbyyServerOCREngineTest {
 		ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTED_FILE);
 		ass.start();
 	}
-
+	@Ignore
 	@Test
 	public void checkThread () throws InterruptedException {
 		Thread.sleep(1000);
 		logger.debug("Checking for Thread");
 		assertTrue("Thread is dead", ass.isAlive());
 	}
-
+	@Ignore
 	@Test
 	public void testRecognize () throws IOException {
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
