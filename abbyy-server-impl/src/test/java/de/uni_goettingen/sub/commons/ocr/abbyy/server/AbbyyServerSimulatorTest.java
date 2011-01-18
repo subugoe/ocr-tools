@@ -20,25 +20,35 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AbbyyServerSimulatorTest {
-
+	public static String INPUT = "input";
+	public static String OUTPUT = "output";
+	public static String HOTFOLDER = "hotfolder";
+	public static String EXPECTED = "expected";
+	public static File TEST_INPUT_FILE, TEST_OUTPUT_FILE, TEST_HOTFOLDER_FILE, TEST_EXPECTED_FILE;
 	protected static AbbyyServerSimulator sim;
 
 	@BeforeClass
 	public static void init () {
-
+		TEST_INPUT_FILE = new File(System.getProperty("user.dir") + File.separator +"src/test/resources/"+ INPUT);
+		TEST_OUTPUT_FILE = new File(System.getProperty("user.dir") + File.separator +"src/test/resources/"+ OUTPUT);
+		TEST_HOTFOLDER_FILE = new File(System.getProperty("user.dir") + File.separator +"src/test/resources/"+ HOTFOLDER);
+		TEST_EXPECTED_FILE = new File(System.getProperty("user.dir") + File.separator +"src/test/resources/"+  EXPECTED);
 	}
 
-	public AbbyyServerSimulatorTest() {
-
-	}
+	/*public AbbyyServerSimulatorTest() {
+	}*/
 
 	@Test
 	public void testSimulator () {
-		sim = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTED_FILE);
+		sim = new AbbyyServerSimulator(TEST_HOTFOLDER_FILE, TEST_EXPECTED_FILE);
+		
 		assertTrue(sim.hotfolder.isDirectory());
 		assertTrue(sim.inputHotfolder.isDirectory());
 		assertTrue(sim.outputHotfolder.isDirectory());
