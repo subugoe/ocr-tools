@@ -189,7 +189,7 @@ public class OCRCli {
 			throws URISyntaxException {
 		for (String book : files) {
 			File directory = new File(System.getProperty("user.dir") + book);
-			logger.debug("Creating AbbyyOCRProcess for " + directory.toString());
+			logger.debug("Creating Process for " + directory.toString());
 			OCRProcess aop = engine.newOcrProcess();
 			List<File> imageDirs = OCRUtil.getTargetDirectories(directory,
 					extension);
@@ -198,7 +198,7 @@ public class OCRCli {
 					logger.error("Directory " + id.getAbsolutePath()
 							+ " contains more then one image directories");
 					throw new OCRException(
-							"can currently create only one AbbyyOCRProcess!");
+							"can currently create only one Process!");
 				}
 				List<OCRImage> imgs = new ArrayList<OCRImage>();
 				String jobName = id.getName();
