@@ -41,7 +41,7 @@ public interface OCRImage {
 	 * 
 	 * @return the uri
 	 */
-	abstract public URI getUri ();
+	abstract public URI getUri();
 
 	/**
 	 * Sets the {@link URI} of the image. URI is used to be able to use
@@ -50,7 +50,7 @@ public interface OCRImage {
 	 * @param uri
 	 *            the new uri
 	 */
-	abstract public void setUri (URI uri);
+	abstract public void setUri(URI uri);
 
 	/**
 	 * Gets the {@link Orientation} of an image. Not all engines support this
@@ -60,7 +60,7 @@ public interface OCRImage {
 	 * 
 	 * @return the rotation
 	 */
-	abstract public Orientation getOrientation ();
+	abstract public Orientation getOrientation();
 
 	/**
 	 * Sets the {@link Orientation} of an image. Not all engines support this
@@ -71,7 +71,7 @@ public interface OCRImage {
 	 * @param orientation
 	 *            the new {@link Orientation}
 	 */
-	abstract public void setOrientation (Orientation orientation);
+	abstract public void setOrientation(Orientation orientation);
 
 	/**
 	 * The Enum Orientation. Orientation is expressed clockwise. For
@@ -115,11 +115,16 @@ public interface OCRImage {
 		 * 
 		 * @return the degree, returns -1 if {@link Orientation} is set to MIXED
 		 */
-		public Integer getDegree () {
+		public Integer getDegree() {
 			return DEGREE;
 		}
 
 	}
-	public void setSize (Long size);
-	public void setRemoteFileName (String remoteFileName);
+	
+	/**
+	 * Sets the size of file
+	 * @param size 
+	 */
+	public void setSize(Long size);
+
 }

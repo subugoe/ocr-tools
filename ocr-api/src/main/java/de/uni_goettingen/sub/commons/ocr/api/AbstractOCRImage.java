@@ -2,21 +2,21 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 /*
 
-Copyright 2010 SUB Goettingen. All rights reserved.
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+ Copyright 2010 SUB Goettingen. All rights reserved.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-*/
+ */
 
 import java.net.URI;
 
@@ -32,17 +32,16 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage.Orientation;
  */
 public abstract class AbstractOCRImage implements OCRImage {
 
-	private String remoteFileName;
-	
-	/**  uri to image wich will be sent to OCR Engine */
+	/** uri to image wich will be sent to OCR Engine */
 	protected URI imageUri = null;
 
-	/** The Enum Orientation. Orientation is expressed clockwise. For
+	/**
+	 * The Enum Orientation. Orientation is expressed clockwise. For
 	 * calculations and display there is a method to get the rotation in
 	 * degrees.
-	 *  */
+	 * */
 	protected Orientation orientation;
-	
+
 	/** the size of the image, if known. */
 	private Long size = 0l;
 
@@ -69,12 +68,11 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * used to convert different subclasses into each other
 	 * 
 	 * @param i
-	 *            The OCRImage. This represents the a single
-	 *            image file to be recognized. Images are referenced by URI.
-	 *            {@link Orientation} is an Enum representing different possible
-	 *            orientations of an image. Implementations should extend
-	 *            {@link AbstractOCRImage} to add further methods for example
-	 *            for handling Streams.
+	 *            The OCRImage. This represents the a single image file to be
+	 *            recognized. Images are referenced by URI. {@link Orientation}
+	 *            is an Enum representing different possible orientations of an
+	 *            image. Implementations should extend {@link AbstractOCRImage}
+	 *            to add further methods for example for handling Streams.
 	 */
 	public AbstractOCRImage(OCRImage i) {
 		this(i.getUri(), i.getOrientation());
@@ -86,71 +84,69 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * @param imageUri
 	 *            the image, uri to image wich will be sent to OCR Engine
 	 * @param orientation
-	 *           	The Enum Orientation. Orientation is expressed clockwise. For
-	 * 				calculations and display there is a method to get the rotation in
-	 * 				degrees.
+	 *            The Enum Orientation. Orientation is expressed clockwise. For
+	 *            calculations and display there is a method to get the rotation
+	 *            in degrees.
 	 */
 	public AbstractOCRImage(URI imageUri, Orientation orientation) {
 		this.imageUri = imageUri;
 		this.orientation = orientation;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#getUri()
 	 */
-	public URI getUri () {
+	public URI getUri() {
 		return this.imageUri;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#setUri(java.net.URI)
 	 */
-	public void setUri (URI uri) {
+	public void setUri(URI uri) {
 		this.imageUri = uri;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#getOrientation()
 	 */
-	public Orientation getOrientation () {
+	public Orientation getOrientation() {
 		return orientation;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#setOrientation(OCRImage.Orientation)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.api.OCRImage#setOrientation(OCRImage
+	 * .Orientation)
 	 */
-	public void setOrientation (Orientation orientation) {
+	public void setOrientation(Orientation orientation) {
 		this.orientation = orientation;
 	}
 
 	/**
 	 * Gets the size of file
+	 * 
 	 * @return the size
 	 */
-	public Long getSize () {
+	public Long getSize() {
 		return size;
 	}
 
 	/**
 	 * Sets the size of file
-	 * @param size 
+	 * 
+	 * @param size
 	 */
-	public void setSize (Long size) {
+	public void setSize(Long size) {
 		this.size = size;
 	}
-	/**
-	 * Gets the remoteFilename is the local file name on the remote system.
-	 * @return the remoteFilename.
-	 */
-	public String getRemoteFileName () {
-		return remoteFileName;
-	}
 
-	/**
-	 * Sets the remoteFilename is the local file name on the remote system.
-	 * @param remoteFileName
-	 */
-	public void setRemoteFileName (String remoteFileName) {
-		this.remoteFileName = remoteFileName;
-	}
 }
