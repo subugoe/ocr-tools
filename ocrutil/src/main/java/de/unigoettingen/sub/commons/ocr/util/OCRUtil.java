@@ -22,8 +22,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import de.unigoettingen.sub.commons.util.file.FileExtensionsFilter;
 
@@ -54,8 +56,25 @@ public class OCRUtil {
 		}
 		return langs;
 	}
-	
-
+	/**
+	 * Parses a String for languages. Languages are represented by {@link java.util.Locale}
+	 * 
+	 * @param str
+	 *            the str
+	 * @return the Set of language
+	 */
+	public static Set<Locale> parseLang (String str) {
+		Set<Locale> langs = new HashSet<Locale>();
+		//TODO: Test this, remove the if
+		if (str.contains(",")) {
+			for (String lang : Arrays.asList(str.split(","))) {
+				langs.add(new Locale(lang));
+			}
+		} else {
+			langs.add(new Locale(str));
+		}
+		return langs;
+	}
 	/**
 	 * Gets the target directories for a given directory. It checks recursively
 	 * if any subfolder contains directories containing one of the given extensions. To use
