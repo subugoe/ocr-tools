@@ -2,23 +2,22 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 /*
 
-© 2010, SUB Göttingen. All rights reserved.
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+ © 2010, SUB Göttingen. All rights reserved.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-*/
+ */
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-
 
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
@@ -57,9 +55,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
+
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
-import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 //TODO: one Locale might represent multiple langueages: <Language>GermanNewSpelling</Language>
 
@@ -67,40 +64,51 @@ import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyTicket.class);
 
-	/** This Map contains the mapping from java.util.Locale to the Strings needed by Abbyy */
+	/**
+	 * This Map contains the mapping from java.util.Locale to the Strings needed
+	 * by Abbyy
+	 */
 	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
 
 	/** The namespace used for the AbbyyTicket files. */
 	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
 
-	/** A Map containing predefined fragments (read settings) for different formats */
+	/**
+	 * A Map containing predefined fragments (read settings) for different
+	 * formats
+	 */
 	protected final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
 
-	/** A Map containing mappings from the internal Enums to engine specific quality settings */
+	/**
+	 * A Map containing mappings from the internal Enums to engine specific
+	 * quality settings
+	 */
 	protected final static Map<OCRQuality, String> QUALITY_MAP;
 
-	/** A Map containing mappings from the internal Enums to engine specific format settings */
+	/**
+	 * A Map containing mappings from the internal Enums to engine specific
+	 * format settings
+	 */
 	public final static Map<OCRFormat, String> FORMAT_MAPPING;
-	
+
 	protected final static Map<OCRTextTyp, String> TEXTTYP_MAP;
-	
+
 	/** Predefined recognition parameters */
-	protected  static RecognitionParams recognitionSettings;
+	protected static RecognitionParams recognitionSettings;
 
 	/** Predefined image processing parameters */
 	protected final static ImageProcessingParams imageProcessingSettings;
 
-	//TODO: Add priorities: Low, BelowNormal, Normal, AboveNormal, High
+	// TODO: Add priorities: Low, BelowNormal, Normal, AboveNormal, High
 	protected String priority = "Normal";
-	
+
 	protected static String encoding = "UTF8";
-	
-	/**The timeout for the process */
+
+	/** The timeout for the process */
 	protected Long processTimeout = null;
-	
+
 	/** is represents the InputStream for files being read */
 	private InputStream is;
-
 
 	// The configuration.
 	protected ConfigParser config;
@@ -231,10 +239,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		LANGUAGE_MAP.put(new Locale("zh"), "Chinese");
 		/*LANGUAGE_MAP.put(new Locale("za"), "Zhuang");	*/
 
-		
-		
-		
-		
 		opts.setSavePrettyPrint();
 		opts.setSaveImplicitNamespaces(new HashMap<String, String>() {
 			{
@@ -244,44 +248,50 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		opts.setUseDefaultNamespace();
 
 		FORMAT_FRAGMENTS = new HashMap<OCRFormat, OutputFileFormatSettings>();
-		XMLExportSettings xmlSettings = XMLExportSettings.Factory.newInstance(opts);
+		XMLExportSettings xmlSettings = XMLExportSettings.Factory
+				.newInstance(opts);
 
 		xmlSettings.setWriteCharactersFormatting(true);
 		xmlSettings.setWriteCharAttributes(true);
 
-		FORMAT_FRAGMENTS.put(OCRFormat.XML, (OutputFileFormatSettings) xmlSettings.changeType(OutputFileFormatSettings.type));
+		FORMAT_FRAGMENTS.put(OCRFormat.XML,
+				(OutputFileFormatSettings) xmlSettings
+						.changeType(OutputFileFormatSettings.type));
 
-		PDFExportSettings pdfSettings = PDFExportSettings.Factory.newInstance(opts);
+		PDFExportSettings pdfSettings = PDFExportSettings.Factory
+				.newInstance(opts);
 
 		pdfSettings.setPictureResolution(BigInteger.valueOf(300));
 		pdfSettings.setQuality(BigInteger.valueOf(50));
 		pdfSettings.setUseImprovedCompression(true);
 		pdfSettings.setExportMode("ImageOnText");
 
-		FORMAT_FRAGMENTS.put(OCRFormat.PDF, (OutputFileFormatSettings) pdfSettings.changeType(OutputFileFormatSettings.type));
+		FORMAT_FRAGMENTS.put(OCRFormat.PDF,
+				(OutputFileFormatSettings) pdfSettings
+						.changeType(OutputFileFormatSettings.type));
 
-		TextExportSettings txtSettings = TextExportSettings.Factory.newInstance(opts);
+		TextExportSettings txtSettings = TextExportSettings.Factory
+				.newInstance(opts);
 
 		txtSettings.setEncodingType(encoding);
-		encoding = txtSettings.getEncodingType();
-		
-		FORMAT_FRAGMENTS.put(OCRFormat.TXT, (OutputFileFormatSettings) txtSettings.changeType(OutputFileFormatSettings.type));
+
+		FORMAT_FRAGMENTS.put(OCRFormat.TXT,
+				(OutputFileFormatSettings) txtSettings
+						.changeType(OutputFileFormatSettings.type));
 
 		FORMAT_FRAGMENTS.put(OCRFormat.DOC, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.HTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.PDFA, null);
 
-		//This is one of Thorough, Balanced or Fast
+		// This is one of Thorough, Balanced or Fast
 		QUALITY_MAP = new HashMap<OCRQuality, String>();
 		QUALITY_MAP.put(OCRQuality.BEST, "Thorough");
 		QUALITY_MAP.put(OCRQuality.BALANCED, "Balanced");
 		QUALITY_MAP.put(OCRQuality.FAST, "Fast");
 
-		
-		
 		recognitionSettings = RecognitionParams.Factory.newInstance();
-		//Might be Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B, Gothic
+		// Might be Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B, Gothic
 		TEXTTYP_MAP = new HashMap<OCRTextTyp, String>();
 		TEXTTYP_MAP.put(OCRTextTyp.Normal, "Normal");
 		TEXTTYP_MAP.put(OCRTextTyp.Typewriter, "Typewriter");
@@ -290,11 +300,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		TEXTTYP_MAP.put(OCRTextTyp.OCR_B, "OCR_B");
 		TEXTTYP_MAP.put(OCRTextTyp.MICR_E13B, "MICR_E13B");
 		TEXTTYP_MAP.put(OCRTextTyp.Gothic, "Gothic");
-		
-		
 
 		imageProcessingSettings = ImageProcessingParams.Factory.newInstance();
-		
+
 		FORMAT_MAPPING = new HashMap<OCRFormat, String>();
 		FORMAT_MAPPING.put(OCRFormat.DOC, "DOC");
 		FORMAT_MAPPING.put(OCRFormat.HTML, "HTML");
@@ -320,12 +328,13 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		this(url.openStream());
 	}
 
-	public void parseTicket () throws MalformedURLException {
-		//TODO: Finish this method
+	public void parseTicket() throws MalformedURLException {
+		// TODO: Finish this method
 		XmlOptions options = new XmlOptions();
-		// Set the namespace 
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE));
-		// Load the Xml 
+		// Set the namespace
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("",
+				NAMESPACE));
+		// Load the Xml
 		XmlTicketDocument ticketDoc = null;
 		try {
 			ticketDoc = XmlTicketDocument.Factory.parse(is, options);
@@ -346,7 +355,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		Map<OCRFormat, OCROutput> outputs = new HashMap<OCRFormat, OCROutput>();
 		for (OutputFileFormatSettings offs : params.getExportFormatList()) {
 			if (offs.isSetOutputFileFormat()) {
-				OCRFormat format = OCRFormat.parseOCRFormat(offs.getOutputFileFormat());
+				OCRFormat format = OCRFormat.parseOCRFormat(offs
+						.getOutputFileFormat());
 				String location = offs.getOutputLocation();
 				AbbyyOCROutput aoo = new AbbyyOCROutput();
 				aoo.setRemoteLocation(location);
@@ -356,9 +366,10 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		setOcrOutputs(outputs);
 	}
 
-	public synchronized void write (final OutputStream out, final String identifier, OCRProcessMetadata ocrProcessMetadata) throws IOException {
+	public synchronized void write(final OutputStream out,
+			final String identifier) throws IOException {
 
-		//Sanity checks
+		// Sanity checks
 		if (out == null || config == null) {
 			logger.error("OutputStream and / or configuration is not set!");
 			throw new IllegalStateException();
@@ -367,50 +378,53 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			throw new IllegalStateException("no outputs defined!");
 		}
 
-		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.newInstance(opts);
+		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory
+				.newInstance(opts);
 		XmlTicket ticket = ticketDoc.addNewXmlTicket();
 
 		if (processTimeout != null) {
 			ticket.setOCRTimeout(BigInteger.valueOf(processTimeout));
 		}
-		String namingsrule = null;
+
 		for (OCRImage aoi : getOcrImages()) {
 			InputFile inputFile = ticket.addNewInputFile();
 			String file = ((AbbyyOCRImage) aoi).getRemoteFileName();
 			inputFile.setName(file);
-			if(namingsrule == null) namingsrule = file;
+
 		}
-		//Use predefined variables here
-		ImageProcessingParams imageProcessingParams = (ImageProcessingParams) imageProcessingSettings.copy();
+		// Use predefined variables here
+		ImageProcessingParams imageProcessingParams = (ImageProcessingParams) imageProcessingSettings
+				.copy();
 		if (config.convertToBW) {
 			imageProcessingParams.setConvertToBWFormat(true);
 		}
 		imageProcessingParams.setDeskew(false);
 		ticket.setImageProcessingParams(imageProcessingParams);
-		
+
 		if (priority != null) {
 			ticket.setPriority(priority);
 		}
-	
-		if(texttyp != null){
-			recognitionSettings.setTextTypeArray(new String[] {TEXTTYP_MAP.get(getTextTyp())});
+
+		if (texttyp != null) {
+			recognitionSettings.setTextTypeArray(new String[] { TEXTTYP_MAP
+					.get(getTextTyp()) });
 		}
-		//Use predefined variables here
-		RecognitionParams recognitionParams = (RecognitionParams) recognitionSettings.copy();
+		// Use predefined variables here
+		RecognitionParams recognitionParams = (RecognitionParams) recognitionSettings
+				.copy();
 
 		if (langs == null) {
 			throw new OCRException("No language given!");
 		}
-		// Locale Liste for the OCRProcessMetadaten 
-		List<Locale> metaDatenLangs = new ArrayList<Locale>() ;
+
 		for (Locale l : langs) {
 			recognitionParams.addLanguage(LANGUAGE_MAP.get(l));
-			metaDatenLangs.add(l);		
+
 		}
-		
+
 		recognitionParams.setRecognitionQuality(QUALITY_MAP.get(quality));
-			
-		//Add default languages from config
+
+		// Add default languages from config
 		if (config.defaultLangs != null) {
 			for (Locale l : config.defaultLangs) {
 				if (!langs.contains(l)) {
@@ -420,7 +434,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		}
 		ticket.setRecognitionParams(recognitionParams);
 		ExportParams exportParams = ticket.addNewExportParams();
-		//TODO: check if we need to set a different string if we want seperate files
+		// TODO: check if we need to set a different string if we want seperate
+		// files
 		if (!config.singleFile) {
 			exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
 		}
@@ -428,47 +443,35 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		if (getOcrOutputs() == null || getOcrOutputs().size() < 1) {
 			throw new OCRException("No export options given!");
 		}
-		
-		//setEncoding and sets Locale Liste to the OCRProcessMetadaten 
-		if (ocrProcessMetadata != null){
-			ocrProcessMetadata.setEncoding(encoding);
-			ocrProcessMetadata.setLanguages(metaDatenLangs);
-		}
-				
-		//Removed the array stuff here since the continue statements below made trouble by adding empty elements to the list.
+
+		// Removed the array stuff here since the continue statements below made
+		// trouble by adding empty elements to the list.
 		List<OutputFileFormatSettings> settings = new ArrayList<OutputFileFormatSettings>();
-		
+
 		Map<OCRFormat, OCROutput> output = getOcrOutputs();
 		for (OCRFormat of : output.keySet()) {
-			//the metadata is generated by default, no need to add it to the ticket
+			// the metadata is generated by default, no need to add it to the
+			// ticket
 			if (of == OCRFormat.METADATA) {
 				continue;
 			}
-			//setFormat whether XML or text as a format were chosen
-			if (ocrProcessMetadata != null){
-				if (of == OCRFormat.TXT || of == OCRFormat.XML){
-					ocrProcessMetadata.setFormat(FORMAT_MAPPING.get(of));
-				}
-			}
-			
-			
+
 			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(of);
-			//The server can't handle this
+			// The server can't handle this
 			if (exportFormat == null) {
-				logger.info("The server can't hand le the format " + of.toString() + ", ignoring it.");
+				logger.info("The server can't hand le the format "
+						+ of.toString() + ", ignoring it.");
 				continue;
 			}
 			exportFormat.setOutputFlowType("SharedFolder");
 			exportFormat.setOutputFileFormat(FORMAT_MAPPING.get(of));
-		
+
 			AbbyyOCROutput aoo = (AbbyyOCROutput) output.get(of);
-			//TODO: Check what we need to set in single file mode
-			if(aoo.getRemoteFilename().equals(identifier + "." + of.toString().toLowerCase())){
-			exportFormat.setNamingRule(aoo.getRemoteFilename());
-	//		exportFormat.setNamingRule(namingsrule.substring(0,namingsrule.lastIndexOf("-")) + "." + of.toString().toLowerCase());
-//   		exportFormat.setNamingRule(identifier + "." + of.toString().toLowerCase());
-	//		exportFormat.setNamingRule(getName()+ "." + of.toString().toLowerCase());
-			
+			// TODO: Check what we need to set in single file mode
+			if (aoo.getRemoteFilename().equals(
+					identifier + "." + of.toString().toLowerCase())) {
+				exportFormat.setNamingRule(aoo.getRemoteFilename());
+
 			}
 			if (aoo.getRemoteLocation() == null) {
 				exportFormat.setOutputLocation(config.serverOutputLocation);
@@ -476,28 +479,32 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 				exportFormat.setOutputLocation(aoo.getRemoteLocation());
 			}
 			settings.add(exportFormat);
-			//If single files should be created, the result files need to be added to the OCROuput object
+			// If single files should be created, the result files need to be
+			// added to the OCROuput object
 
 			if (config.singleFile) {
 				for (OCRImage aoi : getOcrImages()) {
-					String file = ((AbbyyOCRImage) aoi).getRemoteUri().toString() + "." + of.toString().toLowerCase();
+					String file = ((AbbyyOCRImage) aoi).getRemoteUri()
+							.toString() + "." + of.toString().toLowerCase();
 					try {
 						aoo.setSingleFile(true);
 						aoo.addResultFragment(new URI(file));
 					} catch (URISyntaxException e) {
-						logger.error("Error while setting URI in single file mode", e);
+						logger.error(
+								"Error while setting URI in single file mode",
+								e);
 						throw new OCRException(e);
 					}
 				}
-			} 
+			}
 		}
-		
+
 		for (int j = 0; j < settings.size(); j++) {
 			exportParams.addNewExportFormat();
 			exportParams.setExportFormatArray(j, settings.get(j));
 		}
 
-		ticketDoc.save(out, opts);	
+		ticketDoc.save(out, opts);
 		if (config.validateTicket && !ticket.validate()) {
 			logger.error("AbbyyTicket not valid!");
 			throw new OCRException("AbbyyTicket not valid!");
@@ -508,7 +515,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	/**
 	 * @return the processTimeout
 	 */
-	public Long getProcessTimeout () {
+	public Long getProcessTimeout() {
 		return processTimeout;
 	}
 
@@ -516,13 +523,13 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	 * @param processTimeout
 	 *            the processTimeout to set
 	 */
-	public void setProcessTimeout (Long oCRTimeOut) {
+	public void setProcessTimeout(Long oCRTimeOut) {
 		this.processTimeout = oCRTimeOut;
 	}
 
-	//TODO: Check if this is called if a List of OCRImage is set
+	// TODO: Check if this is called if a List of OCRImage is set
 	@Override
-	public void addImage (OCRImage ocrImage) {
+	public void addImage(OCRImage ocrImage) {
 		AbbyyOCRImage aoi = new AbbyyOCRImage(ocrImage);
 		String[] urlParts = ocrImage.getUri().toString().split("/");
 		if (getName() == null) {
@@ -540,5 +547,5 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	protected void setConfig(ConfigParser config) {
 		this.config = config;
 	}
-	
+
 }
