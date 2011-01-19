@@ -2,29 +2,27 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 /*
 
-Copyright 2010 SUB Goettingen. All rights reserved.
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+ Copyright 2010 SUB Goettingen. All rights reserved.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-*/
+ */
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-
 
 /**
  * The Class AbstractOCREngine is a abstract super class for {@link OCREngine}
@@ -39,14 +37,16 @@ public abstract class AbstractOCREngine implements OCREngine {
 	/** A simple list containing {@link OCRProcess} that will be processed */
 	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
 
-	//State variables
+	// State variables
 	/** Indicates if the processing of the engine has started. */
 	protected Boolean started = false;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#getOcrProcess()
 	 */
-	public List<OCRProcess> getOcrProcess () {
+	public List<OCRProcess> getOcrProcess() {
 		return ocrProcess;
 	}
 
@@ -57,7 +57,7 @@ public abstract class AbstractOCREngine implements OCREngine {
 	 * 
 	 * @return the name
 	 */
-	public abstract String getName ();
+	public abstract String getName();
 
 	/**
 	 * Gets the version of the implementation. If the implementation is just a
@@ -66,91 +66,65 @@ public abstract class AbstractOCREngine implements OCREngine {
 	 * 
 	 * @return the version
 	 */
-	public abstract String getVersion ();
+	public abstract String getVersion();
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#newOcrImage()
 	 */
-	public OCRImage newOcrImage () {
-		return new AbstractOCRImage() {
-			@Override
-			public void setUri (URI uri) {
-				super.setUri(uri);
-			}
-		};
-	}
-
-	public OCRImage newOcrImageforCLI (URI imageUri) {
+	public OCRImage newOcrImage(URI imageUri) {
 		return new AbstractOCRImage(imageUri) {
 			@Override
-			public void setUri (URI uri) {
+			public void setUri(URI uri) {
 				super.setUri(uri);
 			}
 		};
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#newOcrOutput()
 	 */
-	public OCROutput newOcrOutput () {
+	public OCROutput newOcrOutput() {
 		return new AbstractOCROutput() {
 			@Override
-			public void setUri (URI uri) {
+			public void setUri(URI uri) {
 				super.setUri(uri);
 			}
 		};
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#newOcrProcess()
 	 */
-	public OCRProcess newOcrProcess () {
+	public OCRProcess newOcrProcess() {
 		return new AbstractOCRProcess() {
 			@Override
-			public void setName (String name) {
+			public void setName(String name) {
 				super.setName(name);
 			}
 
 			@Override
-			public void addLanguage (Locale lang) {
+			public void addLanguage(Locale lang) {
 				super.addLanguage(lang);
 			}
 
 			@Override
-			public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutput) {
+			public void setOcrOutputs(Map<OCRFormat, OCROutput> ocrOutput) {
 				super.setOcrOutputs(ocrOutput);
 			}
 
 			@Override
-			public void setOcrImages (List<OCRImage> ocrImages) {
+			public void setOcrImages(List<OCRImage> ocrImages) {
 				super.setOcrImages(ocrImages);
 			}
 		};
 	}
 
-	
-	public OCRProcess newOcrProcessforCLI () {
-		return new AbstractOCRProcess(){
-			@Override
-			public void setName (String name) {
-				super.setName(name);
-			}
-
-			@Override
-			public void addLanguage (Locale lang) {
-				super.addLanguage(lang);
-			}
-
-			@Override
-			public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutput) {
-				super.setOcrOutputs(ocrOutput);
-			}
-
-			@Override
-			public void setOcrImages (List<OCRImage> ocrImages) {
-				super.setOcrImages(ocrImages);
-			}
-		};
-	}
-	//TODO: check if we can add the getInstance stuff here
+	// TODO: check if we can add the getInstance stuff here
 
 }
