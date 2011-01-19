@@ -20,12 +20,9 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
-
 import java.net.URI;
 import java.util.List;
 import java.util.Observable;
-
-
 
 /**
  * The Interface OCREngine is the main entry point for each engine. It also
@@ -45,7 +42,7 @@ public interface OCREngine {
 	 *            the process
 	 * @return the observable
 	 */
-	abstract public Observable recognize (OCRProcess process);
+	abstract public Observable recognize(OCRProcess process);
 
 	/**
 	 * Recognize the list of given OCRProcess. Throws an IllegalStateException
@@ -56,7 +53,7 @@ public interface OCREngine {
 	 * @return the observer
 	 * @see OCRProcess
 	 */
-	abstract public Observable recognize ();
+	abstract public Observable recognize();
 
 	/**
 	 * Stops a running recognizer. Returns false if the recognizer isn't running
@@ -65,7 +62,7 @@ public interface OCREngine {
 	 * @return true if the engine starts to shut down or already is shut down,
 	 *         false otherwise.
 	 */
-	abstract public Boolean stop ();
+	abstract public Boolean stop();
 
 	/**
 	 * Adds a OCR process. The returned {@link java.util.Observable} can be used
@@ -77,7 +74,7 @@ public interface OCREngine {
 	 * @see OCRProcess
 	 */
 
-	abstract public Observable addOcrProcess (OCRProcess ocrp);
+	abstract public Observable addOcrProcess(OCRProcess ocrp);
 
 	/**
 	 * Adds OCR process.
@@ -85,7 +82,7 @@ public interface OCREngine {
 	 * @return the OCR process
 	 * @see OCRProcess
 	 */
-	abstract public List<OCRProcess> getOcrProcess ();
+	abstract public List<OCRProcess> getOcrProcess();
 
 	/**
 	 * New OCRImage. This method should return an engine specific implementation
@@ -105,27 +102,7 @@ public interface OCREngine {
 	 * @return the new created OCR image
 	 * @see OCRImage
 	 */
-	abstract public OCRImage newOcrImage ();
-	
-	/**
-	 * New OCRImage. This method should return an engine specific implementation
-	 * of {@link OCRImage}. Lazy implementers can choose to return an anonymous
-	 * class that extends {@link AbstractOCRImage}, if it fits their needs:
-	 * 
-	 * <pre>
-	 * {@code 
-	 * return new AbstractOCRImage(imageUri) {
-	 * @Override
-	 * public void setUri (URI uri) {
-	 * super.setUri(uri);
-	 * }
-	 * };
-	 * }
-	 * </pre>
-	 * @return the new created OCR image
-	 * @see OCRImage
-	 */
-	abstract public OCRImage newOcrImageforCLI (URI imageUri);
+	abstract public OCRImage newOcrImage(URI imageUri);
 
 	/**
 	 * New OCRProcess. This method should return an engine specific
@@ -156,40 +133,8 @@ public interface OCREngine {
 	 * @return the new created OCR process
 	 * @see OCRProcess
 	 */
-	abstract public OCRProcess newOcrProcess ();
+	abstract public OCRProcess newOcrProcess();
 
-	/**
-	 * New OCRProcess. This method should return an engine specific
-	 * implementation of {@link OCRProcess}. Lazy implementers can choose to
-	 * return an anonymous class that extends {@link AbstractOCRProcess}, if it
-	 * fits their needs:
-	 * 
-	 * <pre>
-	 * {@code 
-	 * return new AbstractOCRProcess() {
-	 * 	@Override
-	 * 	public void setName (String name) {
-	 * 		super.setName(name);
-	 * 	}
-	 * 	public void addLanguage (Locale lang) {
-	 * 		super.addLanguage(lang);
-	 * 	}
-	 * 	public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutput) {
-	 * 		super.setOcrOutputs(ocrOutput);
-	 * 	}
-	 * 	public void setOcrImages (List<OCRImage> ocrImages) {
-	 * 		super.setOcrImages(ocrImages);
-	 * 	}
-	 * };
-	 * }
-	 * </pre>
-	 * 
-	 * @return the new created OCR process
-	 * @see OCRProcess
-	 */
-	abstract public OCRProcess newOcrProcessforCLI ();
-	
-	
 	/**
 	 * New OCROutput. This method should return an engine specific
 	 * implementation of {@link OCROutput}. Lazy implementers can choose to
@@ -209,8 +154,7 @@ public interface OCREngine {
 	 * @return the new created OCR output
 	 * @see OCROutput
 	 */
-	abstract public OCROutput newOcrOutput ();
-
+	abstract public OCROutput newOcrOutput();
 
 	/**
 	 * Inits the OCREngine. This an be used to check if the engine is
@@ -222,6 +166,6 @@ public interface OCREngine {
 	 * 
 	 * @return true if the engine could be initialized, false otherwise
 	 */
-	abstract public Boolean init ();
-	
+	abstract public Boolean init();
+
 }
