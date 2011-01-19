@@ -50,17 +50,19 @@ import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
  * {@link ConfigParser.setHotfolderClass()}.
  */
 
-
-public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
+public class AbbyyServerOCREngine extends AbstractOCREngine implements
+		OCREngine {
 	public static final String name = "0.5";
-	public static final String version = AbbyyServerOCREngine.class.getSimpleName();
+	public static final String version = AbbyyServerOCREngine.class
+			.getSimpleName();
 
 	// The max threads.
 	protected static Integer maxThreads;
 	// protected ExecutorService pool = new OCRExecuter(maxThreads);
-	
+
 	/** The Constant logger. */
-	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngine.class);
+	final static Logger logger = LoggerFactory
+			.getLogger(AbbyyServerOCREngine.class);
 
 	// The configuration.
 	protected static ConfigParser config;
@@ -75,7 +77,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 
 	// OCR Processes
 	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
-	
+
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
@@ -86,7 +88,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 */
 	private AbbyyServerOCREngine() throws ConfigurationException {
 		config = new ConfigParser().parse();
-		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass, config);
+		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
+				config);
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
 	}
@@ -95,31 +98,21 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 * Start the threadPooling
 	 * 
 	 */
-	protected void start () {
+	protected void start() {
 		started = true;
-		/*
-		if (checkServerState) {
-			try {
-				checkServerState();
-			} catch (IOException e) {
-				logger.error("got IOException during processing", e);
-				throw new OCRException(e);
-			}
-		}
-		*/
 		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder);
 
 		for (OCRProcess process : getOcrProcess()) {
 			AbbyyOCRProcess p = (AbbyyOCRProcess) process;
-			
+
 			processes.add(p);
-			
+
 		}
-		//pool.e
-		
-		//TODO: Try to use only one loop
-		//TODO: check if we really need the Queue here
-		for (AbbyyOCRProcess p: processes) {
+		// pool.e
+
+		// TODO: Try to use only one loop
+		// TODO: check if we really need the Queue here
+		for (AbbyyOCRProcess p : processes) {
 			pool.execute(p);
 		}
 
@@ -139,7 +132,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 * 
 	 */
 
-	public static AbbyyServerOCREngine getInstance () {
+	public static AbbyyServerOCREngine getInstance() {
 
 		if (_instance == null) {
 			try {
@@ -152,41 +145,62 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		return _instance;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine#newOcrImage(java
+	 * .net.URI)
+	 */
 	@Override
-	public OCRImage newOcrImage () {
-		return new AbbyyOCRImage();
-	}
-	@Override
-	public OCRImage newOcrImageforCLI (URI imageUri) {
+	public OCRImage newOcrImage(URI imageUri) {
 		return new AbbyyOCRImage(imageUri);
 	}
-	
-	@Override
-	public OCRProcess newOcrProcess () {
-		return new AbbyyOCRProcess(config, hotfolder);
-	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine#newOcrProcess()
+	 */
 	@Override
-	public OCRProcess newOcrProcessforCLI () {
+	public OCRProcess newOcrProcess() {
 		return new AbbyyOCRProcess(config);
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine#newOcrOutput()
+	 */
 	@Override
-	public OCROutput newOcrOutput () {
+	public OCROutput newOcrOutput() {
 		return new AbbyyOCROutput();
 	}
-	
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize(de.uni_goettingen
+	 * .sub.commons.ocr.api.OCRProcess)
+	 */
 	@Override
-	public Observable recognize (OCRProcess process) {
+	public Observable recognize(OCRProcess process) {
 		Observable o = addOcrProcess(process);
-		//TODO: Get an Observer from somewhere, probably use a Future
+		// TODO: Get an Observer from somewhere, probably use a Future
 		recognize();
 		return o;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize()
+	 */
 	@Override
-	public Observable recognize () {
+	public Observable recognize() {
 		if (!started && !processes.isEmpty()) {
 			start();
 		} else if (processes.isEmpty()) {
@@ -194,10 +208,16 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		}
 		return null;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#addOcrProcess(de.
+	 * uni_goettingen.sub.commons.ocr.api.OCRProcess)
+	 */
 	@Override
-	public Observable addOcrProcess (OCRProcess process) {
-		//TODO: Check if this instanceof works as expected	
+	public Observable addOcrProcess(OCRProcess process) {
+		// TODO: Check if this instanceof works as expected
 		if (process instanceof AbbyyOCRProcess) {
 			processes.add((AbbyyOCRProcess) process);
 		} else {
@@ -205,50 +225,63 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		}
 		return null;
 	}
-	
 
-	public static AbbyyOCRProcess createProcessFromDir (File directory, String extension) {
+	/**
+	 * Creates the process from directory.
+	 * 
+	 * @param directory
+	 *            the directory
+	 * @param extension
+	 *            the extension
+	 * @return the abbyy ocr process
+	 */
+	public static AbbyyOCRProcess createProcessFromDir(File directory,
+			String extension) {
 		AbbyyOCRProcess ap = new AbbyyOCRProcess(config);
-		List<File> imageDirs = OCRUtil.getTargetDirectories(directory, extension);
+		List<File> imageDirs = OCRUtil.getTargetDirectories(directory,
+				extension);
 
 		for (File id : imageDirs) {
 			if (imageDirs.size() > 1) {
-				logger.error("Directory " + directory.getAbsolutePath() + " contains more then one image directories");
-				throw new OCRException("createProcessFromDir can currently create only one AbbyyOCRProcess!");
+				logger.error("Directory " + directory.getAbsolutePath()
+						+ " contains more then one image directories");
+				throw new OCRException(
+						"createProcessFromDir can currently create only one AbbyyOCRProcess!");
 			}
 			String jobName = id.getName();
 			for (File imageFile : OCRUtil.makeFileList(id, extension)) {
 				ap.setName(jobName);
-				//Remote URL isn't set here because we don't know it yet. 
+				// Remote URL isn't set here because we don't know it yet.
 				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI());
 				aoi.setSize(imageFile.length());
 				ap.addImage(aoi);
 			}
-			ap.processTimeout = (long) ap.getOcrImages().size() * ap.config.maxMillisPerFile;
+			ap.processTimeout = (long) ap.getOcrImages().size()
+					* ap.config.maxMillisPerFile;
 		}
 
 		return ap;
 	}
-	
+
 	@Override
-	public Boolean init () {
-		//TODO: check server connection here
+	public Boolean init() {
+		// TODO: check server connection here
 		return true;
 	}
 
 	@Override
-	public Boolean stop () {
+	public Boolean stop() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getName () {
+	public String getName() {
 		return name;
 	}
 
 	@Override
-	public String getVersion () {
+	public String getVersion() {
 		return version;
 	}
 
