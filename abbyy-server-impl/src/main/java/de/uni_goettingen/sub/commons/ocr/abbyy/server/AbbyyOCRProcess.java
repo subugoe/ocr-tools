@@ -2,21 +2,21 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 /*
 
-Copyright 2010 SUB Goettingen. All rights reserved.
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+ Copyright 2010 SUB Goettingen. All rights reserved.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-*/
+ */
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,8 +34,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -58,7 +59,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
-import de.uni_goettingen.sub.commons.ocr.api.SerializerTextMD;
+
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
@@ -66,17 +67,22 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 /**
  * The Class AbbyyOCRProcess.
  */
-public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable {
+public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
+		Runnable {
 
-	//TODO: Make sure that the Executor reads the size and count of the remote server
-	//TODO: Save the stats of the remote system in a hidden file there, use the SharedHotfolder interface for this
-	//TODO: add a locking method to the hotfolder, use the SharedHotfolder interface for this
-	//TODO: make the priority configurable
+	// TODO: Make sure that the Executor reads the size and count of the remote
+	// server
+	// TODO: Save the stats of the remote system in a hidden file there, use the
+	// SharedHotfolder interface for this
+	// TODO: add a locking method to the hotfolder, use the SharedHotfolder
+	// interface for this
+	// TODO: make the priority configurable
 
 	// The Constant logger.
-	public final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcess.class);
+	public final static Logger logger = LoggerFactory
+			.getLogger(AbbyyOCRProcess.class);
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
-	//TODO: Use static fields from the engine class here.
+	// TODO: Use static fields from the engine class here.
 	// The server url.
 	protected URI serverUri;
 
@@ -104,11 +110,11 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	protected Hotfolder hotfolder;
 
 	protected XmlParser xmlParser;
-	protected SerializerTextMD serializerTextMD;
+
 	protected OCRProcessMetadata ocrProcessMetadata;
-	protected XmlResultDocument xmlResultDocument; 
+	protected XmlResultDocument xmlResultDocument;
 	protected DocumentDocument xmlExportDocument;
-	protected XmlResult xmlResultEngine ;
+	protected XmlResult xmlResultEngine;
 	protected Document xmlExport;
 	private Long maxSize;
 
@@ -118,7 +124,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 	private Long totalFileSize;
 	static Object monitor;
-
 
 	protected AbbyyOCRProcess(ConfigParser config, Hotfolder hotfolder) {
 		super();
@@ -130,20 +135,21 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	protected AbbyyOCRProcess(ConfigParser config) {
 		super();
 		this.config = config;
-		ocrProcessMetadata = new OCRProcessMetadataImpl();
-		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass, config);
-		init();	
+		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
+		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
+				config);
+		init();
 		monitor = new Object();
 
 	}
 
-	private void init () {
+	private void init() {
 		if (!config.isParsed()) {
-			//config = config.parse();
+			// config = config.parse();
 			throw new IllegalStateException();
 		}
 
-		//Set constrains
+		// Set constrains
 		maxSize = config.getMaxSize();
 		maxFiles = config.getMaxFiles();
 
@@ -161,28 +167,45 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	protected AbbyyOCRProcess(OCRProcess process, ConfigParser config) {
 		super(process);
 		this.config = config;
-		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass, config);
+		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
+				config);
 		init();
 		throw new NotImplementedException("This constructor isn't finished");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
-	public void run () {
-		
+	public void run() {
+
 		startTime = System.currentTimeMillis();
 
 		if (hotfolder == null) {
 			throw new IllegalStateException("No Hotfolder set!");
 		}
+		// setencoding for ocrProcessMetadata
+		if (encoding.equals("UTF8")) {
+			ocrProcessMetadata.setEncoding("UTF-8");
+		} else
+			ocrProcessMetadata.setEncoding(encoding);
+		// set Language for ocrProcessMetadata
+		if (langs != null) {
+			setLanguageforMetadata(langs);
+		}
 
-		//If we use the static method to create a process some fields aren't set correctly (remoteUri, remoteFileName)
+		// If we use the static method to create a process some fields aren't
+		// set correctly (remoteUri, remoteFileName)
 		for (OCRImage image : getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) image;
 			String remoteFileName = aoi.getUri().toString();
-			remoteFileName = name + "-" + remoteFileName.substring(remoteFileName.lastIndexOf("/") + 1, remoteFileName.length());
+			remoteFileName = name
+					+ "-"
+					+ remoteFileName.substring(
+							remoteFileName.lastIndexOf("/") + 1,
+							remoteFileName.length());
 			if (aoi.getRemoteFileName() == null) {
 				aoi.setRemoteFileName(remoteFileName);
 			}
@@ -202,40 +225,43 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 		}
 
-		//Add the metadata descriptor (result file) to the outputs
+		// Add the metadata descriptor (result file) to the outputs
 		addMetadataOutput();
 
 		try {
-			//Set the file names and URIs
+			// Set the file names and URIs
 			String tmpTicket = name + ".xml";
 			ticketUri = new URI(inputUri.toString() + tmpTicket);
 			errorTicketUri = new URI(errorUri.toURL() + tmpTicket);
-			errorResultUri = new URI(errorUri.toURL() + tmpTicket + config.reportSuffix);
+			errorResultUri = new URI(errorUri.toURL() + tmpTicket
+					+ config.reportSuffix);
 
 			if (config.dryRun) {
-				//No interaction with the server and IO wanted, just return here
+				// No interaction with the server and IO wanted, just return
+				// here
 				logger.info("Process is in dry run mode, don't write anything");
 				return;
-			}			
-			//Create ticket, copy files and ticket
-			//Write ticket to temp file
-			synchronized ( monitor){
-			logger.debug("Creating AbbyyTicket for " + name);
-			OutputStream os = hotfolder.createTmpFile(tmpTicket);
-			write(os, name, ocrProcessMetadata);
-			os.close();
 			}
-			
+			// Create ticket, copy files and ticket
+			// Write ticket to temp file
+			synchronized (monitor) {
+				logger.debug("Creating AbbyyTicket for " + name);
+				OutputStream os = hotfolder.createTmpFile(tmpTicket);
+				write(os, name);
+				os.close();
+			}
+
 			logger.debug("Cleaning Server");
-			//Clean the server here to avoid GUIDs as filenames
+			// Clean the server here to avoid GUIDs as filenames
 			cleanOutputs(getOcrOutputs());
-			//Remove all files that are part of this process, they shouldn't exist yet.
+			// Remove all files that are part of this process, they shouldn't
+			// exist yet.
 			cleanImages(convertList(getOcrImages()));
 
-			//Copy the ticket
+			// Copy the ticket
 			logger.debug("Copying tickt to server");
 			hotfolder.copyTmpFile(tmpTicket, ticketUri);
-			//Copy the files
+			// Copy the files
 			logger.debug("Coping imges to server.");
 			copyFilesToServer(getOcrImages());
 
@@ -244,7 +270,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				return;
 			}
 
-			//Wait for results if needed
+			// Wait for results if needed
 			Long minWait = getOcrImages().size() * config.minMillisPerFile;
 			Long maxWait = getOcrImages().size() * config.maxMillisPerFile;
 			logger.info("Waiting " + minWait + " milli seconds for results");
@@ -252,46 +278,38 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 			try {
 				Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
-				logger.debug("Waking up, waiting another " + (maxWait - minWait) + " milli seconds for results");
+				logger.debug("Waking up, waiting another "
+						+ (maxWait - minWait) + " milli seconds for results");
 				if (waitForResults(outputs, maxWait)) {
-					//Everything should be ok, get the files
+					// Everything should be ok, get the files
 					for (OCRFormat f : outputs.keySet()) {
-						final AbbyyOCROutput o = (AbbyyOCROutput) outputs.get(f);
+						final AbbyyOCROutput o = (AbbyyOCROutput) outputs
+								.get(f);
 						if (o.isSingleFile()) {
 							URI remoteUri = o.getRemoteUri();
 							URI localUri = o.getUri();
-							//TODO Erkennungsrat XMLParser
-							if((remoteUri.toString()).endsWith("xml"+ config.reportSuffix)){
-							//	InputStream isResult = hotfolder.openInputStream(remoteUri);
-								XmlOptions options = new XmlOptions();
-								// Set the namespace 
-								options.setLoadSubstituteNamespaces(Collections.singletonMap("", NAMESPACE));		
-								xmlResultDocument = XmlResultDocument.Factory.parse(hotfolder.openInputStream(remoteUri),options);
-								xmlResultEngine = xmlResultDocument.getXmlResult();
-								BigDecimal totalChar = new BigDecimal(xmlResultEngine.getStatistics().getTotalCharacters());
-								BigDecimal totalUncerChar = new BigDecimal(xmlResultEngine.getStatistics().getUncertainCharacters());
-							    ocrProcessMetadata.setCharacterAccuracy(totalChar, totalUncerChar);
-							    //	    ocrProcessMetadata.setCharacterAccuracy(prozent);
-							    System.out.println(ocrProcessMetadata.getCharacterAccuracy());					
+
+							if ((remoteUri.toString()).endsWith("xml"
+									+ config.reportSuffix)) {
+								parseXmlResult(remoteUri);
 							}
-							if((remoteUri.toString()).endsWith(name + ".xml")){
-								xmlExportDocument = DocumentDocument.Factory.parse(hotfolder.openInputStream(remoteUri));
-								xmlExport = xmlExportDocument.getDocument();
-								ocrProcessMetadata.setDocumentType(xmlExport.toString());
-								ocrProcessMetadata.setSoftwareName(xmlExport.getProducer());
-								ocrProcessMetadata.setSoftwareVersion(xmlExport.getProducer());
+							if ((remoteUri.toString()).endsWith(name + ".xml")) {
+								parseXmlExport(remoteUri);
 							}
-							try{
-								logger.debug("Copy from " + remoteUri + " to " + localUri);
-								hotfolder.copyFile(remoteUri, localUri);							}catch(IOException e){
-								logger.debug("another try Copy from " + remoteUri + " to " + localUri);
+							try {
+								logger.debug("Copy from " + remoteUri + " to "
+										+ localUri);
+								hotfolder.copyFile(remoteUri, localUri);
+							} catch (IOException e) {
+								logger.debug("another try Copy from "
+										+ remoteUri + " to " + localUri);
 								hotfolder.copyFile(remoteUri, localUri);
 							}
-							
+
 							logger.debug("Deleting remote file " + remoteUri);
 							hotfolder.deleteIfExists(remoteUri);
 						} else {
-							//The results are fragmented, merge them
+							// The results are fragmented, merge them
 							mergeResult(f, o);
 						}
 					}
@@ -303,35 +321,32 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				failed = true;
 
 				logger.debug("Trying to delete files of the failed process");
-				//Clean server, to reclaim storage
+				// Clean server, to reclaim storage
 				cleanImages(convertList(getOcrImages()));
 				cleanOutputs(getOcrOutputs());
-				//Delete the error metadata
+				// Delete the error metadata
 				hotfolder.deleteIfExists(ticketUri);
 				hotfolder.deleteIfExists(errorTicketUri);
-				
-				//Error Reports 
+
+				// Error Reports
 				logger.debug("Trying to parse file" + errorResultUri);
-				if(hotfolder.exists(errorResultUri)){
-				xmlParser = new XmlParser();
-				logger.debug("Trying to parse EXISTS file" + errorResultUri);
-				InputStream is = new FileInputStream(new File(errorResultUri.toString()));
-				xmlParser.xmlresultErrorparse(is, name);
-				hotfolder.deleteIfExists(errorResultUri);
+				if (hotfolder.exists(errorResultUri)) {
+					xmlParser = new XmlParser();
+					logger.debug("Trying to parse EXISTS file" + errorResultUri);
+					InputStream is = new FileInputStream(new File(
+							errorResultUri.toString()));
+					xmlParser.xmlresultErrorparse(is, name);
+					hotfolder.deleteIfExists(errorResultUri);
 				}
 				endTime = System.currentTimeMillis();
 				ocrProcessMetadata.setDuration(getDuration());
-			} /*catch (XmlException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/ catch (XmlException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		} catch (XMLStreamException e) {
-			//Set failed here since the results isn't worth much without metadata
+			// Set failed here since the results isn't worth much without
+			// metadata
 			failed = true;
-			logger.error("XML can not Parse, Missing Error Reports for " + name + " : ", e);
+			logger.error("XML can not Parse, Missing Error Reports for " + name
+					+ " : ", e);
 			endTime = System.currentTimeMillis();
 			ocrProcessMetadata.setDuration(getDuration());
 		} catch (IOException e) {
@@ -341,7 +356,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			ocrProcessMetadata.setDuration(getDuration());
 		} catch (InterruptedException e) {
 			failed = true;
-			logger.error("OCR Process was interrupted while coping files to server or waiting for result.", e);
+			logger.error(
+					"OCR Process was interrupted while coping files to server or waiting for result.",
+					e);
 			endTime = System.currentTimeMillis();
 			ocrProcessMetadata.setDuration(getDuration());
 		} catch (URISyntaxException e) {
@@ -361,35 +378,31 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				cleanOutputs(getOcrOutputs());
 				hotfolder.deleteIfExists(errorResultUri);
 				hotfolder.deleteIfExists(ticketUri);
-				if (outputResultUri != null){
+				if (outputResultUri != null) {
 					hotfolder.deleteIfExists(outputResultUri);
 				}
 				endTime = System.currentTimeMillis();
 				ocrProcessMetadata.setDuration(getDuration());
-				//ocrProcessMetadata.setLinebreak("LF");
-				//ocrProcessMetadata.setTextNote("textNote TEST");
-				serializerTextMD = new SerializerTextMD(ocrProcessMetadata);
-				logger.debug("Creating " + name+"-textMD.xml");
-				serializerTextMD.write(new File(System.getProperty("user.dir")+ "/" +name+"-textMD.xml"));
+
 			} catch (IOException e) {
 				failed = true;
 				logger.error("Unable to clean up!", e);
 				endTime = System.currentTimeMillis();
 				ocrProcessMetadata.setDuration(getDuration());
-			}		
+			}
 		}
 	}
 
-	private void getErrorDescription () {
-		
+	private void getErrorDescription() {
+
 	}
-	
+
 	/**
 	 * Calculate size of the OCRImages representing this process
 	 * 
 	 * @return the long, size of all files
 	 */
-	public Long calculateSize () {
+	public Long calculateSize() {
 		Long size = 0l;
 		for (OCRImage i : getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) i;
@@ -398,7 +411,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 		return size;
 	}
 
-	private static List<AbbyyOCRImage> convertList (List<OCRImage> ocrImages) {
+	private static List<AbbyyOCRImage> convertList(List<OCRImage> ocrImages) {
 		List<AbbyyOCRImage> images = new LinkedList<AbbyyOCRImage>();
 		for (OCRImage i : ocrImages) {
 			images.add((AbbyyOCRImage) i);
@@ -408,18 +421,19 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 
 	/**
 	 * Checks if is failed.
-	 *
+	 * 
 	 * @return the boolean
 	 */
-	public Boolean isFailed () {
+	public Boolean isFailed() {
 		return failed;
 	}
+
 	/**
 	 * Checks if is Done.
-	 *
+	 * 
 	 * @return the boolean
 	 */
-	public Boolean isDone () {
+	public Boolean isDone() {
 		return done;
 	}
 
@@ -438,16 +452,18 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *             the interrupted exception
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 
-	private Boolean waitForResults (final Map<OCRFormat, OCROutput> results, Long timeout) throws TimeoutExcetion, InterruptedException, IOException, URISyntaxException {
+	private Boolean waitForResults(final Map<OCRFormat, OCROutput> results,
+			Long timeout) throws TimeoutExcetion, InterruptedException,
+			IOException, URISyntaxException {
 		Long start = System.currentTimeMillis();
 		Boolean check = true;
 		Boolean putfalse = false;
-		Map<URI,Boolean> expectedUris = new HashMap<URI, Boolean>();
+		Map<URI, Boolean> expectedUris = new HashMap<URI, Boolean>();
 		for (OCRFormat of : results.keySet()) {
-		  final AbbyyOCROutput o = (AbbyyOCROutput) results.get(of);
+			final AbbyyOCROutput o = (AbbyyOCROutput) results.get(of);
 			if (o.isSingleFile()) {
 				URI u = o.getRemoteUri();
 				expectedUris.put(u, false);
@@ -458,17 +474,17 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			}
 		}
 		while (check) {
-			for (URI u: expectedUris.keySet()) {
+			for (URI u : expectedUris.keySet()) {
 				if (!expectedUris.get(u) && hotfolder.exists(u)) {
 					logger.trace(u.toString() + " is available");
 					expectedUris.put(u, true);
 				} else {
 					logger.trace(u.toString() + " is not available");
 					putfalse = true;
-				}			
+				}
 			}
-			if(putfalse){
-				for (URI uri: expectedUris.keySet()){
+			if (putfalse) {
+				for (URI uri : expectedUris.keySet()) {
 					expectedUris.put(uri, false);
 				}
 			}
@@ -482,7 +498,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 				throw new TimeoutExcetion();
 			}
 			putfalse = false;
-			logger.trace("Waiting for " + config.checkInterval + " milli seconds");
+			logger.trace("Waiting for " + config.checkInterval
+					+ " milli seconds");
 			Thread.sleep(config.checkInterval);
 		}
 		return true;
@@ -502,30 +519,36 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 * @throws URISyntaxException
 	 * @throws FileSystemException
 	 */
-	private void copyFilesToServer (final List<OCRImage> fileInfos) throws InterruptedException, IOException, URISyntaxException {
+	private void copyFilesToServer(final List<OCRImage> fileInfos)
+			throws InterruptedException, IOException, URISyntaxException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (OCRImage info : fileInfos) {
 			AbbyyOCRImage image = (AbbyyOCRImage) info;
 			if (image.toString().endsWith("/")) {
-				logger.trace("Creating new directory " + image.getRemoteUri().toString() + "!");
+				logger.trace("Creating new directory "
+						+ image.getRemoteUri().toString() + "!");
 				// Create the directory
 				hotfolder.mkDir(image.getRemoteUri());
 			} else {
-				String to = image.getRemoteUri().toString().replace(config.password, "***");
-				logger.trace("Copy from " + image.getUri().toString() + " to " + to);
-				try{
+				String to = image.getRemoteUri().toString()
+						.replace(config.password, "***");
+				logger.trace("Copy from " + image.getUri().toString() + " to "
+						+ to);
+				try {
 					hotfolder.copyFile(image.getUri(), image.getRemoteUri());
-				}catch (IOException e) {
-					logger.debug("can not Copy from " + image.getUri().toString() + " to " + to);
-					logger.debug("another try Copy from " + image.getUri().toString() + " to " + to);
+				} catch (IOException e) {
+					logger.debug("can not Copy from "
+							+ image.getUri().toString() + " to " + to);
+					logger.debug("another try Copy from "
+							+ image.getUri().toString() + " to " + to);
 					hotfolder.copyFile(image.getUri(), image.getRemoteUri());
 				}
-				
+
 			}
 		}
 	}
 
-	public Long getDuration () {
+	public Long getDuration() {
 		if (done) {
 			return endTime - startTime;
 		}
@@ -540,16 +563,19 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 *             Signals that an I/O exception has occurred.
 	 */
 	@SuppressWarnings("serial")
-	public void checkServerState () throws IOException, URISyntaxException {
+	public void checkServerState() throws IOException, URISyntaxException {
 		if (maxSize != 0 && maxFiles != 0) {
 
 			// check if a slash is already appended
 			final URI serverUri = new URI(config.getServerURL());
 			Map<URI, Long> sizeMap = new HashMap<URI, Long>() {
 				{
-					put(new URI(serverUri.toString() + config.getInput() + "/"), 0l);
-					put(new URI(serverUri.toString() + config.getOutput() + "/"), 0l);
-					put(new URI(serverUri.toString() + config.getError() + "/"), 0l);
+					put(new URI(serverUri.toString() + config.getInput() + "/"),
+							0l);
+					put(new URI(serverUri.toString() + config.getOutput() + "/"),
+							0l);
+					put(new URI(serverUri.toString() + config.getError() + "/"),
+							0l);
 				}
 			};
 
@@ -565,14 +591,16 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 			logger.debug("TotalFileSize = " + totalFileSize);
 
 			if (maxFiles != 0 && totalFileCount > maxFiles) {
-				logger.error("Too much files. Max number of files is " + maxFiles + ". Number of files on server: " + totalFileCount + ".\nExit program.");
+				logger.error("Too much files. Max number of files is "
+						+ maxFiles + ". Number of files on server: "
+						+ totalFileCount + ".\nExit program.");
 				throw new IllegalStateException("Max number of files exeded");
 			}
 			if (maxSize != 0 && totalFileSize > maxSize) {
-				logger.error("Size of files is too much files. Max size of all files is " + maxSize
+				logger.error("Size of files is too much files. Max size of all files is "
+						+ maxSize
 						+ ". Size of files on server: "
-						+ totalFileSize
-						+ ".\nExit program.");
+						+ totalFileSize + ".\nExit program.");
 				throw new IllegalStateException("Max size of files exeded");
 			}
 		} else {
@@ -581,13 +609,16 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	}
 
 	@SuppressWarnings("serial")
-	private void mergeResult (final OCRFormat format, final AbbyyOCROutput output) throws IOException, MergeException {
+	private void mergeResult(final OCRFormat format, final AbbyyOCROutput output)
+			throws IOException, MergeException {
 		if (!FileMerger.isSegmentable(format)) {
-			throw new OCRException("Format " + format.toString() + " isn't mergable!");
+			throw new OCRException("Format " + format.toString()
+					+ " isn't mergable!");
 		}
-		//TODO: Use the hotfolder stuff here, since we can redirect IO in this layer
+		// TODO: Use the hotfolder stuff here, since we can redirect IO in this
+		// layer
 		OutputStream os = new FileOutputStream(new File(output.getUri()));
-		//Convert URI list to File list, the hardly readable way ;-)
+		// Convert URI list to File list, the hardly readable way ;-)
 		List<InputStream> inputFiles = new ArrayList<InputStream>() {
 			{
 				for (URI u : output.getResultFragments()) {
@@ -599,7 +630,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	}
 
 	/**
-	 * Adds the output for the given format 
+	 * Adds the output for the given format
+	 * 
 	 * @param format
 	 *            the format to add
 	 * @param output
@@ -607,17 +639,19 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 * 
 	 */
 	@Override
-	public void addOutput (OCRFormat format, OCROutput output) {
-		//Make sure we only add values, not replace existing ones
+	public void addOutput(OCRFormat format, OCROutput output) {
+		// Make sure we only add values, not replace existing ones
 		if (ocrOutputs == null) {
-			//We use a LinkedHashMap to get the order of the elements predictable
+			// We use a LinkedHashMap to get the order of the elements
+			// predictable
 			ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
 		}
 		AbbyyOCROutput aoo = new AbbyyOCROutput(output);
 		String[] urlParts = output.getUri().toString().split("/");
 		if (aoo.getRemoteUri() == null) {
 			try {
-				aoo.setRemoteUri(new URI(outputUri.toString() + urlParts[urlParts.length - 1]));
+				aoo.setRemoteUri(new URI(outputUri.toString()
+						+ urlParts[urlParts.length - 1]));
 			} catch (URISyntaxException e) {
 				logger.error("Error while setting up URIs");
 				throw new OCRException(e);
@@ -632,25 +666,37 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	}
 
 	@Override
-	public void setOcrOutputs (Map<OCRFormat, OCROutput> outputs) {
+	public void setOcrOutputs(Map<OCRFormat, OCROutput> outputs) {
+		StringBuffer sb = new StringBuffer();
 		for (OCRFormat format : outputs.keySet()) {
 			addOutput(format, outputs.get(format));
+			// set Format for ocrProcessMetadata
+			sb.append(format.toString() + " ");
 		}
+		ocrProcessMetadata.setFormat(sb.toString());
 	}
 
-	private synchronized void addMetadataOutput () {
+	private synchronized void addMetadataOutput() {
 		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
 		OCRFormat lastKey = getLastKey(outputs);
 		AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(lastKey);
 		AbbyyOCROutput metadata = new AbbyyOCROutput(out);
 
 		try {
-			//The remote file name
-			outputResultUri = new URI(out.getRemoteUri().toString().replaceAll(lastKey.toString().toLowerCase(), "xml" + config.reportSuffix));
+			// The remote file name
+			outputResultUri = new URI(out
+					.getRemoteUri()
+					.toString()
+					.replaceAll(lastKey.toString().toLowerCase(),
+							"xml" + config.reportSuffix));
 			metadata.setRemoteUri(outputResultUri);
-			
-			//The local file name
-			metadata.setUri(new URI(out.getUri().toString().replaceAll(lastKey.toString().toLowerCase(), "xml" + config.reportSuffix)));
+
+			// The local file name
+			metadata.setUri(new URI(out
+					.getUri()
+					.toString()
+					.replaceAll(lastKey.toString().toLowerCase(),
+							"xml" + config.reportSuffix)));
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs");
 			ocrProcessMetadata.setDuration(0L);
@@ -661,12 +707,15 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <K> K getLastKey (final Map<K, ?> map) {
-		//A stupid hack to get the last key, maybe there is something better in commons-lang 
+	private static <K> K getLastKey(final Map<K, ?> map) {
+		// A stupid hack to get the last key, maybe there is something better in
+		// commons-lang
 		if (!(map instanceof LinkedHashMap)) {
-			throw new IllegalArgumentException("Map needs to be of type LinkedHashMap, otherwise the order isn't predictable");
+			throw new IllegalArgumentException(
+					"Map needs to be of type LinkedHashMap, otherwise the order isn't predictable");
 		}
-		//We could use the keySet().toArray() method as well, but this isn't type save.
+		// We could use the keySet().toArray() method as well, but this isn't
+		// type save.
 		K lastOutput = null;
 		for (K k : map.keySet()) {
 			lastOutput = k;
@@ -685,16 +734,19 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	private void cleanOutputs (final Map<OCRFormat, OCROutput> outputs) throws IOException {
+	private void cleanOutputs(final Map<OCRFormat, OCROutput> outputs)
+			throws IOException {
 		for (OCRFormat of : outputs.keySet()) {
 			AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(of);
 			URI remoteUri = out.getRemoteUri();
-			logger.trace("Trying to remove output from output folder: " + remoteUri.toString());
+			logger.trace("Trying to remove output from output folder: "
+					+ remoteUri.toString());
 			hotfolder.deleteIfExists(remoteUri);
-			//Also remove result fragments if they exist.
+			// Also remove result fragments if they exist.
 			if (!out.isSingleFile()) {
 				for (URI u : out.getResultFragments()) {
-					logger.trace("Trying to remove output fragment from output folder: " + remoteUri.toString());
+					logger.trace("Trying to remove output fragment from output folder: "
+							+ remoteUri.toString());
 					hotfolder.deleteIfExists(u);
 				}
 			}
@@ -711,18 +763,76 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess, Runnable
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	private void cleanImages (final List<AbbyyOCRImage> images) throws IOException {
+	private void cleanImages(final List<AbbyyOCRImage> images)
+			throws IOException {
 		for (AbbyyOCRImage image : images) {
 			URI remoteUri = image.getRemoteUri();
-			logger.trace("Trying to remove image from input folder: " + remoteUri.toString());
+			logger.trace("Trying to remove image from input folder: "
+					+ remoteUri.toString());
 			hotfolder.deleteIfExists(remoteUri);
 			URI errorUri = image.getErrorUri();
-			logger.trace("Trying to remove image from error folder: " + errorUri.toString());
+			logger.trace("Trying to remove image from error folder: "
+					+ errorUri.toString());
 			hotfolder.deleteIfExists(errorUri);
 		}
 	}
-	
-	
+
+	private void parseXmlResult(URI xmlResult) {
+		XmlOptions options = new XmlOptions();
+		// Set the namespace
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("",
+				NAMESPACE));
+		try {
+			xmlResultDocument = XmlResultDocument.Factory.parse(
+					hotfolder.openInputStream(xmlResult), options);
+		} catch (XmlException e) {
+			logger.error(
+					"XMLResult can not Parse, Missing xmlResult Reports for "
+							+ xmlResult.toString() + " : ", e);
+		} catch (IOException e) {
+			logger.error(
+					"XMLResult can not Parse, Missing xmlResult Reports for "
+							+ xmlResult.toString() + " : ", e);
+		}
+		if (xmlResultDocument != null) {
+			xmlResultEngine = xmlResultDocument.getXmlResult();
+			BigDecimal totalChar = new BigDecimal(xmlResultEngine
+					.getStatistics().getTotalCharacters());
+			BigDecimal totalUncerChar = new BigDecimal(xmlResultEngine
+					.getStatistics().getUncertainCharacters());
+			ocrProcessMetadata.setCharacterAccuracy(totalChar, totalUncerChar);
+		}
+	}
+
+	private void parseXmlExport(URI xmlExportURI) {
+		try {
+			xmlExportDocument = DocumentDocument.Factory.parse(hotfolder
+					.openInputStream(xmlExportURI));
+		} catch (XmlException e) {
+			logger.error(
+					"XMLExport can not Parse, Missing xmlExport Reports for "
+							+ xmlExportURI.toString() + " : ", e);
+		} catch (IOException e) {
+			logger.error(
+					"XMLExport can not Parse, Missing xmlExport Reports for "
+							+ xmlExportURI.toString() + " : ", e);
+		}
+		if (xmlExportDocument != null) {
+			xmlExport = xmlExportDocument.getDocument();
+			ocrProcessMetadata.setDocumentType(xmlExport.toString());
+			ocrProcessMetadata.setSoftwareName(xmlExport.getProducer());
+			ocrProcessMetadata.setSoftwareVersion(xmlExport.getProducer());
+		}
+
+	}
+
+	private void setLanguageforMetadata(Set<Locale> language) {
+		List<Locale> lang = new ArrayList<Locale>();
+		for (Locale l : language) {
+			lang.add(l);
+		}
+		ocrProcessMetadata.setLanguages(lang);
+	}
 
 	/**
 	 * The Class TimeoutExcetion.
