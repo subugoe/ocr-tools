@@ -52,6 +52,19 @@ public class SardineHotfolderImpl extends AbstractHotfolder implements Hotfolder
 
 	}
 
+
+	/**
+	 * is just for Junit test
+	 */
+	public SardineHotfolderImpl(String user, String pw) {
+		try {
+			sardine = SardineFactory.begin(user, pw);
+		} catch (SardineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.lang.String, java.lang.String)
 	 */
