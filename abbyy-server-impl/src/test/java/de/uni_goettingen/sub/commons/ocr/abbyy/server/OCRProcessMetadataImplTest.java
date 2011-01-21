@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OCRProcessMetadataImplTest {
-	private static InputStream isResult, isDoc, isDocd;
+	private static InputStream isResult, isDoc;
 	AbbyyOCRProcessMetadata ocrProcessMetadataImpl;
 	final static Logger logger = LoggerFactory
 			.getLogger(OCRProcessMetadataImplTest.class);
