@@ -69,61 +69,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 	 */
 	public AbbyyOCRProcessMetadata() {
 		super();
-	}
-
-	/**
-	 * Just for the TEST 
-	 * Instantiates a new oCR process metadata impl.
-	 * 
-	 * @param inputStreamResult
-	 *            the input stream result
-	 */
-	public AbbyyOCRProcessMetadata(InputStream inputStreamResult) {
-		XmlOptions options = new XmlOptions();
-		// Set the namespace
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("",
-				NAMESPACE));
-		try {
-			xmlResultDocument = XmlResultDocument.Factory.parse(
-					inputStreamResult, options);
-		} catch (XmlException e) {
-			logger.error("Error in XML parse", e);
-		} catch (IOException e) {
-			logger.error("Error ", e);
-		}
-		xmlResultEngine = xmlResultDocument.getXmlResult();
-	}
-
-	/**
-	 * Just for the TEST 
-	 * Instantiates a new oCR process metadata impl.
-	 * 
-	 * @param inputStreamResult
-	 *            the input stream result
-	 * @param inputStreamXmlExport
-	 *            the input stream xml export
-	 * @param processingNote
-	 *            the processing note
-	 */
-	public AbbyyOCRProcessMetadata(InputStream inputStreamResult,
-			InputStream inputStreamXmlExport, InputStream processingNote) {
-		XmlOptions options = new XmlOptions();
-		// Set the namespace
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("",
-				NAMESPACE));
-		try {
-			xmlExportDocument = DocumentDocument.Factory
-					.parse(inputStreamXmlExport);
-			xmlResultDocument = XmlResultDocument.Factory.parse(
-					inputStreamResult, options);
-		} catch (XmlException e) {
-			logger.error("Error in XML parse", e);
-		} catch (IOException e) {
-			logger.error("Error ", e);
-		}
-		xmlResultEngine = xmlResultDocument.getXmlResult();
-		xmlExport = xmlExportDocument.getDocument();
-	}
+	}	
 
 	/**
 	 * Parses the xml result.
