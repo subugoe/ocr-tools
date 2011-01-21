@@ -1,18 +1,30 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+/*
+
+ © 2010, SUB Göttingen. All rights reserved.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+ */
+
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.net.URISyntaxException;
-import java.net.URL;
 
-import org.apache.log4j.helpers.Loader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,60 +33,56 @@ import org.slf4j.LoggerFactory;
 
 public class OCRProcessMetadataImplTest {
 	private static InputStream isResult, isDoc, isDocd;
-	OCRProcessMetadataImpl ocrProcessMetadataImpl;
-	final static Logger logger = LoggerFactory.getLogger(OCRProcessMetadataImplTest.class);
-	
+	AbbyyOCRProcessMetadata ocrProcessMetadataImpl;
+	final static Logger logger = LoggerFactory
+			.getLogger(OCRProcessMetadataImplTest.class);
+
 	@Before
 	public void init() throws Exception {
-		File fileresult = getBaseFolderAsFile();
-		fileresult = new File(getBaseFolderAsFile().getAbsolutePath()+ "/xmlresult.xml.result.xml");
+		File fileresult = new File(AbbyyTicketTest.BASEFOLDER_FILE
+				+ "/hotfolder/" + "xmlresult.xml.result.xml");
 		isResult = new FileInputStream(fileresult);
-		File filexmlexport = getBaseFolderAsFile();
-		filexmlexport = new File(getBaseFolderAsFile().getAbsolutePath()+ "/xmlExport.xml");
+		File filexmlexport;
+		filexmlexport = new File(AbbyyTicketTest.BASEFOLDER_FILE
+				+ "/hotfolder/" + "xmlExport.xml");
 		isDoc = new FileInputStream(filexmlexport);
-		isDocd = new FileInputStream(filexmlexport);
-		ocrProcessMetadataImpl = new OCRProcessMetadataImpl(isResult, isDoc ,isDocd);
+		ocrProcessMetadataImpl = new AbbyyOCRProcessMetadata();
+		ocrProcessMetadataImpl.parseXmlExport(isDoc);
+		ocrProcessMetadataImpl.parseXmlResult(isResult);
 	}
-	
+
 	@Test
-	public void getDocumentType(){
-		assertTrue((ocrProcessMetadataImpl.getDocumentType()).equals("http://www.abbyy.com/FineReader_xml/FineReader6-schema-v1.xml"));
+	public void getDocumentType() {
+		logger.debug(ocrProcessMetadataImpl.getDocumentType());
+		assertTrue((ocrProcessMetadataImpl.getDocumentType())
+				.equals("http://www.abbyy.com/FineReader_xml/FineReader6-schema-v1.xml"));
 	}
-	
+
 	@Test
-	public void getSoftwareName(){
-		assertTrue((ocrProcessMetadataImpl.getSoftwareName()).equals("FineReader"));
+	public void getSoftwareName() {
+		assertTrue((ocrProcessMetadataImpl.getSoftwareName())
+				.equals("FineReader"));
 	}
-	
+
 	@Test
-	public void getSoftwareVersion(){
+	public void getSoftwareVersion() {
 		assertTrue((ocrProcessMetadataImpl.getSoftwareVersion()).equals("8.0"));
 	}
-	
+
 	@Test
-	public void getCharacterAccuracy(){
-		System.out.println(ocrProcessMetadataImpl.getCharacterAccuracy());
-		assertTrue((ocrProcessMetadataImpl.getCharacterAccuracy().toString()).equals("6.29916100") );
+	public void getCharacterAccuracy() {
+		logger.debug(ocrProcessMetadataImpl.getCharacterAccuracy().toString());
+		assertTrue((ocrProcessMetadataImpl.getCharacterAccuracy().toString())
+				.equals("14.04728800"));
 	}
-	
+
 	@Test
-	public void getProcessingNote() throws IOException{
-	    String inputStreamprocessingNote = ocrProcessMetadataImpl.getProcessingNote();	   
-	    System.out.println(inputStreamprocessingNote);
-	    assertTrue(inputStreamprocessingNote.toString()!="");
+	public void getProcessingNote() throws IOException {
+		String inputStreamprocessingNote = ocrProcessMetadataImpl
+				.getProcessingNote();
+		logger.debug(inputStreamprocessingNote);
+		assertTrue(inputStreamprocessingNote.toString() != "");
 
 	}
-	
-	public static File getBaseFolderAsFile() {
-		File basefolder;
-		// TODO: GDZ: Do wee really need to depend on Log4J here? I don't think
-		// so...
-		URL url = Loader.getResource("");
-		try {
-			basefolder = new File(url.toURI());
-		} catch (URISyntaxException ue) {
-			basefolder = new File(url.getPath());
-		}
-		return basefolder;
-	}
+
 }
