@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<textMD xmlns="">
+  <encoding QUALITY="good">
+    <encoding_platform linebreak="LF">Apple iMac, 2.33 GHz Intel Core 2 Duo, 2 GB 667 MHz DDR2 SDRAM, Mac OS X Version 10.4.11, Phase One P45 digital back, Contax 645 camera.</encoding_platform>
+    <encoding_software version="0.1.1">OCRopus</encoding_software>
+    <encoding_agent role="MARKUP">John Q. Doe</encoding_agent>
+  </encoding>
+  <character_info>
+    <charset>UTF-8</charset>
+    <byte_order>little</byte_order>
+    <linebreak>LF</linebreak>
+  </character_info>
+  <language>alb/sqi</language>
+  <alt_language authority="ethnologue">als</alt_language>
+  <font_script>Monaco</font_script>
+  <markup_basis version="1.0">XML</markup_basis>
+  <markup_language version="P5">http://memory.loc.gov/natlib/cred/tei_p5/tei_allPlus.xsd</markup_language>
+  <processingNote>general note about the processing of the file</processingNote>
+  <printRequirements>special requirements for printing the item</printRequirements>
+  <viewingRequirements>Any special hardware or software requirements for viewing the item</viewingRequirements>
+  <textNote>general note on material</textNote>
+</textMD>
