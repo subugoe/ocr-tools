@@ -20,6 +20,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 
 import java.util.Collections;
 
@@ -51,7 +52,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 	protected static DocumentDocument xmlExportDocument;
 
 	/** The xml resul. */
-	protected XmlResult xmlResul;
+	protected XmlResult xmlResultEngine;
 
 	/** The xml export. */
 	protected Document xmlExport;
@@ -71,6 +72,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 	}
 
 	/**
+	 * Just for the TEST 
 	 * Instantiates a new oCR process metadata impl.
 	 * 
 	 * @param inputStreamResult
@@ -89,10 +91,11 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 		} catch (IOException e) {
 			logger.error("Error ", e);
 		}
-		xmlResul = xmlResultDocument.getXmlResult();
+		xmlResultEngine = xmlResultDocument.getXmlResult();
 	}
 
 	/**
+	 * Just for the TEST 
 	 * Instantiates a new oCR process metadata impl.
 	 * 
 	 * @param inputStreamResult
@@ -118,8 +121,67 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 		} catch (IOException e) {
 			logger.error("Error ", e);
 		}
-		xmlResul = xmlResultDocument.getXmlResult();
+		xmlResultEngine = xmlResultDocument.getXmlResult();
 		xmlExport = xmlExportDocument.getDocument();
 	}
 
+	/**
+	 * Parses the xml result.
+	 * 
+	 * @param xmlResult
+	 *            the xml result
+	 */
+	public void parseXmlResult(InputStream xmlResult) {
+		XmlOptions options = new XmlOptions();
+		// Set the namespace
+		options.setLoadSubstituteNamespaces(Collections.singletonMap("",
+				NAMESPACE));
+		try {
+			xmlResultDocument = XmlResultDocument.Factory.parse(xmlResult,
+					options);
+		} catch (XmlException e) {
+			logger.error(
+					"XMLResult can not Parse, Missing xmlResult Reports for : ",
+					e);
+		} catch (IOException e) {
+			logger.error(
+					"XMLResult can not Parse, Missing xmlResult Reports for : ",
+					e);
+		}
+		if (xmlResultDocument != null) {
+			xmlResultEngine = xmlResultDocument.getXmlResult();
+			BigDecimal totalChar = new BigDecimal(xmlResultEngine
+					.getStatistics().getTotalCharacters());
+			BigDecimal totalUncerChar = new BigDecimal(xmlResultEngine
+					.getStatistics().getUncertainCharacters());
+			this.setCharacterAccuracy(totalChar, totalUncerChar);
+		}
+	}
+
+	/**
+	 * Parses the xml export.
+	 * 
+	 * @param is
+	 *            the is
+	 */
+	public void parseXmlExport(InputStream is) {
+		try {
+			xmlExportDocument = DocumentDocument.Factory.parse(is);
+		} catch (XmlException e) {
+			logger.error(
+					"XMLExport can not Parse, Missing xmlExport Reports: ", e);
+		} catch (IOException e) {
+			logger.error(
+					"XMLExport can not Parse, Missing xmlExport Reports for: ",
+					e);
+		}
+		if (xmlExportDocument != null) {
+			xmlExport = xmlExportDocument.getDocument();
+			this.setDocumentType(xmlExport.toString());
+			this.setProcessingNote(xmlExport.toString());
+			this.setSoftwareName(xmlExport.getProducer());
+			this.setSoftwareVersion(xmlExport.getProducer());
+		}
+
+	}
 }
