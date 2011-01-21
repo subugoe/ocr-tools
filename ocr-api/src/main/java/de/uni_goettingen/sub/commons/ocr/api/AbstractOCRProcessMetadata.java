@@ -158,7 +158,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 		splittArray = documentType.split("schemaLocation=");
 		documentTypeSplit = splittArray[1].split(" ");
 		this.documentType = documentTypeSplit[0].substring(1);
-		;
 	}
 
 	/*
@@ -170,11 +169,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 */
 	@Override
 	public String getDocumentType() {
-		/*
-		 * String xmlexport = xmlExport.toString(); String[] splittArray ,
-		 * documentType; splittArray = xmlexport.split("schemaLocation=");
-		 * documentType = splittArray[1].split(" ");
-		 */
 		return documentType;
 	}
 
@@ -253,10 +247,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 */
 	@Override
 	public String getSoftwareVersion() {
-		/*
-		 * String xmlexport = xmlExport.getProducer(); String[] splittArray =
-		 * xmlexport.split(" ");
-		 */
 		return softwareVersion;
 	}
 
@@ -381,14 +371,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 */
 	@Override
 	public BigDecimal getCharacterAccuracy() {
-		/*
-		 * BigDecimal totalChar = new
-		 * BigDecimal(xmlResul.getStatistics().getTotalCharacters()); BigDecimal
-		 * totalUncerChar = new
-		 * BigDecimal(xmlResul.getStatistics().getUncertainCharacters()); return
-		 * (totalUncerChar.divide(totalChar, 8,
-		 * BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal(100));
-		 */
 		return characterAccuracy;
 	}
 
