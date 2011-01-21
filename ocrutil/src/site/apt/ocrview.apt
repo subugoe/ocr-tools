@@ -1,0 +1,105 @@
+			------
+           		SimpleOCR
+            		------
+            		Abergna
+            		------
+             		2011-01-12
+
+
+
+SimpleOCR
+
+	Die Bände(Bilder) werden aus dem file Server über diese SimpleOCR_new.jar in ABBYY-Recognition-Server(Hotfolder
+	 Input-Datei)importiert, die Bände werden in ABBYY bearbeitet, Der wiederum schickt die bearbeitete Bände in Hotfolder
+	 Output-Datei, die ganze bearbeitete Bände werden von Output-Hotfolder gewertet und zum output-folder im File Server
+	 verschoben, diese SimpleOCR_new.jar ist auf Webdav Protokol basiert und kann von verschieden Frontends benutzt werden. 
+
+
+Dokumentation für die Installationsanleitungen und die Nutzungsanweisungen. 
+
+
+	** <<Installationsanleitungen:>>
+
+		- SSH File Transfer Protocol oder ähnliches installieren, {{{http://de.wikipedia.org/wiki/SSH_File_Transfer_Protocol}mehr}}.
+		
+		- PuTTY(oder ähnliches) benutzen um eine Verbindung von einem Rechner zu einem Secure-Shell- bzw. Telnet-Server
+		herzustellen. {{{http://de.wikipedia.org/wiki/PuTTY}mehr}}
+
+
+			* <<Verzeichnisse>>
+
+		Mit SSH File Transfer Protocol werden Ordnern bzw. Dateien auf dem Server erstellt bzw. kopiert.
+ 		als beispiel:
+ 		Alle benötigten Dateien (inklusive Scripte) werden nun, der Übersichtlichkeit halber, unter /san/shares/ocr/digizeit-ocr 
+ 		abgelegt. Die folgenden Unterverzeichnisse und Dateien existieren:
+ 		
+ 		Übersicht über OCR Verzeichnisse 
+ 
+		
+		
+		<</san/shares/ocr/digizeit-ocr:>>                 | Stammverzeichnis.  
+		
+		<</san/shares/ocr/digizeit-ocr/bin:>>             | Verzeichnis für die Scripte. 
+		
+		<</san/shares/ocr/digizeit-ocr/bin/recognizer2:>> | Verzeichnis für die Java Klassen(z.B.: SimpleOCR_new.jar). 
+		
+		<</san/shares/ocr/digizeit-ocr/in:>>              | Eingabeverzeichnis enthält Bände(Bilder)von hier werden die Bände  
+ 		zur Umwandlung in Abbyy Server(Hotfolder-input) kopiert und weiter verarbeitet.       
+		                                               
+		<</san/shares/ocr/digizeit-ocr/out:>>             | Ausgabeverzeichnis.(ABBYY Recognition Server verarbeitet alle      
+ 		Bilder aus den Hotfolder Input Ordner und bei der Ausgabe der verarbeiteten Dateien wird die Unterordnerstruktur in hotfolder     
+ 	    Ordnern Output automatisch reproduziert) und die verarbeiteten Dateien werden hier über SimpleOCR_new.jar in diesem ordner          
+ 		verschoben.
+ 		
+
+	** <<Nutzungsanweisungen>> 
+
+		Hier wird gezeigt, wie die SimpleOCR_new.jar auf dem Server über Putty gestartet wird. Unten sind 3 Schritte, die muss  
+		gemacht werden um den OCR starten zu können.
+
+			* <<PuTTY Starten:>> 
+			
+				Die Host Name oder IP-Adresse eingeben und dann auf Open klicken.
+
+
+			* <<Benutzername und Password in PuTTY eingeben:>> 
+			
+				Nach dem man die Host Name oder IP eingegeben hat, muss der Benutzer Name und der Password eingegeben werden.
+
+
+			* <<SimpleOCR_new.jar starten:>> 
+			
+				Sobald sich der Benutzer erfolgreich eingeloggt hat, es soll zum Stammverzeichnis gewechselt werden und auf der Kommandozeile diese
+ 				<<(sudo -u subtypo3 java -Xmx1024m -jar bin/recognizer2/SimpleOCR_new.jar -l de,en -fXML -t Normal -o /out /in)>> eingeben  werden
+ 				dann  wird der SimpleOCR_new.jar gestartet.
+ 				um SimpleOCR_new.jar richtig zu starten, mussen diese input Parametern eingegeben werden.
+					
+					** <<bin/recognizer2/SimpleOCR_new.jar:>> 
+					
+						wo die SimpleOCR_new.jar befindet.
+					
+					** <<-l de,en :>> 
+					
+						ein oder mehrere language die ABBYY-Recognition-Server unterstützt eingeben. (andere Beispiel: -l de 
+						oder -l de,en,fr,ru).
+					
+					** <<-fXML:>> 
+					
+						ein oder mehrere Format die ABBYY-Recognition-Server unterstützt eingeben.(andere Beispiel: -fPDF, XML oder 
+						-fTXT) (TXT, PDF, XML, PDFA, DOC, HTML, XHTML, HOCR und METADATA sind alle Format, die von ABBYY-Recognition-Server und 
+						SimpleOCR_new.jar unterstützt werden).
+					
+					** <<-t Normal:>> 
+					
+						TextTyp (Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B und Gothic).
+					
+					** <<-o /out:>> 
+					
+						relative Pfade wo die bearbeitete Bände verschoben sollen.
+					
+					** <</in:>>
+					
+						relative Pfade der ganze Bände, die verarbeitet werden sollen.
+			
+			
+			
