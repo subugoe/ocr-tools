@@ -25,11 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -42,8 +41,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlOptions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +95,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 	// State variables.
 	// Set if process is failed
 	private Boolean failed = false;
-
+	protected String errorDescription = null;
 	// Set if process is done
 	private Boolean done = true;
 
@@ -110,7 +108,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 	protected Hotfolder hotfolder;
 
 	protected XmlParser xmlParser;
-
+	protected AbbyySerializerTextMD abbyySerializerTextMD;
 	protected OCRProcessMetadata ocrProcessMetadata;
 	protected XmlResultDocument xmlResultDocument;
 	protected DocumentDocument xmlExportDocument;
@@ -291,10 +289,16 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 
 							if ((remoteUri.toString()).endsWith("xml"
 									+ config.reportSuffix)) {
-								parseXmlResult(remoteUri);
+								// parseXmlResult(remoteUri);
+								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+										.parseXmlResult(hotfolder
+												.openInputStream(remoteUri));
 							}
 							if ((remoteUri.toString()).endsWith(name + ".xml")) {
-								parseXmlExport(remoteUri);
+								// parseXmlExport(remoteUri);
+								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+										.parseXmlExport(hotfolder
+												.openInputStream(remoteUri));
 							}
 							try {
 								logger.debug("Copy from " + remoteUri + " to "
@@ -335,7 +339,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 					logger.debug("Trying to parse EXISTS file" + errorResultUri);
 					InputStream is = new FileInputStream(new File(
 							errorResultUri.toString()));
-					xmlParser.xmlresultErrorparse(is, name);
+					errorDescription = xmlParser.xmlresultErrorparse(is, name);
 					hotfolder.deleteIfExists(errorResultUri);
 				}
 				endTime = System.currentTimeMillis();
@@ -383,7 +387,11 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 				}
 				endTime = System.currentTimeMillis();
 				ocrProcessMetadata.setDuration(getDuration());
-
+				abbyySerializerTextMD = new AbbyySerializerTextMD(
+						ocrProcessMetadata);
+				logger.debug("Creating " + name + "-textMD.xml");
+				abbyySerializerTextMD.write(new File(System
+						.getProperty("user.dir") + "/" + name + "-textMD.xml"));
 			} catch (IOException e) {
 				failed = true;
 				logger.error("Unable to clean up!", e);
@@ -393,8 +401,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 		}
 	}
 
-	private void getErrorDescription() {
-
+	/**
+	 * Gets the error description from xmlError.
+	 * 
+	 * @return the error description
+	 */
+	public String getErrorDescription() {
+		return errorDescription;
 	}
 
 	/**
@@ -775,55 +788,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 					+ errorUri.toString());
 			hotfolder.deleteIfExists(errorUri);
 		}
-	}
-
-	private void parseXmlResult(URI xmlResult) {
-		XmlOptions options = new XmlOptions();
-		// Set the namespace
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("",
-				NAMESPACE));
-		try {
-			xmlResultDocument = XmlResultDocument.Factory.parse(
-					hotfolder.openInputStream(xmlResult), options);
-		} catch (XmlException e) {
-			logger.error(
-					"XMLResult can not Parse, Missing xmlResult Reports for "
-							+ xmlResult.toString() + " : ", e);
-		} catch (IOException e) {
-			logger.error(
-					"XMLResult can not Parse, Missing xmlResult Reports for "
-							+ xmlResult.toString() + " : ", e);
-		}
-		if (xmlResultDocument != null) {
-			xmlResultEngine = xmlResultDocument.getXmlResult();
-			BigDecimal totalChar = new BigDecimal(xmlResultEngine
-					.getStatistics().getTotalCharacters());
-			BigDecimal totalUncerChar = new BigDecimal(xmlResultEngine
-					.getStatistics().getUncertainCharacters());
-			ocrProcessMetadata.setCharacterAccuracy(totalChar, totalUncerChar);
-		}
-	}
-
-	private void parseXmlExport(URI xmlExportURI) {
-		try {
-			xmlExportDocument = DocumentDocument.Factory.parse(hotfolder
-					.openInputStream(xmlExportURI));
-		} catch (XmlException e) {
-			logger.error(
-					"XMLExport can not Parse, Missing xmlExport Reports for "
-							+ xmlExportURI.toString() + " : ", e);
-		} catch (IOException e) {
-			logger.error(
-					"XMLExport can not Parse, Missing xmlExport Reports for "
-							+ xmlExportURI.toString() + " : ", e);
-		}
-		if (xmlExportDocument != null) {
-			xmlExport = xmlExportDocument.getDocument();
-			ocrProcessMetadata.setDocumentType(xmlExport.toString());
-			ocrProcessMetadata.setSoftwareName(xmlExport.getProducer());
-			ocrProcessMetadata.setSoftwareVersion(xmlExport.getProducer());
-		}
-
 	}
 
 	private void setLanguageforMetadata(Set<Locale> language) {
