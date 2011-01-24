@@ -322,8 +322,8 @@ public class SimpleOCRServlet extends HttpServlet {
 
 		//Setup the engine
 		//Create a image;
-		OCRImage oi = oe.newOcrImage();
-		oi.setUri(infile);
+		OCRImage oi = oe.newOcrImage(infile);
+	//	oi.setUri(infile);
 		//create the output
 		final OCROutput oo = oe.newOcrOutput();
 		oo.setUri(outfile);
