@@ -139,25 +139,29 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 		}
 
 		// Encoding
-		if (ocrProcessMetadata.getLinebreak() != null
-				&& !ocrProcessMetadata.getLinebreak().equals("")) {
+		
 			Encoding encoding = textMD.addNewEncoding();
 			// QUALITY
 			encoding.setQUALITY("good");
 			// encoding_platform
 			EncodingPlatform encoding_platform = encoding
 					.addNewEncodingPlatform();
+			
+			if (ocrProcessMetadata.getLinebreak() != null
+					&& !ocrProcessMetadata.getLinebreak().equals("")) {
 			encoding_platform
 					.setLinebreak(noNamespace.TextMDDocument.TextMD.Encoding.EncodingPlatform.Linebreak.Enum
 							.forString(ocrProcessMetadata.getLinebreak()));
+			}
+			
 			encoding_platform
 					.setStringValue("Apple iMac, 2.33 GHz Intel Core 2 Duo, 2 GB 667 MHz DDR2 SDRAM, Mac OS X Version 10.4.11, Phase One P45 digital back, Contax 645 camera.");
 
 			// encoding_software
 			EncodingSoftware encodingsoftware = encoding
 					.addNewEncodingSoftware();
-			encodingsoftware.setVersion("0.1.1");
-			encodingsoftware.setStringValue("OCRopus");
+			encodingsoftware.setVersion(ocrProcessMetadata.getSoftwareVersion());
+			encodingsoftware.setStringValue(ocrProcessMetadata.getSoftwareName());
 
 			// encoding_agent
 			EncodingAgent encodingagent = encoding.addNewEncodingAgent();
@@ -167,12 +171,15 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 			encodingagent.setStringValue("John Q. Doe");
 
 			// characterInfo Linebreak
+			if (ocrProcessMetadata.getLinebreak() != null
+					&& !ocrProcessMetadata.getLinebreak().equals("")) {
 			characterInfo.setLinebreak(Enum.forString(ocrProcessMetadata
 					.getLinebreak()));
+			}
 			// TODO characterInfo character_size-encoding
 			// characterSize.setEncoding(ocrProcessMetadata.getEncoding());
 
-		}
+		
 		// Languages
 		Language language = textMD.addNewLanguage();
 		language.set(noNamespace.TextMDDocument.TextMD.Language.Enum
