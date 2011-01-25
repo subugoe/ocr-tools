@@ -3,6 +3,8 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -26,16 +28,26 @@ public class SerializerTextMDTest {
 				+ "/src/test/resources");
 		TextMD_FILE = new File(BASEFOLDER_FILE.toString()
 				+ "/textMD/textMD.xml");
+
 	}
 
 	@BeforeClass
 	public static void init() {
 		ocrProcess = new AbbyyOCRProcessMetadata();
+		langs = new ArrayList<Locale>();
+		langs.add(new Locale("zh"));
+		langs.add(new Locale("cy"));
+		langs.add(Locale.GERMAN);
 		ocrProcess.setEncoding("UTF-8");
 		ocrProcess.setLinebreak("LF");
+		ocrProcess.setSoftwareVersion("FineReader 8.0");
+		ocrProcess.setSoftwareName("FineReader 8.0");
+		ocrProcess.setFormat("XML PDF ");
 		ocrProcess.setTextNote("general note on material");
 		ocrProcess
 				.setProcessingNote("general note about the processing of the file");
+
+		ocrProcess.setLanguages(langs);
 	}
 
 	@Test
