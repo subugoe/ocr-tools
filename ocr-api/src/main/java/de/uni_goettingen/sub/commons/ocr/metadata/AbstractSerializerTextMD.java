@@ -270,8 +270,24 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 		LANGUAGE_MAP.put(new Locale("zu"), "zul");
 		LANGUAGE_MAP.put(new Locale("zh"), "chi/zho");
 		/* LANGUAGE_MAP.put(new Locale("za"), "zha"); */
-	}
+		
+		// TODO attribute  xsi:schemaLocation
+		opts.setSavePrettyPrint();
+		opts.setSaveImplicitNamespaces(new HashMap<String, String>() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
+			{
+				put("", NAMESPACE);
+			}
+		});
+		
+	//	opts.setUseCDataBookmarks();
+		opts.setUseDefaultNamespace();
+	
+	}
 	/**
 	 * Instantiates a new AbstractSerializerTextMD.
 	 * 
@@ -290,19 +306,7 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 	 * .io.OutputStream)
 	 */
 	public void write(OutputStream outputstream) {
-		opts.setSavePrettyPrint();
-		opts.setSaveImplicitNamespaces(new HashMap<String, String>() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			{
-				put("", NAMESPACE);
-			}
-		});
-		opts.setUseCDataBookmarks();
-		opts.setUseDefaultNamespace();
+		
 		TextMDDocument textMDDoc = TextMDDocument.Factory.newInstance(opts);
 		TextMD textMD = textMDDoc.addNewTextMD();
 
@@ -310,9 +314,9 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 		CharacterInfo characterInfo = textMD.addNewCharacterInfo();
 
 		// byte_order
-		characterInfo
+		/*characterInfo
 				.setByteOrder(noNamespace.TextMDDocument.TextMD.CharacterInfo.ByteOrder.LITTLE);
-
+*/
 		// TODO byte_size
 		// bs.setBigDecimalValue(new BigDecimal(8));
 		// characterInfo.setByteSize((ByteSize) bs.getBigDecimalValue());
@@ -338,7 +342,8 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 
 		Encoding encoding = textMD.addNewEncoding();
 		// QUALITY
-		encoding.setQUALITY("good");
+//		encoding.setQUALITY("good");
+		
 		// encoding_platform
 		EncodingPlatform encoding_platform = encoding.addNewEncodingPlatform();
 
@@ -349,8 +354,7 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 							.forString(ocrProcessMetadata.getLinebreak()));
 		}
 
-		encoding_platform
-				.setStringValue("Apple iMac, 2.33 GHz Intel Core 2 Duo, 2 GB 667 MHz DDR2 SDRAM, Mac OS X Version 10.4.11, Phase One P45 digital back, Contax 645 camera.");
+//		encoding_platform.setStringValue("Apple iMac, 2.33 GHz Intel Core 2 Duo, 2 GB 667 MHz DDR2 SDRAM, Mac OS X Version 10.4.11, Phase One P45 digital back, Contax 645 camera.");
 
 		// encoding_software
 		EncodingSoftware encodingsoftware = encoding.addNewEncodingSoftware();
@@ -358,11 +362,11 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 		encodingsoftware.setStringValue(ocrProcessMetadata.getSoftwareName());
 
 		// encoding_agent
-		EncodingAgent encodingagent = encoding.addNewEncodingAgent();
+		/*EncodingAgent encodingagent = encoding.addNewEncodingAgent();
 		encodingagent
 				.setRole(noNamespace.TextMDDocument.TextMD.Encoding.EncodingAgent.Role.Enum
 						.forString("MARKUP"));
-		encodingagent.setStringValue("John Q. Doe");
+		encodingagent.setStringValue("John Q. Doe");*/
 
 		// characterInfo Linebreak
 		if (ocrProcessMetadata.getLinebreak() != null
@@ -390,12 +394,12 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 		}
 
 		// AltLanguage
-		AltLanguage altlanguage = textMD.addNewAltLanguage();
+		/*AltLanguage altlanguage = textMD.addNewAltLanguage();
 		altlanguage.setAuthority("ethnologue");
 		altlanguage.setStringValue("als");
-
+*/
 		// font_script
-		textMD.addFontScript("Monaco");
+//		textMD.addFontScript("Monaco");
 
 		// markup_basis
 		if (ocrProcessMetadata.getFormat() != null) {
@@ -412,11 +416,11 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 		}
 
 		// markup_language
-		MarkupLanguage markupLanguage = textMD.addNewMarkupLanguage();
+		/*MarkupLanguage markupLanguage = textMD.addNewMarkupLanguage();
 		markupLanguage.setVersion("P5");
 		markupLanguage
 				.setStringValue("http://memory.loc.gov/natlib/cred/tei_p5/tei_allPlus.xsd");
-
+*/
 		// processingNote
 		if (ocrProcessMetadata.getProcessingNote() != null
 				&& !ocrProcessMetadata.getProcessingNote().equals("")) {
@@ -426,17 +430,17 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 		}
 
 		// printRequirements
-		textMD.addPrintRequirements("special requirements for printing the item");
+//		textMD.addPrintRequirements("special requirements for printing the item");
 
 		// viewingRequirements
-		textMD.addViewingRequirements("Any special hardware or software requirements for viewing the item");
+//		textMD.addViewingRequirements("Any special hardware or software requirements for viewing the item");
 
 		// TextNote
-		if (ocrProcessMetadata.getTextNote() != null
+		/*if (ocrProcessMetadata.getTextNote() != null
 				&& !ocrProcessMetadata.getTextNote().equals("")) {
 			textMD.addNewTextNote();
 			textMD.setTextNoteArray(0, ocrProcessMetadata.getTextNote());
-		}
+		}*/
 
 		// TODO
 		// pageOrder not exists
