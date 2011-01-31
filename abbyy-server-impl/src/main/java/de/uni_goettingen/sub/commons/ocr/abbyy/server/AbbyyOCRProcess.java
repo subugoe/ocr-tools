@@ -98,7 +98,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 	protected String errorDescription = null;
 	// Set if process is done
 	private Boolean done = true;
-
+	private Boolean test = true;
 	// The done date.
 	private Long startTime = null;
 
@@ -250,11 +250,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 			}
 
 			logger.debug("Cleaning Server");
-			// Clean the server here to avoid GUIDs as filenames
-			cleanOutputs(getOcrOutputs());
-			// Remove all files that are part of this process, they shouldn't
-			// exist yet.
-			cleanImages(convertList(getOcrImages()));
+			if(test){
+				// Clean the server here to avoid GUIDs as filenames
+				cleanOutputs(getOcrOutputs());
+				// Remove all files that are part of this process, they shouldn't
+				// exist yet.
+				cleanImages(convertList(getOcrImages()));
+			}
+		
 
 			// Copy the ticket
 			logger.debug("Copying tickt to server");
@@ -286,8 +289,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 						if (o.isSingleFile()) {
 							URI remoteUri = o.getRemoteUri();
 							URI localUri = o.getUri();
-
-							if ((remoteUri.toString()).endsWith("xml"
+							//TODO Serializer
+							/*if ((remoteUri.toString()).endsWith("xml"
 									+ config.reportSuffix)) {
 								// parseXmlResult(remoteUri);
 								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
@@ -299,19 +302,34 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
 										.parseXmlExport(hotfolder
 												.openInputStream(remoteUri));
-							}
+							}*/
+							
 							try {
 								logger.debug("Copy from " + remoteUri + " to "
 										+ localUri);
 								hotfolder.copyFile(remoteUri, localUri);
-							} catch (IOException e) {
-								logger.debug("another try Copy from "
-										+ remoteUri + " to " + localUri);
-								hotfolder.copyFile(remoteUri, localUri);
+							} catch (Exception e) {
+								logger.debug("Can NOT Copy from " + remoteUri
+										+ " to " + localUri);
 							}
-
-							logger.debug("Deleting remote file " + remoteUri);
-							hotfolder.deleteIfExists(remoteUri);
+							try {
+								if (!new File(localUri).exists()) {
+									logger.debug("another try Copy from "
+											+ remoteUri + " to " + localUri);
+									Thread.sleep(2000);
+									hotfolder.copyFile(remoteUri, localUri);
+								}
+							} catch (Exception e) {
+								logger.debug("Can NOT Copy from " + remoteUri
+										+ " to " + localUri);
+								throw new OCRException("Can NOT Copy from "
+										+ remoteUri + " to " + localUri);
+							}
+							if (new File(localUri).exists()) {
+								logger.debug("Deleting remote file "
+										+ remoteUri);
+								hotfolder.deleteIfExists(remoteUri);
+							}
 						} else {
 							// The results are fragmented, merge them
 							mergeResult(f, o);
@@ -387,11 +405,24 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 				}
 				endTime = System.currentTimeMillis();
 				ocrProcessMetadata.setDuration(getDuration());
-				abbyySerializerTextMD = new AbbyySerializerTextMD(
-						ocrProcessMetadata);
-				logger.debug("Creating " + name + "-textMD.xml");
-				abbyySerializerTextMD.write(new File(System
-						.getProperty("user.dir") + "/" + name + "-textMD.xml"));
+				//TODO serializer
+				if(!done){
+					abbyySerializerTextMD = new AbbyySerializerTextMD(
+							ocrProcessMetadata);
+					logger.debug("Creating " + name + "-textMD.xml");
+					OutputStream osMD = hotfolder.createTmpFile(name + "-textMD.xml");
+					abbyySerializerTextMD.write(osMD);
+					osMD.close();
+					try {
+					// Copy the textMD to local
+					URI tolocal = new URI(config.textMDLocation+name + "-textMD.xml");
+					logger.debug("Copying Serializer textMD to server " + tolocal.toString());				
+					hotfolder.copyTmpFile(name + "-textMD.xml", tolocal);
+					} catch (URISyntaxException e) {
+						logger.error("Error seting tmp URI for Serializer textMD "+name + "-textMD.xml", e);
+					}
+				}
+				
 			} catch (IOException e) {
 				failed = true;
 				logger.error("Unable to clean up!", e);
@@ -813,6 +844,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 			super();
 		}
 
+	}
+
+	public void setTest(Boolean test) {
+		this.test = test;
 	}
 
 }
