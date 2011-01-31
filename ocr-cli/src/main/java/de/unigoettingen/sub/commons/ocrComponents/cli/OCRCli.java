@@ -55,7 +55,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
 /**
@@ -118,6 +117,8 @@ public class OCRCli {
 	/** The OUTPU t_ definitions. */
 	protected static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 
+	static List<File> dirs = new ArrayList<File>();
+
 	/**
 	 * Inits the opts.
 	 */
@@ -158,20 +159,11 @@ public class OCRCli {
 
 		List<String> files = ocr.defaultOpts(args);
 		if (files.size() > 1) {
-			startRecognize(files);
+			logger.error("there are more folders, should be only one folder as Input");
+			System.exit(0);
 		}
 		if (files.size() == 1) {
-			for (String id : files) {
-				File directory = new File(System.getProperty("user.dir") + id);
-				List<File> folder = OCRUtil.getTargetDirectories(directory,
-						extension);
-				List<String> idfiles = new ArrayList<String>();
-				for (File idfolder : folder) {
-					idfiles.add(id + "/" + idfolder.getName());
-				}
-				startRecognize(idfiles);
-			}
-
+			startRecognize(files);
 		}
 
 	}
@@ -188,55 +180,71 @@ public class OCRCli {
 	public static void startRecognize(List<String> files)
 			throws URISyntaxException {
 		for (String book : files) {
-			File directory = new File(System.getProperty("user.dir") + book);
-			logger.debug("Creating Process for " + directory.toString());
-			OCRProcess aop = engine.newOcrProcess();
-			List<File> imageDirs = OCRUtil.getTargetDirectories(directory,
-					extension);
-			for (File id : imageDirs) {
-				if (imageDirs.size() > 1) {
-					logger.error("Directory " + id.getAbsolutePath()
-							+ " contains more then one image directories");
-					throw new OCRException(
-							"can currently create only one Process!");
-				}
-				List<OCRImage> imgs = new ArrayList<OCRImage>();
-				String jobName = id.getName();
-				for (File imageFile : OCRUtil.makeFileList(id, extension)) {
-					aop.setName(jobName);
-					OCRImage aoi = engine.newOcrImage(imageFile.toURI());
-					aoi.setSize(imageFile.length());
-					if (jobName == null) {
-						logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
-						aop.setName(UUID.randomUUID().toString());
+			// logger.debug("Input Location " +
+			// System.getProperty("user.dir")+book);
+			File directory = new File(System.getProperty("user.dir")+book);
+			getDirectories(directory);
+			if (dirs.size() == 0) {
+				logger.error("Directories is Empty : " + book);
+				System.exit(0);
+			}
+			for (File id : dirs) {
+				if (OCRUtil.makeFileList(id, extension).size() != 0) {
+
+					logger.debug("Creating Process for " + id.toString());
+					OCRProcess aop = engine.newOcrProcess();
+					List<OCRImage> imgs = new ArrayList<OCRImage>();
+					String jobName = id.getName();
+					for (File imageFile : OCRUtil.makeFileList(id, extension)) {
+						aop.setName(jobName);
+						OCRImage aoi = engine.newOcrImage(imageFile.toURI());
+						aoi.setSize(imageFile.length());
+						if (jobName == null) {
+							logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
+							aop.setName(UUID.randomUUID().toString());
+						}
+						imgs.add(aoi);
 					}
-					imgs.add(aoi);
-				}
-				aop.setOcrImages(imgs);
+					aop.setOcrImages(imgs);
 
-			}
-			// add format
-			OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();
+					// add format
+					OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();
 
-			for (OCRFormat ocrformat : f) {
-
-				OCROutput aoo = engine.newOcrOutput();
-				URI uri = new URI(
+					for (OCRFormat ocrformat : f) {
+						OCROutput aoo = engine.newOcrOutput();						
+						URI uri = new URI(
 						new File(System.getProperty("user.dir")).toURI()
-								+ localOutputDir + "/" + directory.getName()
+								+ localOutputDir + "/" + id.getName()
 								+ "." + ocrformat.toString().toLowerCase());
-				aoo.setUri(uri);
-				OUTPUT_DEFINITIONS.put(ocrformat, aoo);
-				aop.addOutput(ocrformat, aoo);
+						// logger.debug("output Location " + uri.toString());
+						aoo.setUri(uri);
+						OUTPUT_DEFINITIONS.put(ocrformat, aoo);
+						aop.addOutput(ocrformat, aoo);
+					}
+					// add language
+					aop.setLanguages(langs);
+					aop.setTextTyp(OCRTextTyp.valueOf(ocrTextTyp));
+					engine.addOcrProcess(aop);
+				}
 			}
-			// add language
-			aop.setLanguages(langs);
-			aop.setTextTyp(OCRTextTyp.valueOf(ocrTextTyp));
-			engine.addOcrProcess(aop);
 		}
 		logger.info("Starting recognize method");
 		engine.recognize();
 		logger.debug("recognize Finished");
+	}
+
+	static void getDirectories(File aFile) {
+		if (aFile.isDirectory()) {
+			dirs.add(aFile);
+			File[] listOfFiles = aFile.listFiles();
+			if (listOfFiles != null) {
+				for (int i = 0; i < listOfFiles.length; i++) {
+					getDirectories(listOfFiles[i]);
+				}
+			} else {
+				logger.error(" [ACCESS DENIED]");
+			}
+		}
 	}
 
 	/**
