@@ -52,7 +52,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract void copyFile (URI from, URI to) throws IOException;
+	public abstract void copyFile(URI from, URI to) throws IOException;
 
 	/**
 	 * Delete a resource at the specified url.
@@ -62,7 +62,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract void delete (URI uri) throws IOException;
+	public abstract void delete(URI uri) throws IOException;
 
 	/**
 	 * Delete a resource at the specified URI if it exists.
@@ -72,7 +72,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract void deleteIfExists (URI uri) throws IOException;
+	public abstract void deleteIfExists(URI uri) throws IOException;
 
 	/**
 	 * Create a directory or collection at the specified url.
@@ -82,7 +82,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract void mkDir (URI uri) throws IOException;
+	public abstract void mkDir(URI uri) throws IOException;
 
 	/**
 	 * Check if a resource at the specified url exists
@@ -93,7 +93,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract Boolean exists (URI uri) throws IOException;
+	public abstract Boolean exists(URI uri) throws IOException;
 
 	/**
 	 * Creates the temporary file and returns the {@link java.io.OutputStream}
@@ -107,7 +107,19 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract OutputStream createTmpFile (String name) throws IOException;
+	public abstract OutputStream createTmpFile(String name) throws IOException;
+
+	/**
+	 * Delete the temporary file to remove the file in tmp
+	 * 
+	 * @param name
+	 *            the name of the temp file. Note that this might be just used
+	 *            by implementations of this interface, te file isn't guaranteed
+	 *            to be named like specified here.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
+	public abstract void deleteTmpFile(String name) throws IOException;
 
 	/**
 	 * Copy a temporary file with the given name. Make sure it was created using
@@ -122,7 +134,8 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract Boolean copyTmpFile (String tmpFile, URI to) throws IOException;
+	public abstract Boolean copyTmpFile(String tmpFile, URI to)
+			throws IOException;
 
 	/**
 	 * Gets the total size for a URI returns just the size of this URI if it
@@ -135,7 +148,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract Long getTotalSize (URI uri) throws IOException;
+	public abstract Long getTotalSize(URI uri) throws IOException;
 
 	/**
 	 * Gets the total count of files under a given URI, returns just 1 if the
@@ -148,7 +161,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract Long getTotalCount (URI uri) throws IOException;
+	public abstract Long getTotalCount(URI uri) throws IOException;
 
 	/**
 	 * Gets the size of a given URI. If the URI represents a collection or
@@ -160,7 +173,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract Long getSize (URI uri) throws IOException;
+	public abstract Long getSize(URI uri) throws IOException;
 
 	/**
 	 * Checks if the URI represents directory or resource collection.
@@ -171,7 +184,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract Boolean isDirectory (URI uri) throws IOException;
+	public abstract Boolean isDirectory(URI uri) throws IOException;
 
 	/**
 	 * List the URIs that are children of the given URI. In other terms, this
@@ -184,7 +197,7 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract List<URI> listURIs (URI uri) throws IOException;
+	public abstract List<URI> listURIs(URI uri) throws IOException;
 
 	/**
 	 * Open an {@link java.io.InputStream} for the given URI to read files based
@@ -196,9 +209,10 @@ public interface Hotfolder {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public abstract InputStream openInputStream (URI uri) throws IOException;
-	
-	//TODO: add a methot to check if the undelying implementation can read and write
-	//public abstract Boolean test ();
-	
+	public abstract InputStream openInputStream(URI uri) throws IOException;
+
+	// TODO: add a methot to check if the undelying implementation can read and
+	// write
+	// public abstract Boolean test ();
+
 }

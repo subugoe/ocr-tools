@@ -2,21 +2,21 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 
 /*
 
-Copyright 2010 SUB Goettingen. All rights reserved.
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+ Copyright 2010 SUB Goettingen. All rights reserved.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-*/
+ */
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,28 +41,37 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
  * @since 0.2
  */
 public abstract class AbstractHotfolder implements Hotfolder {
-	
-	/** The Constant logger. */
-	final static Logger logger = LoggerFactory.getLogger(AbstractHotfolder.class);
 
-	//Simple Implementation of tempfile based on a local file.
+	/** The Constant logger. */
+	final static Logger logger = LoggerFactory
+			.getLogger(AbstractHotfolder.class);
+
+	// Simple Implementation of tempfile based on a local file.
 	protected Map<String, File> tmpfiles = new HashMap<String, File>();
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#deleteIfExists(java.net.URI)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#deleteIfExists
+	 * (java.net.URI)
 	 */
 	@Override
-	public void deleteIfExists (URI uri) throws IOException {
+	public void deleteIfExists(URI uri) throws IOException {
 		if (exists(uri)) {
 			delete(uri);
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#getTotalSize(java.net.URI)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#getTotalSize
+	 * (java.net.URI)
 	 */
 	@Override
-	public Long getTotalSize (URI uri) throws IOException {
+	public Long getTotalSize(URI uri) throws IOException {
 		if (!isDirectory(uri)) {
 			return getSize(uri);
 		}
@@ -77,11 +86,15 @@ public abstract class AbstractHotfolder implements Hotfolder {
 		return size;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#getTotalCount(java.net.URI)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#getTotalCount
+	 * (java.net.URI)
 	 */
 	@Override
-	public Long getTotalCount (URI uri) throws IOException {
+	public Long getTotalCount(URI uri) throws IOException {
 		if (!isDirectory(uri)) {
 			return 1l;
 		}
@@ -95,16 +108,20 @@ public abstract class AbstractHotfolder implements Hotfolder {
 		}
 		return count;
 	}
-	
-	protected Boolean isLocal (URI uri) {
+
+	protected Boolean isLocal(URI uri) {
 		return uri.getScheme().equals("file");
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyTmpFile(java.lang.String, java.net.URI)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyTmpFile(
+	 * java.lang.String, java.net.URI)
 	 */
 	@Override
-	public Boolean copyTmpFile (String tmpFile, URI to) throws IOException {
+	public Boolean copyTmpFile(String tmpFile, URI to) throws IOException {
 		if (tmpfiles.containsKey(tmpFile)) {
 			copyFile(tmpfiles.get(tmpFile).toURI(), to);
 		} else {
@@ -113,23 +130,42 @@ public abstract class AbstractHotfolder implements Hotfolder {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#createTmpFile(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder#
+	 * deleteTmpFile(java.lang.String)
 	 */
 	@Override
-	public OutputStream createTmpFile (String name) throws IOException {
+	public void deleteTmpFile(String name) throws IOException {
+		if (tmpfiles.containsKey(name)) {
+			tmpfiles.get(name).delete();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#createTmpFile
+	 * (java.lang.String)
+	 */
+	@Override
+	public OutputStream createTmpFile(String name) throws IOException {
 		File tmpFile = File.createTempFile(name, null);
 		tmpfiles.put(name, tmpFile);
 		return new FileOutputStream(tmpFile);
 	}
-	
-	public static Hotfolder getHotfolder (String cls, ConfigParser config) {
+
+	public static Hotfolder getHotfolder(String cls, ConfigParser config) {
 		Class<?> c;
 		try {
 			c = Class.forName(cls);
-			return (Hotfolder) c.getMethod("getInstance", new Class[] {ConfigParser.class}).invoke(null, new Object[] {config});
- 		} catch (ClassNotFoundException e) {
- 			logger.error("Class Not Found... ", e);
+			return (Hotfolder) c.getMethod("getInstance",
+					new Class[] { ConfigParser.class }).invoke(null,
+					new Object[] { config });
+		} catch (ClassNotFoundException e) {
+			logger.error("Class Not Found... ", e);
 		} catch (IllegalArgumentException e) {
 			logger.error("Illegal Argument Exception should be thrown ", e);
 		} catch (SecurityException e) {
@@ -143,5 +179,5 @@ public abstract class AbstractHotfolder implements Hotfolder {
 		}
 		return null;
 	}
-	
+
 }
