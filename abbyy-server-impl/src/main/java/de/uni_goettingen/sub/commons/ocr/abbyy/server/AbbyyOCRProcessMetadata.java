@@ -101,6 +101,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 			BigDecimal totalUncerChar = new BigDecimal(xmlResultEngine
 					.getStatistics().getUncertainCharacters());
 			this.setCharacterAccuracy(totalChar, totalUncerChar);
+			this.setProcessingNote(xmlResultEngine.toString());
 		}
 	}
 
@@ -124,7 +125,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 		if (xmlExportDocument != null) {
 			xmlExport = xmlExportDocument.getDocument();
 			this.setDocumentType(xmlExport.toString());
-			this.setProcessingNote(xmlExport.toString());
+//			this.setProcessingNote(xmlExport.toString());
 			this.setSoftwareName(xmlExport.getProducer());
 			this.setSoftwareVersion(xmlExport.getProducer());
 		}

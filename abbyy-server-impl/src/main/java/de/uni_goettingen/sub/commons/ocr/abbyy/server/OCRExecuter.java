@@ -18,6 +18,8 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -65,23 +67,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 */
 	private Condition unpaused = pauseLock.newCondition();
 
-	/**
-	 * maximum size of all files that can be sent to OCR engine, may not be
-	 * exceeded
-	 */
-	private Long maxSize = 0l;
-
-	/**
-	 * maximum number of files that can be sent to the OCR engine, may not be
-	 * exceeded
-	 */
-	private Long maxFiles = 0l;
-
-	/** the size of all files in OCR engine */
-	private Long totalFileSize;
-
-	/** total number of files in the OCR engine */
-	private Long totalFileCount;
+	
 
 	/**
 	 * hotfolder is used to access any file system like backend. This can be
@@ -130,11 +116,15 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		super.beforeExecute(t, r);
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
-			if (maxFiles != 0 && maxSize != 0) {
-				if (abbyyOCRProcess.getOcrImages().size() + totalFileCount > maxFiles
-						|| getFileSize(abbyyOCRProcess) + totalFileSize > maxSize) {
-					pause();
-				}
+			try {
+				getFileSize(abbyyOCRProcess);
+			} catch (IllegalStateException e1) {
+				logger.debug("wait because :", e1);
+				pause();
+			} catch (IOException e1) {
+				logger.error("Could not execute MultiStatus method", e1);
+			} catch (URISyntaxException e1) {
+				logger.error("Error seting URI for OCR Engine", e1);
 			}
 
 		} else {
@@ -165,12 +155,15 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		super.afterExecute(r, e);
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
-
-			if (maxFiles != 0 && maxSize != 0) {
-				if (abbyyOCRProcess.getOcrImages().size() + totalFileCount < maxFiles
-						|| getFileSize(abbyyOCRProcess) + totalFileSize < maxSize) {
-					pause();
-				}
+			try {
+				getFileSize(abbyyOCRProcess);
+			} catch (IllegalStateException e1) {
+				logger.debug("wait because :", e1);
+				pause();
+			} catch (IOException e1) {
+				logger.error("Could not execute MultiStatus method", e1);
+			} catch (URISyntaxException e1) {
+				logger.error("Error seting URI for OCR Engine", e1);
 			}
 
 		} else {
@@ -209,9 +202,11 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 * @param p
 	 *            represent the process
 	 * @return the Calculate size of the OCRImages representing this process
+	 * @throws URISyntaxException 
+	 * @throws IOException 
 	 */
-	protected Long getFileSize(AbbyyOCRProcess p) {
-		return p.calculateSize();
+	protected void getFileSize(AbbyyOCRProcess p) throws IOException, URISyntaxException, IllegalStateException {
+		p.checkServerState();
 	}
 
 }
