@@ -326,10 +326,10 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	@Override
 	public Long getTotalSize(URI uri) throws IOException {
 		Long size = 0l;
-		for (URI u : listURIs(uri)) {
+	//	for (URI u : listURIs(uri)) {
 			MultiStatus multiStatus;
 			try {
-				multiStatus = propFind(u);
+				multiStatus = propFind(uri);
 			} catch (DavException e) {
 				throw new IOException("Could not execute MultiStatus method", e);
 			}
@@ -344,7 +344,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 							DavPropertyName.GETCONTENTLENGTH).getValue());
 				}
 			}
-		}
+	//	}
 		return size;
 	}
 
