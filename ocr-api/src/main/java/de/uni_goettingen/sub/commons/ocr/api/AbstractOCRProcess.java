@@ -56,6 +56,11 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 * OCR_B, MICR_E13B, Gothic.
 	 *  */
 	protected OCRTextTyp texttyp ;
+	
+	/**the priority level of the job. The default priority is Normal.
+	 * priority level : Low, BelowNormal, Normal, AboveNormal, High ;
+	 * */
+	protected OCRPriority priority;
 	/**
 	 * The images that should be converted, are stored in the given format at
 	 * the given location
@@ -239,6 +244,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 		return this.texttyp;
 	}
 	
+
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setTextTyp(de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp)
 	 */
@@ -246,7 +252,19 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 		this.texttyp = t ;
 	}
 	
-	
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getPriority()
+	 */
+	public OCRPriority getPriority() {
+		return this.priority;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setPriority(de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority)
+	 */
+	public void setPriority(OCRPriority p) {
+		this.priority = p;
+	}
 	/**
 	 * Adds the output for the given format, this might be a helpful utility
 	 * method when working with Lists
