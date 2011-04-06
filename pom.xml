@@ -18,6 +18,7 @@
 		<module>ocrutil</module>
 		<module>GoobiOCRServlet</module>
 		<!-- <module>dummy-impl</module> -->
+		<module>tesseract-impl</module>
 	</modules>
 	<developers>
 		<developer>
