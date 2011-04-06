@@ -259,6 +259,42 @@ public interface OCRProcess {
 		Gothic
 	}
 	
+	
+	/**
+	 * Gets the priority. to describe the level of the job.
+	 *
+	 * @return the priority
+	 */
+	abstract OCRPriority getPriority();
+	
+	/**
+	 * Sets the priority. to describe the level of the job.
+	 *
+	 * @param p the new priority
+	 */
+	abstract void setPriority(OCRPriority p);
+	/**
+	 * the priority level of the job. The default priority is Normal.
+	 * 
+	 */
+	public enum OCRPriority {
+		/**Low job priority*/
+		Low, 
+		
+		/**Below normal job priority*/ 
+		BelowNormal, 
+		
+		/**Normal job priority*/
+		Normal,
+		
+		/**Above normal job priority*/
+		AboveNormal, 
+		
+		/**High job priority*/
+		High ;
+	}
+	
+	
 	/**
 	 * Adds the output for the given format 
 	 * @param format
