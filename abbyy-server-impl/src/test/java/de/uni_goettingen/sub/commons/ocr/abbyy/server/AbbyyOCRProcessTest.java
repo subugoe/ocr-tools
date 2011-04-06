@@ -85,7 +85,7 @@ public class AbbyyOCRProcessTest {
 			assertNotNull(aop);
 			aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
-			aop.write(new FileOutputStream(testTicket), testDir.getName(), null);
+			aop.write(new FileOutputStream(testTicket), testDir.getName());
 			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
 		}
 	}
@@ -99,7 +99,7 @@ public class AbbyyOCRProcessTest {
 			assertNotNull(aop);
 			aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
-			aop.write(new FileOutputStream(testTicket), testDir.getName(), null);
+			aop.write(new FileOutputStream(testTicket), testDir.getName());
 			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
 			assertTrue("This fails if the number of files between ticket and file system differs.", AbbyyTicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
 		}

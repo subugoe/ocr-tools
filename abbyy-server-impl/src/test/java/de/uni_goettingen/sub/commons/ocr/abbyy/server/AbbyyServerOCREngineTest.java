@@ -94,7 +94,7 @@ public class AbbyyServerOCREngineTest {
 					+ File.separator
 					+ book
 					+ ".xml");
-			aop.write(new FileOutputStream(testTicket), testDir.getName(), null);
+			aop.write(new FileOutputStream(testTicket), testDir.getName());
 			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
 			logger.debug("Starting Engine");
 			ase.recognize(aop);
@@ -184,7 +184,7 @@ public class AbbyyServerOCREngineTest {
 			AbbyyOCRProcess p = (AbbyyOCRProcess) abbyy.newOcrProcess();
 			p.setName(files.getName());
 			for (File fileImage : fileListimage) {
-				AbbyyOCRImage image = (AbbyyOCRImage) abbyy.newOcrImage();
+				AbbyyOCRImage image = (AbbyyOCRImage) abbyy.newOcrImage(fileImage.toURI());
 				//	System.out.println("fehler "+ fileImage.getAbsolutePath());
 
 				image.setUri(fileImage.toURI());
