@@ -9,4 +9,18 @@
   <artifactId>tesseract-impl</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>tesseract-impl</name>
+  
+  
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>de.uni-goettingen.sub</groupId>
+  		<artifactId>ocr-api</artifactId>
+  		<version>0.9-SNAPSHOT</version>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
+  
+  
+  
 </project>
