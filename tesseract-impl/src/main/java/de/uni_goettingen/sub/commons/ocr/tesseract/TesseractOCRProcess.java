@@ -13,9 +13,16 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 		OCRProcess {
 
 	
+	public TesseractOCRProcess(OCRProcess process){
+		super(process);
+	}
+	public TesseractOCRProcess(){
+		super();
+	}
+	
 	@Override
 	public void addOutput(OCRFormat format, OCROutput output) {
-		// Make sure we only add values, not replace existing ones
+		
 		if (ocrOutputs == null) {
 			// We use a LinkedHashMap to get the order of the elements
 			// predictable

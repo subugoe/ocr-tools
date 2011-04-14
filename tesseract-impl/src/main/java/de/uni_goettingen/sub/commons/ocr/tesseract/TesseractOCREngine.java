@@ -1,10 +1,15 @@
 package de.uni_goettingen.sub.commons.ocr.tesseract;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -16,6 +21,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 
 	private static TesseractOCREngine _instance;
+
 
 	public static TesseractOCREngine getInstance() {
 		
@@ -39,10 +45,16 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 	}
 
 	@Override
-	public Observable addOcrProcess(OCRProcess ocrp) {
-		// TODO Auto-generated method stub
+	public Observable addOcrProcess(OCRProcess process) {
+		// TODO: Check if this instanceof works as expected
+		if (process instanceof TesseractOCRProcess) {
+			ocrProcess.add((TesseractOCRProcess) process);
+		} else {
+			ocrProcess.add(new TesseractOCRProcess(process));
+		}
 		return null;
 	}
+
 
 	@Override
 	public Boolean init() {
@@ -59,6 +71,9 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 	@Override
 	public Observable recognize() {
 		System.out.println("-------------  engine.recognize() ---------------");
+		System.out.println(this.getOcrProcess().get(0).getOcrImages().get(0).getUri());
+		System.out.println(this.getOcrProcess().get(0).getOcrImages().get(1).getUri());
+		System.out.println(getOcrProcess().get(0).getOcrOutputs().get(OCRFormat.TXT).getUri());
 		return null;
 	}
 
@@ -67,7 +82,6 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	
 	public OCRProcess newOcrProcess() {
 		return new TesseractOCRProcess() {
