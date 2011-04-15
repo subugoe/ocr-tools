@@ -44,6 +44,20 @@
 
 	<build>
 		<finalName>ocr-webservice</finalName>
+<plugins>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>maven-jetty-plugin</artifactId>
+				<configuration>
+					<scanIntervalSeconds>10</scanIntervalSeconds>
+					<requestLog implementation="org.mortbay.jetty.NCSARequestLog">
+						<append>true</append>
+						<extended>false</extended>
+					</requestLog>
+				</configuration>
+			</plugin>
+</plugins>
+
 	</build>
 
 
