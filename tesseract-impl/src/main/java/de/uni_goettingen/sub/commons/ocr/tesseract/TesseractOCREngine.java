@@ -70,10 +70,11 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 
 	@Override
 	public Observable recognize() {
-		System.out.println("-------------  engine.recognize() ---------------");
-		System.out.println(this.getOcrProcess().get(0).getOcrImages().get(0).getUri());
-		System.out.println(this.getOcrProcess().get(0).getOcrImages().get(1).getUri());
-		System.out.println(getOcrProcess().get(0).getOcrOutputs().get(OCRFormat.TXT).getUri());
+		
+		for(OCRProcess process : ocrProcess) {
+			((TesseractOCRProcess)process).start();
+		}
+		
 		return null;
 	}
 
