@@ -13,6 +13,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 public class Tesseract {
 
 	protected static Logger logger = LoggerFactory.getLogger(Tesseract.class);
+	
 	private final String tesseract = "tesseract";
 
 	private OCRFormat format = OCRFormat.TXT;
