@@ -85,7 +85,7 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 				i++;
 
 				executeTesseract(localImage, format, localTempOutput);
-				localImage.delete();
+				//localImage.delete();
 
 				// eg html for HOCR files, is automatically added by tesseract
 				String actualExtension = extensions.get(format);
@@ -108,23 +108,30 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	}
 
 	File getLocalImage(OCRImage image, String tempPath) {
-		File result = new File(tempPath);
+		File result = null;
 
 		String protocol = image.getUri().getScheme();
-		if (!protocol.equals("file")) {
+		
+		System.out.println("------------------" + image.getUri().getScheme());
+
+		if (protocol.equals("file")) {
+			result = new File(image.getUri().getPath());
+			System.out.println("------------------" + image.getUri().getPath());
+			
+		} else {
 			try {
 				InputStream is = image.getUri().toURL().openStream();
 				BufferedOutputStream bos = new BufferedOutputStream(
 						new FileOutputStream(result));
-
+				
 				byte[] buffer = new byte[32 * 1024];
 				while ((is.read(buffer)) != -1) {
 					bos.write(buffer);
 				}
-
+				
 				is.close();
 				bos.close();
-
+				
 			} catch (MalformedURLException e) {
 				logger.error("Not a URL: " + image.getUri());
 				e.printStackTrace();
@@ -132,7 +139,7 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 				logger.error("Error while downloading or saving image.");
 				e.printStackTrace();
 			}
-
+			
 		}
 
 		return result;
