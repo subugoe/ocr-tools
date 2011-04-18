@@ -1,7 +1,11 @@
 package de.uni_goettingen.sub.commons.ocr.tesseract;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -27,13 +31,21 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	protected static Logger logger = LoggerFactory
 			.getLogger(TesseractOCRProcess.class);
 
-	private List<File> outputFiles = new ArrayList<File>();
+	private List<File> tempFiles = new ArrayList<File>();
 
 	private static Map<String, String> languages = new HashMap<String, String>();
+	private static Map<OCRFormat, String> extensions = new HashMap<OCRFormat, String>();
+	private static Map<OCRFormat, String> formats = new HashMap<OCRFormat, String>();
 
 	static {
 		languages.put("german", "deu");
 		languages.put("english", "eng");
+
+		extensions.put(OCRFormat.TXT, "txt");
+		extensions.put(OCRFormat.HOCR, "html");
+
+		formats.put(OCRFormat.TXT, "");
+		formats.put(OCRFormat.HOCR, "hocr");
 	}
 
 	public TesseractOCRProcess(OCRProcess process) {
@@ -48,8 +60,6 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	public void addOutput(OCRFormat format, OCROutput output) {
 
 		if (ocrOutputs == null) {
-			// We use a LinkedHashMap to get the order of the elements
-			// predictable
 			ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
 		}
 		ocrOutputs.put(format, output);
@@ -58,53 +68,101 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	public void start() {
 		for (Map.Entry<OCRFormat, OCROutput> formatToOutput : ocrOutputs
 				.entrySet()) {
+
+			// eg TXT
+			OCRFormat format = formatToOutput.getKey();
+
+			OCROutput output = formatToOutput.getValue();
+
+			// to have a different file name for each OCRed text
 			int i = 1;
+
 			for (OCRImage image : ocrImages) {
-
-				String imagePath = image.getUri().toString();
-				String outputPath = formatToOutput.getValue().getUri()
-						.toString()
-						+ i;
-				if (imagePath.startsWith("file:")
-						&& outputPath.startsWith("file:")) {
-					File inputImage = new File(imagePath.substring(5));
-					File output = new File(outputPath.substring(5));
-					Locale locale = new ArrayList<Locale>(langs).get(0);
-					OCRFormat format = formatToOutput.getKey();
-
-					Tesseract tesseract = new Tesseract(inputImage, output);
-					tesseract.setFormat(format);
-					tesseract.setLanguage(languages.get(locale.getLanguage()));
-
-					if (getTextTyp() == OCRTextTyp.Gothic) {
-						tesseract.setGothic(true);
-					}
-
-					tesseract.execute();
-
-					String actualOutput = output.getAbsolutePath() + "."
-							+ formatToOutput.getKey().toString().toLowerCase();
-					outputFiles.add(new File(actualOutput));
-
-				} else {
-					logger.error("Cannot process file: " + imagePath);
-				}
-				
+				String tempPath = System.getProperty("user.dir")
+						+ System.getProperty("file.separator") + "temp.tif";
+				File localImage = getLocalImage(image, tempPath);
+				File localTempOutput = getLocalOutput(output, i + "");
 				i++;
 
+				executeTesseract(localImage, format, localTempOutput);
+				localImage.delete();
+
+				// eg html for HOCR files, is automatically added by tesseract
+				String actualExtension = extensions.get(format);
+
+				String actualOutput = localTempOutput.getAbsolutePath() + "."
+						+ actualExtension;
+				tempFiles.add(new File(actualOutput));
+
 			}
 
-			String finalOutput = formatToOutput.getValue().getUri().getPath();
-			try {
-				FileMerger.mergeTXT(outputFiles, new File(finalOutput));
-			} catch (IOException e) {
-				logger.error("Could not merge files to " + finalOutput);
-				e.printStackTrace();
-			} finally {
-				for (File file : outputFiles) {
-					file.delete();
-				}
+			File localOutput = getLocalOutput(output, "");
+
+			// TODO merger for HOCR
+			FileMerger.mergeFiles(OCRFormat.TXT, tempFiles, localOutput);
+
+			for (File file : tempFiles) {
+				file.delete();
 			}
 		}
+	}
+
+	File getLocalImage(OCRImage image, String tempPath) {
+		File result = new File(tempPath);
+
+		String protocol = image.getUri().getScheme();
+		if (!protocol.equals("file")) {
+			try {
+				InputStream is = image.getUri().toURL().openStream();
+				BufferedOutputStream bos = new BufferedOutputStream(
+						new FileOutputStream(result));
+
+				byte[] buffer = new byte[32 * 1024];
+				while ((is.read(buffer)) != -1) {
+					bos.write(buffer);
+				}
+
+				is.close();
+				bos.close();
+
+			} catch (MalformedURLException e) {
+				logger.error("Not a URL: " + image.getUri());
+				e.printStackTrace();
+			} catch (IOException e) {
+				logger.error("Error while downloading or saving image.");
+				e.printStackTrace();
+			}
+
+		}
+
+		return result;
+	}
+
+	File getLocalOutput(OCROutput output, String postfix) {
+		String protocol = output.getUri().getScheme();
+		if (protocol.equals("file")) {
+			return new File(output.getUri().getPath() + postfix);
+		} else {
+			// TODO handle remote output uris
+			throw new RuntimeException("Unsupported protocol for outputs: "
+					+ protocol);
+		}
+	}
+
+	private void executeTesseract(File image, OCRFormat format, File output) {
+
+		Tesseract tesseract = new Tesseract(image, output);
+		tesseract.setFormat(formats.get(format));
+
+		// tesseract only takes one language
+		Locale locale = new ArrayList<Locale>(langs).get(0);
+		tesseract.setLanguage(languages.get(locale.getLanguage()));
+
+		if (getTextTyp() == OCRTextTyp.Gothic) {
+			tesseract.setGothic(true);
+		}
+
+		tesseract.execute();
+
 	}
 }
