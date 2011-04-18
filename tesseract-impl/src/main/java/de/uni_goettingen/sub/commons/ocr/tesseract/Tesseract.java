@@ -16,7 +16,7 @@ public class Tesseract {
 	
 	private final String tesseract = "tesseract";
 
-	private OCRFormat format = OCRFormat.TXT;
+	private String format = "";
 	private File inputImage;
 	private File outputBase;
 	private String language = "deu";
@@ -26,7 +26,7 @@ public class Tesseract {
 		this.outputBase = outputBase;
 	}
 
-	public void setFormat(OCRFormat format) {
+	public void setFormat(String format) {
 		this.format = format;
 	}
 
@@ -46,14 +46,13 @@ public class Tesseract {
 
 		String i = inputImage.getAbsolutePath();
 		String o = outputBase.getAbsolutePath();
-		String f = format == OCRFormat.HOCR ? "hocr" : "";
 
 		logger.debug("Executing command: " + tesseract + " " + i + " " + o
-				+ " " + "-l" + " " + language + postfix + " " + f);
+				+ " " + "-l" + " " + language + postfix + " " + format);
 
 		try {
 			Process proc = new ProcessBuilder(tesseract, i, o, "-l", language
-					+ postfix, f).start();
+					+ postfix, format).start();
 
 			logger.debug("Tesseract stdout: "
 					+ IOUtils.toString(proc.getInputStream()));
