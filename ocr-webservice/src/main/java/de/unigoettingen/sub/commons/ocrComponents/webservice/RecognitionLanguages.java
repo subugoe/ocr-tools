@@ -9,22 +9,18 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import javax.xml.bind.annotation.XmlType;
 
-	@XmlAccessorType(XmlAccessType.FIELD)
-	@XmlType(name = "RecognitionLanguages", propOrder = {
-	    "recognitionLanguage"
-	})
-	public class RecognitionLanguages {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "RecognitionLanguages", propOrder = { "recognitionLanguage" })
+public class RecognitionLanguages {
 
-	    @XmlElement(defaultValue = "German")
-	    protected List<RecognitionLanguage> recognitionLanguage;
+	@XmlElement(defaultValue = "German")
+	protected List<RecognitionLanguage> recognitionLanguage;
 
-	    public List<RecognitionLanguage> getRecognitionLanguage() {
-	        if (recognitionLanguage == null) {
-	            recognitionLanguage = new ArrayList<RecognitionLanguage>();
-	        }
-	        return this.recognitionLanguage;
-	    }
+	public List<RecognitionLanguage> getRecognitionLanguage() {
+		if (recognitionLanguage == null) {
+			recognitionLanguage = new ArrayList<RecognitionLanguage>();
+		}
+		return this.recognitionLanguage;
+	}
 
 }
-
-
