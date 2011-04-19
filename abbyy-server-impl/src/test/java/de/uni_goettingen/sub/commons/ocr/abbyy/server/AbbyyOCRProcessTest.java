@@ -65,7 +65,6 @@ public class AbbyyOCRProcessTest {
 				add("PPN31311157X_0102");
 				add("PPN514401303_1890");
 				add("PPN514854804_0001");
-				add("PPNError1234_1234");
 			}
 		};
 	}
