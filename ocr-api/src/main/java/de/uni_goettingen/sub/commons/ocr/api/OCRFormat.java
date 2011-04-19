@@ -23,6 +23,12 @@ package de.uni_goettingen.sub.commons.ocr.api;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlEnum;
+
+import javax.xml.bind.annotation.XmlType;
+
+
+
 /**
  * The Enum OCRFormat. The formats which are supported.
  * 
@@ -30,6 +36,8 @@ import java.util.Map;
  * @author abergna
  * @author cmahnke
  */
+@XmlType(name = "outputFormatType")
+@XmlEnum
 public enum OCRFormat {
 
 	/** The Format for Text, UTF-8 is assumed. */
@@ -104,5 +112,13 @@ public enum OCRFormat {
 	public static OCRFormat parseOCRFormat (String format) {
 		return Enum.valueOf(OCRFormat.class, format.toUpperCase());
 	}
-
+	
+	public static OCRFormat fromValue(String v) {
+        for (OCRFormat c: OCRFormat.values()) {
+            if (c.name.equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
 }
