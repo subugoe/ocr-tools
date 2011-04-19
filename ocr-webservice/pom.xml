@@ -18,23 +18,16 @@
 
 	<dependencies>
 
-		<!--<dependency>
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-bundle</artifactId>
 			<version>2.3.3</version>
 		</dependency>
-
-
-		--><dependency>
-   <groupId>org.apache.cxf</groupId>
-   <artifactId>cxf-rt-frontend-jaxws</artifactId>
-   <version>${cxf.version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.apache.cxf</groupId>
-   <artifactId>cxf-rt-transports-http</artifactId>
-   <version>${cxf.version}</version>
-  </dependency>
+		<dependency>
+			<groupId>de.uni-goettingen.sub</groupId>
+			<artifactId>ocr-api</artifactId>
+			<version>0.9-SNAPSHOT</version>
+		</dependency>
 
 
 
@@ -44,7 +37,7 @@
 
 	<build>
 		<finalName>ocr-webservice</finalName>
-<plugins>
+		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
@@ -56,7 +49,7 @@
 					</requestLog>
 				</configuration>
 			</plugin>
-</plugins>
+		</plugins>
 
 	</build>
 
