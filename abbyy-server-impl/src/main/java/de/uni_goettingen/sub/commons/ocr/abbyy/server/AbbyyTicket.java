@@ -293,13 +293,13 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		recognitionSettings = RecognitionParams.Factory.newInstance();
 		// Might be Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B, Gothic
 		TEXTTYP_MAP = new HashMap<OCRTextTyp, String>();
-		TEXTTYP_MAP.put(OCRTextTyp.Normal, "Normal");
-		TEXTTYP_MAP.put(OCRTextTyp.Typewriter, "Typewriter");
-		TEXTTYP_MAP.put(OCRTextTyp.Matrix, "Matrix");
+		TEXTTYP_MAP.put(OCRTextTyp.NORMAL, "Normal");
+		TEXTTYP_MAP.put(OCRTextTyp.TYPEWRITER, "Typewriter");
+		TEXTTYP_MAP.put(OCRTextTyp.MATRIX, "Matrix");
 		TEXTTYP_MAP.put(OCRTextTyp.OCR_A, "OCR_A");
 		TEXTTYP_MAP.put(OCRTextTyp.OCR_B, "OCR_B");
 		TEXTTYP_MAP.put(OCRTextTyp.MICR_E13B, "MICR_E13B");
-		TEXTTYP_MAP.put(OCRTextTyp.Gothic, "Gothic");
+		TEXTTYP_MAP.put(OCRTextTyp.GOTHIC, "Gothic");
 
 		imageProcessingSettings = ImageProcessingParams.Factory.newInstance();
 
