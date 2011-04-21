@@ -99,10 +99,10 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 			File localOutput = getLocalOutput(output, "");
 
 			// TODO merger for HOCR
-			FileMerger.mergeFiles(OCRFormat.TXT, tempFiles, localOutput);
-
+			FileMerger.mergeFiles(format, tempFiles, localOutput);
+			
 			for (File file : tempFiles) {
-				file.delete();
+				//file.delete();
 			}
 		}
 	}
@@ -112,11 +112,8 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 
 		String protocol = image.getUri().getScheme();
 		
-		System.out.println("------------------" + image.getUri().getScheme());
-
 		if (protocol.equals("file")) {
 			result = new File(image.getUri().getPath());
-			System.out.println("------------------" + image.getUri().getPath());
 			
 		} else {
 			try {
