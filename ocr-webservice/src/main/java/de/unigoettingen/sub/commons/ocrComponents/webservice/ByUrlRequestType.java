@@ -17,17 +17,22 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 		"textType", "outputFormat", "ocrlanguages", "inputUrl" })
 public class ByUrlRequestType {
 
-	@XmlElement(defaultValue = "Normal")
+	@XmlElement(defaultValue = "NORMAL")
 	protected OCRPriority ocrPriorityType;
-	@XmlElement(defaultValue = "Gothic")
+	@XmlElement(defaultValue = "GOTHIC")
 	protected OCRTextTyp textType;
-	@XmlElement(defaultValue = "Text")
+	@XmlElement(defaultValue = "TXT")
 	protected OCRFormat outputFormat;
 	protected RecognitionLanguages ocrlanguages;
 	@XmlElement(required = true, defaultValue = "http://fue.onb.ac.at/impact/testdata/00000868_p.tif")
 	@XmlSchemaType(name = "anyURI")
 	protected String inputUrl;
 
+	
+	
+	public ByUrlRequestType(){
+		
+	}
 	/**
 	 * Gets the input priority type.
 	 * 

@@ -34,6 +34,11 @@ public class ByUrlResponseType {
     @XmlSchemaType(name = "anyURI")
     protected String outputUrl;
 
+   
+    
+    public ByUrlResponseType(){
+    	
+    }
     /**
      * Gets the value of the success property.
      * 
