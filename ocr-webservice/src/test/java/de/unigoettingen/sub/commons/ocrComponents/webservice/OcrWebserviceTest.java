@@ -7,6 +7,7 @@ import javax.xml.ws.Endpoint;
 
 import org.apache.xmlbeans.XmlException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.eviware.soapui.impl.WsdlInterfaceFactory;
@@ -34,6 +35,7 @@ public class OcrWebserviceTest {
 
 	}
 
+	@Ignore
 	@Test
 	public void test() throws InterruptedException, XmlException, IOException,
 			SoapUIException, SubmitException {
@@ -79,7 +81,7 @@ public class OcrWebserviceTest {
 				.contains("<outputUrl>Output Url: http://webservice.xml</outputUrl>"));
 		// System.out.println( content );
 
-		JOptionPane.showMessageDialog(null, "Server beenden");
+		//JOptionPane.showMessageDialog(null, "Server beenden");
 		endpoint.stop();
 
 	}
