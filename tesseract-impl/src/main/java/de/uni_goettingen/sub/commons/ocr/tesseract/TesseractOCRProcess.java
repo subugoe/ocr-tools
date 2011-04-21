@@ -162,7 +162,7 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 		Locale locale = new ArrayList<Locale>(langs).get(0);
 		tesseract.setLanguage(languages.get(locale.getLanguage()));
 
-		if (getTextTyp() == OCRTextTyp.Gothic) {
+		if (getTextTyp() == OCRTextTyp.GOTHIC) {
 			tesseract.setGothic(true);
 		}
 
