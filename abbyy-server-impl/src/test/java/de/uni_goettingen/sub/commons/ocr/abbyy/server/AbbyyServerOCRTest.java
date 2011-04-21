@@ -244,7 +244,7 @@ public class AbbyyServerOCRTest {
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
 			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
 			aop.addLanguage(Locale.GERMAN);
-			aop.setTextTyp(OCRTextTyp.Normal);
+			aop.setTextTyp(OCRTextTyp.NORMAL);
 			assertNotNull(aop);
 			for (OCRFormat f: AbbyyTicketTest.OUTPUT_DEFINITIONS.keySet()) {
 				//Call the copy contructor to get rid of mock objects

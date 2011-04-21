@@ -158,7 +158,7 @@ public class AbbyyTicketTest {
 		assertTrue((abbyyTicket.config.maxMillisPerFile * ocrp.getOcrImages()
 				.size()) == 100000);
 
-		abbyyTicket.setTextTyp(OCRTextTyp.Normal);
+		abbyyTicket.setTextTyp(OCRTextTyp.NORMAL);
 		// Use a stream to check if we to write it directly into a Stream
 		ticketStream = new FileOutputStream(TICKET_FILE);
 		abbyyTicket.write(ticketStream, name);
