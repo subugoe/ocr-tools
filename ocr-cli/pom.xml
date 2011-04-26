@@ -89,6 +89,12 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>de.uni-goettingen.sub</groupId>
+			<artifactId>tesseract-impl</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	
 	<build>
