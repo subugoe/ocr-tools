@@ -407,7 +407,6 @@ public class FileMerger {
 
 		Boolean docStarted = false;
 		Boolean htmlStarted = false;
-		Boolean bodyStarted = false;
 		Boolean insideHead = false;
 
 
@@ -479,8 +478,17 @@ public class FileMerger {
 							for (int i = 0; i < parser.getAttributeCount(); i++) {
 								String name = parser.getAttributeLocalName(i);
 								String value = parser.getAttributeValue(i);
-								if (name.equals("id") && value.equals("page_1")) {
+								boolean isId = name.equals("id");
+								if (isId && value.equals("page_1")) {
 									value = "page_" + fileCounter;
+								} else if (isId
+										&& (value.startsWith("block_")
+												|| value.startsWith("line_")
+												|| value.startsWith("word_") || value
+												.startsWith("xword_"))) {
+									String[] parts = value.split("_");
+									value = parts[0] + "_" + fileCounter + "_" + parts[2];
+
 								}
 								if (parser.getAttributeNamespace(i) != null) {
 									writer.writeAttribute(parser
@@ -492,7 +500,6 @@ public class FileMerger {
 							}
 						}
 					}
-					// writer.writeStartElement(parser.getLocalName());
 				} else if (event == XMLStreamConstants.CHARACTERS) {
 					writer.writeCharacters(parser.getText());
 				} else if (event == XMLStreamConstants.END_ELEMENT) {
@@ -514,20 +521,6 @@ public class FileMerger {
 			}
 			parser.close();
 			fileCounter++;
-
-			// OutputStreamWriter osw = new OutputStreamWriter(os);
-			// String seperator = System.getProperty("line.separator");
-			//	
-			// InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-			// BufferedReader br = new BufferedReader(isr);
-			// String line;
-			// while ((line = br.readLine()) != null) {
-			// osw.write(line);
-			// osw.write(seperator);
-			// }
-			//	
-			// isr.close();
-			// osw.close();
 
 		}
 		writer.flush();

@@ -102,7 +102,7 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 			FileMerger.mergeFiles(format, tempFiles, localOutput);
 			
 			for (File file : tempFiles) {
-				//file.delete();
+				file.delete();
 			}
 		}
 	}

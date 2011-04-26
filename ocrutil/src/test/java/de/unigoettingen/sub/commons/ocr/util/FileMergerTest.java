@@ -22,6 +22,7 @@ public class FileMergerTest {
 	public void mergeFilesTest() {
 		File f1 = new File(getClass().getResource("/tmp.hocr1.html").getFile());
 		File f2 = new File(getClass().getResource("/tmp.hocr2.html").getFile());
+		File f3 = new File(getClass().getResource("/tmp.hocr3.html").getFile());
 		
 		URL root = getClass().getResource("/");
 		File out = new File(root.getPath() + "tmp.hocr");
@@ -30,6 +31,7 @@ public class FileMergerTest {
 		
 		images.add(f1);
 		images.add(f2);
+		images.add(f3);
 		
 		FileMerger.mergeFiles(OCRFormat.HOCR, images, out);
 		
