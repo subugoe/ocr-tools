@@ -98,7 +98,6 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 
 			File localOutput = getLocalOutput(output, "");
 
-			// TODO merger for HOCR
 			FileMerger.mergeFiles(format, tempFiles, localOutput);
 			
 			for (File file : tempFiles) {
