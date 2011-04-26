@@ -10,15 +10,34 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 
+/**
+ * Wrapper for the tesseract command-line tool. 
+ * 
+ * @author dennis
+ *
+ * 
+ */
+
 public class Tesseract {
 
 	protected static Logger logger = LoggerFactory.getLogger(Tesseract.class);
 	
+	/**
+	 * the command for the shell
+	 */
 	private final String tesseract = "tesseract";
 
+	/**
+	 * It this is empty, then tesseract will produce a text file.
+	 * Another option is currently 'hocr'
+	 */
 	private String format = "";
 	private File inputImage;
 	private File outputBase;
+	
+	/**
+	 * the corresponding language package must be installed on the system.
+	 */
 	private String language = "deu";
 
 	public Tesseract(File inputImage, File outputBase) {
@@ -26,10 +45,17 @@ public class Tesseract {
 		this.outputBase = outputBase;
 	}
 
+	/**
+	 * tesseract v3 only supports txt and hocr
+	 * @param format
+	 */
 	public void setFormat(String format) {
 		this.format = format;
 	}
 
+	/**
+	 * the corresponding language package must be installed on the system.
+	 */
 	public void setLanguage(String language) {
 		this.language = language;
 	}
@@ -40,6 +66,9 @@ public class Tesseract {
 
 	private boolean isGothic = false;
 
+	/**
+	 * Starts tesseract on the command line using the parameter fields
+	 */
 	public void execute() {
 
 		String postfix = isGothic ? "-frak" : "";
