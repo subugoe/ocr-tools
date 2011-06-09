@@ -26,7 +26,7 @@ import com.hazelcast.core.HazelcastInstance;
 import static java.lang.Thread.sleep;
 
 public class ZazelcastTest {
-	final static Logger logger = LoggerFactory.getLogger(HazelcastTest.class);
+	final static Logger logger = LoggerFactory.getLogger(ZazelcastTest.class);
 	static final Comparator<Item> ORDER = new ItemComparator();
 
 
@@ -70,6 +70,7 @@ public class ZazelcastTest {
             		
         JOptionPane.showMessageDialog(null, "Start Hazelcast");
 		q.addAll(queue);
+		
 		//sleep(500);
 		
 		System.out.println("++++++ B Start PriorityQueue SIZE +++++ "+ q.size());
