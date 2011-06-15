@@ -83,7 +83,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 	// TODO: Use static fields from the engine class here.
 	// The server url.
 	protected URI serverUri;
-
+	// time for sort
+	private Long time;
 	// The folder URLs.
 	protected URI inputUri, outputUri, errorUri;
 
@@ -854,4 +855,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 		this.test = test;
 	}
 
+	public Long getTime() {
+		return time;
+	}
+
+	public void setTime(Long time) {
+		this.time = time;
+	}
+
+	
 }
