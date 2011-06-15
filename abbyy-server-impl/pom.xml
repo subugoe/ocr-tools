@@ -92,6 +92,11 @@
 			<version>0.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast</artifactId>
+			<version>1.9.2</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.7</version>
