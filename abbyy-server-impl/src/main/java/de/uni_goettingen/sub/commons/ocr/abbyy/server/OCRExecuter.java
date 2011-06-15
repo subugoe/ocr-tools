@@ -18,8 +18,13 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
+
+
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -30,7 +35,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hazelcast.core.HazelcastInstance;
+
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
+
+
+
 
 /**
  * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
@@ -67,7 +77,16 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 */
 	private Condition unpaused = pauseLock.newCondition();
 
+	//Comparator 
+	static final Comparator<AbbyyOCRProcess> ORDER = new ItemComparator();
 	
+	//Hazelcast
+	protected HazelcastInstance h;
+	
+	// PriorityQueue for AbbyyOCRProcess
+	protected PriorityQueue<AbbyyOCRProcess> q ;
+	
+	protected Set <AbbyyOCRProcess> set; 
 
 	/**
 	 * hotfolder is used to access any file system like backend. This can be
@@ -97,11 +116,14 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 *            before they are executed. This queue will hold only the
 	 *            Runnable tasks submitted by the execute method.
 	 */
-	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder) {
+	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder, HazelcastInstance h) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
 		this.maxThreads = maxThreads;
 		this.hotfolder = hotfolder;
+		this.h = h;
+		q = new PriorityQueue<AbbyyOCRProcess>(100, ORDER);
+		set = h.getSet("default");
 	}
 
 	/*
@@ -116,6 +138,17 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		super.beforeExecute(t, r);
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
+			set.add(abbyyOCRProcess);
+			q.clear();
+			q.addAll(set);
+			AbbyyOCRProcess a = q.poll();
+			while (!a.getName().equals(abbyyOCRProcess.getName())) {
+				q.clear();
+				q.addAll(set);
+				a = q.poll();
+			}
+			set.remove(abbyyOCRProcess);
+			
 			try {
 				getFileSize(abbyyOCRProcess);
 			} catch (IllegalStateException e1) {
