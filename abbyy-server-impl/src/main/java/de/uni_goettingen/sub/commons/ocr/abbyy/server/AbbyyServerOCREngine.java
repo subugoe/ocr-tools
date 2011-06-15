@@ -33,6 +33,9 @@ import org.apache.commons.vfs.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.AbstractHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
@@ -79,6 +82,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	// OCR Processes
 	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
 
+	protected HazelcastInstance h = Hazelcast.newHazelcastInstance(null);
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
@@ -101,7 +105,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	protected void start() {
 		started = true;
-		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder);
+		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder, h);
 
 		for (OCRProcess process : getOcrProcess()) {
 			AbbyyOCRProcess p = (AbbyyOCRProcess) process;
@@ -124,7 +128,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		} catch (InterruptedException e) {
 			logger.error("Got a problem with thread pool: ", e);
 		}
-
+		h.shutdown();
 	}
 
 	/**
