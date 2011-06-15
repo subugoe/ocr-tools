@@ -20,6 +20,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Queue;
@@ -113,6 +114,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		// TODO: Try to use only one loop
 		// TODO: check if we really need the Queue here
 		for (AbbyyOCRProcess p : processes) {
+			p.setTime(new Date().getTime());			
 			pool.execute(p);
 		}
 
