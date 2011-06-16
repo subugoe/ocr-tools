@@ -27,6 +27,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -77,7 +78,11 @@ import de.unigoettingen.sub.commons.util.file.FileUtils;
  * 
  */
 public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
-		Hotfolder {
+		Hotfolder, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// The Constant logger.
 	final static Logger logger = LoggerFactory
 			.getLogger(JackrabbitHotfolderImpl.class);

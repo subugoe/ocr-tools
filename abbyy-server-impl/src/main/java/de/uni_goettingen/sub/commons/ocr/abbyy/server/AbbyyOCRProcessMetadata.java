@@ -20,6 +20,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import java.util.Collections;
@@ -43,7 +44,12 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
  * for accuracy or to save it for further processing.
  */
 public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
-		implements OCRProcessMetadata {
+		implements OCRProcessMetadata, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/** The xml result document. */
 	protected static XmlResultDocument xmlResultDocument;
