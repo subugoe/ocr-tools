@@ -78,7 +78,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	private Condition unpaused = pauseLock.newCondition();
 
 	//Comparator 
-	static final Comparator<AbbyyOCRProcess> ORDER = new ItemComparator();
+	protected static Comparator<AbbyyOCRProcess> ORDER;
 	
 	//Hazelcast
 	protected HazelcastInstance h;
@@ -122,8 +122,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		this.maxThreads = maxThreads;
 		this.hotfolder = hotfolder;
 		this.h = h;
+		ORDER = new ItemComparator();
 		q = new PriorityQueue<AbbyyOCRProcess>(100, ORDER);
-		set = h.getSet("default");
+		set = h.getSet("ocrProcess");
 	}
 
 	/*
@@ -141,11 +142,11 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			set.add(abbyyOCRProcess);
 			q.clear();
 			q.addAll(set);
-			AbbyyOCRProcess a = q.poll();
-			while (!a.getName().equals(abbyyOCRProcess.getName())) {
+			AbbyyOCRProcess abbyy = q.poll();
+			while (!abbyy.getiD_Process().equals(abbyyOCRProcess.getiD_Process())) {
 				q.clear();
 				q.addAll(set);
-				a = q.poll();
+				abbyy = q.poll();
 			}
 			set.remove(abbyyOCRProcess);
 			
