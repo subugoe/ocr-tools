@@ -316,17 +316,18 @@ public interface OCRProcess {
 		/**High job priority*/
 		HIGH("High"),
 		
+		/** Above normal job priority */
+		ABOVENORMAL("AboveNormal"),
+		
 		/** Normal job priority */
 		NORMAL("Normal"),
 
-		/** Low job priority */
-		LOW("Low"),
-
 		/** Below normal job priority */
 		BELOWNORMAL("BelowNormal"),
+		
+		/** Low job priority */
+		LOW("Low");
 
-		/** Above normal job priority */
-		ABOVENORMAL("AboveNormal");
 		
 		private final String value;
 
