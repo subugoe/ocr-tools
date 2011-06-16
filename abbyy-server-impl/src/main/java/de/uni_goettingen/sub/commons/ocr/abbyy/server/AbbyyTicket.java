@@ -100,8 +100,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	protected final static ImageProcessingParams imageProcessingSettings;
 
 	// TODO: Add priorities: Low, BelowNormal, Normal, AboveNormal, High
-	protected String priority = "Normal";
-
+	//protected String priority = "Normal";
+	protected final static Map<OCRPriority, String> PRIORITY_MAP;
+	
 	protected static String encoding = "UTF8";
 
 	/** The timeout for the process */
@@ -300,7 +301,15 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		TEXTTYP_MAP.put(OCRTextTyp.OCR_B, "OCR_B");
 		TEXTTYP_MAP.put(OCRTextTyp.MICR_E13B, "MICR_E13B");
 		TEXTTYP_MAP.put(OCRTextTyp.GOTHIC, "Gothic");
-
+		
+		//priorities: Low, BelowNormal, Normal, AboveNormal, High
+		PRIORITY_MAP = new HashMap<OCRPriority, String>();		
+		PRIORITY_MAP.put(OCRPriority.HIGH, "High");
+		PRIORITY_MAP.put(OCRPriority.ABOVENORMAL, "AboveNormal");
+		PRIORITY_MAP.put(OCRPriority.NORMAL, "Normal");
+		PRIORITY_MAP.put(OCRPriority.BELOWNORMAL, "BelowNormal");
+		PRIORITY_MAP.put(OCRPriority.LOW, "Low");
+		
 		imageProcessingSettings = ImageProcessingParams.Factory.newInstance();
 
 		FORMAT_MAPPING = new HashMap<OCRFormat, String>();
@@ -401,9 +410,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		imageProcessingParams.setDeskew(false);
 		ticket.setImageProcessingParams(imageProcessingParams);
 
-		if (ticket.getPriority()== null) {
-			ticket.setPriority(priority);
-		}else ticket.getPriority();
+		if (priority != null) {
+			ticket.setPriority(PRIORITY_MAP.get(getPriority()));
+		}//else ticket.getPriority();
 
 		if (texttyp != null) {
 			recognitionSettings.setTextTypeArray(new String[] { TEXTTYP_MAP
