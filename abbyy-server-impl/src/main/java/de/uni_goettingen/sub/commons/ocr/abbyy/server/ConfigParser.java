@@ -94,7 +94,8 @@ public class ConfigParser {
 	public final static String PARAMETER_LOCALOUTPUTLOCATION = "localOutputLocation";
 	public final static String DEFAULT_LOCALOUTPUTLOCATION = ".";
 	protected String serverOutputLocation, localOutputLocation;
-
+    //ID Process
+	protected String id_Process;
 	//Process specific settings
 	public final static Boolean DEFAULT_COPYONLY = false;
 	public final static String PARAMETER_COPYONLY = "copyOnly";
@@ -212,6 +213,8 @@ public class ConfigParser {
 		maxMillisPerFile = config.getLong(PARAMETER_MAXMILLISPERFILE, DEFAULT_MAXMILLISPERFILE);
 		maxOCRTimeout = config.getLong(PARAMETER_MAXOCRTIMEOUT, DEFAULT_MAXOCRTIMEOUT);
 
+		id_Process = java.util.UUID.randomUUID().toString();
+		
 		copyOnly = config.getBoolean(PARAMETER_COPYONLY, DEFAULT_COPYONLY);
 		dryRun = config.getBoolean(PARAMETER_DRYRUN, DEFAULT_DRYRUN);
 		checkInterval = config.getLong(PARAMETER_CHECKINTERVAL, DEFAULT_CHECKINTERVAL);
@@ -407,6 +410,14 @@ public class ConfigParser {
 	 */
 	public String getTicketTmpStore () {
 		return ticketTmpStore;
+	}
+
+	public String getId_Process() {
+		return id_Process;
+	}
+
+	public void setId_Process(String id_Process) {
+		this.id_Process = id_Process;
 	}
 
 }
