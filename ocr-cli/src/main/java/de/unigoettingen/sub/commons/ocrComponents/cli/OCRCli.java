@@ -53,6 +53,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
@@ -107,7 +108,10 @@ public class OCRCli {
 
 	/** The ocr text typ. */
 	private static String ocrTextTyp = null;
-
+	
+	/** The ocr ocrPriority typ. */
+	private static String ocrPriority = null;
+	
 	/** The engine. */
 	protected static OCREngine engine;
 
@@ -133,6 +137,7 @@ public class OCRCli {
 		opts.addOption("e", true, "File extension (default \"tif\")");
 		opts.addOption("t", true, "OCRTextTyp");
 		opts.addOption("o", true, "Output folder");
+		opts.addOption("p", true, "Priority");
 	}
 
 	/**
@@ -223,6 +228,7 @@ public class OCRCli {
 					}
 					// add language
 					aop.setLanguages(langs);
+					aop.setPriority(OCRPriority.valueOf(ocrPriority));
 					aop.setTextTyp(OCRTextTyp.valueOf(ocrTextTyp));
 					engine.addOcrProcess(aop);
 				}
@@ -387,6 +393,7 @@ public class OCRCli {
 				ocrTextTyp = cmd.getOptionValue("t");
 				try {
 					OCRProcess.OCRTextTyp.valueOf(ocrTextTyp).ordinal();
+					logger.trace("ocrTextTyp: " + ocrTextTyp);
 				} catch (IllegalArgumentException e) {
 					logger.error("the process ended, This ocrTextTyp < "
 							+ ocrTextTyp + " > is not supported");
@@ -394,6 +401,23 @@ public class OCRCli {
 
 				}
 			}
+		}
+		
+		//Priority
+		if (cmd.hasOption("p")) {
+			if (cmd.getOptionValue("p") != null
+					&& !cmd.getOptionValue("p").equals("")) {
+				ocrPriority = cmd.getOptionValue("p");
+				try {
+					OCRProcess.OCRPriority.valueOf(ocrPriority).ordinal();
+					logger.trace("ocrPriority: " + ocrPriority);
+				} catch (IllegalArgumentException e) {
+					logger.error("the process ended, This ocrPriority < "
+							+ ocrPriority + " > is not supported");
+					System.exit(0);
+
+				}
+			}else ocrPriority = "NORMAL";
 		}
 		// Output foler
 		if (cmd.hasOption("o")) {
