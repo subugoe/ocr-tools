@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -65,7 +66,7 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 /**
  * The Class AbbyyOCRProcess.
  */
-public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
+public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializable,
 		Runnable {
 
 	// TODO: Make sure that the Executor reads the size and count of the remote
@@ -76,6 +77,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 	// interface for this
 	// TODO: make the priority configurable
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// The Constant logger.
 	public final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcess.class);
@@ -121,7 +126,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 	private Long maxFiles;
 
 	private Long totalFileCount;
-
+	//ID Nr for AbbyyOCRProcess
+	private String iD_Process ;
 	private Long totalFileSize = 0l;
 	static Object monitor;
 
@@ -148,7 +154,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 			// config = config.parse();
 			throw new IllegalStateException();
 		}
-
+		iD_Process = config.getId_Process();
 		// Set constrains
 		maxSize = config.getMaxSize();
 		maxFiles = config.getMaxFiles();
@@ -861,6 +867,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,
 
 	public void setTime(Long time) {
 		this.time = time;
+	}
+
+	public String getiD_Process() {
+		return iD_Process;
+	}
+
+	public void setiD_Process(String iD_Process) {
+		this.iD_Process = iD_Process;
 	}
 
 	
