@@ -50,14 +50,16 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
+
 
 @SuppressWarnings("serial")
 public class AbbyyOCRProcessTest {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcessTest.class);
 	public static File BASEFOLDER_FILE = AbbyyTicketTest.BASEFOLDER_FILE;
 	public static List<String> TEST_FOLDERS;
-
+	protected static String extension = "tif";
 	static {
 		TEST_FOLDERS = new ArrayList<String>() {
 			{
@@ -80,12 +82,15 @@ public class AbbyyOCRProcessTest {
 		for (String book : TEST_FOLDERS) {
 			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
-			AbbyyOCRProcess aop = AbbyyServerOCREngine.getInstance().createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
-			assertNotNull(aop);
-			aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
-			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
-			aop.write(new FileOutputStream(testTicket), testDir.getName());
-			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
+			if (OCRUtil.makeFileList(testDir, extension).size() != 0) {
+				logger.debug("Creating Process for " + testDir.toString());
+				AbbyyOCRProcess aop = (AbbyyOCRProcess) AbbyyServerOCREngine.getInstance().newOcrProcess();
+				assertNotNull(aop);
+				aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
+				File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
+				aop.write(new FileOutputStream(testTicket), testDir.getName());
+				logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
+			}
 		}
 	}
 
@@ -94,13 +99,16 @@ public class AbbyyOCRProcessTest {
 		for (String book : TEST_FOLDERS) {
 			File testDir = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
-			AbbyyOCRProcess aop = AbbyyServerOCREngine.getInstance().createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
-			assertNotNull(aop);
-			aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
-			File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
-			aop.write(new FileOutputStream(testTicket), testDir.getName());
-			logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
-			assertTrue("This fails if the number of files between ticket and file system differs.", AbbyyTicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
+			if (OCRUtil.makeFileList(testDir, extension).size() != 0) {
+				logger.debug("Creating Process for " + testDir.toString());
+				AbbyyOCRProcess aop = (AbbyyOCRProcess) AbbyyServerOCREngine.getInstance().newOcrProcess();
+				assertNotNull(aop);
+				aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
+				File testTicket = new File(BASEFOLDER_FILE.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book + ".xml");
+				aop.write(new FileOutputStream(testTicket), testDir.getName());
+				logger.debug("Wrote AbbyyTicket:\n" + StreamUtils.dumpInputStream(new FileInputStream(testTicket)));
+				assertTrue("This fails if the number of files between ticket and file system differs.", AbbyyTicketTest.parseFilesFromTicket(testTicket).size() == aop.getOcrImages().size());
+			}
 		}
 	}
 
