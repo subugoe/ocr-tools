@@ -60,7 +60,7 @@ public class JackrabbitHotfolderImpTest {
 	XmlResult xm ;
 	protected static DocumentDocument documentDocument;
 	Document doc;
-	
+	//private static File BASEFOLDER_FILE;
 	static JackrabbitHotfolderImpl imp;
 	static File WEBDAV;
 	final static Logger logger = LoggerFactory
@@ -68,7 +68,9 @@ public class JackrabbitHotfolderImpTest {
 
 	@Before
 	public void setUp() throws Exception {
-		File file = getBaseFolderAsFile();
+		File file = new File(System.getProperty("user.dir")
+				+ "/src/test/resources");
+		//File file = getBaseFolderAsFile();
 	    WEBDAV = new File(file.toString() + "/WEBDAV");
 		WEBDAV.mkdir();
 	    server = new Server(8090);
