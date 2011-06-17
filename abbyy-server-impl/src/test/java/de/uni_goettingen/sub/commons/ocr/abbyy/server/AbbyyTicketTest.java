@@ -111,7 +111,7 @@ public class AbbyyTicketTest {
 
 		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>() {
 			{
-				put(OCRFormat.PDF, aoo);
+			//	put(OCRFormat.PDF, aoo);
 				put(OCRFormat.XML, aoo);
 			}
 		};
