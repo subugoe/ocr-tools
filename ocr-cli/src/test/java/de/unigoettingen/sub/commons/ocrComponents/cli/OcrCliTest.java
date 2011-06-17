@@ -45,7 +45,7 @@ public class OcrCliTest {
 		args[0] = "-l de,en";
 		args[1] = "-o /src/test/java/output";
 		args[2] = "-fTXT,PDF";
-		args[3] = "-tNormal";
+		args[3] = "-tNORMAL";
 		args[4] = "/src/test/java/books";
 		files = ocrCli.configureFromArgs(args);
 
