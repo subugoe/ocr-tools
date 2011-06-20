@@ -19,7 +19,7 @@ public class Main {
 	public static void main(String[] args) throws InterruptedException {
 		logger.debug(" 1 Sart");
 		AbbyyOCREngine engine = AbbyyOCREngine.getInstance();
-		JOptionPane.showMessageDialog(null, "Start Hazelcast 1");
+		//JOptionPane.showMessageDialog(null, "Start Hazelcast 1");
 		engine.recognize();
 		System.out.println("############ 1 FINISCHED         ##################");
 	}
