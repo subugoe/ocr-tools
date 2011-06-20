@@ -68,7 +68,7 @@ public class ZazelcastTest {
              queue.add(a);       	
         }
             		
-        JOptionPane.showMessageDialog(null, "Start Hazelcast");
+   //     JOptionPane.showMessageDialog(null, "Start Hazelcast");
 		q.addAll(queue);
 		
 		//sleep(500);
