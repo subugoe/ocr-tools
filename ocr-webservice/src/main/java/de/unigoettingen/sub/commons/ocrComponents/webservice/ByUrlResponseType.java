@@ -26,7 +26,7 @@ public class ByUrlResponseType {
     protected int returncode;
     @XmlElement(required = true)
     protected String message;
-    protected int toolProcessingTime;
+    protected Long toolProcessingTime;
     @XmlElement(required = true)
     protected String processingLog;
     @XmlElement(required = true)
@@ -99,7 +99,7 @@ public class ByUrlResponseType {
      * Gets the value of the toolProcessingTime property.
      * 
      */
-    public int getToolProcessingTime() {
+    public Long getToolProcessingTime() {
         return toolProcessingTime;
     }
 
@@ -107,7 +107,7 @@ public class ByUrlResponseType {
      * Sets the value of the toolProcessingTime property.
      * 
      */
-    public void setToolProcessingTime(int value) {
+    public void setToolProcessingTime(Long value) {
         this.toolProcessingTime = value;
     }
 
