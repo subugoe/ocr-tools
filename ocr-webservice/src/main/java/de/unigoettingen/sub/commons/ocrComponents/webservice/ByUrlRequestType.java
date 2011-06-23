@@ -19,7 +19,7 @@ public class ByUrlRequestType {
 
 	@XmlElement(defaultValue = "NORMAL")
 	protected OCRPriority ocrPriorityType;
-	@XmlElement(defaultValue = "GOTHIC")
+	@XmlElement(defaultValue = "NORMAL")
 	protected OCRTextTyp textType;
 	@XmlElement(defaultValue = "TXT")
 	protected OCRFormat outputFormat;
