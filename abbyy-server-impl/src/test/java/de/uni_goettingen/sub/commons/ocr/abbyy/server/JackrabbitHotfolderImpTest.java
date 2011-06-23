@@ -133,7 +133,7 @@ public class JackrabbitHotfolderImpTest {
 		}	
 	}
 	
-	
+
 	@Test
 	public void testdelete() throws Exception {
 		imp.delete(new URI("http://localhost:8090/TestA"));
