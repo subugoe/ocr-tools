@@ -69,7 +69,7 @@ public class AbbyyTicketTest {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyTicketTest.class);
 	public static String EXTENSION = "tif";
 	public static File BASEFOLDER_FILE;
-	public static String OUTPUT_LOCATION = "D:\\Recognition\\GDZ\\output";
+//	public static String OUTPUT_LOCATION = "D:\\Recognition\\GDZ\\output";
 	public static String RESULTS = "results";
 	public static File TICKET_FILE;
 	public static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
@@ -106,7 +106,7 @@ public class AbbyyTicketTest {
 		}
 
 		final AbbyyOCROutput aoo = new AbbyyOCROutput(resultUri);
-		aoo.setRemoteLocation(OUTPUT_LOCATION);
+//		aoo.setRemoteLocation(OUTPUT_LOCATION);
 		aoo.setRemoteFilename("result");
 
 		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>() {
@@ -215,8 +215,7 @@ public class AbbyyTicketTest {
 				logger.debug("Output location for format " + format.name()
 						+ " is " + location);
 				assertTrue(OUTPUT_DEFINITIONS.containsKey(format));
-				assertTrue(((AbbyyOCROutput) OUTPUT_DEFINITIONS.get(format))
-						.getRemoteLocation().equals(location));
+//				assertTrue(((AbbyyOCROutput) OUTPUT_DEFINITIONS.get(format)).getRemoteLocation().equals(location));
 			}
 		}
 	}
