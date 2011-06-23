@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "RecognitionLanguages", propOrder = { "recognitionLanguage" })
 public class RecognitionLanguages {
 
-	//@XmlElement(defaultValue = "German")
+	@XmlElement(defaultValue = "GERMAN")
 	protected List<RecognitionLanguage> recognitionLanguage;
 
 	public List<RecognitionLanguage> getRecognitionLanguage() {
