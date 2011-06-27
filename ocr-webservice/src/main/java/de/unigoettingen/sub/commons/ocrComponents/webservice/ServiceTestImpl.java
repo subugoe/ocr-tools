@@ -247,6 +247,7 @@ public class ServiceTestImpl implements ServiceTest {
 
 			logger.info("Starting recognize method");
 			engine.recognize();
+			file.delete();
 			endTime = System.currentTimeMillis();
 			File f = new File(PATH_PARENT+ "/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase());
 			if( f.exists()){
