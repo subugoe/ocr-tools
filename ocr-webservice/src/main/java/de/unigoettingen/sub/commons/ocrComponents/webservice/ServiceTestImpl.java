@@ -1,6 +1,8 @@
 package de.unigoettingen.sub.commons.ocrComponents.webservice;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -12,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 
@@ -44,7 +47,7 @@ public class ServiceTestImpl implements ServiceTest {
 			.getLogger(ServiceTestImpl.class);
 	/** The engine. */
 	protected static OCREngine engine;
-	protected static String PATH_PARENT = "C:/xampp/webdav/Test";
+	protected static String PATH_PARENT;
 
 	/** The language. */
 	protected static Set<Locale> langs;
@@ -158,6 +161,17 @@ public class ServiceTestImpl implements ServiceTest {
 		OCREngineFactory ocrEngineFactory = (OCREngineFactory) factory
 		.getBean("OCREngineFactory");
 
+		Properties properties = new Properties();
+    	BufferedInputStream stream;
+		try {
+			stream = new BufferedInputStream(new FileInputStream("webservice-config.properties"));
+			properties.load(stream);
+			stream.close();
+		} catch (IOException e) {
+			logger.error("Error reading configuration", e);
+		}
+		PATH_PARENT = properties.getProperty("path");
+		
 		engine = ocrEngineFactory.newOcrEngine();
 		OCRProcess aop = engine.newOcrProcess();
 		startTime = System.currentTimeMillis();
