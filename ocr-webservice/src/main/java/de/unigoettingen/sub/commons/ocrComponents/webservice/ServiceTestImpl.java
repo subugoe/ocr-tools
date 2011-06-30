@@ -1,9 +1,10 @@
 package de.unigoettingen.sub.commons.ocrComponents.webservice;
 
-import java.io.BufferedInputStream;
+
 import java.io.File;
-import java.io.FileInputStream;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,8 +48,8 @@ public class ServiceTestImpl implements ServiceTest {
 			.getLogger(ServiceTestImpl.class);
 	/** The engine. */
 	protected static OCREngine engine;
-	protected static String PATH_PARENT;
-
+	protected static String WEBSERVER_PATH;
+	protected static String LOCAL_PATH;
 	/** The language. */
 	protected static Set<Locale> langs;
 	/** The OUTPU t_ definitions. */
@@ -154,109 +155,118 @@ public class ServiceTestImpl implements ServiceTest {
 	}
 	
 	@Override
-	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType part1)    {
-		
+	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType part1) {
+
 		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
-		"contentWebservice.xml"));
+				"contentWebservice.xml"));
 		OCREngineFactory ocrEngineFactory = (OCREngineFactory) factory
-		.getBean("OCREngineFactory");
+				.getBean("OCREngineFactory");
 
 		Properties properties = new Properties();
-    	BufferedInputStream stream;
+		InputStream stream;
 		try {
-			stream = new BufferedInputStream(new FileInputStream("webservice-config.properties"));
+			stream = getClass().getResource("/webservice-config.properties")
+					.openStream();
 			properties.load(stream);
 			stream.close();
 		} catch (IOException e) {
 			logger.error("Error reading configuration", e);
 		}
-		PATH_PARENT = properties.getProperty("path");
-		
+		WEBSERVER_PATH = properties.getProperty("webserverpath");
+		LOCAL_PATH = properties.getProperty("localpath");
 		engine = ocrEngineFactory.newOcrEngine();
 		OCRProcess aop = engine.newOcrProcess();
 		startTime = System.currentTimeMillis();
-		if(part1.getInputUrl() != null && part1.getInputUrl().startsWith("http") && part1.getInputUrl().endsWith("tif")){
+		if (part1.getInputUrl() != null
+				&& part1.getInputUrl().startsWith("http")
+				&& part1.getInputUrl().endsWith("tif")) {
 			List<OCRImage> imgs = new ArrayList<OCRImage>();
 			URL inputuri = null;
 			String[] urlParts;
-			
+
 			try {
-				inputuri = new URL(part1.getInputUrl());			
+				inputuri = new URL(part1.getInputUrl());
 			} catch (MalformedURLException e) {
 				endTime = System.currentTimeMillis();
 				duration = endTime - startTime;
 				logger.error("URL is Mal formed: " + part1.getInputUrl());
-				byUrlResponseType.setMessage("Process finished unsuccessfully after " + duration + " milliseconds.");
-				byUrlResponseType.setOutputUrl("Output Url: ...");
-				byUrlResponseType.setProcessingLog("URL is Mal formed: " + part1.getInputUrl());
-				byUrlResponseType.setProcessingUnit(PATH_PARENT);
-				byUrlResponseType.setReturncode(1);
-				byUrlResponseType.setSuccess(false);
-				byUrlResponseType.setToolProcessingTime(duration);
-				return byUrlResponseType;				
-			} 
+				String error = "URL is Mal formed: " + part1.getInputUrl();
+				return byURLresponse(duration, error);
+			}
+
 			urlParts = inputuri.toString().split("/");
 			parent = urlParts[urlParts.length - 2];
 			jobName = urlParts[urlParts.length - 1].replace(".tif", "");
-			File file = new File(PATH_PARENT + "/" + parent + "/" + jobName + "/" + urlParts[urlParts.length - 1]);
+			File file = new File(LOCAL_PATH + "/" + parent + "/" + jobName
+					+ "/" + urlParts[urlParts.length - 1]);
+
 			try {
 				FileUtils.copyURLToFile(inputuri, file);
-			} catch (IOException e) {		
+			} catch (IOException e) {
 				logger.error("ERROR CAN NOT COPY URL To File");
 				endTime = System.currentTimeMillis();
 				duration = endTime - startTime;
-				byUrlResponseType.setMessage("Process finished unsuccessfully after " + duration + " milliseconds.");
-				byUrlResponseType.setOutputUrl("Output Url: ...");
-				byUrlResponseType.setProcessingLog("ERROR CAN NOT COPY URL: "+ part1.getInputUrl() +" To Local File");
-				byUrlResponseType.setProcessingUnit(PATH_PARENT);
-				byUrlResponseType.setReturncode(1);
-				byUrlResponseType.setSuccess(false);
-				byUrlResponseType.setToolProcessingTime(duration);
-				return byUrlResponseType;	
-				
+				String error = "ERROR CAN NOT COPY URL: " + part1.getInputUrl()
+						+ " To Local File";
+				return byURLresponse(duration, error);
+
 			}
+
 			aop.setName(jobName);
 			OCRImage aoi = engine.newOcrImage(file.toURI());
 			aoi.setSize(file.length());
 			imgs.add(aoi);
 			aop.setOcrImages(imgs);
-			
+
 			// add format
 			OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();
-			
+
 			OCRFormat ocrformat = part1.getOutputFormat();
-			OCROutput aoo = engine.newOcrOutput();	
+			OCROutput aoo = engine.newOcrOutput();
 			URI uri = null;
 			try {
-				uri = new URI(new File(PATH_PARENT).toURI() + "/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase());
+				uri = new URI(new File(WEBSERVER_PATH).toURI() + "/" + parent
+						+ "/" + jobName + "."
+						+ ocrformat.toString().toLowerCase());
 			} catch (URISyntaxException e) {
-				logger.error("URL is Mal formed: " + PATH_PARENT + "/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase());
+				logger.error("URL is Mal formed: " + WEBSERVER_PATH + "/"
+						+ parent + "/" + jobName + "."
+						+ ocrformat.toString().toLowerCase());
 			}
-					// logger.debug("output Location " + uri.toString());
+			// logger.debug("output Location " + uri.toString());
 			aoo.setUri(uri);
 			OUTPUT_DEFINITIONS.put(ocrformat, aoo);
 			aop.addOutput(ocrformat, aoo);
 			langs = new HashSet<Locale>();
-			for(RecognitionLanguage r : part1.getOcrlanguages().getRecognitionLanguage()){		
+			for (RecognitionLanguage r : part1.getOcrlanguages()
+					.getRecognitionLanguage()) {
 				langs.add(LANGUAGE_MAP.get(r));
 			}
 			aop.setLanguages(langs);
-			aop.setPriority(OCRPriority.fromValue(part1.getOcrPriorityType().value()));
+			aop.setPriority(OCRPriority.fromValue(part1.getOcrPriorityType()
+					.value()));
 			aop.setTextTyp(OCRTextTyp.fromValue(part1.getTextType().value()));
 			engine.addOcrProcess(aop);
 
 			logger.info("Starting recognize method");
 			engine.recognize();
 			file.delete();
+			try {
+				FileUtils.deleteDirectory(file.getParentFile());
+				FileUtils.deleteDirectory(new File(LOCAL_PATH + "/" + parent));
+			} catch (IOException e) {
+				logger.error("ERROR CAN NOT deleteDirectory");
+			}
 			endTime = System.currentTimeMillis();
-			File f = new File(PATH_PARENT+ "/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase());
+			File f = new File(WEBSERVER_PATH + "/" + parent + "/" + jobName
+					+ "." + ocrformat.toString().toLowerCase());
 			if( f.exists()){
 				duration = endTime - startTime;
 				byUrlResponseType.setMessage("Process finished successfully after " + duration + " milliseconds.");
-				byUrlResponseType.setOutputUrl("http://localhost/webdav/Test/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase());
+				byUrlResponseType.setOutputUrl(WEBSERVER_PATH + "/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase());
 				byUrlResponseType.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
 													"Using service: IMPACT Abbyy Fine Reader 2 Service "+ "\n" +
-													"Parameter processingUnit: http://localhost/webdav/Test/"+ "\n" +
+													"Parameter processingUnit: "+ WEBSERVER_PATH + "\n" +
 													"URL of input image: "+ part1.getInputUrl()+ "\n" +
 													"Wrote file " + file.toString()+  "\n" +
 													"OUTFORMAT substitution variable value: "+ocrformat.toString()+ "\n" +
@@ -266,30 +276,36 @@ public class ServiceTestImpl implements ServiceTest {
 													"INTEXTTYPE substitution variable value: "+ part1.getTextType().value()+ "\n" +
 													"Process finished successfully with code 0."+ "\n" +
 													"Output file has been created successfully.."+ "\n" +
-													"Output Url: http://localhost/webdav/Test/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
-													"Output Url-Abbyy-Result : http://localhost/webdav/Test/" + parent + "/" + jobName	+ ".xml.result.xml" + "\n" +
-													"Output Url-Summary-File : http://localhost/webdav/Test/" + parent + "/" + jobName	+ "-textMD.xml" + "\n" + 
-													"Process finished unsuccessfully after " + duration + " milliseconds."
+													"Output Url: " + WEBSERVER_PATH + "/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
+													"Output Url-Abbyy-Result : " + WEBSERVER_PATH + "/" + parent + "/" + jobName	+ ".xml.result.xml" + "\n" +
+													"Output Url-Summary-File : " + WEBSERVER_PATH + "/" + parent + "/" + jobName	+ "-textMD.xml" + "\n" + 
+													"Process finished successfully after " + duration + " milliseconds."
 													);
 				
-				byUrlResponseType.setProcessingUnit("http://localhost/webdav/Test/");
+				byUrlResponseType.setProcessingUnit(WEBSERVER_PATH);
 				byUrlResponseType.setReturncode(0);
 				byUrlResponseType.setSuccess(true);
 				byUrlResponseType.setToolProcessingTime(duration);			
 			}		
-		}else {
+		} else {
 			duration = endTime - startTime;
-			byUrlResponseType.setMessage("Process finished unsuccessfully after " + duration + " milliseconds.");
-			byUrlResponseType.setOutputUrl("Output Url: ...");
-			byUrlResponseType.setProcessingLog("ERROR: " +part1.getInputUrl()+" is null or No URL or no Image from type tif");
-			byUrlResponseType.setProcessingUnit("http://localhost/webdav/Test/");
-			byUrlResponseType.setReturncode(1);
-			byUrlResponseType.setSuccess(false);
-			byUrlResponseType.setToolProcessingTime(duration);
-			return byUrlResponseType;
+			String error = "ERROR: " + part1.getInputUrl()
+					+ " is null or No URL or no Image from type tif";
+			return byURLresponse(duration, error);
 		}
-		
+
 		return byUrlResponseType;
 	}
 
+	ByUrlResponseType byURLresponse(Long duration, String error) {
+		byUrlResponseType.setMessage("Process finished unsuccessfully after "
+				+ duration + " milliseconds.");
+		byUrlResponseType.setOutputUrl("Output Url: ...");
+		byUrlResponseType.setProcessingLog(error);
+		byUrlResponseType.setProcessingUnit(WEBSERVER_PATH);
+		byUrlResponseType.setReturncode(1);
+		byUrlResponseType.setSuccess(false);
+		byUrlResponseType.setToolProcessingTime(duration);
+		return byUrlResponseType;
+	}
 }
