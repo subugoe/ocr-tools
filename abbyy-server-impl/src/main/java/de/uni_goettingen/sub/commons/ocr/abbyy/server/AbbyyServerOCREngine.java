@@ -90,7 +90,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	protected Hotfolder hotfolder;
 	protected OCRProcessMetadata ocrProcessMetadata;
 	/** single instance of AbbyyServerOCREngine. */
-	private static AbbyyServerOCREngine _instance;
+	private static AbbyyServerOCREngine _instance, newInstance;
 
 	// The check server state.
 	protected static Boolean checkServerState = true;
@@ -363,13 +363,13 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 	public static AbbyyServerOCREngine getNewOCREngine() {	
 			try {
-				_instance = new AbbyyServerOCREngine();
+				newInstance = new AbbyyServerOCREngine();
 			} catch (ConfigurationException e) {
 				logger.error("Can't read configuration", e);
 				throw new OCRException(e);
 			}
 
-		return _instance;
+		return newInstance;
 	}
 	/*
 	 * (non-Javadoc)
