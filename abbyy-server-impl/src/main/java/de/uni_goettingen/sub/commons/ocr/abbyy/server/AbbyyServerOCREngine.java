@@ -19,11 +19,21 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,9 +50,11 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.AbstractHotfolde
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
+import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
@@ -59,11 +71,15 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	public static final String name = "0.5";
 	public static final String version = AbbyyServerOCREngine.class
 			.getSimpleName();
-
+	protected int divNumber, restNumber, splitNumberForSubProcess, imagesNumberForSubprocess = 15;
 	// The max threads.
 	protected static Integer maxThreads;
 	// protected ExecutorService pool = new OCRExecuter(maxThreads);
-
+	// The done date.
+	protected Long startTimeForProcess = null;
+	protected AbbyySerializerTextMD abbyySerializerTextMD;
+	// The done date.
+	protected Long endTimeForProcess = null;
 	/** The Constant logger. */
 	final static Logger logger = LoggerFactory
 			.getLogger(AbbyyServerOCREngine.class);
@@ -72,16 +88,17 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	protected static ConfigParser config;
 
 	protected Hotfolder hotfolder;
-
+	protected OCRProcessMetadata ocrProcessMetadata;
 	/** single instance of AbbyyServerOCREngine. */
 	private static AbbyyServerOCREngine _instance;
 
 	// The check server state.
 	protected static Boolean checkServerState = true;
+	protected static Boolean rest = false;
 
 	// OCR Processes
 	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
-
+	
 	protected HazelcastInstance h = Hazelcast.newHazelcastInstance(null);
 	/**
 	 * Instantiates a new abbyy server engine.
@@ -109,19 +126,177 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 		for (OCRProcess process : getOcrProcess()) {
 			AbbyyOCRProcess p = (AbbyyOCRProcess) process;
-
 			processes.add(p);
 
 		}
 		// pool.e
 
-		// TODO: Try to use only one loop
-		// TODO: check if we really need the Queue here
 		for (AbbyyOCRProcess p : processes) {
-			p.setTime(new Date().getTime());			
-			pool.execute(p);
+			ocrProcessMetadata = new AbbyyOCRProcessMetadata();
+			startTimeForProcess = System.currentTimeMillis();
+			ocrProcessMetadata.setEncoding("UTF-8");
+			StringBuffer sbProcessingNote = new StringBuffer();
+			BigDecimal totalChar = new BigDecimal(0), totalUncerChar = new BigDecimal(0);
+			List <String> urlLocalforSubProcess = new ArrayList<String>();
+			Set <String> outpuFormat = new HashSet<String>();
+			if(p.getOcrImages().size() > (imagesNumberForSubprocess + imagesNumberForSubprocess/2)){		
+				divNumber = p.getOcrImages().size()/imagesNumberForSubprocess;
+				restNumber= (p.getOcrImages().size() % imagesNumberForSubprocess);
+				if(restNumber >= imagesNumberForSubprocess/2){
+					splitNumberForSubProcess = divNumber + 1;
+				}else splitNumberForSubProcess = divNumber;				
+				int imageCounters = 1;
+				int subProcessCounters = 1;
+				int once = 1;
+				List<OCRImage> imgs = new ArrayList<OCRImage>();
+				Map<OCRFormat, OCROutput> outputs = p.getOcrOutputs();				
+				for(OCRImage ocrimage : p.getOcrImages()){
+					if(splitNumberForSubProcess > subProcessCounters){
+						if(imageCounters <= imagesNumberForSubprocess){														
+								OCRImage aoi = newOcrImage(ocrimage.getUri());								
+								imgs.add(aoi);							
+								if(imageCounters == imagesNumberForSubprocess){
+									imageCounters = 0;								
+									OCRProcess ocrp = newOcrProcess();
+									ocrp.setOcrImages(imgs);
+									ocrp.setName(p.getName()+ "_" + subProcessCounters + "oF" + splitNumberForSubProcess);									
+									StringBuffer sbformat = new StringBuffer();
+									for (OCRFormat f : outputs.keySet()) {
+										final AbbyyOCROutput o = (AbbyyOCROutput) outputs
+												.get(f);									
+										OCROutput aoo = newOcrOutput();
+										URI localUri = o.getUri();
+										String l = localUri.toString().replace(p.getName(), ocrp.getName());
+										urlLocalforSubProcess.add(l);
+										outpuFormat.add(f.toString());
+										try {
+											localUri = new URI(l);
+										} catch (URISyntaxException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+										aoo.setUri(localUri);
+										ocrp.addOutput(f, aoo);
+										if(once == 1){
+											sbformat.append(f.toString() + " ");
+										}	
+									}
+									if(once == 1){
+										ocrProcessMetadata.setFormat(sbformat.toString());
+										List<Locale> lang = new ArrayList<Locale>();
+										for (Locale l : p.getLanguages()) {
+											lang.add(l);
+										}
+										ocrProcessMetadata.setLanguages(lang);
+										once++;
+									}
+									ocrp.setSegmentation(true);
+									ocrp.setLanguages(p.getLanguages());
+									ocrp.setPriority(p.getPriority());
+									ocrp.setTextTyp(p.getTextTyp());
+									ocrp.setTime(new Date().getTime());
+									pool.execute((AbbyyOCRProcess)ocrp);
+									imgs = new ArrayList<OCRImage>();
+									subProcessCounters++;
+								}										
+							imageCounters++;							
+						}
+					}else{
+							OCRImage aoi = newOcrImage(ocrimage.getUri());								
+							imgs.add(aoi);
+							rest = true;
+						}					
+					}
+					if(rest){
+						OCRProcess ocrp = newOcrProcess();
+						ocrp.setOcrImages(imgs);
+						ocrp.setName(p.getName()+ "_" + subProcessCounters + "oF" + splitNumberForSubProcess);
+						for (OCRFormat f : outputs.keySet()) {
+							final AbbyyOCROutput o = (AbbyyOCROutput) outputs
+									.get(f);									
+							OCROutput aoo = newOcrOutput();
+							URI localUri = o.getUri();
+							String l = localUri.toString().replace(p.getName(), ocrp.getName());
+							urlLocalforSubProcess.add(l);
+							outpuFormat.add(f.toString());
+							try {
+								localUri = new URI(l);
+							} catch (URISyntaxException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							aoo.setUri(localUri);
+							ocrp.addOutput(f, aoo);
+						}
+						ocrp.setSegmentation(true);
+						ocrp.setLanguages(p.getLanguages());
+						ocrp.setPriority(p.getPriority());
+						ocrp.setTextTyp(p.getTextTyp());
+						ocrp.setTime(new Date().getTime());
+						pool.execute((AbbyyOCRProcess)ocrp);
+						imgs = new ArrayList<OCRImage>();
+					}
+					//Merge Metadata and Results
+					outpuFormat.add("xml"+ config.reportSuffix);
+					
+					if(localFileExists(urlLocalforSubProcess, outpuFormat)){						
+						List<InputStream> reports = null;
+						boolean control = true;
+						for(String o : outpuFormat){				
+							for(String u : urlLocalforSubProcess){
+								//Merge Metadata
+								if (o.toLowerCase().equals("xml"+config.reportSuffix)) {
+									InputStream isResult = null;
+									try {
+										isResult = new FileInputStream(new File(u));
+										reports.add(isResult);
+									} catch (FileNotFoundException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}									
+									((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+											.parseXmlResult(isResult);							 
+									totalChar = totalChar.add(((AbbyyOCRProcessMetadata) ocrProcessMetadata).getTotalChar()) ;
+									totalUncerChar = totalUncerChar.add(((AbbyyOCRProcessMetadata) ocrProcessMetadata).getTotalUncerChar());
+									sbProcessingNote.append(ocrProcessMetadata.getProcessingNote());
+								}
+								
+								if (o.toLowerCase().equals("xml")) {
+									InputStream isDoc = null;									
+									try {
+										isDoc = new FileInputStream(new File(u + "." + o.toLowerCase()));
+									} catch (FileNotFoundException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									if(control){
+										((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+										.parseXmlExport(isDoc);
+										control = false;
+									}
+									
+									
+								}
+								if (o.toLowerCase().equals("txt")) {
+									
+								}
+								
+							}		
+						}	
+						ocrProcessMetadata.setCharacterAccuracy(totalChar, totalUncerChar);
+						ocrProcessMetadata.setProcessingNote(sbProcessingNote.toString());
+						//TODO Merge Results
+						//serializerTextMD(ocrProcessMetadata, p.getName());
+						
+					}
+					
+			}else{
+				p.setTime(new Date().getTime());
+				pool.execute(p);
+			}		
 		}
 
+		
 		pool.shutdown();
 		try {
 			pool.awaitTermination(3600, TimeUnit.SECONDS);
@@ -131,6 +306,41 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		h.shutdown();
 	}
 
+	private void serializerTextMD(OCRProcessMetadata ocrProcessMetadata,
+			String textMD) {
+		abbyySerializerTextMD = new AbbyySerializerTextMD(ocrProcessMetadata);
+		logger.debug("Creating " + name + "-textMD.xml");
+		
+		URI urii;
+		try {
+			String localUrl = "C:/Dokumente und Einstellungen/mabergn.UG-SUB/workspace-ocr/ocr-tools/ocr-cli/target/results/";
+			urii = new URI(localUrl +"/"+ textMD+  "-textMD.xml");
+			abbyySerializerTextMD.write(new File(urii));
+			logger.debug("TextMD Created " + urii.toString());
+		} catch (URISyntaxException e) {
+			logger.error("CAN NOT Copying Serializer textMD to local " + name
+					+ "-textMD.xml", e);
+		}
+	}
+	
+	private boolean localFileExists(List<String> url, Set <String> outpuFormat){
+		boolean exists = false;
+		for(String u : url){
+			File file = new File(u);
+			File fileReport = new File(u.replace("xml", "xml.result.xml"));
+			if(file.exists() && fileReport.exists()){
+				exists = true;
+			}else {
+				exists = true;
+				break;
+			}
+					
+		}			
+		return exists;
+	}
+	
+	
+	
 	/**
 	 * Gets the single instance of AbbyyServerOCREngine.
 	 * 
