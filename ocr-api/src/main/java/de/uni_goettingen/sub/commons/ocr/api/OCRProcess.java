@@ -128,12 +128,26 @@ public interface OCRProcess {
 	abstract public String getName();
 
 	/**
+	 * Gets the time for process sort in hazelcastQueue.
+	 *
+	 * @return the time
+	 */
+	abstract public Long getTime();
+	
+	/**
+	 * Sets the time for process sort in hazelcastQueue.
+	 *
+	 * @param time the new time
+	 */
+	abstract public void setTime(Long time);
+	
+	/**
 	 * Gets the params that should be used for recognition. Since these a
 	 * specific to a {@link OCRProcess}, they should only be used to adjust the
 	 * recognition options, not the output.
 	 * 
 	 * @return the params
-	 */
+	 */	
 	abstract public Map<String, String> getParams();
 
 	/**
@@ -153,7 +167,8 @@ public interface OCRProcess {
 	 *         otherwise {@link OCRException} if the process failed
 	 */
 	abstract public Boolean isFinished();
-
+	
+	
 	/**
 	 * Gets the OCR output metadata for this {@link OCRProcess}. This can be
 	 * used to filter the results for accuracy or to save it for further
@@ -358,5 +373,18 @@ public interface OCRProcess {
 	 * 
 	 */
 	public void addOutput(OCRFormat format, OCROutput output);
-
+	
+	/**
+	 * Gets the segmentation. 
+	 *
+	 * @return the segmentation true: split Process in SubProcess
+	 */
+	abstract public Boolean getSegmentation();
+	
+	/**
+	 * Sets the segmentation.
+	 *
+	 * @param segmentaion the new segmentation
+	 */
+	abstract public void setSegmentation(Boolean segmentaion);
 }
