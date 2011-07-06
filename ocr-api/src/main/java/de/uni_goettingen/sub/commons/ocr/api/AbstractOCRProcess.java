@@ -73,7 +73,10 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	//State variables
 	/** This indicates that process has failed. */
 	protected Boolean isFinished = false;
-
+	/** for Subdivision the process*/
+    protected Boolean segmentation = false;
+	
+	protected Long time;
 	/**
 	 * Instantiates a new abstract OCR process.
 	 */
@@ -280,4 +283,34 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	public void addOutput (OCRFormat format, OCROutput output) {
 		ocrOutputs.put(format, output);
 	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getTime()
+	 */
+	public Long getTime() {
+		return time;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setTime(java.lang.Long)
+	 */
+	public void setTime(Long time) {
+		this.time = time;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getSegmentation()
+	 */
+	public Boolean getSegmentation() {
+		return segmentation;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setSegmentation(java.lang.Boolean)
+	 */
+	public void setSegmentation(Boolean segmentaion) {
+		this.segmentation = segmentaion;
+	}
+	
+	
 }
