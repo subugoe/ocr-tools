@@ -132,7 +132,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		// pool.e
 
 		for (AbbyyOCRProcess p : processes) {
-			ocrProcessMetadata = new AbbyyOCRProcessMetadata();
+			/*ocrProcessMetadata = new AbbyyOCRProcessMetadata();
 			startTimeForProcess = System.currentTimeMillis();
 			ocrProcessMetadata.setEncoding("UTF-8");
 			StringBuffer sbProcessingNote = new StringBuffer();
@@ -290,10 +290,10 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 						
 					}
 					
-			}else{
+			}else{*/
 				p.setTime(new Date().getTime());
 				pool.execute(p);
-			}		
+			//}		
 		}
 
 		
