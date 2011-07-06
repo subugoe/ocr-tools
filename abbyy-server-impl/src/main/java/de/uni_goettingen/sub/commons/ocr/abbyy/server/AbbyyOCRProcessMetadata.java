@@ -62,7 +62,9 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 
 	/** The xml export. */
 	protected Document xmlExport;
-
+	
+	protected BigDecimal totalChar, totalUncerChar;
+	
 	/** The Constant NAMESPACE. */
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
 	// The Constant logger.
@@ -102,9 +104,9 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 		}
 		if (xmlResultDocument != null) {
 			xmlResultEngine = xmlResultDocument.getXmlResult();
-			BigDecimal totalChar = new BigDecimal(xmlResultEngine
+			totalChar = new BigDecimal(xmlResultEngine
 					.getStatistics().getTotalCharacters());
-			BigDecimal totalUncerChar = new BigDecimal(xmlResultEngine
+			totalUncerChar = new BigDecimal(xmlResultEngine
 					.getStatistics().getUncertainCharacters());
 			this.setCharacterAccuracy(totalChar, totalUncerChar);
 			this.setProcessingNote(xmlResultEngine.toString());
@@ -137,4 +139,22 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 		}
 
 	}
+
+	public BigDecimal getTotalChar() {
+		return totalChar;
+	}
+
+	public void setTotalChar(BigDecimal totalChar) {
+		this.totalChar = totalChar;
+	}
+
+	public BigDecimal getTotalUncerChar() {
+		return totalUncerChar;
+	}
+
+	public void setTotalUncerChar(BigDecimal totalUncerChar) {
+		this.totalUncerChar = totalUncerChar;
+	}
+	
+	
 }
