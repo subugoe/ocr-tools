@@ -88,8 +88,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 	// TODO: Use static fields from the engine class here.
 	// The server url.
 	protected URI serverUri;
-	// time for sort
-	private Long time;
+	
 	// The folder URLs.
 	protected URI inputUri, outputUri, errorUri;
 
@@ -339,20 +338,23 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 					ocrProcessMetadata.setDuration(getDuration());
 					logger.debug("OCR Output file for " +name + " has been created successfully after "+  getDuration() + " milliseconds");
 					//Serializer
-					for (URI l : listOfLocalURI) {
-						if ((l.toString())
-								.endsWith("xml" + config.reportSuffix)) {
-							InputStream isResult = new FileInputStream(new File(l));
-							((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-									.parseXmlResult(isResult);
+					if(!getSegmentation()){
+						for (URI l : listOfLocalURI) {
+							if ((l.toString())
+									.endsWith("xml" + config.reportSuffix)) {
+								InputStream isResult = new FileInputStream(new File(l));
+								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+										.parseXmlResult(isResult);
+							}
+							if ((l.toString()).endsWith(name + ".xml")) {
+								InputStream isDoc = new FileInputStream(new File(l));
+								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+										.parseXmlExport(isDoc);
+							}
 						}
-						if ((l.toString()).endsWith(name + ".xml")) {
-							InputStream isDoc = new FileInputStream(new File(l));
-							((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-									.parseXmlExport(isDoc);
-						}
+						serializerTextMD(ocrProcessMetadata, name);
 					}
-					serializerTextMD(ocrProcessMetadata, name);
+						
 					// end of serializer
 				} else {
 					failed = true;
@@ -861,13 +863,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 		this.test = test;
 	}
 
-	public Long getTime() {
-		return time;
-	}
-
-	public void setTime(Long time) {
-		this.time = time;
-	}
 
 	public String getiD_Process() {
 		return iD_Process;
