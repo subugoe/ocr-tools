@@ -361,6 +361,16 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		return _instance;
 	}
 
+	public static AbbyyServerOCREngine getNewOCREngine() {	
+			try {
+				_instance = new AbbyyServerOCREngine();
+			} catch (ConfigurationException e) {
+				logger.error("Can't read configuration", e);
+				throw new OCRException(e);
+			}
+
+		return _instance;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
