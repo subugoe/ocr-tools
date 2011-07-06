@@ -65,7 +65,7 @@ public class ServiceTestImpl implements ServiceTest {
 	// The done date.
 	private Long duration = null;
 	
-	ByUrlResponseType byUrlResponseType = new ByUrlResponseType();
+	ByUrlResponseType byUrlResponseType;
 	public final static Map<RecognitionLanguage, Locale> LANGUAGE_MAP = new HashMap<RecognitionLanguage, Locale>();
 
 	static {
@@ -156,7 +156,7 @@ public class ServiceTestImpl implements ServiceTest {
 	
 	@Override
 	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType part1) {
-
+		byUrlResponseType = new ByUrlResponseType();
 		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
 				"contentWebservice.xml"));
 		OCREngineFactory ocrEngineFactory = (OCREngineFactory) factory
@@ -232,6 +232,12 @@ public class ServiceTestImpl implements ServiceTest {
 				logger.error("URL is Mal formed: " + WEBSERVER_PATH + "/"
 						+ parent + "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
+				String error = "URL is Mal formed: " + WEBSERVER_PATH + "/"
+				+ parent + "/" + jobName + "."
+				+ ocrformat.toString().toLowerCase();
+				endTime = System.currentTimeMillis();
+				duration = endTime - startTime;
+				return byURLresponse(duration, error);
 			}
 			// logger.debug("output Location " + uri.toString());
 			aoo.setUri(uri);
@@ -251,6 +257,7 @@ public class ServiceTestImpl implements ServiceTest {
 			logger.info("Starting recognize method");
 			engine.recognize();
 			file.delete();
+			logger.debug("Delete File: "+ file.toString());
 			try {
 				FileUtils.deleteDirectory(file.getParentFile());
 				FileUtils.deleteDirectory(new File(LOCAL_PATH + "/" + parent));
@@ -286,7 +293,12 @@ public class ServiceTestImpl implements ServiceTest {
 				byUrlResponseType.setReturncode(0);
 				byUrlResponseType.setSuccess(true);
 				byUrlResponseType.setToolProcessingTime(duration);			
-			}		
+			}else {
+				duration = endTime - startTime;
+				logger.error("ERROR File CAN NOT: "+ f.toString());
+				String error = "ERROR File CAN NOT: "+ f.toString();
+				return byURLresponse(duration, error);
+			}
 		} else {
 			duration = endTime - startTime;
 			String error = "ERROR: " + part1.getInputUrl()
