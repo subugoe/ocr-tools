@@ -52,6 +52,11 @@ public class OCREngineFactory {
 
 	}
 
+	public static OCREngineFactory getNewFactory () {		
+			_instance = new OCREngineFactory();
+		return _instance;
+
+	}
 	/**
 	 * Returns a new ocr engine instance.
 	 *
