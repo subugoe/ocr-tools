@@ -29,7 +29,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 public class OCREngineFactory {
 	
 	/** The field _instance contains the reference to this singleton. */
-	private static OCREngineFactory _instance = null;
+	private static OCREngineFactory neWInstance,_instance = null;
 	private OCREngine engine;
 
 	/**
@@ -52,9 +52,9 @@ public class OCREngineFactory {
 
 	}
 
-	public static OCREngineFactory getNewFactory () {		
-			_instance = new OCREngineFactory();
-		return _instance;
+	public static OCREngineFactory newFactory () {		
+		neWInstance = new OCREngineFactory();
+		return neWInstance;
 
 	}
 	/**
