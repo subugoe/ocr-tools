@@ -9,7 +9,6 @@ import org.apache.xmlbeans.XmlException;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import com.eviware.soapui.impl.WsdlInterfaceFactory;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.WsdlRequest;
@@ -23,19 +22,19 @@ import com.eviware.soapui.support.SoapUIException;
 import static org.junit.Assert.assertTrue;
 
 public class OcrWebserviceTest {
-	ServiceTestImpl serviceTest;
+	OcrServiceImpl serviceTest;
 
 	WsdlProject project;
 
 	@Before
 	public void before() throws XmlException, IOException, SoapUIException {
 		// serviceTest = mock(ServiceTest.class);
-		serviceTest = new ServiceTestImpl();
+		serviceTest = new OcrServiceImpl();
 		// byUrlRequestType = new ByUrlRequestType();
 
 	}
 
-	@Ignore
+	//@Ignore
 	@Test
 	public void test() throws InterruptedException, XmlException, IOException,
 			SoapUIException, SubmitException {
@@ -81,8 +80,8 @@ public class OcrWebserviceTest {
 				.contains("<outputUrl>Output Url: http://webservice.xml</outputUrl>"));
 		 System.out.println( content );
 */		
-	//	System.out.println( content );
-	//	JOptionPane.showMessageDialog(null, "Server beenden");
+		System.out.println( content );
+		JOptionPane.showMessageDialog(null, "Server beenden");
 		endpoint.stop();
 
 	}
