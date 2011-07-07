@@ -87,7 +87,7 @@ public class OcrServiceImpl implements OcrService {
 		}
 		WEBSERVER_PATH = properties.getProperty("webserverpath");
 		LOCAL_PATH = properties.getProperty("localpath");
-		if(LOCAL_PATH == null){
+		if(LOCAL_PATH == null || LOCAL_PATH.equals("")){
 			LOCAL_PATH = System.getProperty("java.io.tmpdir");
 		}
 		if(!LOCAL_PATH.endsWith("/")){
@@ -131,6 +131,10 @@ public class OcrServiceImpl implements OcrService {
 
 			try {
 				FileUtils.copyURLToFile(inputuri, file);
+				if(file.exists()){
+					System.out.println("exists: "+file.toString());
+				}
+				System.out.println(file.toString());
 			} catch (IOException e) {
 				logger.error("ERROR CAN NOT COPY URL To File");
 				endTime = System.currentTimeMillis();
@@ -177,7 +181,7 @@ public class OcrServiceImpl implements OcrService {
 			for (RecognitionLanguage r : part1.getOcrlanguages()
 					.getRecognitionLanguage()) {
 			//	langs.add(LANGUAGE_MAP.get(r));
-				langs.add(new Locale(r.value()));
+				langs.add(new Locale(r.toString()));
 			}
 			aop.setLanguages(langs);
 			aop.setPriority(OCRPriority.fromValue(part1.getOcrPriorityType()
