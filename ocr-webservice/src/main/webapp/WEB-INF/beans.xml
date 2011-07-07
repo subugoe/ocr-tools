@@ -11,7 +11,7 @@
     <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
 
     <jaxws:endpoint id="ocr-webservice"
-        implementor="de.unigoettingen.sub.commons.ocrComponents.webservice.ServiceTestImpl" address="/service">
+        implementor="de.unigoettingen.sub.commons.ocrComponents.webservice.OcrServiceImpl" address="/service">
         
 
     </jaxws:endpoint>
