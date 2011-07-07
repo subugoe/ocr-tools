@@ -10,173 +10,173 @@ import javax.xml.bind.annotation.XmlType;
 public enum RecognitionLanguage {
 
 //    //    @XmlEnumValue("Bulgarian")
-    BULGARIAN("Bulgarian"),
+    bg("Bulgarian"),
 //    //    @XmlEnumValue("Catalan")
-    CATALAN("Catalan"),
+    ca("Catalan"),
 //    //    @XmlEnumValue("Czech")
-    CZECH("Czech"),
+    cs("Czech"),
 //    //    @XmlEnumValue("Danish")
-    DANISH("Danish"),
+    da("Danish"),
 //    //    @XmlEnumValue("Dutch")
-    DUTCH("Dutch"),
+    nl("Dutch"),
 //    //    @XmlEnumValue("English")
-    ENGLISH("English"),
+    en("English"),
 //    //    @XmlEnumValue("Finnish")
-    FINNISH("Finnish"),
+    fi("Finnish"),
 //    //    @XmlEnumValue("French")
-    FRENCH("French"),
+    fr("French"),
 //   //    @XmlEnumValue("German")
-    GERMAN("German"),
+    de("German"),
 //    //    @XmlEnumValue("Greek")
-    GREEK("Greek"),
+    el("Greek"),
 //    //    @XmlEnumValue("Hungarian")
-    HUNGARIAN("Hungarian"),
+    hu("Hungarian"),
 //    //    @XmlEnumValue("Irish")
-    IRISH("Irish"),
+    ga("Irish"),
     //    //    @XmlEnumValue("Italian")
-    ITALIAN("Italian"),
+    it("Italian"),
     //    //    @XmlEnumValue("Macedonian")
-    MACEDONIAN("Macedonian"),
+    mk("Macedonian"),
     //    //    @XmlEnumValue("gd")
-    SCOTS_GAELIC("gd"),
+    gd("scots_gaelic"),
     //    //    @XmlEnumValue("Abkhazian")
-    ABKHAZIAN("Abkhazian"),
+    ab("Abkhazian"),
     //    //    @XmlEnumValue("Afrikaans")
-    AFRIKANNS("Afrikaans"),
+    af("Afrikaans"),
     //    //    @XmlEnumValue("Amharic")
-    AMHARIC("Amharic"),
+    am("Amharic"),
     //    //    @XmlEnumValue("Aymara")
-    AYMARA("Aymara"),
+    ay("Aymara"),
     //    //    @XmlEnumValue("Azerbaijani")
-    AZERBAIJANI("Azerbaijani"),
+    az("Azerbaijani"),
     //    //    @XmlEnumValue("Portuguese")
-    PORTUGUESE("Portuguese"),
+    pt("Portuguese"),
     //    //    @XmlEnumValue("Romanian")
-    ROMANIAN("Romanian"),
+    ro("Romanian"),
     //    //    @XmlEnumValue("Russian")
-    RUSSIAN("Russian"),
+    ru("Russian"),
     //    //    @XmlEnumValue("Serbian")
-    SERBIAN("Serbian"),
+    sr("Serbian"),
     //    //    @XmlEnumValue("Somali")
-    SOMALI("Somali"),
+    so("Somali"),
     //    //    @XmlEnumValue("Slovenian")
-    SLOVENIAN("Slovenian"),
+    sl("Slovenian"),
     //    @XmlEnumValue("Slovak")
-    SLOVAK("Slovak"),
+    sk("Slovak"),
     //    @XmlEnumValue("Spanish")
-    SPANISH("Spanish"),
+    es("Spanish"),
     //    @XmlEnumValue("Bashkir")
-    BASHKIR("Bashkir"),
+    ba("Bashkir"),
     //    @XmlEnumValue("Byelorussian")
-    BYELORUSSIAN("Byelorussian"),
+    be("Byelorussian"),
     //    @XmlEnumValue("Breton")
-    BRETON("Breton"),
+    br("Breton"),
     //    @XmlEnumValue("Corsican")
-    CORSICAN("Corsican"),
+    co("Corsican"),
     //    @XmlEnumValue("Welsh")
-    WELSH("Welsh"),
+    cy("Welsh"),
     //    @XmlEnumValue("Basque")
-    BASQUE("Basque"),
+    eu("Basque"),
     //    @XmlEnumValue("Estonian")
-    ESTONIAN("Estonian"),
+    et("Estonian"),
     //    @XmlEnumValue("Faroese")
-    FAROESE("Faroese"),
+    fo("Faroese"),
     //    @XmlEnumValue("Frisian")
-    FRISIAN("Frisian"),
+    fy("Frisian"),
     //    @XmlEnumValue("Galician")
-    GALICIAN("Galician"),
+    gl("Galician"),
     //    @XmlEnumValue("Guarani")
-    GUARANI("Guarani"),
+    gn("Guarani"),
     //    @XmlEnumValue("Gujarati")
-    GUJARATI("Gujarati"),
+    gu("Gujarati"),
     //    @XmlEnumValue("Hausa")
-    HAUSA("Hausa"),
+    ha("Hausa"),
     //    @XmlEnumValue("Hebrew")
-    HEBREW("Hebrew"),
+    he("Hebrew"),
     //    @XmlEnumValue("Croatian")
-    CROATIAN("Croatian"),
+    hr("Croatian"),
     //    @XmlEnumValue("Armenian")
-    ARMENIAN("Armenian"),
+    hy("Armenian"),
     //    @XmlEnumValue("Indonesian")
-    INDONESIAN("Indonesian"),
+    id("Indonesian"),
     //    @XmlEnumValue("Korean")
-    KOREAN("Korean"),
+    ko("Korean"),
     //    @XmlEnumValue("Kurdish")
-    KURDISH("Kurdish"),
+    ku("Kurdish"),
     //    @XmlEnumValue("Kirghiz")
-    KIRGHIZ("Kirghiz"),
+    ky("Kirghiz"),
     //    @XmlEnumValue("Kazakh")
-    KAZAKH("Kazakh"),
+    kk("Kazakh"),
     //    @XmlEnumValue("Latin")
-    LATIN("Latin"),
+    la("Latin"),
     //    @XmlEnumValue("Lithuanian")
-    LITHUANIAN("Lithuanian"),
+    lt("Lithuanian"),
     //    @XmlEnumValue("Latvian")
-    LATVIAN("Latvian"),
+    lv("Latvian"),
     //    @XmlEnumValue("Malagasy")
-    MALAGASY("Malagasy"),
+    mg("Malagasy"),
     //    @XmlEnumValue("Maori")
-    MAORI("Maori"),
+    mi("Maori"),
     //    @XmlEnumValue("Malay")
-    MALAY("Malay"),
+    ms("Malay"),
     //    @XmlEnumValue("Mongolian")
-    MONGOLIAN("Mongolian"),
+    mn("Mongolian"),
     //    @XmlEnumValue("Moldavian")
-    MOLDAVIAN("Moldavian"),
+    mo("Moldavian"),
     //    @XmlEnumValue("Maltese")
-    MALTESE("Maltese"),
+    mt("Maltese"),
     //    @XmlEnumValue("Norwegian")
-    NORWEGIAN("Norwegian"),
+    no("Norwegian"),
     //    @XmlEnumValue("Occitan")
-    OCCITAN("Occitan"),
+    oc("Occitan"),
     //    @XmlEnumValue("Polish")
-    POLISH("Polish"),
+    pl("Polish"),
     //    @XmlEnumValue("Quechua")
-    QUECHUA("Quechua"),
+    qu("Quechua"),
     //    @XmlEnumValue("Swedish")
-    SWEDISH("Swedish"),
+    sv("Swedish"),
     //    @XmlEnumValue("Samoan")
-    SAMOAN("Samoan"),
+    sm("Samoan"),
     //    @XmlEnumValue("Shona")
-    SHONA("Shona"),
+    sn("Shona"),
     //    @XmlEnumValue("Albanian")
-    ALBANIAN("Albanian"),
+    sq("Albanian"),
     //    @XmlEnumValue("Swahili")
-    SWAHILI("Swahili"),
+    sw("Swahili"),
     //    @XmlEnumValue("Tajik")
-    TAJIK("Tajik"),
+    tg("Tajik"),
     //    @XmlEnumValue("Thai")
-    THAI("Thai"),
+    th("Thai"),
     //    @XmlEnumValue("Turkmen")
-    TURKMEN("Turkmen"),
+    tk("Turkmen"),
     //    @XmlEnumValue("Tagalog")
-    TAGALOG("Tagalog"),
+    tl("Tagalog"),
     //    @XmlEnumValue("Tonga")
-    TONGA("Tonga"),
+    to("Tonga"),
     //    @XmlEnumValue("Turkish")
-    TURKISH("Turkish"),
+    tr("Turkish"),
     //    @XmlEnumValue("Tatar")
-    TATAR("Tatar"),
+    tt("Tatar"),
     //    @XmlEnumValue("Uighur")
-    UIGHUR("Uighur"),
+    ug("Uighur"),
     //    @XmlEnumValue("Ukrainian")
-    UKRAINIAN("Ukrainian"),
+    uk("Ukrainian"),
     //    @XmlEnumValue("Uzbek")
-    UZBEK("Uzbek"),
+    uz("Uzbek"),
     //    @XmlEnumValue("Wolof")
-    WOLOF("Wolof"),
+    wo("Wolof"),
     //    @XmlEnumValue("Xhosa")
-    XHOSA("Xhosa"),
+    xh("Xhosa"),
     //    @XmlEnumValue("Yiddish")
-    YIDDISH("Yiddish"),
+    yi("Yiddish"),
     //    @XmlEnumValue("Zulu")
-    ZULU("Zulu"),
+    zu("Zulu"),
     //    @XmlEnumValue("Chinese")
-    CHINESE("Chinese"),
+    zh("Chinese"),
     //    @XmlEnumValue("rm")
-    RHARTO_ROMANCE("rm"),
+    rm("rm"),
     
-    JAPANESE("ja");
+    ja("ja");
     
     private final String value;
 
