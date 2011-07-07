@@ -39,7 +39,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 
 
 
-@WebService(endpointInterface = "de.unigoettingen.sub.commons.ocrComponents.webservice.ServiceTest")
+@WebService(endpointInterface = "de.unigoettingen.sub.commons.ocrComponents.webservice.OcrService")
 public class OcrServiceImpl implements OcrService {
 	
 	/** The logger. */
