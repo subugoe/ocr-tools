@@ -34,7 +34,7 @@ public class OcrWebserviceTest {
 
 	}
 
-	//@Ignore
+	@Ignore
 	@Test
 	public void test() throws InterruptedException, XmlException, IOException,
 			SoapUIException, SubmitException {
