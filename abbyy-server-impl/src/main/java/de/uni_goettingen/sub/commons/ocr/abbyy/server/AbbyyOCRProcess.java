@@ -412,7 +412,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 				if (outputResultUri != null || isResult != true) {
 					hotfolder.deleteIfExists(outputResultUri);
 				}
-				logger.debug("Process " +name + " finished after "+  getDuration() + " milliseconds");
+				logger.debug("Process " +name + " finished ");
 			} catch (IOException e) {
 				failed = true;
 				logger.error("Unable to clean up!", e);
