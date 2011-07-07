@@ -220,7 +220,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 				remoteUri = new URI(inputUri.toString() + remoteFileName);
 			} catch (URISyntaxException e) {
 				logger.error("Error contructing remote URL.");
-				ocrProcessMetadata.setDuration(0L);
 				throw new OCRException(e);
 			}
 			if (aoi.getRemoteUri() == null) {
@@ -413,14 +412,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 				if (outputResultUri != null || isResult != true) {
 					hotfolder.deleteIfExists(outputResultUri);
 				}
-				endTime = System.currentTimeMillis();
-				ocrProcessMetadata.setDuration(getDuration());
 				logger.debug("Process " +name + " finished after "+  getDuration() + " milliseconds");
 			} catch (IOException e) {
 				failed = true;
 				logger.error("Unable to clean up!", e);
-				endTime = System.currentTimeMillis();
-				ocrProcessMetadata.setDuration(getDuration());
 			}
 		}
 	}
@@ -555,10 +550,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 				logger.debug("Waited to long - fail");
 				throw new TimeoutExcetion();
 			}
-			putfalse = false;
-			logger.debug("Waiting for " + config.checkInterval
+			putfalse = false;			
+			logger.debug("Waiting for " + getOcrImages().size() * config.checkInterval
 					+ " milli seconds");
-			Thread.sleep(config.checkInterval);
+			Thread.sleep(getOcrImages().size()* config.checkInterval);
 		}
 		return true;
 	}
@@ -756,7 +751,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 							"xml" + config.reportSuffix)));
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs");
-			ocrProcessMetadata.setDuration(0L);
 			throw new OCRException(e);
 		}
 
