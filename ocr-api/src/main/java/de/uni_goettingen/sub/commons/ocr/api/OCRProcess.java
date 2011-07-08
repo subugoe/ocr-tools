@@ -180,7 +180,19 @@ public interface OCRProcess {
 	 * @see OCRProcessMetadata
 	 */
 	abstract OCRProcessMetadata getOcrProcessMetadata();
-
+	
+	/**
+	 * Sets the OCR output metadata for this {@link OCRProcess}. This can be
+	 * used to filter the results for accuracy or to save it for further
+	 * processing. Implementations not generating this information should throw
+	 * a {@link java.lang.UnsupportedOperationException}. The location and / or
+	 * name of this method may change in future releases.
+	 * 
+	 * @return the OCR output metadata
+	 * @see OCRProcessMetadata
+	 */
+	abstract void setOcrProcessMetadata(OCRProcessMetadata ocrProcessMetadata);
+	
 	/**
 	 * Gets the quality that should be produced by an engine while processing
 	 * this process. Engine specific implementations of OCRProcess might throw a
