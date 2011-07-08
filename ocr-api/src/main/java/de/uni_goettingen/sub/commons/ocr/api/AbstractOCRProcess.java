@@ -61,6 +61,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 * priority level : Low, BelowNormal, Normal, AboveNormal, High ;
 	 * */
 	protected OCRPriority priority;
+	protected OCRProcessMetadata ocrProcessMetadata;
 	/**
 	 * The images that should be converted, are stored in the given format at
 	 * the given location
@@ -222,9 +223,17 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrProcessMetadata()
 	 */
-	public OCRProcessMetadata getOcrProcessMetadata () {
+	/*public OCRProcessMetadata getOcrProcessMetadata () {
 		throw new UnsupportedOperationException();
+	}*/
+	public OCRProcessMetadata getOcrProcessMetadata() {
+		return ocrProcessMetadata;
 	}
+
+	public void setOcrProcessMetadata(OCRProcessMetadata ocrProcessMetadata) {
+		this.ocrProcessMetadata = ocrProcessMetadata;
+	}
+	
 
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getQuality()
@@ -232,6 +241,8 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	public OCRQuality getQuality () {
 		return quality;
 	}
+
+	
 
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setQuality(de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRQuality)
