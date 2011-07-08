@@ -69,17 +69,7 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializable,
 		Runnable {
 
-	// TODO: Make sure that the Executor reads the size and count of the remote
-	// server
-	// TODO: Save the stats of the remote system in a hidden file there, use the
-	// SharedHotfolder interface for this
-	// TODO: add a locking method to the hotfolder, use the SharedHotfolder
-	// interface for this
-	// TODO: make the priority configurable
-
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	// The Constant logger.
 	public final static Logger logger = LoggerFactory
@@ -336,6 +326,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 					endTime = System.currentTimeMillis();
 					ocrProcessMetadata.setDuration(getDuration());
 					logger.debug("OCR Output file for " +name + " has been created successfully after "+  getDuration() + " milliseconds");
+					setOcrProcessMetadata(ocrProcessMetadata);
 					//Serializer
 					if(!getSegmentation()){
 						for (URI l : listOfLocalURI) {
