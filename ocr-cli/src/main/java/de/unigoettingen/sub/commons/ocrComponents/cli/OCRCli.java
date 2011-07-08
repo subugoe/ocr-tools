@@ -228,7 +228,7 @@ public class OCRCli {
 					}
 					// add language
 					aop.setLanguages(langs);
-					aop.setPriority(OCRPriority.valueOf(ocrPriority));
+					if(ocrPriority != null)	aop.setPriority(OCRPriority.valueOf(ocrPriority));
 					aop.setTextTyp(OCRTextTyp.valueOf(ocrTextTyp));
 					engine.addOcrProcess(aop);
 				}
