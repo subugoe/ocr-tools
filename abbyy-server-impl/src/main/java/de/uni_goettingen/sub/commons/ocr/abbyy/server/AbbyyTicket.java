@@ -412,7 +412,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 		if (priority != null) {
 			ticket.setPriority(PRIORITY_MAP.get(getPriority()));
-		}//else ticket.getPriority();
+		}else ticket.setPriority("Normal");
 
 		if (texttyp != null) {
 			recognitionSettings.setTextTypeArray(new String[] { TEXTTYP_MAP
