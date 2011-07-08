@@ -80,8 +80,8 @@ public class OcrWebserviceTest {
 				.contains("<outputUrl>Output Url: http://webservice.xml</outputUrl>"));
 		 System.out.println( content );
 */		
-		System.out.println( content );
-		JOptionPane.showMessageDialog(null, "Server beenden");
+	//	System.out.println( content );
+	//	JOptionPane.showMessageDialog(null, "Server beenden");
 		endpoint.stop();
 
 	}
