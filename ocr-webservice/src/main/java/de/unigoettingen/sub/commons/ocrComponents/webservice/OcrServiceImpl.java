@@ -71,14 +71,8 @@ public class OcrServiceImpl implements OcrService {
 	protected static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 	private String parent, jobName;
 	
-	// The start date.
-	private Long startTime = null;
-	
-	// The end date.
-	private Long endTime = null;
-	
 	// The duration.
-	private Long duration = null;
+	private Long duration = 0L;
 	
 	ByUrlResponseType byUrlResponseType;
 
@@ -111,14 +105,11 @@ public class OcrServiceImpl implements OcrService {
 		}
 		engine = ocrEngineFactory.newOcrEngine();
 		OCRProcess aop = engine.newOcrProcess();
-		startTime = System.currentTimeMillis();
-		
+
 		if (part1.getInputUrl() == null
 				&& !part1.getInputUrl().startsWith("http")
 				&& !part1.getInputUrl().endsWith("tif")) {
-			
-			endTime = System.currentTimeMillis();
-			duration = endTime - startTime;
+
 			String error = "ERROR: " + part1.getInputUrl()
 					+ " is null or No URL or no Image from type tif";
 			return byURLresponse(duration, error);
@@ -132,8 +123,6 @@ public class OcrServiceImpl implements OcrService {
 			try {
 				inputuri = new URL(part1.getInputUrl());
 			} catch (MalformedURLException e) {
-				endTime = System.currentTimeMillis();
-				duration = endTime - startTime;
 				logger.error("URL is Mal formed: " + part1.getInputUrl());
 				String error = "URL is Mal formed: " + part1.getInputUrl();
 				return byURLresponse(duration, error);
@@ -147,14 +136,8 @@ public class OcrServiceImpl implements OcrService {
 
 			try {
 				FileUtils.copyURLToFile(inputuri, file);
-				if(file.exists()){
-					System.out.println("exists: "+file.toString());
-				}
-				System.out.println(file.toString());
 			} catch (IOException e) {
 				logger.error("ERROR CAN NOT COPY URL To File");
-				endTime = System.currentTimeMillis();
-				duration = endTime - startTime;
 				String error = "ERROR CAN NOT COPY URL: " + part1.getInputUrl()
 						+ " To Local File";
 				return byURLresponse(duration, error);
@@ -184,8 +167,6 @@ public class OcrServiceImpl implements OcrService {
 				String error = "URL is Mal formed: " + WEBSERVER_PATH + "/"
 				+ parent + "/" + jobName + "."
 				+ ocrformat.toString().toLowerCase();
-				endTime = System.currentTimeMillis();
-				duration = endTime - startTime;
 				return byURLresponse(duration, error);
 			}
 			// logger.debug("output Location " + uri.toString());
@@ -207,6 +188,10 @@ public class OcrServiceImpl implements OcrService {
 
 			logger.info("Starting recognize method");
 			engine.recognize();
+			
+			if(aop.getOcrProcessMetadata().getDuration() != 0L){
+				duration = aop.getOcrProcessMetadata().getDuration();
+			}
 			file.delete();
 			logger.debug("Delete File: "+ file.toString());
 			
@@ -216,13 +201,11 @@ public class OcrServiceImpl implements OcrService {
 			} catch (IOException e) {
 				logger.error("ERROR CAN NOT deleteDirectory");
 			}
-			endTime = System.currentTimeMillis();
+
 			File f = new File(WEBSERVER_PATH + "/" + parent + "/" + jobName
 					+ "." + ocrformat.toString().toLowerCase());
-			duration = endTime - startTime;
 			
 			if( !f.exists()){
-				duration = endTime - startTime;
 				logger.error("ERROR File CAN NOT Find: "+ f.toString());
 				String error = "ERROR File CAN NOT Find: "+ f.toString();
 				return byURLresponse(duration, error);
