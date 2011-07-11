@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="ocr-webservice">
+	 <body>
+	 	 <menu name="ocr-webservice">
+		   <item name="Übersicht" href="ocrWebserviceview.html"/>
+		 </menu>
+	 	 <menu ref="reports"/>
+	 </body>
+</project>

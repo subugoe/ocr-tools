@@ -1,0 +1,82 @@
+			------
+           		OCR-Webservice
+            		------
+            		Abergna
+            		------
+             		2011-07-11
+
+
+OCR_Webservice
+
+	Taverna Workbench oder soapUI wird ein Url(Bild) und ein paar input Parametern an den OCR-Impact-Webserivce weitergegeben, der  
+	 Service holt das Bild von Url und speichert es in einem Webserver, der Service schickt dieses Bild von Webserver zu den 
+	 Hotfolder(Input), in Abbyy wird das Bild bearbeitet, der wiederum stellt die Ergebnisse in Output- oder Error-Verzeichnis(Hotfolder),
+	 diese Ergebnisse werden dann in einem Verzeichnis in Webserver gespeichert, sodass sie per Urls verfuegbar sein werden sollen, diese 
+	 Urls werden an die Taverna als Ergebnisse weiter gegeben.
+
+
+Dokumentation fuer die Nutzungsanweisungen.	 
+
+	**<<Jetty Starten:>>
+
+		Jetty ist sein Servlet Container aehnlich wie Tomcat. im Hauptverzeichnis der Modul(ocr-Webservice, Da wo sich die pom.xml für das
+		Webservice Projekt befindet) startet man auf der Konsole den Server mit "mvn jetty:run" . 
+		Um diesen Befehl aus Eclipse auszufuehren gehen wir wie folgt vor: Eclipse: 
+		- Run -> Run as -> Maven Build... und Im Reiter Main das Goal (jetty:run) eintragen und dann auf Run klicken.
+
+		so wird der Service jetzt unter http://localhost:8080/ocr-webservice/service?wsdl erreichbar.  
+
+
+	** <<Nutzung der Webservice von Taverna:>>
+
+		- Um den Webservice in Taverna zu starten, muss erstmal Jetty gestartet werden und einpaar steps für die Erstellung 
+		  der Worklflow. hier wird gezeigt, wie diese Worklfow in Taverna modelliert wird.
+
+		in Taverna oben links in Service panel soll wie folgt gemacht werden: 
+		
+		Import new services -> WSDL service... -> in WSDL location den URL(http://localhost:8080/ocr-webservice/service?wsdl) eingeben 
+		-> add
+		
+		* <<1 :>>
+			wird jetzt einen Service in Available services erstellt. 
+			mit rechte Maustaste auf die ocrImageFileUrl-> Add to workflow -> wird ocrImageFileByUrl in Workflow diagram panel erstellt.
+		
+		* <<2 : Splitter erstellen>>
+			mit rechte Maustaste auf ocrImageFileByUrl in Workflow diagram panel -> Add XML Input Splitter... + Add XML Output Splitter... 
+
+		* <<3 : Ansicht �ndern>>
+			um die Input und Output kasten zu sehen, soll oben in Workflow diagram panel auf Display all Service ports geklickt werden.
+
+		* <<4 : Input und Output New workflow erstellen>>
+			jetzt können die ganze Input und Output parameter vom Webservice gesehen werden.
+			Es soll in jede parameter ein New workflow erstellt werden. 
+			mit der rechte maustaste -> Connect as (input oder output)to... -> New workflow(input oder output) port... sieh mal Bild 5
+
+		* << 5 :>>
+			der Workflow ist jetzt ganz modelliert werden. dh ist jetzt komplett muss nur noch ausgeführt werden.
+			
+			
+		* <<6 : Ausführen >>
+			Es soll erstmal auf (Run the current workflow) klicken, wird dann ein neu Fenster erstellt.
+			In diesem Fenster sollen alle input eingegebne werden, für jede Parameter ein New value eingeben.
+			und dann am ende auf Run workflow klicken.
+
+		
+		um OCR-Webservice richtig zu auszuf�hren, mussen diese input Parametern eingegeben werden. 
+		
+			** <<LANGUAGES :>> 
+				ein oder mehrere language die ABBYY-Recognition-Server unterst�tzt eingeben. (andere Beispiel: de 
+				oder de,en,fr,ru).
+					
+			** <<OUTFORMAT :>> 
+				ein Format die ABBYY-Recognition-Server unterstützt eingeben.(andere Beispiel:(TXT, PDF, XML, PDFA, DOC, HTML, XHTML, HOCR und METADATA sind alle Format, die von ABBYY-Recognition-Server und SimpleOCR_new.jar unterst�tzt werden).
+					
+			** <<TEXTTYPE:>> 
+				TextTyp (Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B und Gothic).
+					
+			** <<PRIORITY>> 
+				HIGH, ABOVENORMAL, NORMAL, BELOWNORMAL, LOW 	
+						
+			** <<inputURL image:>>
+				URL vom Bild, die verarbeitet werden soll. 	
+				
