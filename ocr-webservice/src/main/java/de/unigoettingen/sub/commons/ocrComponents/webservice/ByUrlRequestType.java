@@ -33,7 +33,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 		"textType", "outputFormat", "ocrlanguages", "inputUrl" })
 public class ByUrlRequestType {
 
-	@XmlElement(defaultValue = "NORMAL")
+	@XmlElement(defaultValue = "HIGH")
 	protected OCRPriority ocrPriorityType;
 	@XmlElement(defaultValue = "NORMAL")
 	protected OCRTextTyp textType;

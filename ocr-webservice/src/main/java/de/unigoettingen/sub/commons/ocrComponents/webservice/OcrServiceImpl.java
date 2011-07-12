@@ -70,7 +70,7 @@ public class OcrServiceImpl implements OcrService {
 	/** The OUTPU t_ definitions. */
 	protected static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 	private String parent, jobName;
-	
+	private String FILE_SEPARATOR = System.getProperty("file.separator");
 	// The duration.
 	private Long duration = 0L;
 	
@@ -95,7 +95,7 @@ public class OcrServiceImpl implements OcrService {
 		} catch (IOException e) {
 			logger.error("Error reading configuration", e);
 		}
-		WEBSERVER_PATH = properties.getProperty("webserverpath");
+		
 		LOCAL_PATH = properties.getProperty("localpath");
 		if(LOCAL_PATH == null || LOCAL_PATH.equals("")){
 			LOCAL_PATH = System.getProperty("java.io.tmpdir");
@@ -103,6 +103,15 @@ public class OcrServiceImpl implements OcrService {
 		if(!LOCAL_PATH.endsWith("/")){
 			LOCAL_PATH = LOCAL_PATH + "/";
 		}
+		
+		WEBSERVER_PATH = properties.getProperty("webserverpath");
+		if(!WEBSERVER_PATH.endsWith("/")){
+			WEBSERVER_PATH = WEBSERVER_PATH + "/";
+		}
+		if(WEBSERVER_PATH == null || WEBSERVER_PATH.equals("")){
+			WEBSERVER_PATH = System.getProperty("webapp.root");
+		}
+		
 		engine = ocrEngineFactory.newOcrEngine();
 		OCRProcess aop = engine.newOcrProcess();
 
@@ -157,16 +166,17 @@ public class OcrServiceImpl implements OcrService {
 			URI uri = null;
 			
 			try {
-				uri = new URI(new File(WEBSERVER_PATH).toURI() + "/" + parent
+				uri = new URI(new File(WEBSERVER_PATH).toURI() + parent
 						+ "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
 			} catch (URISyntaxException e) {
-				logger.error("URL is Mal formed: " + WEBSERVER_PATH + "/"
+				logger.error("URL is Mal formed: " + WEBSERVER_PATH 
 						+ parent + "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
-				String error = "URL is Mal formed: " + WEBSERVER_PATH + "/"
+				String error = "URL is Mal formed: " + WEBSERVER_PATH 
 				+ parent + "/" + jobName + "."
 				+ ocrformat.toString().toLowerCase();
+				file.delete();
 				return byURLresponse(duration, error);
 			}
 			// logger.debug("output Location " + uri.toString());
@@ -202,7 +212,7 @@ public class OcrServiceImpl implements OcrService {
 				logger.error("ERROR CAN NOT deleteDirectory");
 			}
 
-			File f = new File(WEBSERVER_PATH + "/" + parent + "/" + jobName
+			File f = new File(WEBSERVER_PATH + parent + "/" + jobName
 					+ "." + ocrformat.toString().toLowerCase());
 			
 			if( !f.exists()){
@@ -212,7 +222,7 @@ public class OcrServiceImpl implements OcrService {
 			}
 			
 			byUrlResponseType.setMessage("Process finished successfully after " + duration + " milliseconds.");
-			byUrlResponseType.setOutputUrl(WEBSERVER_PATH + "/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase());
+			byUrlResponseType.setOutputUrl(WEBSERVER_PATH + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase());
 			byUrlResponseType.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
 												"Using service: IMPACT Abbyy Fine Reader 2 Service "+ "\n" +
 												"Parameter processingUnit: "+ WEBSERVER_PATH + "\n" +
@@ -225,9 +235,9 @@ public class OcrServiceImpl implements OcrService {
 												"INTEXTTYPE substitution variable value: "+ part1.getTextType().value()+ "\n" +
 												"Process finished successfully with code 0."+ "\n" +
 												"Output file has been created successfully.."+ "\n" +
-												"Output Url: " + WEBSERVER_PATH + "/" + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
-												"Output Url-Abbyy-Result : " + WEBSERVER_PATH + "/" + parent + "/" + jobName	+ ".xml.result.xml" + "\n" +
-												"Output Url-Summary-File : " + WEBSERVER_PATH + "/" + parent + "/" + jobName	+ "-textMD.xml" + "\n" + 
+												"Output Url: " + WEBSERVER_PATH + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
+												"Output Url-Abbyy-Result : " + WEBSERVER_PATH + parent + "/" + jobName	+ ".xml.result.xml" + "\n" +
+												"Output Url-Summary-File : " + WEBSERVER_PATH + parent + "/" + jobName	+ "-textMD.xml" + "\n" + 
 												"Process finished successfully after " + duration + " milliseconds."
 												);
 			
