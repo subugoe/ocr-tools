@@ -1,0 +1,468 @@
+
+						---
+					MassenDigiMathe (OCR)
+							---
+						Mohamed Abergna
+							---
+							2011-07-12
+
+
+
+
+<<1 MassenDigiMathe (OCR)>>
+
+	Es geht hier um eine Programmierung einer vollautomatisierten Schnittstelle zwischen 
+	dem Workflow-System(Goobi) und dem ABBYY-Recognition-Server des GBV.
+
+ *<< 1.1 Ist-Zustand>>
+ 
+ 	In der Produktion bzw. Im GDZ werden verschiedene aufgaben durchgeführt (sieh Abb.1) und 
+ 	es wird für jedes zu digitalisierende Werkstück ein Vorgang in der Workflowverwaltung "Goobi" angelegt. 
+ 
+  **<< 1.1.1 Goobi>>
+  
+  	Ist ein Open Source Lizenz frei, er ist modulare aufgebaut, für diese Projekt brauchen wir zwei 
+  	wichtigsten Bereiche von Goobi, die Produktionsebene in der die digitalen Objekte produziert werden und die Präsentationsebene in der die Objekte in der Digitalen Bibliothek präsentiert und genutzt werden können. 
+  	
+  	
+  	
+  	
+	<<Produktionsebene:>>
+  	
+  		[200 000 Bilder oder mehr werden im Monate von REP produziert, dazu befinden sich schon 6 Millionen Bilder in dieser Ebene, 
+ 		die noch nicht digitalisiert sind.] 	
+ 	
+ 
+ 	<<Präsentationsebene:>>
+ 	
+ 		[In DigiZeitschriften sind aktuell (22.07.2010) 4 Millionen Seiten digitalisiert, davon sind ca 1 Mio. Seiten
+ 		aus dem GDZ übernommen (Mathematische Zeitschriften). Tagesaktuelle Zahlen gibt es da: Link {{http://www.digizeitschriften.de/digitools/structs.php}} 
+ 		Im online Repository des GDZ befinden sich aktuell (22.07.2010) 4,3 Millionen Seiten. Auch hier gibt es tagesaktuelle Zahlen: Link {{http://gdz.sub.uni-goettingen.de/gdztools/structs.php}}.
+ 		In beiden Seitenzählern kann man sich mit der Query <?start=YYYYMMDD&end=YYYYMMDD> auch die Produktion nach Zeitraum ausgeben lassen.
+ 		(Achtung das Bilderzählen kann eine Weile dauern)]
+ 		
+
+  **<< 1.1.2 ABBYY-Recognition-Server des GBV>>
+	
+	Ist eine Technologie, die die Umwandlung unterschiedlicher Dokumente, wie z.B. gescannter Dokumente, PDF-Dateien oder Digitalbilder in editierbare und durchsuchbare Daten ermöglicht. 
+	(Zuständig in GBV ist Herr Gerald Steilen)
+	
+	 	<<120 Seiten werden pro Minute umgewandelt>> 
+	 	
+	 	<<Jedes bild hat die große von 20-30 MB>>
+	 	
+	  
+ *<< 1.2 Soll-Zustand>>
+ 
+ 	Das zu implementierende System soll die Anwendung verschiedener Frontends ermöglichen. Die Abbildung 1 zeigt zwei grüne Bereiche, die der kerne dieses Projekts sind. 
+ 
+[./images/Ablauf.JPG] Abb.1: Ablauf  
+
+ Abb.1: Ablauf 
+	
+	
+	In der Abb.1 sind zwei grüne Bereiche, die der kerne dieses Projekts sind.
+
+	<<OCR/Volltextgenerierung:>>
+
+	Hier soll eine vollautomatisierte Schnittstelle programmiert werden. Die Bände werden aus dem file 
+	Server über diese Schnittstelle in ABBYY-Recognition-Server(Input-Verzeichnis) des GBV importiert, 
+	die Bände werden in ABBYY bearbeitet, Der wiederum schickt die bearbeitete Bände in Output-Verzeichnis, 
+	die ganze muss als Bibliothek sein, diese soll bzw. muss auf Webdav Protokol basiert werden und von 
+	verschieden Frontends benutzt werden. 
+ 
+ 	<<Metadaten Generierung:>>
+ 	
+ 	hier muss eine Metadatenbibliothek (UGH) angepasst werden um die TEI Dateien im METS zu referenzieren. 
+ 	D.h. eine Formatkonvertierung, aus dem Abbyy Ergebnis in ein Importierbares Format. 
+ 
+ 
+ *<< 1.3 Aufgabendefinition>>
+ 
+ 	Um den Ist-Zustand in den Soll-Zustand zu überführen, wird zunächst ein Konzept entwickelt, 
+ 	das dann die Basis der Implementierung darstellt. Hierbei werden im Wesentlichen zwei Ziele 
+ 	verfolgt: Zum einen die Implementierung eines Schnittstelle im OCR/Volltestgenerierung, zum anderen 
+ 	die Umsetzung der Konvertierungsmethode in Metadaten Generierung.
+
+	Aufgrund der Beschreibung des Soll-Zustandes lassen sich die folgenden Anforderungen ableiten: 
+  
+  	[Im Requirements Engineering unterscheidet man zwischen funktionalen und nicht funktionalen Anforderungen. 
+  	<<(Die Prioritäten sind in Klammern angegeben, dabei ist 1 die höchste, 3 die niedrigste.)>>]
+  	
+  	
+ 
+ 
+	[Im Folgenden werde ich zwischen zwei Arten von Anforderungen für unsere Ziele beschreiben: Auf der einen Seite gibt es funktionalen
+	und auf der anderen die nicht funktionalen Anforderungen.] 
+  	
+  
+  
+  **<< 1.3.1 Funktionale Anforderungen>>
+  
+  	Zuerst möchte ich an dieser Stelle auf die Funktionale Anforderungen eingehen. Funktionale Anforderungen 
+  	beziehen sich hier auf die gewünschten Funktionalitäten dieses Systems. Sie beschreiben einfach, was in 
+  	diesem Softwaresystem gemacht werden soll bzw. was soll das System tun/können.
+
+
+     ***<< 1.3.1.1 ABBYY-Recognition-Server:>>
+
+
+     	
+  [[A]] Bei der importieren soll die Schnittstelle berücksichtigen, dass ABBYY 120 Seiten(Bild) pro Minute in 
+   		die gewünschte Format umwandeln kann <<(2)>> und dass jedes Bild die groß von 20-30 MB hat.<<(1)>>
+
+
+
+  [[B]] Der Server hat einen beschränkten Speicherplatz in  Input-Datei, die Anzahl (bzw, Menge) der im System 
+   		befindlichen Bilder muss wirkungsvoll beschränkt werden. Dafür ist es auch notwendig in der Lage zu sein 
+   		die darauf befindliche Menge zu ermitteln (da im Fehlerfall keine Vorhersagen basierend auf den übermitteln 
+   		Daten getroffen werden kann).<<(1)>>
+
+
+   		
+  [[C]] Die Kommunikation erfolgt über Hotfolder via WebDAV (Ordner: Input, Output und Error)]
+   			
+   		   [++ <<Input:>> hier werden die Bilder zur Umwandlung  importiert, leider ist die Speicher Platz  hier beschränkt, darum 
+        soll immer vorher überprüft werden, ob genug Platz gibt.<<(1)>>]
+			
+		   [++ <<Output:>> ABBYY Recognition Server verarbeitet alle Bilder aus den Input Ordner und  bei der Ausgabe der verarbeiteten
+        Dateien wird die Unterordnerstruktur in diesen Ordnern Output automatisch reproduziert.<<(1)>>]
+        	
+           [++ <<Error:>> in dem Recognition Server nicht verarbeitbare Dateien ablegt. Zu jeder zurückgewiesenen Datei gehört eine
+        spezielle XML-Ergebnisdatei, die eine Beschreibung des Problems enthält.<<(1)>>]
+
+
+
+  [[D]] Für die Steuerung des Erkennungsprozesses muss ein XML Ticket erstellt werden, dafür ist eine Art API Notwendig.<<(1)>>
+        	
+           [++ XML-Tickets ermöglicht die Verarbeitung der Bilder anhand von Parametern, für die Änderung der Erkennungssprache der
+        Priorität,oder des Ausgabeformats. Das XML-Ticket muss vor den angegebenen Bildern im Eingabeordner (Input) platziert
+        werden.<<(1)>>]
+        
+        
+  [[E]] Fürs Fehlerhandling ist es notwendig die Vorgänge zu überwachen (inklusive Timeout)(1)
+        	
+           [++ Bei Fehlern, die das Programm erst während der Laufzeit bemerkt hat, sollen mit Fehlermeldungen abgestürzt werden.
+        Fehlerbehandlung können in solchen Fällen für eine verständliche Meldung sorgen oder sogar dafür, dass das Programm 
+        sinnvoll weitermacht.]
+        
+        
+  [[F]] Für die Klassifikation der Fehler müssen die Fehlerberichte analysiert werden.<<(2)>>
+        
+        
+  [[G]] "Über" dem OCR Manager sollte es ggf. ein System zur Verhinderung von Duplikaten geben. Dieses könnte auch für die Persistenz
+    von Informationen zwischen einem unnormalen Programmabbruch und einem Neustart sorgen. Um diese Problem zu vermeiden soll keine
+    Duplikate Bände zum Eingabeordner(Input) importiert werden.<<(1)>>
+
+	
+    	
+  [[H]] Es sollten auch die unterschiedlichen Ausgabeformate (für uns wichtig XML und PDF/A) unterstüzt werden.<<(2)>>
+
+	
+    	
+  [[I]] Das erste Frontend für die Bibliothek sollten Unit Tests sein. Diese sollten demonstrieren das es möglich ist mehr als einen Band auf
+    einmal erkennen zu lassen und mindestens XML und PDF/A (LZA Format) als Ergebnis zu speichern, dabei soll sowohl Englisch als auch
+    Deutsch erkannt werden. Zugangsdaten und globale Parameter sollten via API oder Konfigurationsdatei übergeben werden. Die Ausgabe
+    wird als Stream realiasiert.<<(3)>>
+    	
+   
+  ***<< 1.3.1.2 Metadaten Generierung:>>
+     
+     Nach dem ABBYY die (Bände)Bilder in editierbare und durchsuchbare Daten umgewandelt hat, sollen die Metadaten 
+     im TEI-Format Weiterverarbeitet werden und diese im METS zu referenzieren via ein Metadatenbibliothek(UGH), die noch angepasst
+     werden muss<<(1)>>
+
+        
+  
+ **<< 1.3.2 Nichtfunktionale Anforderungen>>
+  
+  	Nichtfunktionale Anforderungen sind Anforderungen, an die "Qualität" in welcher die geforderte Funktionalität zu erbringen ist. 
+  	Im Weiteren möchte ich nun speziell auf den Begriff Softwarequalität eingehen: Man kann von Qualität bei Software reden, 
+  	wenn sie sich für den erforderten Zweck Eignet. Einige Zielfragen die man sich als Entwickler dazu stellen kann, sind folgende:
+  	    
+  		+ Erfüllt die Software die Bedürfnisse der Arbeitsgeber? <<(1)>> 
+
+    	+ Löst die Software die Aufgabe, wie es der Arbeitsgeber braucht? <<(1)>> 
+
+    	+ Ist sie schnell genug? <<(2)>> 
+
+    	+ Ist sie sicher genug? <<(2)>> 
+
+    	+ Ist die Software fertig, wenn der Arbeitsgeber sie benötigt? <<(2)>> 
+
+    	+ Ist sie anpassungsfähig, wenn sich die Bedürfnisse ändern? <<(1)>> 
+    
+    Der obige Fragenkatalog lässt sich auch kurz mit folgender Fragestellung zusammenfassen: Erfüllt die Software die Anforderungen an das System?<<(1)>> 
+    Um den Qualitätsbegriff abzuschließen, will ich noch auf manche Qualitätsfaktoren eingehen.
+    
+     	
+
+     
+     ***<< 1.3.2.1 Wartbarkeit:>>
+     
+     Die Wartbarkeit ist die Leichtigkeit, mit der ein System verändert oder erweitert werden kann. Hier sind die Wichtige Kriterien für die 
+     Wartbarkeit von Software:
+     
+     	+ die Dokumentation, insbesondere die exakte Spezifikation von Schnittstellen <<(1)>>
+     	
+     	+ ein modularer, stark gegliederter Aufbau (Zerlegung in elementare, einzeln testbare Einheiten) <<(1)>>
+     	
+     	+ die lokale Verständlichkeit von Anweisungen <<(1)>>
+     	
+     	+ Um Kodedoppelungen zu vermeiden und Erweiterbarkeit zu ermöglichen sollten bei ähnlicher Funktionalität diese mit Hilfe von Schnittstellen vereinheitlicht werden <<(1)>>
+     	
+     	+ Um den Aufwand zu reduzieren und die eigene Codebasis möglichst klein zu halten, sollten, wo möglich, bestehende Bibliotheken nachgenutzt werden(z.B. WebDAV.jar …) <<(2)>>
+     	
+     	
+     
+     
+     
+     ***<< 1.3.2.2 Robustbarkeit:>>
+     
+     Hier soll ein Robustheitsdiagramm erstellt werden. Ein Robustheitsdiagramm oder Anwendungsfalldiagramm (engl. Use-Case-Diagramm) ist kurzgefasst die Beschreibung der Zusammenhänge 
+     zwischen einer Menge von Anwendungsfällen und der daran beteiligten Akteure. Es bildet somit den Kontext und die Gliederung der Beschreibung, wie mit einem Geschäftsvorfall verfahren wird.
+     
+     To Do… 
+     
+     In einem Artikel des "software development magazine" haben die häufigsten / typischen Fehler analysiert und Vorgehensweisen beschrieben wie diese zu umgehen sind. Hier die wichtigsten als 
+     allgemeine Richtlinien, zum Erstellen von Robustheitsdiagrammen, formuliert: 
+     
+     + Man sollte das statische Domänenmodell nach den Erkenntnissen der Robustheitsanalyse aktualisieren (neu gefundene Objekte eintragen) 
+     
+     + Es sollte ein visueller Abgleich zwischen Use Case Text und dem Robustheitsdiagramm stattfinden (Lesen des Use Case Textes und gleichzeitige Nachvollziehung im Diagramm) 
+     
+     + Man sollte nicht zu viele Controller Objekte in die Diagramme einbauen, die Robustheitsanalyse soll ein schneller "Sanity Check" für die Use Cases sein. 
+     
+     + Alternative Wege aus dem Use Case (z.B. im Fehlerfall) sollten ebenfalls dargestellt werden 
+     
+
+
+     
+     ***<< 1.3.2.3 Fehlertoleranz:>>
+     
+     Diese Software(Goobi-OCR) kann Fehlertoleranz durch folgende Maßnahmen erreicht werden: 
+     
+     + Keine Systemabbrüche oder undefinierten Systemzustände <<(3)>>
+     
+     + Fehlererläuterungen zu Korrekturzwecken 
+     
+     + Prüfung und Bestätigung vor Ausführung <<(1)>>
+     
+     + Fehlerbehebung ohne Zustandsänderung des Dialogs <<(2)>>
+     
+     + Wenn das System einen Fehler erkennt, soll es eine für den Benutzer verstehbare Meldung erzeugen <<(1)>>
+
+
+   
+     
+     ***<< 1.3.2.4 Skalierbarkeit:>>
+     
+     <<Ein Threadpool (1) >>
+     
+     In unserem Proket gibt immer Aufgaben, die sehr lange dauern und sehr große Mengen an Daten verarbeiten müssen. Dabei geht es meistens um Minuten oder gar Stunden, Tage ... Diese sollten sinnvollerweise parallelisiert werden, um die Leistungs des Systems zu nutzen. dafür wird hier Threadpool benutzt.
+	 Ein Threadpool ist eine Abstraktion, die eine Anzahl von erzeugten und bereits gestarteten Thread vorrätig hält, um mit ihnen asynchrone Tätigkeiten auszuführen. Zum Beispiel wird ein Application Server einen Threadpool enthalten, um die hereinkommenden Serviceanfragen asynchron damit auszuführen. Die Nutzung eines Threadpools in einem solchen Kontext hat zwei Vorteile:
+	 
+	 + Zum einen entfällt der Overhead des Threaderzeugens, -startens und -beenden.
+	 
+	 + Daneben sorgt ein richtig getunter Threadpool für eine gute Skalierbarkeit des Systems.
+	 
+	 
+	 
+ 
+ *<< 1.4 Grobkonzept>>
+ 
+ Die folgenden beiden Abschnitte sollen zunächst ein allgemeines Verständnis des zu konzipierenden Systems ermöglichen. 
+ 
+ 
+  
+  **<< 1.4.1 Flussdiagramm>>
+  
+[./images/Aktualflussdia.PNG] Flussdiagramm
+  
+  **<< 1.4.2 Der Ablauf>>
+  
+  [[1]] hier werden die Input Parameter eingegeben.
+  
+  + Eingabeverzeichnis (wo die ganzen Bände sind) 
+  
+  + Ausgabeverzeichnis 
+  
+  + Text type (z.B. Gothic, Normal…)
+  
+  + Ausgabe-Formate (Text, XML …)
+  
+  + Sprachen mit vollständiger Wörterbuchunterstützung(German …)
+  
+  [[2]] Das  Eingabeverzeichnis wird durchgesucht und wird eine Liste von Verzeichnissen(Bände) gemacht, die nur  Bilder als 
+  tif-Format haben.
+  
+  [[3]] Die Liste (Bände) kommen in die Warteschlange.
+  
+  [[4]] Der Speicherplatz auf dem Server wird überprüft, ob schon Platz für die Bände vorhanden ist, wenn nicht, dann müssen die 
+  Bände in die Warteschlange gewartet werden bis der Freiplatz gibt.
+      
+  [[5]] wenn Platz vorhanden ist, wird der nächste Band weiter bearbeitet.
+  
+  [[6]] Ein XML-Ticket wird für den Beteiligten Band erstellt.
+  
+  [[7]] Es muss zuerst das XML-Ticket im Eingabeordner(Input) gespeichert werden und erst danach die diesem XML-Ticket 
+  zugeordneten  Bilder. Ansonsten verarbeitet ABBYY Recognition Server die Bilder möglicherweise, ohne das XML-Ticket zu 
+  berücksichtigen.
+  
+  [[8]] Hier wird geprüft, ob alle Dateien erfolgreich kopiert werden, wenn ein Fehler beim kopieren auftritt, wird dann noch 
+  mal versucht, derselben Datei zu kopieren.
+  
+  [[9]] für jede Band wird Wartezeit berechnet.
+  
+  MinZeit: hier wird 10 000ms pro Bild gegeben.
+  
+  MaxZeit: hier wird 45 000ms pro Bild gegeben.
+  
+  [[10]] Es wird hier einfach gewartet, bis die MinZeit läuft, die vorher berechnet wurde.
+  
+  [[11]] der Überprüfung der Hotfolder wird hier gestartet. 
+  
+  [[12]] Abbyy-Server verarbeitet alle Bilder aus dem Input Ordner und bei der Ausgabe der verarbeiteten Dateien werden in Output 
+  automatisch reproduziert, darum wird geprüft, ob die Ausgabe da sind, wenn nicht, wird 20 000ms gewartet dann wird noch mal geprüft 
+  bis die MaxZeit erreicht werden.
+  
+  [[13]] wenn die Ausgabe Daten da sind, werden die Daten vom Server zum lokal verschoben, im Fehlerfall wird noch mal wiederholt. 
+  Nachher wird geprüft, ob die Daten wirklich lokal sind. Wenn Ja, wird dann ein textMD.xml im Lokal erstellt, wenn nein, kommt dann 
+  der nächste Band(Punkt15) ohne ein textMD.xml zu erstellen.
+  
+  [[14]] Eine Schritt davor wird (Input Ordner) geprüft, ob der Input Odner die Ausgabe enthält, hier wird die MaxZeit erreicht 
+  ohne die Ausgabe Daten zu finden(TimeOut). Hier soll die (Hotfolder)Error Ordner geprüft werden und dann die XML-Ergebnisdatei 
+  parsen und die Beschreibung des Problems zu log geben nachher werden die Daten von Error Ordner gelöscht am ende kommt der nächste 
+  Band(Punkt15)
+  
+  [[15]] nächster Band.
+ 
+  
+ 
+ *<< 1.5 Spezifikation>>
+ 
+ Um eine Herausforderung der Entwicklung dieser Schnittstelle so risikolos wie möglich durchführen zu können ist eine gute Planung notwendig. Daher soll im Rahme dieses Auftrags eine Spezifikation erstellt werden. Die Spezifikation soll auf Basis der Anforderungen erstellt werden. 
+ 
+ 
+  
+  **<< 1.5.1 WebDAV>>
+  
+  <<WebDAV (Web-based Distributed Authoring and Versioning):>> Technisch gesehen ist WebDAV eine Erweiterung des Protokolls HTTP/1.1, die bestimmte Einschränkungen von HTTP aufhebt. Mit WebDAV können ganze Verzeichnisse übertragen werden.
+  
+  <<Technische Hintergründe>>
+  Das WebDAV-Protokoll erweitert das vorhandene Hypertext Transfer Protocol um einem Satz neuer Methoden und Header-Attribute.
+  Hier sind die zusätzliche Anfrage-Methoden, die von WebDAV-konformen Webservern behandelt werden müssen: 
+  
+  + <<PROPFIND:>> wird benutzt, um Eigenschaften, abgelegt als XML, einer Ressource zu erfahren. Außerdem wird sie benutzt (überladen), um die Verzeichnisstruktur eines entfernten Systems in Erfahrung bringen zu können.
+  
+  + <<PROPPATCH:>> ändert und löscht mehrere Eigenschaften einer Ressource.  
+  
+  + <<MKCOL:>> erzeugt ein Verzeichnis (bei WebDAV "Collection" genannt). 
+  
+  + <<LOCK:>> Setzt für den Überschreibschutz eine Sperre auf eine Collection oder Ressource.
+  
+  + <<UNLOCK:>> Gibt eine gesperrte Collection oder Ressource wieder frei. 
+  
+  + <<COPY:>> Kopiert Collections und Ressourcen innerhalb eines zusammenhängenden Namensraumes.
+  
+  + <<MOVE:>> Verschiebt Collections und Ressourcen innerhalb eines zusammenhängenden Namensraumes. 
+
+
+  
+  **<< 1.5.2 XMLBeans(XML-Binding)>>
+  
+  Um eine XML-Ticket für jede Band zu erstellen, brauchen wir XMLBeans. XMLBeans ist ein Softwarepaket für Java, welches es ermöglicht, Daten aus einer XML-Schema-Instanz heraus automatisch an Java-Klassen zu binden. Diesen Vorgang nennt man XML-Datenbindung. Dies ermöglicht ein Arbeiten mit XML-Dokumenten, ohne dass der Programmierer Schnittstellen zur Verarbeitung von XML wie SAX oder DOM verwenden muss. XMLBeans ist ein Teil des Apache XML Projekts. 
+  
+  Apache XMLBeans verwendet eine XML Schema Definition, um Java Klassen und Schnittstellen zu generieren. Falls das XML Schema nicht vorhanden sein sollte kann Apache XMLBeans ein Schema basierend auf einem XML Dokument erzeugen. 
+
+
+
+  
+  **<< 1.5.3 Input Parameter>>
+  
+  Die Beschränkungen des Servers.
+  
+  Timeouts
+  
+  Anzahl der parallelen Prozesse 
+  
+  
+  <<Verbindung bauen:>>
+  
+  + URL: File-Server (wo die Bände sind) 
+  
+  + URL: Input-Ordner von Abbyy (wo die Bände kopiert sollen werden) 
+  
+  + URLs: Zugangsdaten 
+  
+  
+  <<XML-Ticket erstellen:>> vielleicht hier sind mehr Eingabe erforderlich!! 
+  
+  + Bände-Namen 
+  
+  + Language
+  
+  + Ausgabe Format 
+  
+  + Output Location
+  
+  
+  <<Error & Ergebnisse>> für die Überprüfung wird ein paar URLs benötigt 
+  
+  + URL: Error-Ordner(wo der Abbyy seine Fehler erstellt) 
+  
+  + URL: Output-Datei (wor der Abbyy seine Ergebnisse erstellt) 
+  
+
+
+
+  
+  
+
+ 
+ *<< 1.6 Zugangsdaten für den OCR Server>>
+ 
+ user: 
+ pw:
+ 
+ <<WebDav URLs sind:>>
+ 
+  + {{http://dl380-130.gbv.de/webdav/GDZ/input}}
+  
+  + {{http://dl380-130.gbv.de/webdav/GDZ/output}}
+  
+  + {{http://dl380-130.gbv.de/webdav/GDZ/error}}
+ 
+ bzw.
+ 
+  + {{https://dl380-130.gbv.de/webdav/GDZ/input}}
+  
+  + {{https://dl380-130.gbv.de/webdav/GDZ/output}}
+  
+  + {{https://dl380-130.gbv.de/webdav/GDZ/error}}
+  
+ 
+ 
+ 
+<<2 Links & Informationen>>
+
+ + textMD: {{http://www.loc.gov/standards/textMD/}}
+ Metadaten für Texte (Verarbeitungsinformationen, Qualität etc.) 
+ 
+ + METS: {{http://www.loc.gov/standards/mets/}}
+ Metadatencontainerformat 
+ 
+ + XMLBeans: {{http://xmlbeans.apache.org/}}
+ Generiert Java Klassen aus XML Schema 
+ 
+ + TEI: {{http://tei-c.org/}}
+ Enkodierung von Volltexten
+ 
+ + ABBYY: {{http://www.abbyy.de/Default.aspx?DN=9eb88f04-1a8d-4366-885f-6238033c6c7a#n}}
+ Einstellungen des Recognition Server
+ 
+ + Abstraktion des Dateisystems: {{http://commons.apache.org/}}
+ 
+ 
+ 
+
