@@ -1,0 +1,106 @@
+								---
+					Instruction of utilisation for OCR-Webservice 
+							---
+						Mohamed Abergna
+							---
+							2011-07-12
+
+
+
+<<1-Nutzungsanweisungen>>
+
+	* <<1.1 Jetty Starten>>
+	
+	Jetty ist sein Servlet Container ähnlich wie Tomcat. im Hauptverzeichnis der Modul(ocr-Webservice, Da wo sich die pom.xml für das Webservice Projekt befindet) startet man auf der Konsole den Server mit "mvn jetty:run" . Um diesen Befehl aus Eclipse auszuführen gehen wir wie folgt vor: Eclipse: Run -> Run as -> Maven Build... und Im Reiter Main das Goal (jetty:run) eintragen und dann auf Run klicken.
+	
+	so wird der Service jetzt unter  <<http://localhost:8080/ocr-webservice/service?wsdl>> erreichbar.
+
+
+	
+	* <<1.1 Nutzung von Taverna>>
+	
+	Um den Webservice in Taverna zu starten, muss erstmal Jetty gestartet werden und einpaar steps für die Erstellung der Worklflow. hier wird gezeigt, wie diese Worklfow in Taverna modelliert wird. 
+	
+	in Taverna oben links in Service panel soll wie folgt gemacht werden: 
+	
+	Import new services -> WSDL service... -> in WSDL location den URL(http://localhost:8080/ocr-webservice/service?wsdl) eingeben 
+    -> add
+    
+    
+[./images/tavernaSteps.JPG]
+    
+    
+    [[1]] 
+    wird jetzt einen Service in Available services erstellt. 
+          
+    mit rechte Maustaste -> Add to workflow -> wird ocrImageFileByUrl in Workflow diagram panel erstellt.
+    
+    [[2]] <<Splitter erstellen>>
+    
+    mit rechte Maustaste auf ocrImageFileByUrl -> Add XML Input Splitter... + Add XML Output Splitter... -> Bild 3
+    
+    
+    [[3]] <<Ansicht ändern>>
+    
+    um das Bild 4 zu bekommen, soll oben in Workflow diagram panel auf Display all Service ports geklickt werden.
+    
+    
+    [[4]] <<Input und Output New workflow erstellen>>
+    
+    im Bild 4 können die ganze Input und Output parameter vom Webservice gesehen werden.
+    Es soll in jede parameter ein New workflow erstellt werden. mit der rechte maustaste -> Connect as (input oder output)to... 
+    -> New workflow(input oder output) port... sieh mal Bild 5
+    
+    
+[./images/tavernaWorkflow.JPG]
+	
+	
+	
+    
+    
+    [[5]]
+    jetzt ist der Workflow ganz modelliert werden. dh ist jetzt komplett muss nur noch ausgeführt werden.
+    
+    
+    
+    
+    
+[./images/tavernaRun.JPG]
+    
+    
+    [[6]] <<Ausführen>>
+    
+    wie im Bild zeigt, es soll erstmal auf Pfeile 1(Run the current workflow) klicken, wird dann ein neu Fenster(A) erstellt.
+    In A sollen alle input eingegebne werden, für jede Parameter ein New value eingegeben.
+    und dann am ende auf Run workflow klicken.
+    
+
+
+ [um OCR-Webservice richtig zu starten, mussen diese input Parametern eingegeben werden. ]
+  
+  + <<LANGUAGES de :>> ein oder mehrere language die ABBYY-Recognition-Server unterstützt eingeben. (andere Beispiel: en,fr,ru).
+  
+  + <<OUTFORMAT:>> ein Format die ABBYY-Recognition-Server unterstützt eingeben.(andere Beispiel: TXT, PDF, XML, PDFA, DOC, HTML, XHTML, HOCR und METADATA sind alle Format, die von ABBYY-Recognition-Server unterstützt werden).
+  
+  + <<INTEXTTYPE:>> TextTyp (Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B und Gothic).
+  
+  + <<inputURL image:>> URL vom Bild, die verarbeitet werden sollen. 
+  
+  + <<Priority :>> HIGH, ABOVENORMAL, NORMAL, BELOWNORMAL, LOW   
+  
+ 
+    
+     
+     
+
+
+    
+    
+    
+    
+	
+	
+	
+
+
+

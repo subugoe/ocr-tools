@@ -2,7 +2,8 @@
 <project name="ocr-webservice">
 	 <body>
 	 	 <menu name="ocr-webservice">
-		   <item name="Übersicht" href="ocrWebserviceview.html"/>
+		   <item name="Übersicht" href="impactview.html"/>
+		   <item name="Nutzungsanweisungen" href="instr-OfUtilisation.html"/>
 		 </menu>
 	 	 <menu ref="reports"/>
 	 </body>

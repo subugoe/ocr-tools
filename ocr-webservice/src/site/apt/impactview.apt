@@ -1,0 +1,336 @@
+								
+								
+								---
+					OCR Instruction of utilisation
+							---
+						Mohamed Abergna
+							---
+							2011-07-12
+
+
+
+<<1-OCR-Webservice für IMPACT>>
+
+ Es geht hier um eine Programmierung einen OCR-Webservice für IMAPCT. Der in Taverna ausgeführt wird.
+
+
+<<2-Ist-Zustand>>
+
+    * <<2.1 Web Service-API von Abbyy>>
+    
+    Diese Komponente bietet eine Web Service-API für die Integration von Recognition Server in Remoteanwendungen über das HTTP-Protokoll.
+    
+          o <<2.1.1 Anforderungen>>
+          
+          + Laüft nur unter Windows.
+          
+          + WS-API wird nicht funktionieren , wenn ASP.NET nicht vorinstalliert ist.
+          
+          + verlangt eine komplizierte konfiguration, wenn es auf dem selben Computer mit Sharepoint Server installiert wird.
+          
+          + input folder sind als shared folder oder FTP folder verfügbar.
+          
+                   
+          o <<2.1.2 WS-API Funktionen>>
+          
+          WS-API bietet folgende Funktionen:
+          
+           + Übertragung von Bildern für die Verarbeitung.
+          
+           + Erstellen und übertragen von XML-Ticket für die verarbeitung
+          
+           + Abrufen von Benachrichtigungen über die Jobfertigstellung und von Informationen über die Jobergebnisse
+          
+          
+          o <<2.1.3 Schritte für die WS-API>>
+          
+          hier sind die Basisschirtte für die Benutzung der WS-API:
+          
+           + SOAPService erstellen.
+          
+           + Verbindung mit der Server.
+          
+           + die Liste von verfügbaren Workflows.
+          
+           + die Parametern für die Workflow auswählen, um die XML-Ticket zu erstellen.
+          
+           + Erstellung der XML-Ticket.
+          
+           + Erkennung der Bilder in Input.
+          
+           + Überprüfung der verfügbaren Ergenisse.
+          
+                 
+          
+          o <<2.1.4 Warum gegen WS-API entschieden>>
+          
+          WS-API entspricht nicht die Anforderung der Taverna und IMPACT. 
+          
+           + bei Taverna und IMPACT werden nur URLs ausgetauscht und hier bei WS-API ist nicht der Fall.
+          
+           + Taverna erwartet immer einen log, wo einpaar Details stehen, die für Repository in Impact wichtig sind.
+          
+          Es ist für Server-Impl-API entschieden weil die Anforderung von Taverna und IMPACT entspricht.
+          
+          + Austausch von URLs ist hier Möglich.
+          
+          + log file für detaills kann auch erstellt werden.
+          
+          + wird von mehreren Frontend benutzt z.B.: CLI, Webservice...
+          
+          + ausserdem kann Server-Impl-API die jobs parallel zu den Horfolder schicken, so können die Datein schnell von Abbyy bearbeitet
+            werden.
+          
+
+
+    * <<2.2 Taverna>>
+    
+    In Taverna werden die Webservices durch sogenannten Workflows orchestriert. 
+    
+    Workflows können in Taverna durch eine Graphische Oberfläche konstruiert werden.
+    
+    
+   
+    * <<2.3 OCR-Tool>>
+    
+    Eine vollautomatisierte Schnittstelle, die die Bände aus dem lokal System in ABBYY-Recognition-Server(Input-Verzeichnis)   
+    importiert,  die Bände werden in ABBYY bearbeitet, der wiederum stellt die Ergebnisse in Output-Verzeichnis, diese Ergebnisse 
+    werden  dann lokal verschoben.
+    
+    
+    
+
+<<3-Soll-Zustand>>
+
+ Das OCR-Tool soll als Webservice für IMPACT benutzt werden, dh. OCR-Tool soll in IIF integriert werden, darum soll  dieses Tool noch 
+ angepasst werden,  der Webservice soll dann  durch Workflow in Taverna durchgeführt werden. Die Herausforderungen von Taverna  
+ sollen auch berücksichtigt werden.
+ 
+ die Parallelität  und Prioritäten sollen auch von diesem Webservice angenommen, um diesen Webservice von mehreren Benutzern benutzt 
+ zu werden.
+
+
+<<4-Funktionale Anforderungen>>
+
+ Bevor die gewünschten Funktionalitäten dieses Webservices beschrieben werden bzw. was dieses Webservices gemacht werden soll,
+ Sollen  erstmal die Anforderungen von Taverna und IMPACT erkannt werden.
+ 
+
+    * <<4.1 Taverna Anforderungen>>
+    
+    + URL von einem WSDL ist ganz notwendig um einen Workflow in Taverna zu modellieren.
+    
+    + Ein Bild muss verarbeitet und sofort zurückgegeben werden (Synchronität)
+    
+    + Workflow in Taverna  enthält Input und Output Ports, die dann an den Webservice weitergeleitet werden, 
+      die Input Ports sollen nur URLs zu den Bildern annehmen und die Output Ports geben auch eine URL zur Ausgabedatei 
+      und einen Log zurück.
+    
+    + Ein Log muss bestimmte Zeilen mit Informationen enthalten:
+     
+     ++ Using service (name des Services z.B.: IMPACTAbbyyOcrService)
+     
+     ++ Input URL von dem Bild
+     
+     ++ Output URL
+     
+     ++ Process finished successfully after (Millisekunde).
+     
+     ++ {{{https://kbdemo.dnsalias.org/impact/rep/ugoe/1785~download~evaluate_abbyy_9__abbyy_10__tesseract__french__403928.t2flow*version=2/1297423700462/IMPACTAbbyyOcrService/log/00001.log}Beispiel:}}
+     
+  
+    
+    * <<4.2 IMPACT Anforderungen>>
+    
+    Die Services in IMPACT tauschen nur URLs und die Implementierung  dahinter holt sich die tatsächlichen Daten und diese 
+    Webservice soll diese auch berücksichtigen.
+
+
+    
+    
+    * <<4.3 OCR-Webservice Anforderungen>>
+    
+    
+          o <<4.3.1 WSDL>>
+          
+          Web Service Description Language ist ein XML.Format um Dienste zu beschreiben, ein Dienst wird durch sechs Elemente 
+          in der WSDL-Datei beschrieben, in der folgenden Auflistung  werden diese Elemente angegeben.
+          
+          <<Types:>> Die Datentypen sollen hier durch ein XML-Schema beschrieben.
+          
+          <<Message:>> die gesendeten oder empfangenen Daten sollen hier beschrieben werden.
+          
+          <<PortType:>> Die Dienst-Operation soll hier beschrieben werden, diese Operation enthält eine Eingangsnachricht, 
+          Ausgangsnachricht und eine Liste der möglichen Fehler, die während de Ausführung auftreten können.
+          
+          <<Binding:>> Die Datenformat und Nachrichten einer Schnittstelle sollen hier beschrieben.
+          
+          <<Port:>> Hier soll eine Adresse für ein spezielles Protokoll festgelegt und beschrieben. Dieser Port ist ein 
+          Endpunkt für die Kommunikation.
+          
+          <<Service:>> das soll eine Menge von Kommunikationsendpunkten unter einem logischem Namen zusammenfassen.
+          
+          
+             
+          o <<4.3.2 Workflow Ports>>
+          
+          <<Inputs:>>
+          
+          + URL zu einem Bild im Tiff-Format
+          
+          + Text type (z.B. Gothic, Normal…)
+          
+          + Ausgabe-Formate (Text, XML …)
+          
+          + Sprachen mit vollständiger Wörterbuchunterstützung(German …)
+          
+          <<Outputs:>>
+          
+          + URL zur Ausgabedateien. Der Name des Services, der Name des jeweiligen Workflow-Ports und die Korrekte Dateiendung 
+            (z.B. XML) müssen in der URL nach dem folgenden Schema kodiert werden. 
+            http://.../<service>_<port>_<irgendwas_eindeutiges>.<endung>
+          
+          + Log oder String muss bestimmte Zeilen mit Informationen enthalten: Using Service (Name des Services), URL of input image, 
+            Output URL und Process finished successfully after. Ein Beispiel befindet sich {{{https://kbdemo.dnsalias.org/impact/rep/ugoe/1785~download~evaluate_abbyy_9__abbyy_10__tesseract__french__403928.t2flow*version=2/1297423700462/IMPACTAbbyyOcrService/log/00001.log}hier}}
+          
+
+         
+          o <<4.3.3 Priorisieren und Synchronisierung>>
+          
+          Abbyy Recognition Server verarbeitet die Jobs in der Warteschlange je nach ihrer Prioritäten, dh. Die Prioritäten ist hier schon  
+          Möglich, es soll nur in der XML-Ticket eingestellt werden, um die Jobpriorität zu erhöhen oder zu niedrigen. Und dieser Parameter 
+          darf ohne Rücksprache nicht höher als durchschnittlich gesetzt werden. Laut Abbyy doc.
+
+                
+                + <<4.3.3.1 Hazelcast für die Synchronisierung der jobs>>
+                
+                damit die Auslastung der Abbyy Server vermieden werden, muss die zugriff auf die Hotfolder von verschiedenen Frontends 
+                synchronisiert werden.
+                
+                dh. die jobs, die Hohe Prioritäten haben, müssen als erstes ausgeführt werden. hier werden die jobs von verschiedenen 
+                Frontends nach Prioritäten und nach Datum/Zeit sortiert. dank Hazelcast, die uns einpaar wichtige Features bietet. hier
+                mehr über {{{http://www.hazelcast.com/}hazelcast.}}
+                
+                
+          o <<4.3.4 Parallelität>>
+          
+          
+                + <<4.3.4.1 Parallel Bilder bearbeiten>>
+                
+                Das OCR-Tool ist sehr schnell, weil die Liste von Bilder Parallel von diesem Tool bearbeitet werden können,  und weil es in 
+                Taverna die Möglichkeit gibt, eine Liste von Bilder(URLs) weiter an den Webservice zugeben, wird Diese OCR-Webservice auch schnell
+                sein. (es soll hier diese Synchronität von Taverna berücksichtigt werden, dh, es muss gewartet, bis diese Liste von Bilder(URLs) 
+                komplette  von OCR-Webservice bearbeitet wird).
+ 
+                Deswegen wäre ganz besser, wenn diese OCR-Webservice meistens nur eine Liste von Bilder(URLs) annimmt, um schnelle Ergebnisse zu  
+                bekommen.
+                
+                Natürlich  gibt auch die Möglichkeit in Taverna, dass nur ein Bild an dem Webservice weitergegeben wird, der OCR-Webservice wird das 
+                auch können.
+                
+                  
+                + <<4.3.4.2 Parallel Frontends>>
+                
+                Der Webservice selbst wird als Server bezeichnet, der Aufrufe von einer Frontend entgegennimmt und In Taverna müssen gleichzeitige 
+                Aufrufe von mehreren Benutzern Möglich sein. Dh. Der OCR-Webservice kann auch von mehreren Frontends Parallel benutzt wird, es soll
+                nur auf die Speicherbeschränkung der Abbyy-Hotfolder beachtet werden.
+
+                
+                
+<<5-Spezifikation>>
+
+[./images/OCR-Impact.JPG] 
+ 
+ Das Bild zeigt wie die Library  Server Impl von verschiedenen Frontends benutzt werden,  auf jede Java Virtuelle Maschine ist 
+ einen Frontend, der diese Library benutzt, die Priorisierung zwischen verschiedenen Instanzen wird dann mit Hazelcast gemacht.
+ die Jobs(Job ist Bilder mit XML-Ticket), die hohe Priorität haben, sollen als erstes zu den Hotfolder in Abbyy Recognition 
+ Server geschickt werden, die Jobs werden in Abbyy bearbeitet, in dem der Server Manager die Jobs aus der Warteschlange gleichmäßig 
+ auf diese Verarbeitungsstationen verteilt. Der Server Manager wiederum stellt die Ergebnisse in Hotfolder.
+ 
+ Das Wichtigste Punkt ist die zugriff auf die Hotfolder, das muss synchronisiert werden, damit die Auslastung der Abbyy Server
+ vermieden werden. 
+ 
+
+
+    * <<5.1 Sequenzdiagramm>>
+    
+[./images/Ocr-Impact-sequenz.JPG] Abb. 1 OCR-Impact
+
+    
+    
+    Abb. 1 OCR-Impact
+    
+    Abb.1  zeigt die Darstellung einer konkreten Konversation zwischen Taverna Workbench, einem OCR-Impact Webservice, einem Webserver
+    und dem Abbyy Server(Finereader) als Sequenzdiagramm.
+    
+    
+    Taverna Workbench wird ein Url(Bild) an den OCR-Impact-Webserivce weitergegeben, der Service holt das Bild von Url
+    und speichert es in einem Webserver, der Service schickt dieses Bild von Webserver zu den Hotfolder(Input), in Abbyy wird das
+    Bild bearbeitet, der wiederum stellt die Ergebnisse in Output- oder Error-Verzeichnis(Hotfolder), diese Ergebnisse werden dann 
+    in einem Verzeichnis in Tomcat gespeichert, sodass sie per Urls verfügbar sein werden sollen, diese Urls werden an die Taverna als
+    Ergebnisse weiter gegeben.
+    
+
+    
+    * <<5.2 Zustandsdiagram>>
+    
+[./images/Aktualflussdia.PNG] 
+    
+    [[1]] als erstes werden Input-Parametern von Taverna Worckbench an den Webservice gegeben.
+    
+    + URL zu dem Bild im Tiff Format
+    
+    + Text type (z.B. Gothic, Normal…)
+    
+    + Ausgabe-Format (Text, XML…)
+    
+    + Sprachen mit Vollständiger Wörterbuchunterstützung (German…)
+    
+    
+    [[2]] dann wird das Bild von diesem URL geholt und im Webserver gespeichert.
+    
+    
+    [[3]] Das Bild kommt in die Warteschlange.
+    
+    
+    [[4]] Der Speicherplatz auf dem Server wird überprüft, ob schon Platz für das job vorhanden ist, wenn nicht, dann müssen 
+          die jobs in die Warteschlange gewartet werden bis der Freiplatz gibt.
+    
+    [[5]] Wenn Platz vorhanden ist, wird die nächste der job weiter bearbeitet.
+    
+    [[6]] Ein XML-Ticket wird für die beteiligte Bild erstellt, hier wird die Priorität eingesetzt,  Abbyy Recognition Server  
+          verarbeitet die Jobs in der Warteschlange  je nach ihrer Priorität. Hier muss auch DocumentSeparationMethod als OneFilePerImage 
+          gesetzt werden, sodass man für jedes Bild ein eigenes Ergebnis hat.
+    
+    [[7]] Es muss zuerst das XML-Ticket in Eingabeordner(Input) gespeichert werden und erst danach die diesem XML-Ticket 
+          zugeordneten Bilder. Ansonsten verarbeite ABBYY Recognition Server die Bilder möglicherweise, ohne das XML-Ticket zu berücksichtigen.
+    
+    [[8]] Hier wird geprüft, ob alle Dateien erfolgreich kopiert werden, wenn ein Fehler beim kopieren auftritt, wird dann noch mal 
+          versucht, derselben Datei zu kopieren.
+    
+    
+    [[9]] Für jede job wird Wartezeit berechnet, Minzeit hier wird 5 000ms pro Bild gegeben.
+    
+    [[10]] Es wird hier einfach gewartet, bis die Minzeit läuft, die vorher berechnet wurde.
+    
+    
+    [[11]] Die Überprüfung der Hotfolder wird hier gestartet. Abbyy Server verarbeitet alle Bilder aus dem Input Ordner und bei
+           der Ausgabe der verarbeiteten Daten werden in Output oder Error automatisch reproduziert, darum wird erstmal der Output (Hotfolder) 
+           geprüft, ob alle Ausgabe Dateien da sind, wenn nicht wird  der Error(Hotfolder) auch geprüft, ob die restlichen Ausgabe Dateien da 
+           sind, es wird eine Wiederholung falls nicht alle Ergebnisse in beiden (Hotfolder) gegeben.
+    
+    [[12]] Falls sich alle Ergebnisse in Output(Hotfolder) und Error befinden, wird dann als erstes einen Log für jedes Ergebnis 
+           erstellt und zweitens werden diese Ergebnisse in tmp bei Tomcat kopiert, danach werden alle Ergebnisse vom Output und 
+           Error(Hotfolder)  gelöscht, alle Ergebnisse werden am ende mit  URLs erreichbar.
+    
+    
+    [[13]] Nächste Liste
+    
+    
+    
+    
+    
+    
+
+							
+						

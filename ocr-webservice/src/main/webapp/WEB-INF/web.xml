@@ -9,6 +9,19 @@
         <welcome-file>default.htm</welcome-file>
         <welcome-file>default.jsp</welcome-file>
     </welcome-file-list>
+   
+    <!-- WebAppRootListener     -->
+    <listener>
+	    <listener-class>
+	      org.springframework.web.util.WebAppRootListener
+	    </listener-class>
+ 	 </listener>
+ 	 
+ 	 <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>ocrWebservice.root</param-value>
+    </context-param>
+    <!-- end of WebAppRootListener     -->
     
     <context-param>
         <param-name>contextConfigLocation</param-name>
