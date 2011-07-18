@@ -166,7 +166,7 @@ public class OcrServiceImpl implements OcrService {
 			URI uri = null;
 			
 			try {
-				uri = new URI(new File(WEBSERVER_PATH).toURI() + parent
+				uri = new URI(new File(WEBSERVER_PATH).toURI()+ "/" + parent
 						+ "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
 			} catch (URISyntaxException e) {
