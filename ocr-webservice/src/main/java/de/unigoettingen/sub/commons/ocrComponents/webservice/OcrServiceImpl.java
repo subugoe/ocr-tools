@@ -21,10 +21,12 @@ import java.io.File;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,7 +65,7 @@ public class OcrServiceImpl implements OcrService {
 			.getLogger(OcrServiceImpl.class);
 	/** The engine. */
 	protected static OCREngine engine;
-	protected static String WEBSERVER_PATH;
+	protected static String WEBSERVER_PATH,WEBSERVER_HOSTNAME;
 	protected static String LOCAL_PATH;
 	/** The language. */
 	protected static Set<Locale> langs;
@@ -105,13 +107,11 @@ public class OcrServiceImpl implements OcrService {
 		}
 		
 		WEBSERVER_PATH = properties.getProperty("webserverpath");
-		if(!WEBSERVER_PATH.endsWith("/")){
-			WEBSERVER_PATH = WEBSERVER_PATH + "/";
-		}
-		if(WEBSERVER_PATH == null || WEBSERVER_PATH.equals("")){
-			WEBSERVER_PATH = System.getProperty("webapp.root");
-		}
 		
+		if(WEBSERVER_PATH == null || WEBSERVER_PATH.equals("")){
+			WEBSERVER_PATH = System.getProperty("ocrWebservice.root");
+		}
+
 		engine = ocrEngineFactory.newOcrEngine();
 		OCRProcess aop = engine.newOcrProcess();
 
@@ -183,6 +183,13 @@ public class OcrServiceImpl implements OcrService {
 			aoo.setUri(uri);
 			OUTPUT_DEFINITIONS.put(ocrformat, aoo);
 			aop.addOutput(ocrformat, aoo);
+			try {
+				InetAddress inet = InetAddress.getLocalHost(); 				         
+				WEBSERVER_HOSTNAME = "http://"+inet.getCanonicalHostName()+"/";
+			} catch (UnknownHostException e) {
+				logger.error("Can't detect hostname : " + e);
+			}
+			
 			langs = new HashSet<Locale>();
 			
 			for (RecognitionLanguage r : part1.getOcrlanguages()
@@ -222,10 +229,10 @@ public class OcrServiceImpl implements OcrService {
 			}
 			
 			byUrlResponseType.setMessage("Process finished successfully after " + duration + " milliseconds.");
-			byUrlResponseType.setOutputUrl(WEBSERVER_PATH + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase());
+			byUrlResponseType.setOutputUrl(WEBSERVER_HOSTNAME + parent + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
 			byUrlResponseType.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
 												"Using service: IMPACT Abbyy Fine Reader 2 Service "+ "\n" +
-												"Parameter processingUnit: "+ WEBSERVER_PATH + "\n" +
+												"Parameter processingUnit: "+ WEBSERVER_HOSTNAME + "\n" +
 												"URL of input image: "+ part1.getInputUrl()+ "\n" +
 												"Wrote file " + file.toString()+  "\n" +
 												"OUTFORMAT substitution variable value: "+ocrformat.toString()+ "\n" +
@@ -235,13 +242,13 @@ public class OcrServiceImpl implements OcrService {
 												"INTEXTTYPE substitution variable value: "+ part1.getTextType().value()+ "\n" +
 												"Process finished successfully with code 0."+ "\n" +
 												"Output file has been created successfully.."+ "\n" +
-												"Output Url: " + WEBSERVER_PATH + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
-												"Output Url-Abbyy-Result : " + WEBSERVER_PATH + parent + "/" + jobName	+ ".xml.result.xml" + "\n" +
-												"Output Url-Summary-File : " + WEBSERVER_PATH + parent + "/" + jobName	+ "-textMD.xml" + "\n" + 
+												"Output Url: " + WEBSERVER_HOSTNAME + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
+												"Output Url-Abbyy-Result : " + WEBSERVER_HOSTNAME + parent + "/" + jobName	+ ".xml.result.xml" + "\n" +
+												"Output Url-Summary-File : " + WEBSERVER_HOSTNAME + parent + "/" + jobName	+ "-textMD.xml" + "\n" + 
 												"Process finished successfully after " + duration + " milliseconds."
 												);
 			
-			byUrlResponseType.setProcessingUnit(WEBSERVER_PATH);
+			byUrlResponseType.setProcessingUnit(WEBSERVER_HOSTNAME);
 			byUrlResponseType.setReturncode(0);
 			byUrlResponseType.setSuccess(true);
 			byUrlResponseType.setToolProcessingTime(duration);									
