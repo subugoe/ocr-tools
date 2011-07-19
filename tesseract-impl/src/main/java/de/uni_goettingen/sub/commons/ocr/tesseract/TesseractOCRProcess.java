@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Locale;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 
 /**
@@ -57,8 +59,8 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	private static Map<OCRFormat, String> formats = new HashMap<OCRFormat, String>();
 
 	static {
-		languages.put("german", "deu");
-		languages.put("english", "eng");
+		languages.put("de", "deu");
+		languages.put("en", "eng");
 
 		extensions.put(OCRFormat.TXT, "txt");
 		extensions.put(OCRFormat.HOCR, "html");
@@ -67,6 +69,17 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 		formats.put(OCRFormat.HOCR, "hocr");
 	}
 
+	private long duration = 0l;
+	
+	@Override
+	public OCRProcessMetadata getOcrProcessMetadata() {
+		
+		OCRProcessMetadata meta = new TesseractOCRProcessMetadata();
+		meta.setDuration(duration);
+		
+		return meta;
+	}
+	
 	/**
 	 * Instantiates a new tesseract ocr process.
 	 * 
@@ -95,9 +108,13 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	@Override
 	public void addOutput(OCRFormat format, OCROutput output) {
 
+		if(!output.getUri().toString().startsWith("file:"))
+			throw new RuntimeException("Tesseract can only handle local files");
+		
 		if (ocrOutputs == null) {
 			ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
 		}
+				
 		ocrOutputs.put(format, output);
 	}
 
@@ -106,6 +123,9 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	 * each image.
 	 */
 	public void start() {
+		
+		long start = System.currentTimeMillis();
+		
 		for (Map.Entry<OCRFormat, OCROutput> formatToOutput : ocrOutputs
 				.entrySet()) {
 
@@ -145,6 +165,7 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 				file.delete();
 			}
 		}
+		duration = System.currentTimeMillis() - start;
 	}
 
 	private File getLocalImage(OCRImage image, String tempPath) {
@@ -205,6 +226,12 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	 */
 	private void executeTesseract(File image, OCRFormat format, File output) {
 
+		File parentDir = new File(output.getParent());
+		
+		if(!parentDir.exists()) {
+				parentDir.mkdirs();
+		}
+		
 		Tesseract tesseract = new Tesseract(image, output);
 		tesseract.setFormat(formats.get(format));
 
