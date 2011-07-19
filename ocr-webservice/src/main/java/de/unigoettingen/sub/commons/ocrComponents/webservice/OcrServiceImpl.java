@@ -72,7 +72,7 @@ public class OcrServiceImpl implements OcrService {
 	/** The OUTPU t_ definitions. */
 	protected static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 	private String parent, jobName;
-	private String FILE_SEPARATOR = System.getProperty("file.separator");
+	//private String FILE_SEPARATOR = System.getProperty("file.separator");
 	// The duration.
 	private Long duration = 0L;
 	
@@ -188,6 +188,8 @@ public class OcrServiceImpl implements OcrService {
 				WEBSERVER_HOSTNAME = "http://"+inet.getCanonicalHostName()+"/";
 			} catch (UnknownHostException e) {
 				logger.error("Can't detect hostname : " + e);
+				String error = "Can't detect hostname : " + e;
+				return byURLresponse(duration, error);
 			}
 			
 			langs = new HashSet<Locale>();
