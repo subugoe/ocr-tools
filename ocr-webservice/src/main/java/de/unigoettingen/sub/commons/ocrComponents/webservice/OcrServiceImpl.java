@@ -60,6 +60,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 @WebService(endpointInterface = "de.unigoettingen.sub.commons.ocrComponents.webservice.OcrService")
 public class OcrServiceImpl implements OcrService {
 	
+	private final String APP_NAME = "ocr-webservice";
+	
 	/** The logger. */
 	protected static Logger logger = LoggerFactory
 			.getLogger(OcrServiceImpl.class);
@@ -185,7 +187,7 @@ public class OcrServiceImpl implements OcrService {
 			aop.addOutput(ocrformat, aoo);
 			try {
 				InetAddress inet = InetAddress.getLocalHost(); 				         
-				WEBSERVER_HOSTNAME = "http://"+inet.getCanonicalHostName()+"/";
+				WEBSERVER_HOSTNAME = "http://"+inet.getCanonicalHostName()+"/"+APP_NAME+"/";
 			} catch (UnknownHostException e) {
 				logger.error("Can't detect hostname : " + e);
 				String error = "Can't detect hostname : " + e;
