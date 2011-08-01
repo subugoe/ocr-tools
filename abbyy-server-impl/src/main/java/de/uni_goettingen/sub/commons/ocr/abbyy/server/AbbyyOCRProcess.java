@@ -102,7 +102,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 	private Long endTime = null;
 
 	protected Hotfolder hotfolder;
-
+	
 	protected XmlParser xmlParser;
 	protected AbbyySerializerTextMD abbyySerializerTextMD;
 	protected OCRProcessMetadata ocrProcessMetadata;
@@ -120,12 +120,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 	private Long totalFileSize = 0l;
 	static Object monitor;
 
-	protected AbbyyOCRProcess(ConfigParser config, Hotfolder hotfolder) {
-		super();
-		this.config = config;
-		this.hotfolder = hotfolder;
-		init();
-	}
 
 	protected AbbyyOCRProcess(ConfigParser config) {
 		super();
@@ -135,9 +129,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 				config);
 		init();
 		monitor = new Object();
-
 	}
-
+	
+	
 	private void init() {
 		if (!config.isParsed()) {
 			// config = config.parse();
@@ -327,6 +321,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 					ocrProcessMetadata.setDuration(getDuration());
 					logger.debug("OCR Output file for " +name + " has been created successfully after "+  getDuration() + " milliseconds");
 					setOcrProcessMetadata(ocrProcessMetadata);
+					failed = true;
 					//Serializer
 					if(!getSegmentation()){
 						for (URI l : listOfLocalURI) {
@@ -395,6 +390,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 		} finally {
 			xmlParser = null;
 			try {
+				isFinished = true;
+				setIsFinished(true);
 				cleanImages(convertList(getOcrImages()));
 				if (isResult != true)
 				cleanOutputs(getOcrOutputs());
@@ -405,7 +402,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 				}
 				logger.debug("Process " +name + " finished ");
 			} catch (IOException e) {
-				failed = true;
 				logger.error("Unable to clean up!", e);
 			}
 		}
@@ -858,4 +854,11 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 	}
 
 	
+	public Boolean getIsFinished() {
+		return isFinished;
+	}
+
+	public void setIsFinished(Boolean isFinished) {
+		this.isFinished = isFinished;
+	}
 }
