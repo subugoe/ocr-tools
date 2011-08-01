@@ -122,7 +122,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	protected void start() {
 		started = true;
-		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder, h);
+		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder, h, config);
 
 		for (OCRProcess process : getOcrProcess()) {
 			AbbyyOCRProcess p = (AbbyyOCRProcess) process;
