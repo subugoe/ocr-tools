@@ -82,7 +82,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 * @see java.util.concurrent.locks.ReentrantLock.html#ReentrantLock()
 	 */
 	private ReentrantLock pauseLock = new ReentrantLock();
-
+	protected ConfigParser config;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -129,9 +129,10 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 *            before they are executed. This queue will hold only the
 	 *            Runnable tasks submitted by the execute method.
 	 */
-	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder, HazelcastInstance h) {
+	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder, HazelcastInstance h, ConfigParser config) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
+		this.config = config;
 		this.maxThreads = maxThreads;
 		this.hotfolder = hotfolder;
 		this.h = h;
@@ -204,10 +205,10 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
 			try {
 				//TODO check liste for SubProcess(Observer mit Subject)
-				/*//if(checkAllSubProcessIsFinished(abbyyOCRProcess.isFinished())){
-				if(abbyyOCRProcess.isFinished()){
+				//if(checkAllSubProcessIsFinished(abbyyOCRProcess.isFinished())){
+				if(abbyyOCRProcess.getSegmentation()){
 					cleanUncompletedResults();
-				}*/
+				}
 				getFileSize(abbyyOCRProcess);				
 			} catch (IllegalStateException e1) {
 				logger.debug("wait because :", e1);
@@ -285,7 +286,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		String spname = processName;
 		Map<OCRFormat, OCROutput> outputs = abbyyOCRProcess.getOcrOutputs();
 		for(List<OCRImage> imgs : splitingImages(abbyyOCRProcess.getOcrImages())){				
-			SubProcess subProcess = new SubProcess();
+			AbbyyOCRProcess subProcess = new AbbyyOCRProcess(config);
 			subProcess.setOcrImages(imgs);
 			subProcess.setName(processName + "_" + listNumber + "oF" + splitNumberForSubProcess);			
 			String localuri = null, format = null;
@@ -305,6 +306,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			}	
 			subProcessResults.add(localuri.replace(format, "xml.result.xml"));
 			spname = subProcess.getName();
+			if(abbyyOCRProcess.getPriority() != null) subProcess.setPriority(abbyyOCRProcess.getPriority());
+			subProcess.setLanguages(abbyyOCRProcess.getLanguages());
+			subProcess.setTextTyp(abbyyOCRProcess.getTextTyp());
 			subProcess.setTime(new Date().getTime());
 			subProcess.setSegmentation(true);
 	//TODO		subject.registerObserver(subProcess);
@@ -357,7 +361,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		System.out.println("Result Deleted : ############################### ");
 	}
 	
-	protected Boolean checkAllSubProcessIsFinished(List<SubProcess> listOfSubProcess){
+	protected Boolean checkAllSubProcessIsFinished(List<AbbyyOCRProcess> listOfSubProcess){
 		Boolean f = false;
 		for(AbbyyOCRProcess a : listOfSubProcess){
 	//TODO		a.setListOfSubProcess(listOfSubProcess);

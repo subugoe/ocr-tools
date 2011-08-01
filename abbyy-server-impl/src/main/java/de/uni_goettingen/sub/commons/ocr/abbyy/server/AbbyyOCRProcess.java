@@ -392,6 +392,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 			try {
 				isFinished = true;
 				setIsFinished(true);
+			//	if(getSegmentation()) subject.informObservers(name, isFinished());
 				cleanImages(convertList(getOcrImages()));
 				if (isResult != true)
 				cleanOutputs(getOcrOutputs());
@@ -861,4 +862,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 	public void setIsFinished(Boolean isFinished) {
 		this.isFinished = isFinished;
 	}
+
+
+	
 }
