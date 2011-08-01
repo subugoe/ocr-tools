@@ -112,7 +112,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	private InputStream is;
 
 	// The configuration.
-	protected ConfigParser config;
+	protected static ConfigParser config;
 
 	private static XmlOptions opts = new XmlOptions();
 
@@ -557,4 +557,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		this.config = config;
 	}
 
+	//
+	protected void clearOcrImageList(){
+		ocrImages.clear();
+	}
 }

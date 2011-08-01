@@ -71,7 +71,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	public static final String name = "0.5";
 	public static final String version = AbbyyServerOCREngine.class
 			.getSimpleName();
-	protected int divNumber, restNumber, splitNumberForSubProcess, imagesNumberForSubprocess = 15;
+	
 	// The max threads.
 	protected static Integer maxThreads;
 	// protected ExecutorService pool = new OCRExecuter(maxThreads);
@@ -146,7 +146,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		}
 		h.shutdown();
 	}
-
+	//TODO
 	private void serializerTextMD(OCRProcessMetadata ocrProcessMetadata,
 			String textMD) {
 		abbyySerializerTextMD = new AbbyySerializerTextMD(ocrProcessMetadata);
@@ -163,7 +163,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 					+ "-textMD.xml", e);
 		}
 	}
-	
+	//TODO
 	private boolean localFileExists(List<String> url, Set <String> outpuFormat){
 		boolean exists = false;
 		for(String u : url){
