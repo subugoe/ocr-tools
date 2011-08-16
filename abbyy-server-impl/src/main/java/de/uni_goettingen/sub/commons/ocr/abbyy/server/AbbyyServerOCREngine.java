@@ -146,40 +146,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		}
 		h.shutdown();
 	}
-	//TODO
-	private void serializerTextMD(OCRProcessMetadata ocrProcessMetadata,
-			String textMD) {
-		abbyySerializerTextMD = new AbbyySerializerTextMD(ocrProcessMetadata);
-		logger.debug("Creating " + name + "-textMD.xml");
-		
-		URI urii;
-		try {
-			String localUrl = "C:/Dokumente und Einstellungen/mabergn.UG-SUB/workspace-ocr/ocr-tools/ocr-cli/target/results/";
-			urii = new URI(localUrl +"/"+ textMD+  "-textMD.xml");
-			abbyySerializerTextMD.write(new File(urii));
-			logger.debug("TextMD Created " + urii.toString());
-		} catch (URISyntaxException e) {
-			logger.error("CAN NOT Copying Serializer textMD to local " + name
-					+ "-textMD.xml", e);
-		}
-	}
-	//TODO
-	private boolean localFileExists(List<String> url, Set <String> outpuFormat){
-		boolean exists = false;
-		for(String u : url){
-			File file = new File(u);
-			File fileReport = new File(u.replace("xml", "xml.result.xml"));
-			if(file.exists() && fileReport.exists()){
-				exists = true;
-			}else {
-				exists = true;
-				break;
-			}
-					
-		}			
-		return exists;
-	}
-	
 	
 	
 	/**

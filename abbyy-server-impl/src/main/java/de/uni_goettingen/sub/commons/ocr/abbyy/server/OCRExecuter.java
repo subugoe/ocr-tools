@@ -41,6 +41,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+
 import com.hazelcast.core.HazelcastInstance;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
@@ -65,17 +67,12 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	public final static Logger logger = LoggerFactory
 			.getLogger(OCRExecuter.class);
 
-	protected int divNumber, restNumber, splitNumberForSubProcess, imagesNumberForSubprocess = 15;
-	
 	/** The max number of threads. */
 	protected Integer maxThreads;
 
 	/** The ispaused. paused the execution if true */
 	private Boolean isPaused = false;
 
-	protected List<AbbyyOCRProcess> listOfSubProcess;
-
-	private List<String> subProcessResults;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -204,11 +201,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
 			try {
-				//TODO check liste for SubProcess(Observer mit Subject)
-				//if(checkAllSubProcessIsFinished(abbyyOCRProcess.isFinished())){
-				if(abbyyOCRProcess.getSegmentation()){
-					cleanUncompletedResults();
-				}
 				getFileSize(abbyyOCRProcess);				
 			} catch (IllegalStateException e1) {
 				logger.debug("wait because :", e1);
@@ -264,111 +256,18 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	
 	@Override
 	public void execute(Runnable process) {
-		AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) process;
-		if(abbyyOCRProcess.getOcrImages().size() < (imagesNumberForSubprocess + imagesNumberForSubprocess/2)){
-			super.execute(abbyyOCRProcess);		
-		}else{
-			String processName = abbyyOCRProcess.getName();
-			subProcessResults = new ArrayList<String>();
-			listOfSubProcess = splitingProcess(abbyyOCRProcess, processName);
-			for(AbbyyOCRProcess p : listOfSubProcess){									
-		//TODO		p.listOfsp.addAll(listOfsp);
-				super.execute(p);				
+		List<AbbyyOCRProcess> sp = ((AbbyyOCRProcess)process).split();
+		for (Runnable p: sp){
+			//TODO trick with it we are got not null pointer
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		}		
-	}
-
-
-	
-	protected List<AbbyyOCRProcess> splitingProcess(AbbyyOCRProcess abbyyOCRProcess, String processName){
-		List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
-		int listNumber = 1;
-		String spname = processName;
-		Map<OCRFormat, OCROutput> outputs = abbyyOCRProcess.getOcrOutputs();
-		for(List<OCRImage> imgs : splitingImages(abbyyOCRProcess.getOcrImages())){				
-			AbbyyOCRProcess subProcess = new AbbyyOCRProcess(config);
-			subProcess.setOcrImages(imgs);
-			subProcess.setName(processName + "_" + listNumber + "oF" + splitNumberForSubProcess);			
-			String localuri = null, format = null;
-			for (OCRFormat f : outputs.keySet()) {
-				URI localUri = outputs.get(f).getUri();
-				format = f.toString().toLowerCase();
-				localuri = localUri.toString().replace(spname, subProcess.getName());
-				try {
-					localUri = new URI(localuri);	
-				} catch (URISyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				subProcessResults.add(localuri);
-				outputs.get(f).setUri(localUri);				
-				subProcess.addOutput(f, outputs.get(f));
-			}	
-			subProcessResults.add(localuri.replace(format, "xml.result.xml"));
-			spname = subProcess.getName();
-			if(abbyyOCRProcess.getPriority() != null) subProcess.setPriority(abbyyOCRProcess.getPriority());
-			subProcess.setLanguages(abbyyOCRProcess.getLanguages());
-			subProcess.setTextTyp(abbyyOCRProcess.getTextTyp());
-			subProcess.setTime(new Date().getTime());
-			subProcess.setSegmentation(true);
-	//TODO		subject.registerObserver(subProcess);
-			sp.add(subProcess);	
-			listNumber++;
-		}
-		return sp;		
-	}
-
-	protected List<List<OCRImage>> splitingImages(List<OCRImage> ocrImages){
-		List<List<OCRImage>> splitingOcrImagesforSubProcess = new ArrayList<List<OCRImage>>();		
-		divNumber = ocrImages.size()/imagesNumberForSubprocess;
-		restNumber= (ocrImages.size() % imagesNumberForSubprocess);
-		if(restNumber >= imagesNumberForSubprocess/2){
-			splitNumberForSubProcess = divNumber + 1;
-		}else splitNumberForSubProcess = divNumber;	
-		
-		int sn = 1, imageCounters = 0;		
-		List<OCRImage> ocrImagesforSubProcesses = new ArrayList<OCRImage>();
-		for(OCRImage o : ocrImages){
-			imageCounters++;
-			if(imagesNumberForSubprocess >= imageCounters && sn < splitNumberForSubProcess){					
-				ocrImagesforSubProcesses.add(o);									
-				if(imagesNumberForSubprocess == imageCounters){
-					splitingOcrImagesforSubProcess.add(ocrImagesforSubProcesses);
-					ocrImagesforSubProcesses = new ArrayList<OCRImage>();
-					imageCounters = 0;
-					sn++;
-				}				
-			}else{				
-				ocrImagesforSubProcesses.add(o);				
-				if(imageCounters == restNumber)
-				splitingOcrImagesforSubProcess.add(ocrImagesforSubProcesses);
-			}							
+			super.execute(p);
 		}
 		
-		return splitingOcrImagesforSubProcess;		
-	}
-	
-	
-	protected void cleanUncompletedResults(){
-		//TODO
-		/*List<String> subProcessResults
-		 * for(String localUriResults : subProcessResults){
-			File localfile = new File(localUriResults);
-			logger.debug("Result Deleted : ###### "+ localfile.toString());
-			localfile.delete();
-		}*/
-		logger.debug("Result Deleted : ############################### ");
-		System.out.println("Result Deleted : ############################### ");
-	}
-	
-	protected Boolean checkAllSubProcessIsFinished(List<AbbyyOCRProcess> listOfSubProcess){
-		Boolean f = false;
-		for(AbbyyOCRProcess a : listOfSubProcess){
-	//TODO		a.setListOfSubProcess(listOfSubProcess);
-			if(a.getIsFinished()) f = true;
-			else {f = false; break;}
-		}
-		return f;
 	}
 	
 }

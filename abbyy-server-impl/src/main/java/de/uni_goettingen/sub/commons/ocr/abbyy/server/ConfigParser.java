@@ -88,7 +88,9 @@ public class ConfigParser {
 	public final Boolean DEFAULT_CONVERTTOBW = false;
 	public final String PARAMETER_CONVERTTOBW = "convertToBW";
 	protected Boolean convertToBW;
-
+	public final static String IMAGES_NUMBER_FORSUBPROCESS = "imagesNumberForSubprocess";
+	protected Integer imagesNumberForSubprocess;
+	
 	//The output location on the server, needed to generate tickets
 	public final static String PARAMETER_SERVEROUTPUTLOCATION = "serverOutputLocation";
 	public final static String PARAMETER_LOCALOUTPUTLOCATION = "localOutputLocation";
@@ -185,7 +187,7 @@ public class ConfigParser {
 		} catch (URISyntaxException e) {
 			logger.error("URI is malformed", e);
 		}
-		
+		imagesNumberForSubprocess = config.getInt(IMAGES_NUMBER_FORSUBPROCESS);
 		textMDLocation = textMDLocation.endsWith("/") ? textMDLocation : textMDLocation + "/";
 		
 		if (System.getProperty(DEBUG_PROPERTY) != null) {

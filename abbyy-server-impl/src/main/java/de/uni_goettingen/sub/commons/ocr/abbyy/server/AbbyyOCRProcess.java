@@ -30,12 +30,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
@@ -45,6 +51,7 @@ import org.apache.commons.vfs.FileSystemException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument;
 import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument.Document;
@@ -66,7 +73,7 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 /**
  * The Class AbbyyOCRProcess.
  */
-public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializable,
+public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,Serializable,
 		Runnable {
 
 	
@@ -97,12 +104,20 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 	private Boolean isResult = false;
 	// The done date.
 	private Long startTime = null;
+	//subProcesses
+	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
+	private List<String> SubProcessName = new ArrayList<String>();
+	private String outResultUri = null;
+	private boolean complete = false;
+	private Observer obs;
+	private boolean finished = false;
+	protected int splitNumberForSubProcess;
 	
 	// The done date.
 	private Long endTime = null;
 
 	protected Hotfolder hotfolder;
-	
+	private List<AbbyyOCRProcess> listOfsp;
 	protected XmlParser xmlParser;
 	protected AbbyySerializerTextMD abbyySerializerTextMD;
 	protected OCRProcessMetadata ocrProcessMetadata;
@@ -113,7 +128,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 	private Long maxSize;
 
 	private Long maxFiles;
-
 	private Long totalFileCount;
 	//ID Nr for AbbyyOCRProcess
 	private String iD_Process ;
@@ -131,6 +145,16 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 		monitor = new Object();
 	}
 	
+	protected AbbyyOCRProcess(Observer obs, ConfigParser config) {
+		super();
+		this.config = config;
+		this.obs = obs;
+		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
+		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
+				config);
+		init();
+		monitor = new Object();
+	}
 	
 	private void init() {
 		if (!config.isParsed()) {
@@ -389,9 +413,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 			failed = true;
 		} finally {
 			xmlParser = null;
-			try {
-				isFinished = true;
-				setIsFinished(true);
+			try {	
 			//	if(getSegmentation()) subject.informObservers(name, isFinished());
 				cleanImages(convertList(getOcrImages()));
 				if (isResult != true)
@@ -401,6 +423,12 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 				if (outputResultUri != null || isResult != true) {
 					hotfolder.deleteIfExists(outputResultUri);
 				}
+				if(obs != null && getSegmentation()) {
+					setIsFinished();
+				//	setChanged();
+				//	notifyObservers("bin"); 
+					obs.update(this, this);
+				}		
 				logger.debug("Process " +name + " finished ");
 			} catch (IOException e) {
 				logger.error("Unable to clean up!", e);
@@ -408,6 +436,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 		}
 	}
 
+	
+	
 	/**
 	 * Gets the error description from xmlError.
 	 * 
@@ -841,6 +871,126 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 
 	}
 
+	//Split in SubProcess
+	protected List<AbbyyOCRProcess> split(){
+		int listNumber = 1;
+		String processName = getName();
+		String spname = processName;
+		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
+		if(getOcrImages().size() < (config.imagesNumberForSubprocess + (config.imagesNumberForSubprocess/2))){
+			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
+			sp.add(this);
+			return sp;
+		}else{
+			for(List<OCRImage> imgs : splitingImages(getOcrImages(), config.imagesNumberForSubprocess)){				
+				AbbyyOCRProcess subProcess = new AbbyyOCRProcess((Observer)this, config);
+				subProcess.setOcrImages(imgs);
+				subProcess.setName(processName + "_" + listNumber + "oF" + splitNumberForSubProcess);			
+				SubProcessName.add(processName + "_" + listNumber + "oF" + splitNumberForSubProcess);
+				String localuri = null, format = null;
+				for (OCRFormat f : outputs.keySet()) {
+					URI localUri = outputs.get(f).getUri();
+					format = f.toString().toLowerCase();
+					localuri = localUri.toString().replace(spname, subProcess.getName());
+					outResultUri = localuri.replace(subProcess.getName()+ f.toString().toLowerCase(), "");
+					try {
+						localUri = new URI(localuri);	
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					outputs.get(f).setUri(localUri);				
+					subProcess.addOutput(f, outputs.get(f));
+	//				results.add(localuri);
+				}	
+	//			results.add(localuri.replace(format, "xml.result.xml"));
+				spname = subProcess.getName();
+				if(getPriority() != null) subProcess.setPriority(getPriority());
+				subProcess.setLanguages(getLanguages());
+				subProcess.setTextTyp(getTextTyp());
+				subProcess.setTime(new Date().getTime());
+				subProcess.setSegmentation(true);
+				subProcesses.add(subProcess);
+				addObserver(subProcess);
+				listNumber++;
+				
+			}
+			return subProcesses;
+		}
+	}
+	
+	protected List<List<OCRImage>> splitingImages(List<OCRImage> ocrImages, int imagesNumberForSubprocess){
+		List<List<OCRImage>> splitingOcrImagesforSubProcess = new ArrayList<List<OCRImage>>();		
+		int divNumber = ocrImages.size()/imagesNumberForSubprocess;
+		int restNumber= (ocrImages.size() % imagesNumberForSubprocess);
+		if(restNumber >= imagesNumberForSubprocess/2){
+			splitNumberForSubProcess = divNumber + 1;
+		}else splitNumberForSubProcess = divNumber;	
+		
+		int sn = 1, imageCounters = 0;		
+		List<OCRImage> ocrImagesforSubProcesses = new ArrayList<OCRImage>();
+		for(OCRImage o : ocrImages){
+			imageCounters++;
+			if(imagesNumberForSubprocess >= imageCounters && sn < splitNumberForSubProcess){					
+				ocrImagesforSubProcesses.add(o);									
+				if(imagesNumberForSubprocess == imageCounters){
+					splitingOcrImagesforSubProcess.add(ocrImagesforSubProcesses);
+					ocrImagesforSubProcesses = new ArrayList<OCRImage>();
+					imageCounters = 0;
+					sn++;
+				}				
+			}else{				
+				ocrImagesforSubProcesses.add(o);				
+				if(imageCounters == restNumber)
+				splitingOcrImagesforSubProcess.add(ocrImagesforSubProcesses);
+			}							
+		}
+		
+		return splitingOcrImagesforSubProcess;		
+	}
+	
+	
+	public void update(Observable o, Object arg) {
+		 doUpdate();	
+	}
+
+	synchronized private void doUpdate() {
+		  if (!complete && checkSubs()) {		   
+		   merge();
+		   complete = true;
+		  }
+	}
+	
+	private boolean checkSubs() {
+		for (AbbyyOCRProcess sub : subProcesses) {
+			boolean oneFinished = sub.getIsFinished();
+			if (!oneFinished)
+				return false;
+		}
+		return true;
+	}
+
+	private void merge() {
+	
+	//TODO
+		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
+		for (OCRFormat f : outputs.keySet()){
+			List<File> files = new ArrayList<File>(); 
+			for(String s : SubProcessName){
+			File file = new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
+					outResultUri.length()), "")+ s +"."+f.toString().toLowerCase());
+			files.add(file);
+			}
+			/*try {
+				FileMerger.mergeTXT(files, new File("PPN129323640_0001.txt"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+		}
+	}
+	
+	
 	public void setTest(Boolean test) {
 		this.test = test;
 	}
@@ -856,12 +1006,25 @@ public class AbbyyOCRProcess extends AbbyyTicket implements OCRProcess,Serializa
 
 	
 	public Boolean getIsFinished() {
-		return isFinished;
+		return finished;
 	}
 
-	public void setIsFinished(Boolean isFinished) {
-		this.isFinished = isFinished;
+	public void setIsFinished() {
+		this.finished = true;
 	}
+
+
+	public List<AbbyyOCRProcess> getListOfsp() {
+		return listOfsp;
+	}
+
+
+	public void setListOfsp(List<AbbyyOCRProcess> listOfsp) {
+		this.listOfsp = listOfsp;
+	}
+
+
+	
 
 
 	
