@@ -249,6 +249,7 @@ public class FileMerger {
 		int f = 0;
 		while (f < files.size()) {
 			iss.add(new FileInputStream(files.get(f)));
+			f++;
 		}
 		mergeAbbyyXML(iss, os);
 	}
