@@ -35,7 +35,7 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	private String format;
 
 	/** The processing note. */
-	private String processingNote;
+	private String processingNote = null;
 
 	/** The software name. */
 	private String softwareName;
@@ -62,7 +62,7 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	private BigDecimal wordAccuracy;
 
 	/** The character accuracy. */
-	private BigDecimal characterAccuracy;
+	private BigDecimal characterAccuracy = new BigDecimal(0.0);
 
 	/** The duration. */
 	private Long duration;
@@ -332,7 +332,7 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 */
 	@Override
 	public void setProcessingNote(String processingNote) {
-		this.processingNote = processingNote;
+		this.processingNote = this.processingNote + processingNote;
 	}
 
 	/*
