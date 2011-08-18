@@ -20,6 +20,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,18 +104,18 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	private Boolean test = true;
 	private Boolean isResult = false;
 	// The done date.
-	private Long startTime = null;
+	private Long startTime = 0L;
 	//subProcesses
 	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
 	private List<String> SubProcessName = new ArrayList<String>();
 	private String outResultUri = null;
-	private boolean complete = false;
 	private Observer obs;
 	private boolean finished = false;
 	protected int splitNumberForSubProcess;
 	
 	// The done date.
-	private Long endTime = null;
+	private Long endTime = 0L;
+	private Long processTimeResult = 0L;
 
 	protected Hotfolder hotfolder;
 	private List<AbbyyOCRProcess> listOfsp;
@@ -342,7 +343,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 						}
 					}
 					endTime = System.currentTimeMillis();
-					ocrProcessMetadata.setDuration(getDuration());
+					processTimeResult = getDuration();
+					ocrProcessMetadata.setDuration(processTimeResult);
 					logger.debug("OCR Output file for " +name + " has been created successfully after "+  getDuration() + " milliseconds");
 					setOcrProcessMetadata(ocrProcessMetadata);
 					failed = true;
@@ -414,7 +416,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		} finally {
 			xmlParser = null;
 			try {	
-			//	if(getSegmentation()) subject.informObservers(name, isFinished());
 				cleanImages(convertList(getOcrImages()));
 				if (isResult != true)
 				cleanOutputs(getOcrOutputs());
@@ -425,8 +426,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				}
 				if(obs != null && getSegmentation()) {
 					setIsFinished();
-				//	setChanged();
-				//	notifyObservers("bin"); 
 					obs.update(this, this);
 				}		
 				logger.debug("Process " +name + " finished ");
@@ -473,20 +472,26 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			String textMD) {
 		abbyySerializerTextMD = new AbbyySerializerTextMD(ocrProcessMetadata);
 		logger.debug("Creating " + name + "-textMD.xml");
-		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
-		OCRFormat lastKey = getLastKey(outputs);
-		AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(lastKey);
-		URI urii;
-		try {
-			String localUrl = out.getUri().toString().replaceAll(lastKey.toString().toLowerCase(),
-					"xml" + config.reportSuffix);
-			urii = new URI(localUrl.replace(".xml" + config.reportSuffix, "-textMD.xml"));
-			abbyySerializerTextMD.write(new File(urii));
-			logger.debug("TextMD Created " + urii.toString());
-		} catch (URISyntaxException e) {
-			logger.error("CAN NOT Copying Serializer textMD to local " + name
-					+ "-textMD.xml", e);
+		if(getSegmentation()){
+			abbyySerializerTextMD.write(new File(textMD));
+			logger.debug("TextMD Created " + textMD.toString());
+		}else{
+			Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
+			OCRFormat lastKey = getLastKey(outputs);
+			AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(lastKey);
+			URI urii;
+			try {
+				String localUrl = out.getUri().toString().replaceAll(lastKey.toString().toLowerCase(),
+						"xml" + config.reportSuffix);
+				urii = new URI(localUrl.replace(".xml" + config.reportSuffix, "-textMD.xml"));
+				abbyySerializerTextMD.write(new File(urii));
+				logger.debug("TextMD Created " + urii.toString());
+			} catch (URISyntaxException e) {
+				logger.error("CAN NOT Copying Serializer textMD to local " + name
+						+ "-textMD.xml", e);
+			}
 		}
+		
 	}
 
 	/**
@@ -882,28 +887,34 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			sp.add(this);
 			return sp;
 		}else{
+			// set encoding for ocrProcessMetadata
+			if (encoding.equals("UTF8")) {
+				ocrProcessMetadata.setEncoding("UTF-8");
+			} else
+				ocrProcessMetadata.setEncoding(encoding);
+			// set Language for ocrProcessMetadata
+			if (langs != null) {
+				setLanguageforMetadata(langs);
+			}
+			setSegmentation(true);
 			for(List<OCRImage> imgs : splitingImages(getOcrImages(), config.imagesNumberForSubprocess)){				
 				AbbyyOCRProcess subProcess = new AbbyyOCRProcess((Observer)this, config);
 				subProcess.setOcrImages(imgs);
 				subProcess.setName(processName + "_" + listNumber + "oF" + splitNumberForSubProcess);			
 				SubProcessName.add(processName + "_" + listNumber + "oF" + splitNumberForSubProcess);
-				String localuri = null, format = null;
+				String localuri = null;
 				for (OCRFormat f : outputs.keySet()) {
 					URI localUri = outputs.get(f).getUri();
-					format = f.toString().toLowerCase();
 					localuri = localUri.toString().replace(spname, subProcess.getName());
 					outResultUri = localuri.replace(subProcess.getName()+ f.toString().toLowerCase(), "");
 					try {
 						localUri = new URI(localuri);	
 					} catch (URISyntaxException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error("Error contructing localUri URL: "+ localuri , e);
 					}
 					outputs.get(f).setUri(localUri);				
 					subProcess.addOutput(f, outputs.get(f));
-	//				results.add(localuri);
 				}	
-	//			results.add(localuri.replace(format, "xml.result.xml"));
 				spname = subProcess.getName();
 				if(getPriority() != null) subProcess.setPriority(getPriority());
 				subProcess.setLanguages(getLanguages());
@@ -951,44 +962,103 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	
 	
 	public void update(Observable o, Object arg) {
-		 doUpdate();	
-	}
-
-	synchronized private void doUpdate() {
-		  if (!complete && checkSubs()) {		   
-		   merge();
-		   complete = true;
-		  }
-	}
-	
-	private boolean checkSubs() {
-		for (AbbyyOCRProcess sub : subProcesses) {
-			boolean oneFinished = sub.getIsFinished();
-			if (!oneFinished)
-				return false;
+	//	 doUpdate();	
+		synchronized (monitor) {	   
+			boolean oneFinished = false;
+			for (AbbyyOCRProcess sub : subProcesses) {
+				oneFinished = sub.getIsFinished();
+				if (!oneFinished){
+					oneFinished = false;
+					processTimeResult = 0L;
+					break;
+				}	
+				processTimeResult = processTimeResult + sub.processTimeResult;
+			}
+			if(oneFinished){
+				logger.debug("Waiting... for Merge Proccessing");
+				startTime = System.currentTimeMillis();
+				String uriTextMD = merge();
+				endTime = System.currentTimeMillis();
+				ocrProcessMetadata.setDuration(getDuration() + processTimeResult);
+				if(!uriTextMD.equals(null))
+				  serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
+			}
 		}
-		return true;
+		
 	}
 
-	private void merge() {
-	
-	//TODO
+
+	private String merge() {	
+		String uriTextMD = null;
 		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
+		int i = 0, j =0;
+		List<File> fileResults = new ArrayList<File>(); 
 		for (OCRFormat f : outputs.keySet()){
+			if (!FileMerger.isSegmentable(f)) {
+				throw new OCRException("Format " + f.toString()
+						+ " isn't mergable!");
+			}
 			List<File> files = new ArrayList<File>(); 
 			for(String s : SubProcessName){
-			File file = new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
-					outResultUri.length()), "")+ s +"."+f.toString().toLowerCase());
-			files.add(file);
+				File fileResult, file = new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
+						outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ s + "." + f.toString().toLowerCase());
+				if ((f.toString().toLowerCase()).equals("xml") && j == 0) {
+					InputStream isDoc = null;
+					j++;
+					try {
+						isDoc = new FileInputStream(file);
+					} catch (FileNotFoundException e) {
+						logger.error("Error contructing FileInputStream for: "+file.toString() , e);
+					}
+					((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+							.parseXmlExport(isDoc);
+				}
+				files.add(file);
+				if(i == 0){
+					fileResult = new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
+							outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ s + ".xml"+ config.reportSuffix);	
+					InputStream isResult = null;
+					try {
+						isResult = new FileInputStream(fileResult);
+					} catch (FileNotFoundException e) {
+						logger.error("Error contructing FileInputStream for: "+fileResult.toString() , e);
+					}
+					((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+							.parseXmlResult(isResult);
+					fileResults.add(fileResult);			
+				}		
 			}
-			/*try {
-				FileMerger.mergeTXT(files, new File("PPN129323640_0001.txt"));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+			i++;
+			FileMerger.mergeFiles(f, files, new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
+						outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name + "." + f.toString().toLowerCase()));
+			logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED");
+			RemoveSubProcessResults(files);			
 		}
+		try {
+			FileMerger.mergeAbbyyXML(fileResults , new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
+					outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name + ".xml" + config.reportSuffix));
+			RemoveSubProcessResults(fileResults);
+			logger.debug(name + ".xml" + config.reportSuffix+ " MERGED");			
+			uriTextMD = outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
+					outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name;
+		} catch (IOException e) {
+			logger.error("ERROR contructing :" +new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
+					outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name + ".xml" + config.reportSuffix).toString(), e);
+		} catch (XMLStreamException e) {
+			logger.error("ERROR in mergeAbbyyXML :", e);
+		}
+		
+		return uriTextMD;
 	}
+	
+	private void RemoveSubProcessResults(List<File> files){
+		for(File fi : files){
+			fi.delete();
+			//second delete if still exists 
+			if(fi.exists()) fi.delete();
+		}		
+	}
+	
 	
 	
 	public void setTest(Boolean test) {

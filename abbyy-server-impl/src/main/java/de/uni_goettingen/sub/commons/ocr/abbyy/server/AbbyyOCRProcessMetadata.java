@@ -63,7 +63,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 	/** The xml export. */
 	protected Document xmlExport;
 	
-	protected BigDecimal totalChar, totalUncerChar;
+	protected BigDecimal totalChar = new BigDecimal(0.0), totalUncerChar = new BigDecimal(0.0);
 	
 	/** The Constant NAMESPACE. */
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
@@ -104,10 +104,10 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 		}
 		if (xmlResultDocument != null) {
 			xmlResultEngine = xmlResultDocument.getXmlResult();
-			totalChar = new BigDecimal(xmlResultEngine
-					.getStatistics().getTotalCharacters());
-			totalUncerChar = new BigDecimal(xmlResultEngine
-					.getStatistics().getUncertainCharacters());
+			setTotalChar(new BigDecimal(xmlResultEngine
+					.getStatistics().getTotalCharacters()));
+			setTotalUncerChar( new BigDecimal(xmlResultEngine
+					.getStatistics().getUncertainCharacters()));
 			this.setCharacterAccuracy(totalChar, totalUncerChar);
 			this.setProcessingNote(xmlResultEngine.toString());
 		}
@@ -145,7 +145,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 	}
 
 	public void setTotalChar(BigDecimal totalChar) {
-		this.totalChar = totalChar;
+		this.totalChar = this.totalChar.add(totalChar);
 	}
 
 	public BigDecimal getTotalUncerChar() {
@@ -153,8 +153,8 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 	}
 
 	public void setTotalUncerChar(BigDecimal totalUncerChar) {
-		this.totalUncerChar = totalUncerChar;
+		this.totalUncerChar = this.totalUncerChar.add(totalUncerChar);
 	}
-	
-	
+
+		
 }
