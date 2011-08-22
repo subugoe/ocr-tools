@@ -98,8 +98,9 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 	// OCR Processes
 	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
-	
-	protected HazelcastInstance h = Hazelcast.newHazelcastInstance(null);
+
+//	protected HazelcastInstance h = Hazelcast.newHazelcastInstance(null);
+	protected HazelcastInstance h;
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
@@ -122,22 +123,14 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	protected void start() {
 		started = true;
+		h = Hazelcast.newHazelcastInstance(null);
 		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder, h, config);
-
-		for (OCRProcess process : getOcrProcess()) {
-			AbbyyOCRProcess p = (AbbyyOCRProcess) process;
-			processes.add(p);
-
-		}
-		// pool.e
 
 		for (AbbyyOCRProcess p : processes) {
 				p.setTime(new Date().getTime());
 				pool.execute(p);
-			//}		
 		}
 
-		
 		pool.shutdown();
 		try {
 			pool.awaitTermination(3600, TimeUnit.SECONDS);
@@ -252,7 +245,11 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	public Observable addOcrProcess(OCRProcess process) {
 		// TODO: Check if this instanceof works as expected
 		if (process instanceof AbbyyOCRProcess) {
-			processes.add((AbbyyOCRProcess) process);
+			/*List<AbbyyOCRProcess> sp = ((AbbyyOCRProcess)process).split();
+			for (AbbyyOCRProcess acp : sp){
+				processes.add(acp);
+			}*/
+     		processes.add((AbbyyOCRProcess) process);
 		} else {
 			processes.add(new AbbyyOCRProcess(process, config));
 		}

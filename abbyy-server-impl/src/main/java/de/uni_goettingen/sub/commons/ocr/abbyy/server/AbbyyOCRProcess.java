@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -74,7 +75,7 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 /**
  * The Class AbbyyOCRProcess.
  */
-public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,Serializable,
+public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,Serializable,Cloneable,
 		Runnable {
 
 	
@@ -108,6 +109,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	//subProcesses
 	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
 	private List<String> SubProcessName = new ArrayList<String>();
+	private Set<OCRFormat> formatForSubProcess = new HashSet<OCRFormat>();
 	private String outResultUri = null;
 	private Observer obs;
 	private boolean finished = false;
@@ -716,7 +718,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	@Override
 	public void addOutput(OCRFormat format, OCROutput output) {
 		// Make sure we only add values, not replace existing ones
-		if (ocrOutputs == null) {
+		if (ocrOutputs == null || ocrOutputs.size() == 0) {
 			// We use a LinkedHashMap to get the order of the elements
 			// predictable
 			ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
@@ -877,17 +879,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	}
 
 	//Split in SubProcess
-	protected List<AbbyyOCRProcess> split(){
-		int listNumber = 1;
-		String processName = getName();
-		String spname = processName;
-		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
+	protected List<AbbyyOCRProcess> split(){		
 		if(getOcrImages().size() < (config.imagesNumberForSubprocess + (config.imagesNumberForSubprocess/2))){
 			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
 			sp.add(this);
 			return sp;
-		}else{
-			// set encoding for ocrProcessMetadata
+		}else{		
+			// setencoding for ocrProcessMetadata
 			if (encoding.equals("UTF8")) {
 				ocrProcessMetadata.setEncoding("UTF-8");
 			} else
@@ -896,38 +894,59 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			if (langs != null) {
 				setLanguageforMetadata(langs);
 			}
-			setSegmentation(true);
-			for(List<OCRImage> imgs : splitingImages(getOcrImages(), config.imagesNumberForSubprocess)){				
-				AbbyyOCRProcess subProcess = new AbbyyOCRProcess((Observer)this, config);
-				subProcess.setOcrImages(imgs);
-				subProcess.setName(processName + "_" + listNumber + "oF" + splitNumberForSubProcess);			
-				SubProcessName.add(processName + "_" + listNumber + "oF" + splitNumberForSubProcess);
+			for(AbbyyOCRProcess subProcess : cloneProcess()){	
+				subProcess.setiD_Process(getiD_Process()+ subProcess.getName());
+				subProcesses.add(subProcess);		
+			}
+			return subProcesses;
+		}
+	}
+	
+	protected List<AbbyyOCRProcess> cloneProcess(){
+		List<AbbyyOCRProcess> cloneProcesses = new ArrayList<AbbyyOCRProcess>();
+		Map<OCRFormat, OCROutput> outs = new HashMap<OCRFormat, OCROutput>();
+		for (OCRFormat f : getOcrOutputs().keySet()) {
+			OCROutput aoo = new AbbyyOCROutput();
+			aoo.setUri(getOcrOutputs().get(f).getUri());
+			outs.put(f, aoo);
+		}
+		int listNumber = 1;
+		setSegmentation(true);
+		for(List<OCRImage> imgs : splitingImages(getOcrImages(), config.imagesNumberForSubprocess)){				
+				AbbyyOCRProcess sP = null;
+				try {
+					sP = (AbbyyOCRProcess) this.clone();
+					sP.setObs((Observer)this);
+					sP.ocrImages.clear();
+					sP.ocrOutputs.clear();										
+				} catch (CloneNotSupportedException e1) {
+					logger.error("Clone Not Supported Exception: ", e1);
+					return null;
+				}
+				sP.setOcrImages(imgs);
+				sP.setName(name + "_" + listNumber + "oF" + splitNumberForSubProcess);			
+				SubProcessName.add(name + "_" + listNumber + "oF" + splitNumberForSubProcess);
 				String localuri = null;
-				for (OCRFormat f : outputs.keySet()) {
-					URI localUri = outputs.get(f).getUri();
-					localuri = localUri.toString().replace(spname, subProcess.getName());
-					outResultUri = localuri.replace(subProcess.getName()+ f.toString().toLowerCase(), "");
+				for (OCRFormat f : outs.keySet()) {
+					OCROutput aoo = new AbbyyOCROutput();
+					URI localUri = outs.get(f).getUri();
+					localuri = localUri.toString().replace(name, sP.getName());
+					outResultUri = localuri.replace(sP.getName()+ "."+f.toString().toLowerCase(), "");
 					try {
 						localUri = new URI(localuri);	
 					} catch (URISyntaxException e) {
 						logger.error("Error contructing localUri URL: "+ localuri , e);
 					}
-					outputs.get(f).setUri(localUri);				
-					subProcess.addOutput(f, outputs.get(f));
+					aoo.setUri(localUri);				
+					if(sP.ocrOutputs.size() == 0)
+					sP.addOutput(f, aoo);
+					formatForSubProcess.add(f);
 				}	
-				spname = subProcess.getName();
-				if(getPriority() != null) subProcess.setPriority(getPriority());
-				subProcess.setLanguages(getLanguages());
-				subProcess.setTextTyp(getTextTyp());
-				subProcess.setTime(new Date().getTime());
-				subProcess.setSegmentation(true);
-				subProcesses.add(subProcess);
-				addObserver(subProcess);
-				listNumber++;
-				
-			}
-			return subProcesses;
+				sP.setTime(new Date().getTime());
+			    listNumber++;
+				cloneProcesses.add(sP);
 		}
+		return cloneProcesses;
 	}
 	
 	protected List<List<OCRImage>> splitingImages(List<OCRImage> ocrImages, int imagesNumberForSubprocess){
@@ -962,7 +981,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	
 	
 	public void update(Observable o, Object arg) {
-	//	 doUpdate();	
 		synchronized (monitor) {	   
 			boolean oneFinished = false;
 			for (AbbyyOCRProcess sub : subProcesses) {
@@ -983,17 +1001,15 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				if(!uriTextMD.equals(null))
 				  serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
 			}
-		}
-		
+		}		
 	}
 
 
 	private String merge() {	
 		String uriTextMD = null;
-		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
 		int i = 0, j =0;
 		List<File> fileResults = new ArrayList<File>(); 
-		for (OCRFormat f : outputs.keySet()){
+		for (OCRFormat f : formatForSubProcess){
 			if (!FileMerger.isSegmentable(f)) {
 				throw new OCRException("Format " + f.toString()
 						+ " isn't mergable!");
@@ -1002,6 +1018,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			for(String s : SubProcessName){
 				File fileResult, file = new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
 						outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ s + "." + f.toString().toLowerCase());
+				//parse only once enough for ProcessMetadata
 				if ((f.toString().toLowerCase()).equals("xml") && j == 0) {
 					InputStream isDoc = null;
 					j++;
@@ -1029,12 +1046,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				}		
 			}
 			i++;
+			//mergeFiles for input format if Supported
 			FileMerger.mergeFiles(f, files, new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
 						outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name + "." + f.toString().toLowerCase()));
 			logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED");
 			RemoveSubProcessResults(files);			
 		}
 		try {
+			//mergeFiles for Abbyy Result xml.result.xml
 			FileMerger.mergeAbbyyXML(fileResults , new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
 					outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name + ".xml" + config.reportSuffix));
 			RemoveSubProcessResults(fileResults);
@@ -1053,14 +1072,28 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	
 	private void RemoveSubProcessResults(List<File> files){
 		for(File fi : files){
-			fi.delete();
+			fi.delete(); 
 			//second delete if still exists 
 			if(fi.exists()) fi.delete();
 		}		
 	}
 	
+	 /* Implemented method from the interface Cloneable */
+    /* This method can throw a CloneNotSupportedException */
+    protected Object clone() throws CloneNotSupportedException
+    {
+        /* clone method of the superclass */
+        return super.clone();
+    }
 	
-	
+	public Observer getObs() {
+		return obs;
+	}
+
+	public void setObs(Observer obs) {
+		this.obs = obs;
+	}
+
 	public void setTest(Boolean test) {
 		this.test = test;
 	}

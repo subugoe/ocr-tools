@@ -265,7 +265,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			super.execute(p);
+				super.execute(p);
+
 		}
 		
 	}
