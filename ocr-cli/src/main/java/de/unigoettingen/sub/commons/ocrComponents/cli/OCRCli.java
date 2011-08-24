@@ -223,12 +223,18 @@ public class OCRCli {
 								+ "." + ocrformat.toString().toLowerCase());
 						// logger.debug("output Location " + uri.toString());
 						aoo.setUri(uri);
+						aoo.setlocalOutput(System.getProperty("user.dir")+ "/" +localOutputDir);
 						OUTPUT_DEFINITIONS.put(ocrformat, aoo);
 						aop.addOutput(ocrformat, aoo);
 					}
 					// add language
 					aop.setLanguages(langs);
-					if(ocrPriority != null)	aop.setPriority(OCRPriority.valueOf(ocrPriority));
+					if(ocrPriority != null){
+						aop.setPriority(OCRPriority.valueOf(ocrPriority));
+					}else{
+						logger.error("the process ended, ocrPriority is null");
+						System.exit(0);
+					}
 					aop.setTextTyp(OCRTextTyp.valueOf(ocrTextTyp));
 					engine.addOcrProcess(aop);
 				}
