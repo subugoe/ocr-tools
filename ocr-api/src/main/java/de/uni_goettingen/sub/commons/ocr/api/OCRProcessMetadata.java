@@ -34,6 +34,7 @@ import java.util.Locale;
  * for accuracy or to save it for further processing.
  * 
  * @version 0.9
+ * @author abergna
  * @author cmahnke
  */
 public interface OCRProcessMetadata {

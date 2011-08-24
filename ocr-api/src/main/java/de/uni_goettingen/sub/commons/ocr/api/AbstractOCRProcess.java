@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,15 +36,21 @@ import java.util.Set;
  * creation of processes.
  * 
  * @version 0.9
+ * @author abergna
  * @author cmahnke
  */
-public abstract class AbstractOCRProcess extends Observable implements OCRProcess {
+public abstract class AbstractOCRProcess extends Observable implements OCRProcess,Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3302775196071887966L;
 
 	/** The name of this process, this is needed for serialization of a process */
 	protected String name;
 
 	/** The Images which should be converted */
-	protected List<OCRImage> ocrImages = new ArrayList<OCRImage>();
+	transient protected List<OCRImage> ocrImages = new ArrayList<OCRImage>();
 
 	/** The languages which should be recognized */
 	protected Set<Locale> langs = new HashSet<Locale>();
@@ -61,12 +68,12 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 * priority level : Low, BelowNormal, Normal, AboveNormal, High ;
 	 * */
 	protected OCRPriority priority;
-	protected OCRProcessMetadata ocrProcessMetadata;
+	transient protected OCRProcessMetadata ocrProcessMetadata;
 	/**
 	 * The images that should be converted, are stored in the given format at
 	 * the given location
 	 */
-	protected Map<OCRFormat, OCROutput> ocrOutputs;
+	transient protected Map<OCRFormat, OCROutput> ocrOutputs;
 
 	/** The params that should be used adjust the recognition process. */
 	protected Map<String, String> params = new HashMap<String, String>();

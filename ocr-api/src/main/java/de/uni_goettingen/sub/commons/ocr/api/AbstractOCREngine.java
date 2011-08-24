@@ -30,6 +30,7 @@ import java.util.Map;
  * different implementations {@link #getName()} and {@link #getVersion()}.
  * 
  * @version 0.9
+ * @author abergna
  * @author cmahnke
  */
 public abstract class AbstractOCREngine implements OCREngine {
