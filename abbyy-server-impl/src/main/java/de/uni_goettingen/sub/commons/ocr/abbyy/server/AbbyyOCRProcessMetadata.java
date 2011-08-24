@@ -42,6 +42,10 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
  * The Class OCRProcessMetadataImpl. used to obtain a description of the
  * {@link OCRProcess} and it's results This can be used to filter the results
  * for accuracy or to save it for further processing.
+ * 
+ * @version 0.9
+ * @author abergna
+ * 
  */
 public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 		implements OCRProcessMetadata, Serializable {

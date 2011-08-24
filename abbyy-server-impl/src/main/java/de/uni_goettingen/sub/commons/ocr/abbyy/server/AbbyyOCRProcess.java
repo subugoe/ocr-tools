@@ -31,15 +31,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-import java.util.Collection;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
+
 import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
@@ -74,6 +74,10 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 
 /**
  * The Class AbbyyOCRProcess.
+ * 
+ * @version 0.9
+ * @author abergna
+ * @author cmahnke
  */
 public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,Serializable,Cloneable,
 		Runnable {
@@ -141,17 +145,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	protected AbbyyOCRProcess(ConfigParser config) {
 		super();
 		this.config = config;
-		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
-		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
-				config);
-		init();
-		monitor = new Object();
-	}
-	
-	protected AbbyyOCRProcess(Observer obs, ConfigParser config) {
-		super();
-		this.config = config;
-		this.obs = obs;
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
 		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
 				config);
@@ -908,6 +901,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		for (OCRFormat f : getOcrOutputs().keySet()) {
 			OCROutput aoo = new AbbyyOCROutput();
 			aoo.setUri(getOcrOutputs().get(f).getUri());
+			outResultUri = getOcrOutputs().get(f).getlocalOutput();
+			aoo.setlocalOutput(outResultUri);
 			outs.put(f, aoo);
 		}
 		int listNumber = 1;
@@ -918,7 +913,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					sP = (AbbyyOCRProcess) this.clone();
 					sP.setObs((Observer)this);
 					sP.ocrImages.clear();
-					sP.ocrOutputs.clear();										
+					sP.ocrOutputs.clear();					
 				} catch (CloneNotSupportedException e1) {
 					logger.error("Clone Not Supported Exception: ", e1);
 					return null;
@@ -930,8 +925,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				for (OCRFormat f : outs.keySet()) {
 					OCROutput aoo = new AbbyyOCROutput();
 					URI localUri = outs.get(f).getUri();
+					if(localUri.isAbsolute())
 					localuri = localUri.toString().replace(name, sP.getName());
-					outResultUri = localuri.replace(sP.getName()+ "."+f.toString().toLowerCase(), "");
+	//				outResultUri = localuri.replace(sP.getName()+ "."+f.toString().toLowerCase(), "");
 					try {
 						localUri = new URI(localuri);	
 					} catch (URISyntaxException e) {
@@ -1015,26 +1011,24 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 						+ " isn't mergable!");
 			}
 			List<File> files = new ArrayList<File>(); 
-			for(String s : SubProcessName){
-				File fileResult, file = new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
-						outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ s + "." + f.toString().toLowerCase());
+			for(String sn : SubProcessName){				
+				File fileResult,file = new File(outResultUri + "/" + sn + "." + f.toString().toLowerCase());
 				//parse only once enough for ProcessMetadata
 				if ((f.toString().toLowerCase()).equals("xml") && j == 0) {
 					InputStream isDoc = null;
 					j++;
 					try {
-						isDoc = new FileInputStream(file);
+						 isDoc = new FileInputStream(file);		
 					} catch (FileNotFoundException e) {
 						logger.error("Error contructing FileInputStream for: "+file.toString() , e);
 					}
 					((AbbyyOCRProcessMetadata) ocrProcessMetadata)
 							.parseXmlExport(isDoc);
 				}
-				files.add(file);
+				files.add(file); 
 				if(i == 0){
-					fileResult = new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
-							outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ s + ".xml"+ config.reportSuffix);	
-					InputStream isResult = null;
+					fileResult = new File(outResultUri + "/" + sn + ".xml"+ config.reportSuffix);
+							InputStream isResult = null;
 					try {
 						isResult = new FileInputStream(fileResult);
 					} catch (FileNotFoundException e) {
@@ -1047,22 +1041,18 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			}
 			i++;
 			//mergeFiles for input format if Supported
-			FileMerger.mergeFiles(f, files, new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
-						outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name + "." + f.toString().toLowerCase()));
+			FileMerger.mergeFiles(f, files, new File(outResultUri + "/" + name + "." + f.toString().toLowerCase()));
 			logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED");
 			RemoveSubProcessResults(files);			
 		}
 		try {
 			//mergeFiles for Abbyy Result xml.result.xml
-			FileMerger.mergeAbbyyXML(fileResults , new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
-					outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name + ".xml" + config.reportSuffix));
+			FileMerger.mergeAbbyyXML(fileResults , new File(outResultUri + "/" + name + ".xml" + config.reportSuffix));
 			RemoveSubProcessResults(fileResults);
 			logger.debug(name + ".xml" + config.reportSuffix+ " MERGED");			
-			uriTextMD = outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
-					outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name;
+			uriTextMD = outResultUri + "/" + name;
 		} catch (IOException e) {
-			logger.error("ERROR contructing :" +new File(outResultUri.replace(outResultUri.substring(outResultUri.toString().lastIndexOf("/") + 1,
-					outResultUri.length()), "").replace("%20", " ").replace("file:/", "")+ name + ".xml" + config.reportSuffix).toString(), e);
+			logger.error("ERROR contructing :" +new File(outResultUri + "/" + name + ".xml" + config.reportSuffix).toString(), e);
 		} catch (XMLStreamException e) {
 			logger.error("ERROR in mergeAbbyyXML :", e);
 		}

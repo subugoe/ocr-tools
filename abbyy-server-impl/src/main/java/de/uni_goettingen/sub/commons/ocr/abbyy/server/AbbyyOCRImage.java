@@ -31,6 +31,10 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage.Orientation;
  * system, usally a relative file name and thus represented as a String. -
  * remoteURL, an URL representing the remote file, it should be resolveable from
  * the local Server.
+ * 
+ * @version 0.9
+ * @author abergna
+ * @author cmahnke
  */
 public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	/** This represents the filename that should be written to the ticket. */

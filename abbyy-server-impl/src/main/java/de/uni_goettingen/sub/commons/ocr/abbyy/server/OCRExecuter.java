@@ -20,15 +20,11 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 
 
-import java.io.File;
+
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -41,14 +37,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 import com.hazelcast.core.HazelcastInstance;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
+
 
 
 
@@ -59,6 +51,10 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
  * 
  * Two of the Templatemethods are used in connection with the implementation of
  * an activity by a Pool-Thread.
+ * 
+ * @version 0.9
+ * @author abergna
+ * @author cmahnke
  */
 public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	// TODO: There is a bug in here currently only one process per time is
@@ -258,17 +254,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	public void execute(Runnable process) {
 		List<AbbyyOCRProcess> sp = ((AbbyyOCRProcess)process).split();
 		for (Runnable p: sp){
-			//TODO trick with it we are got not null pointer
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-				super.execute(p);
-
-		}
-		
+			super.execute(p);
+		}		
 	}
 	
 }
