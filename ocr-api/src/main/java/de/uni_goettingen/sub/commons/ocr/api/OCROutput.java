@@ -51,7 +51,25 @@ public interface OCROutput {
 	 *            the new uri
 	 */
 	abstract public void setUri (URI uri);
-
+	
+	/**
+	 * Gets the String Dir where the results should be stored. If {@link #isResult()}
+	 * is true, the result should be at this location.
+	 * 
+	 * @return the String dir
+	 */
+	abstract public String getlocalOutput ();
+	
+	/**
+	 * Sets the String Dir for the result. If {@link #isResult()} is true, the result
+	 * should be at this location.
+	 * 
+	 * @param String dir
+	 *            the new dir
+	 */
+	abstract public void setlocalOutput (String uri);
+	
+	
 	/**
 	 * Gets the params that should be used for creation of output files. Since
 	 * these a specific to a {@link OCRFormat} and the used engine, they should

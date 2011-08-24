@@ -30,6 +30,10 @@ import java.util.Observable;
  * interfaces. Note that this may change before version 1.0 will be published.
  * The return types for the {@link #recognize()} methods isn't also set in stone
  * yet since {@link java.util.Observable} isn't optimal.
+ * 
+ * @version 0.9
+ * @author abergna
+ * @author cmahnke
  */
 public interface OCREngine {
 

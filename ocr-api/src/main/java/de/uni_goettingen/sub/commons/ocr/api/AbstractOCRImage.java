@@ -28,6 +28,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage.Orientation;
  * reference and a orientation.
  * 
  * @version 0.9
+ * @author abergna
  * @author cmahnke
  */
 public abstract class AbstractOCRImage implements OCRImage {

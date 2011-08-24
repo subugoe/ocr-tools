@@ -19,10 +19,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-// TODO: Auto-generated Javadoc
+
 /**
  * A factory for creating OCREngine objects.
  * @version 0.9
+ * @author abergna
  * @author cmahnke
  * @since 0.9
  */
