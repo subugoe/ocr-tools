@@ -58,7 +58,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	protected List<URI> errorImages = new ArrayList<URI>();
 	
 	public AbbyyOCROutput(URI uri) {
-		super(uri, null);
+		super(uri, null, null);
 	}
 
 	//This calls a copy constructor for the base class
