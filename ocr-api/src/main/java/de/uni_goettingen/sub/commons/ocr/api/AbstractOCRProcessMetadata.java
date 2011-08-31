@@ -154,10 +154,12 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 */
 	@Override
 	public void setDocumentType(String documentType) {
-		String[] splittArray, documentTypeSplit;
+		//TODO no fkt
+		/*String[] splittArray, documentTypeSplit;
 		splittArray = documentType.split("schemaLocation=");
 		documentTypeSplit = splittArray[1].split(" ");
-		this.documentType = documentTypeSplit[0].substring(1);
+		this.documentType = documentTypeSplit[0].substring(1);*/
+		this.documentType = documentType;
 	}
 
 	/*
