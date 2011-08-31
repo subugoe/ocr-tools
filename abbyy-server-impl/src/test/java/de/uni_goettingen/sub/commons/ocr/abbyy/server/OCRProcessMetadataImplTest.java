@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.slf4j.Logger;
@@ -50,12 +51,14 @@ public class OCRProcessMetadataImplTest {
 		ocrProcessMetadataImpl.parseXmlExport(isDoc);
 		ocrProcessMetadataImpl.parseXmlResult(isResult);
 	}
-
+	
+	@Ignore
 	@Test
 	public void getDocumentType() {
 		logger.debug(ocrProcessMetadataImpl.getDocumentType());
 		assertTrue((ocrProcessMetadataImpl.getDocumentType())
 				.equals("http://www.abbyy.com/FineReader_xml/FineReader6-schema-v1.xml"));
+		System.out.println(ocrProcessMetadataImpl.getDocumentType());
 	}
 
 	@Test
