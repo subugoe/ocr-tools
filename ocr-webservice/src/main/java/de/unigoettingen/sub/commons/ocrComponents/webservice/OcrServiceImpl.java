@@ -55,7 +55,14 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 
-
+/**
+ * IMPACT Abbyy Fine Reader 8.0 Service. This service provides the basic
+ * functionality of the Abbyy Fine Reader 8.0 text recogntion engine for
+ * applying OCR to an image file.
+ *  
+ * @author mabergn
+ *
+ */
 
 @WebService(endpointInterface = "de.unigoettingen.sub.commons.ocrComponents.webservice.OcrService")
 public class OcrServiceImpl implements OcrService {
