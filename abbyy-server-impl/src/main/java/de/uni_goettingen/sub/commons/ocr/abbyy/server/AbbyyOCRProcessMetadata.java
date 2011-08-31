@@ -136,8 +136,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 		}
 		if (xmlExportDocument != null) {
 			xmlExport = xmlExportDocument.getDocument();
-			this.setDocumentType(xmlExport.toString());
-//			this.setProcessingNote(xmlExport.toString());
+//			this.setDocumentType(xmlExport.toString());
 			this.setSoftwareName(xmlExport.getProducer());
 			this.setSoftwareVersion(xmlExport.getProducer());
 		}

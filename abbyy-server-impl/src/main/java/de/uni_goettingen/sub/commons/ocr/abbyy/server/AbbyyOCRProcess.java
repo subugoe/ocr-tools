@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
@@ -106,17 +107,23 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	protected String errorDescription = null;
 	// Set if process is done
 	private Boolean done = true;
-	private Boolean test = true;
+
 	private Boolean isResult = false;
 	// The done date.
 	private Long startTime = 0L;
 	//subProcesses
 	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
+	//List of Name from all SubProcesses 
 	private List<String> SubProcessName = new ArrayList<String>();
+	//Set of the Format from all SubProcesses
 	private Set<OCRFormat> formatForSubProcess = new HashSet<OCRFormat>();
+	//Result files for all SubProcess
+	protected Map<File, List<File>> ResultfilesForAllSubProcess = new HashMap<File, List<File>>();
+	//localOutput from CLI 
 	private String outResultUri = null;
 	private Observer obs;
 	private boolean finished = false;
+	//Number of SubProcesses
 	protected int splitNumberForSubProcess;
 	
 	// The done date.
@@ -124,7 +131,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	private Long processTimeResult = 0L;
 
 	protected Hotfolder hotfolder;
-	private List<AbbyyOCRProcess> listOfsp;
 	protected XmlParser xmlParser;
 	protected AbbyySerializerTextMD abbyySerializerTextMD;
 	protected OCRProcessMetadata ocrProcessMetadata;
@@ -136,7 +142,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 
 	private Long maxFiles;
 	private Long totalFileCount;
-	//ID Nr for AbbyyOCRProcess
+	//ID Number for AbbyyOCRProcess
 	private String iD_Process ;
 	private Long totalFileSize = 0l;
 	static Object monitor;
@@ -260,14 +266,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			}
 
 			logger.debug("Cleaning Server");
-			if (test) {
-				// Clean the server here to avoid GUIDs as filenames
-				cleanOutputs(getOcrOutputs());
-				// Remove all files that are part of this process, they
-				// shouldn't
-				// exist yet.
-				cleanImages(convertList(getOcrImages()));
-			}
+
+			// Clean the server here to avoid GUIDs as filenames
+			cleanOutputs(getOcrOutputs());
+			// Remove all files that are part of this process, they
+			// shouldn't
+			// exist yet.
+			cleanImages(convertList(getOcrImages()));
+
 
 			// Copy the ticket
 			logger.debug("Copying tickt to server");
@@ -342,7 +348,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					ocrProcessMetadata.setDuration(processTimeResult);
 					logger.debug("OCR Output file for " +name + " has been created successfully after "+  getDuration() + " milliseconds");
 					setOcrProcessMetadata(ocrProcessMetadata);
-					failed = true;
 					//Serializer
 					if(!getSegmentation()){
 						for (URI l : listOfLocalURI) {
@@ -845,7 +850,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			hotfolder.deleteIfExists(errorUri);
 		}
 	}
-
+	//Language for MetaData
 	private void setLanguageforMetadata(Set<Locale> language) {
 		List<Locale> lang = new ArrayList<Locale>();
 		for (Locale l : language) {
@@ -861,18 +866,18 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 
 		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = -3002142265497735648L;
-
 		/**
 		 * Instantiates a new timeout excetion.
 		 */
 		public TimeoutExcetion() {
 			super();
 		}
-
 	}
 
 	//Split in SubProcess
 	protected List<AbbyyOCRProcess> split(){		
+		//Example: getOcrImages().size()=234 and  imagesNumberForSubprocess=50, 234 < 75=(50+25)
+		//so is optimal for Abbyy
 		if(getOcrImages().size() < (config.imagesNumberForSubprocess + (config.imagesNumberForSubprocess/2))){
 			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
 			sp.add(this);
@@ -887,6 +892,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			if (langs != null) {
 				setLanguageforMetadata(langs);
 			}
+			//rename subProcess ID
 			for(AbbyyOCRProcess subProcess : cloneProcess()){	
 				subProcess.setiD_Process(getiD_Process()+ subProcess.getName());
 				subProcesses.add(subProcess);		
@@ -894,7 +900,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			return subProcesses;
 		}
 	}
-	
+	//The subprocess will be here cloned from the Process
 	protected List<AbbyyOCRProcess> cloneProcess(){
 		List<AbbyyOCRProcess> cloneProcesses = new ArrayList<AbbyyOCRProcess>();
 		Map<OCRFormat, OCROutput> outs = new HashMap<OCRFormat, OCROutput>();
@@ -925,9 +931,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				for (OCRFormat f : outs.keySet()) {
 					OCROutput aoo = new AbbyyOCROutput();
 					URI localUri = outs.get(f).getUri();
-					if(localUri.isAbsolute())
+//					if(localUri.isAbsolute())
 					localuri = localUri.toString().replace(name, sP.getName());
-	//				outResultUri = localuri.replace(sP.getName()+ "."+f.toString().toLowerCase(), "");
 					try {
 						localUri = new URI(localuri);	
 					} catch (URISyntaxException e) {
@@ -945,6 +950,20 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		return cloneProcesses;
 	}
 	
+	/** 
+	 * The list of images to be shared here imagesNumberForSubprocess (properties 
+	 * from config). Here a list of lists will be created.
+	 * For example: 
+	 * 
+	 * + The process is between (250 and 274) images in the list and 
+	 * imagesNumberForSubprocess = 50, here are 5 lists created, the final list has 
+	 * (50 or 74) images. because the restnumber <50/2 
+	 * 
+	 * + The process is between (276 and 299) images in the list and imagesNumberForSubprocess = 50, here 6
+	 * lists are created, the final list has (26 or 49) images. because the restnumber> = 50/2
+	 * 
+	 * Advantage in Abbyy with Error tolerance
+	 * */
 	protected List<List<OCRImage>> splitingImages(List<OCRImage> ocrImages, int imagesNumberForSubprocess){
 		List<List<OCRImage>> splitingOcrImagesforSubProcess = new ArrayList<List<OCRImage>>();		
 		int divNumber = ocrImages.size()/imagesNumberForSubprocess;
@@ -975,7 +994,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		return splitingOcrImagesforSubProcess;		
 	}
 	
-	
+	/**
+	 * Observer can respond via its update method on changes an observable. 
+	 * This happens only when registering Observer in Observable.
+	 * 
+	 * In our sample implementation is in the update method only checks a list of 
+	 * observers, if all successfully completed. then all Results should be merged
+	 * 
+	 */
 	public void update(Observable o, Object arg) {
 		synchronized (monitor) {	   
 			boolean oneFinished = false;
@@ -989,20 +1015,31 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				processTimeResult = processTimeResult + sub.processTimeResult;
 			}
 			if(oneFinished){
-				logger.debug("Waiting... for Merge Proccessing");
+				for (AbbyyOCRProcess sub : subProcesses) {
+					oneFinished = sub.failed;
+					if(oneFinished){
+						oneFinished = false;
+						break;
+					}else oneFinished = true;				
+				}
 				startTime = System.currentTimeMillis();
-				String uriTextMD = merge();
+				String uriTextMD = merge(oneFinished);
 				endTime = System.currentTimeMillis();
 				ocrProcessMetadata.setDuration(getDuration() + processTimeResult);
-				if(!uriTextMD.equals(null))
-				  serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
+				if(!uriTextMD.equals("FAILED")){
+					serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
+					RemoveSubProcessResults(ResultfilesForAllSubProcess);
+				}
+				 
 			}
 		}		
 	}
 
-
-	private String merge() {	
+	// merge if subProcessfailed is true 
+	//merge Results and ProcessMetaData
+	private String merge(Boolean subProcessfailed) {	
 		String uriTextMD = null;
+		File abbyyMergedResult = null;
 		int i = 0, j =0;
 		List<File> fileResults = new ArrayList<File>(); 
 		for (OCRFormat f : formatForSubProcess){
@@ -1017,59 +1054,85 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				if ((f.toString().toLowerCase()).equals("xml") && j == 0) {
 					InputStream isDoc = null;
 					j++;
-					try {
-						 isDoc = new FileInputStream(file);		
-					} catch (FileNotFoundException e) {
-						logger.error("Error contructing FileInputStream for: "+file.toString() , e);
+					if(subProcessfailed){
+						try {
+						isDoc = new FileInputStream(file);		
+						} catch (FileNotFoundException e) {
+							logger.error("Error contructing FileInputStream for: "+file.toString() , e);
+						}
+						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+								.parseXmlExport(isDoc);
 					}
-					((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-							.parseXmlExport(isDoc);
+					
 				}
 				files.add(file); 
 				if(i == 0){
 					fileResult = new File(outResultUri + "/" + sn + ".xml"+ config.reportSuffix);
-							InputStream isResult = null;
-					try {
-						isResult = new FileInputStream(fileResult);
-					} catch (FileNotFoundException e) {
-						logger.error("Error contructing FileInputStream for: "+fileResult.toString() , e);
-					}
-					((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-							.parseXmlResult(isResult);
+					InputStream isResult = null;
+					if(subProcessfailed){
+						try {
+							isResult = new FileInputStream(fileResult);
+						} catch (FileNotFoundException e) {
+							logger.error("Error contructing FileInputStream for: "+fileResult.toString() , e);
+						}
+						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+								.parseXmlResult(isResult);
+					}					
 					fileResults.add(fileResult);			
 				}		
 			}
 			i++;
-			//mergeFiles for input format if Supported
-			FileMerger.mergeFiles(f, files, new File(outResultUri + "/" + name + "." + f.toString().toLowerCase()));
-			logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED");
-			RemoveSubProcessResults(files);			
+			if(subProcessfailed){
+				logger.debug("Waiting... for Merge Proccessing");
+				//mergeFiles for input format if Supported
+				abbyyMergedResult = new File(outResultUri + "/" + name + "." + f.toString().toLowerCase());
+				FileMerger.mergeFiles(f, files, abbyyMergedResult);
+				logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED");
+				ResultfilesForAllSubProcess.put(abbyyMergedResult, files);	
+			}
+					
 		}
 		try {
-			//mergeFiles for Abbyy Result xml.result.xml
-			FileMerger.mergeAbbyyXML(fileResults , new File(outResultUri + "/" + name + ".xml" + config.reportSuffix));
-			RemoveSubProcessResults(fileResults);
-			logger.debug(name + ".xml" + config.reportSuffix+ " MERGED");			
-			uriTextMD = outResultUri + "/" + name;
+			if(subProcessfailed){
+				logger.debug("Waiting... for Merge Proccessing");
+				//mergeFiles for Abbyy Result xml.result.xml
+				abbyyMergedResult = new File(outResultUri + "/" + name + ".xml" + config.reportSuffix);
+				FileMerger.mergeAbbyyXML(fileResults , abbyyMergedResult);
+				ResultfilesForAllSubProcess.put(abbyyMergedResult, fileResults);
+				logger.debug(name + ".xml" + config.reportSuffix+ " MERGED");			
+				uriTextMD = outResultUri + "/" + name;
+			}else {
+				uriTextMD = "FAILED";
+			}
+			
 		} catch (IOException e) {
 			logger.error("ERROR contructing :" +new File(outResultUri + "/" + name + ".xml" + config.reportSuffix).toString(), e);
 		} catch (XMLStreamException e) {
 			logger.error("ERROR in mergeAbbyyXML :", e);
-		}
-		
+		}		
 		return uriTextMD;
 	}
 	
-	private void RemoveSubProcessResults(List<File> files){
-		for(File fi : files){
-			fi.delete(); 
-			//second delete if still exists 
-			if(fi.exists()) fi.delete();
-		}		
+	//remove local files from the list after merge if the mergeResults Exists
+	protected void RemoveSubProcessResults(Map<File, List<File>> Resultfiles){
+		@SuppressWarnings("rawtypes")
+		Iterator k = Resultfiles.keySet().iterator();
+		File abbyyMergedResult = (File) k.next();
+		if(abbyyMergedResult.exists()){
+			List<File> files =  (List<File>) Resultfiles.get(abbyyMergedResult);
+			for(File file : files){
+				file.delete(); 
+				//second delete if still exists 
+				if(file.exists()) file.delete();
+		    }
+		}
+			
 	}
+		
 	
-	 /* Implemented method from the interface Cloneable */
-    /* This method can throw a CloneNotSupportedException */
+
+	 /* Implemented method from the interface Cloneable 
+    This method can throw a CloneNotSupportedException */
     protected Object clone() throws CloneNotSupportedException
     {
         /* clone method of the superclass */
@@ -1083,11 +1146,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	public void setObs(Observer obs) {
 		this.obs = obs;
 	}
-
-	public void setTest(Boolean test) {
-		this.test = test;
-	}
-
 
 	public String getiD_Process() {
 		return iD_Process;
@@ -1104,16 +1162,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 
 	public void setIsFinished() {
 		this.finished = true;
-	}
-
-
-	public List<AbbyyOCRProcess> getListOfsp() {
-		return listOfsp;
-	}
-
-
-	public void setListOfsp(List<AbbyyOCRProcess> listOfsp) {
-		this.listOfsp = listOfsp;
 	}
 
 
