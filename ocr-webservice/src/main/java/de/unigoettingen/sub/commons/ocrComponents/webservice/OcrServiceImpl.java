@@ -242,7 +242,7 @@ public class OcrServiceImpl implements OcrService {
 			byUrlResponseType.setMessage("Process finished successfully after " + duration + " milliseconds.");
 			byUrlResponseType.setOutputUrl(WEBSERVER_HOSTNAME + parent + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
 			byUrlResponseType.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
-												"Using service: IMPACT Abbyy Fine Reader 2 Service "+ "\n" +
+												"Using service: IMPACT Abbyy Fine Reader 8.0 Service "+ "\n" +
 												"Parameter processingUnit: "+ WEBSERVER_HOSTNAME + "\n" +
 												"URL of input image: "+ part1.getInputUrl()+ "\n" +
 												"Wrote file " + file.toString()+  "\n" +
