@@ -153,9 +153,9 @@ public class AbbyyTicketTest {
 		assertNotNull("base path is null", BASEFOLDER_FILE);
 		abbyyTicket = new AbbyyTicket(ocrp);
 		abbyyTicket.setConfig(new ConfigParser().parse());
-		abbyyTicket.processTimeout = abbyyTicket.config.maxMillisPerFile
+		abbyyTicket.processTimeout = AbbyyTicket.config.maxMillisPerFile
 				* ocrp.getOcrImages().size();
-		assertTrue((abbyyTicket.config.maxMillisPerFile * ocrp.getOcrImages()
+		assertTrue((AbbyyTicket.config.maxMillisPerFile * ocrp.getOcrImages()
 				.size()) == 100000);
 
 		abbyyTicket.setTextTyp(OCRTextTyp.NORMAL);
