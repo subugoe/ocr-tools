@@ -250,6 +250,10 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		p.checkServerState();
 	}
 	
+	
+	protected void noSplitProcess(AbbyyOCRProcess p) {
+		super.execute(p);
+	}
 	@Override
 	public void execute(Runnable process) {
 		List<AbbyyOCRProcess> sp = ((AbbyyOCRProcess)process).split();
