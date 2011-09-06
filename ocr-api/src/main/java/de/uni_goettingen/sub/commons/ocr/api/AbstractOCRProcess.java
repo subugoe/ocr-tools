@@ -83,6 +83,8 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	protected Boolean isFinished = false;
 	/** for Subdivision the process*/
     protected Boolean segmentation = false;
+    
+    protected Boolean splitProcess = false;
 	
 	protected Long time;
 	/**
@@ -328,6 +330,20 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	public void setSegmentation(Boolean segmentaion) {
 		this.segmentation = segmentaion;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getSplitProcess()
+	 */
+	public Boolean getSplitProcess() {
+		return splitProcess;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setSplitProcess(java.lang.Boolean)
+	 */
+	public void setSplitProcess(Boolean splitProcess) {
+		this.splitProcess = splitProcess;
 	}
 	
 	
