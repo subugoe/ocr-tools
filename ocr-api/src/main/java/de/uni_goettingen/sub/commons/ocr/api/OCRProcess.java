@@ -399,4 +399,18 @@ public interface OCRProcess {
 	 * @param segmentaion the new segmentation
 	 */
 	abstract public void setSegmentation(Boolean segmentaion);
+	
+	/**
+	 * Gets the segmentation from CLI. 
+	 *
+	 * @return the segmentation true: split Process in SubProcess 
+	 */
+	abstract public Boolean getSplitProcess();
+	
+	/**
+	 * Sets the segmentation from CLI.
+	 *
+	 * @param segmentaion the new segmentation 
+	 */
+	abstract public void setSplitProcess(Boolean SplitProcess);
 }
