@@ -112,6 +112,9 @@ public class OCRCli {
 	/** The ocr ocrPriority typ. */
 	private static String ocrPriority = null;
 	
+	/** The splitProcess if splitProcess = yes. */
+	private static String splitProcess = "no";
+	
 	/** The engine. */
 	protected static OCREngine engine;
 
@@ -138,6 +141,7 @@ public class OCRCli {
 		opts.addOption("t", true, "OCRTextTyp");
 		opts.addOption("o", true, "Output folder");
 		opts.addOption("p", true, "Priority");
+		opts.addOption("s", true, "Segmentation");
 	}
 
 	/**
@@ -229,6 +233,9 @@ public class OCRCli {
 					}
 					// add language
 					aop.setLanguages(langs);
+					if(splitProcess.equals("yes")){
+						aop.setSplitProcess(true);
+					}
 					if(ocrPriority != null){
 						aop.setPriority(OCRPriority.valueOf(ocrPriority));
 					}else{
@@ -391,7 +398,13 @@ public class OCRCli {
 		if (cmd.hasOption("r")) {
 			recursiveMode = true;
 		}
-
+		//Segmentation
+		if(cmd.hasOption("s")){
+			if (cmd.getOptionValue("s") != null
+					&& !cmd.getOptionValue("s").equals("")) {
+				splitProcess = (cmd.getOptionValue("s")).toLowerCase();
+			}
+		}
 		// OCRTextTyp
 		if (cmd.hasOption("t")) {
 			if (cmd.getOptionValue("t") != null
