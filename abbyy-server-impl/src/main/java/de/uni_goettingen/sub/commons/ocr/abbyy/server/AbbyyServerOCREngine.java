@@ -118,8 +118,11 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder, h, config);
 
 		for (AbbyyOCRProcess p : processes) {
-				p.setTime(new Date().getTime());
-				pool.execute(p);
+			p.setTime(new Date().getTime());
+			if(!p.getSplitProcess()){
+				((OCRExecuter) pool).noSplitProcess(p);
+			}else pool.execute(p);
+				
 		}
 
 		pool.shutdown();
