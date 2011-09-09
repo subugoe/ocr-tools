@@ -19,8 +19,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import java.io.File;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -149,6 +151,8 @@ public class OcrServiceImpl implements OcrService {
 			urlParts = inputuri.toString().split("/");
 			parent = urlParts[urlParts.length - 2];
 			jobName = urlParts[urlParts.length - 1].replace(".tif", "");
+			//is a random number after jobName
+			jobName = jobName + "_" + (int) ((Math.random()*((int) System.currentTimeMillis()))+1);
 			File file = new File(LOCAL_PATH + parent + "/" + jobName
 					+ "/" + urlParts[urlParts.length - 1]);
 
@@ -192,14 +196,29 @@ public class OcrServiceImpl implements OcrService {
 			aoo.setUri(uri);
 			OUTPUT_DEFINITIONS.put(ocrformat, aoo);
 			aop.addOutput(ocrformat, aoo);
+			URL whatismyip = null;
 			try {
+				whatismyip = new URL("http://automation.whatismyip.com/n09230945.asp");
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+		                  whatismyip.openStream()));
+				String ip = in.readLine(); //you get the IP as a String
+				WEBSERVER_HOSTNAME = "http://"+ip+"/"+APP_NAME+"/";
+			} catch (MalformedURLException e1) {
+				logger.error("URL is Mal formed: " + e1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			/*try {
 				InetAddress inet = InetAddress.getLocalHost(); 				         
 				WEBSERVER_HOSTNAME = "http://"+inet.getCanonicalHostName()+"/"+APP_NAME+"/";
 			} catch (UnknownHostException e) {
 				logger.error("Can't detect hostname : " + e);
 				String error = "Can't detect hostname : " + e;
 				return byURLresponse(duration, error);
-			}
+			}*/
 			
 			langs = new HashSet<Locale>();
 			
