@@ -1086,6 +1086,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				logger.debug("Waiting... for Merge Proccessing");
 				//mergeFiles for input format if Supported
 				abbyyMergedResult = new File(outResultUri + "/" + name + "." + f.toString().toLowerCase());
+				FileMerger.ABBYY_VERSION_NUMBER = config.abbyyVersionNumber;
 				FileMerger.mergeFiles(f, files, abbyyMergedResult);
 				logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED");
 				ResultfilesForAllSubProcess.put(abbyyMergedResult, files);	
@@ -1097,7 +1098,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				logger.debug("Waiting... for Merge Proccessing");
 				//mergeFiles for Abbyy Result xml.result.xml
 				abbyyMergedResult = new File(outResultUri + "/" + name + ".xml" + config.reportSuffix);
-				FileMerger.mergeAbbyyXML(fileResults , abbyyMergedResult);
+				FileMerger.mergeAbbyyXMLResults(fileResults , abbyyMergedResult);
 				ResultfilesForAllSubProcess.put(abbyyMergedResult, fileResults);
 				logger.debug(name + ".xml" + config.reportSuffix+ " MERGED");			
 				uriTextMD = outResultUri + "/" + name;

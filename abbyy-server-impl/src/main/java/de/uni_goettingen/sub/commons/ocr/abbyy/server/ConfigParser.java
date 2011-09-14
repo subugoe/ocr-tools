@@ -98,6 +98,9 @@ public class ConfigParser {
 	protected String serverOutputLocation, localOutputLocation;
     //ID Process
 	protected String id_Process;
+	//
+	public final static String ABBYY_VERSION = "abbyyVersionNumber";
+	protected String abbyyVersionNumber;
 	//Process specific settings
 	public final static Boolean DEFAULT_COPYONLY = false;
 	public final static String PARAMETER_COPYONLY = "copyOnly";
@@ -216,6 +219,7 @@ public class ConfigParser {
 		maxOCRTimeout = config.getLong(PARAMETER_MAXOCRTIMEOUT, DEFAULT_MAXOCRTIMEOUT);
 
 		id_Process = java.util.UUID.randomUUID().toString();
+		abbyyVersionNumber = config.getString(ABBYY_VERSION, null);
 		
 		copyOnly = config.getBoolean(PARAMETER_COPYONLY, DEFAULT_COPYONLY);
 		dryRun = config.getBoolean(PARAMETER_DRYRUN, DEFAULT_DRYRUN);
