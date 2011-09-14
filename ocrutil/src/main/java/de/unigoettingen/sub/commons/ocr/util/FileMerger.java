@@ -2,21 +2,21 @@ package de.unigoettingen.sub.commons.ocr.util;
 
 /*
 
-Copyright 2010 SUB Goettingen. All rights reserved.
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+ Copyright 2010 SUB Goettingen. All rights reserved.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-*/
+ */
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -66,13 +66,13 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
  */
 public class FileMerger {
 
-	protected static Logger logger = LoggerFactory
-	.getLogger(FileMerger.class);
+	protected static Logger logger = LoggerFactory.getLogger(FileMerger.class);
 
-	
 	/** This list contains the SEGMENTABLE_FORMATS. */
 	public final static List<OCRFormat> SEGMENTABLE_FORMATS;
 
+	/** Abbyy version number. */
+	public static String ABBYY_VERSION_NUMBER = "v10";
 	/**
 	 * This list the mapping from {@link OCRFormat} to methods for File based
 	 * merging.
@@ -90,39 +90,46 @@ public class FileMerger {
 		fileMergers = new HashMap<OCRFormat, Method>();
 		streamMergers = new HashMap<OCRFormat, Method>();
 
-		//And now: Some black magic!
+		// And now: Some black magic!
 		try {
-			//These represent the arguments for the methods
+			// These represent the arguments for the methods
 			Class<?> fileParams[] = new Class[2];
 			fileParams[0] = List.class;
 			fileParams[1] = File.class;
-			//This are the methods for handling files
-			fileMergers.put(OCRFormat.PDF, FileMerger.class.getMethod("mergePDF", fileParams));
-			fileMergers.put(OCRFormat.XML, FileMerger.class.getMethod("mergeAbbyyXML", fileParams));
-			fileMergers.put(OCRFormat.TXT, FileMerger.class.getMethod("mergeTXT", fileParams));
-			fileMergers.put(OCRFormat.HOCR, FileMerger.class.getMethod("mergeHOCR", fileParams));
+			// This are the methods for handling files
+			fileMergers.put(OCRFormat.PDF,
+					FileMerger.class.getMethod("mergePDF", fileParams));
+			fileMergers.put(OCRFormat.XML,
+					FileMerger.class.getMethod("mergeAbbyyXML", fileParams));
+			fileMergers.put(OCRFormat.TXT,
+					FileMerger.class.getMethod("mergeTXT", fileParams));
+			fileMergers.put(OCRFormat.HOCR,
+					FileMerger.class.getMethod("mergeHOCR", fileParams));
 
-			//These represent the arguments for the methods
+			// These represent the arguments for the methods
 			Class<?> streamParams[] = new Class[2];
 			streamParams[0] = List.class;
 			streamParams[1] = OutputStream.class;
-			//This are the methods for handling files
-			streamMergers.put(OCRFormat.PDF, FileMerger.class.getMethod("mergePDF", streamParams));
-			streamMergers.put(OCRFormat.XML, FileMerger.class.getMethod("mergeAbbyyXML", streamParams));
-			streamMergers.put(OCRFormat.TXT, FileMerger.class.getMethod("mergeTXT", streamParams));
-			streamMergers.put(OCRFormat.HOCR, FileMerger.class.getMethod("mergeHOCR", streamParams));
+			// This are the methods for handling files
+			streamMergers.put(OCRFormat.PDF,
+					FileMerger.class.getMethod("mergePDF", streamParams));
+			streamMergers.put(OCRFormat.XML,
+					FileMerger.class.getMethod("mergeAbbyyXML", streamParams));
+			streamMergers.put(OCRFormat.TXT,
+					FileMerger.class.getMethod("mergeTXT", streamParams));
+			streamMergers.put(OCRFormat.HOCR,
+					FileMerger.class.getMethod("mergeHOCR", streamParams));
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 
-		//Get the public formats from the internal Map
+		// Get the public formats from the internal Map
 		SEGMENTABLE_FORMATS = new ArrayList<OCRFormat>();
 		SEGMENTABLE_FORMATS.addAll(fileMergers.keySet());
 	}
-	
-	
+
 	/**
-	 * Merge Abbyy XML Streams. This operates directly on Streams and should be
+	 * Merge Abbyy XML Streams for Version 8. This operates directly on Streams and should be
 	 * suitable for processing over WebDAV for example
 	 * 
 	 * @param iss
@@ -132,12 +139,13 @@ public class FileMerger {
 	 * @throws XMLStreamException
 	 *             the xML stream exception
 	 */
-	public static void mergeAbbyyXML (List<InputStream> iss, OutputStream os) throws XMLStreamException {
+	public static void mergeAbbyyXMLv8(List<InputStream> iss, OutputStream os)
+			throws XMLStreamException {
 
 		Integer pageCount = iss.size();
-		//Output
+		// Output
 		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
-		//outFactory.setProperty("javax.xml.stream.isPrefixDefaulting",Boolean.TRUE);
+		// outFactory.setProperty("javax.xml.stream.isPrefixDefaulting",Boolean.TRUE);
 
 		XMLStreamWriter writer = outFactory.createXMLStreamWriter(os);
 
@@ -150,12 +158,12 @@ public class FileMerger {
 
 		while (f < iss.size()) {
 
-			//Input
+			// Input
 			InputStream in = iss.get(f);
 			XMLInputFactory inFactory = XMLInputFactory.newInstance();
 			XMLStreamReader parser = inFactory.createXMLStreamReader(in);
 
-			//Handle the events
+			// Handle the events
 			while (true) {
 				int event = parser.getEventType();
 				if (event == XMLStreamConstants.START_DOCUMENT) {
@@ -171,23 +179,28 @@ public class FileMerger {
 						String uri = parser.getNamespaceURI(i);
 						if (prefix == null) {
 							prefix = "default";
-							writer.setDefaultNamespace(parser.getNamespaceURI(i));
+							writer.setDefaultNamespace(parser
+									.getNamespaceURI(i));
 						} else {
 							writer.setPrefix(prefix, uri);
 						}
 						nsPrefixes.put(prefix, uri);
 					}
-					if (!headerWriten || !parser.getLocalName().equalsIgnoreCase(rootTag)) {
+					if (!headerWriten
+							|| !parser.getLocalName().equalsIgnoreCase(rootTag)) {
 						if (parser.getNamespaceURI() != null) {
-							writer.writeStartElement(parser.getNamespaceURI(), parser.getLocalName());
+							writer.writeStartElement(parser.getNamespaceURI(),
+									parser.getLocalName());
 						} else {
 							writer.writeStartElement(parser.getLocalName());
 						}
 						if (!headerWriten) {
-							writer.writeDefaultNamespace(nsPrefixes.get("default"));
+							writer.writeDefaultNamespace(nsPrefixes
+									.get("default"));
 							for (String namespace : nsPrefixes.keySet()) {
 								if (!namespace.equalsIgnoreCase("default")) {
-									writer.writeNamespace(namespace, nsPrefixes.get(namespace));
+									writer.writeNamespace(namespace,
+											nsPrefixes.get(namespace));
 								}
 							}
 						}
@@ -199,7 +212,9 @@ public class FileMerger {
 								headerWriten = true;
 							}
 							if (parser.getAttributeNamespace(i) != null) {
-								writer.writeAttribute(parser.getAttributeNamespace(i), name, value);
+								writer.writeAttribute(
+										parser.getAttributeNamespace(i), name,
+										value);
 							} else {
 								writer.writeAttribute(name, value);
 							}
@@ -208,11 +223,12 @@ public class FileMerger {
 				} else if (event == XMLStreamConstants.CHARACTERS) {
 					writer.writeCharacters(parser.getText());
 				} else if (event == XMLStreamConstants.END_ELEMENT) {
-					if (headerWriten && !parser.getLocalName().equalsIgnoreCase(rootTag)) {
+					if (headerWriten
+							&& !parser.getLocalName().equalsIgnoreCase(rootTag)) {
 						writer.writeEndElement();
 					}
 				} else if (event == XMLStreamConstants.END_DOCUMENT) {
-					//writer.writeEndElement();
+					// writer.writeEndElement();
 					if (f == iss.size() - 1) {
 						writer.writeEndDocument();
 					}
@@ -232,6 +248,303 @@ public class FileMerger {
 	}
 
 	/**
+	 * Merge Abbyy XML Streams for Version 10. This operates directly on Streams and should be
+	 * suitable for processing over WebDAV for example
+	 * 
+	 * @param iss
+	 *            the List of InputStreams
+	 * @param os
+	 *            the OutputStram to write to.
+	 * @throws XMLStreamException
+	 *             the xML stream exception
+	 */
+	public static void mergeAbbyyXMLv10(List<InputStream> iss, OutputStream os)
+			throws XMLStreamException {
+		Set<String> ignoredElements = new HashSet<String>();
+		ignoredElements.add("documentData");
+		ignoredElements.add("sections");
+		ignoredElements.add("section");
+		ignoredElements.add("mainText");
+		ignoredElements.add("stream");
+		ignoredElements.add("elemId");
+		ignoredElements.add("paragraphStyles");
+		ignoredElements.add("paragraphStyle");
+		
+
+		Integer pageCount = iss.size();
+		// Output
+		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
+		// outFactory.setProperty("javax.xml.stream.isPrefixDefaulting",Boolean.TRUE);
+
+		XMLStreamWriter writer = outFactory.createXMLStreamWriter(os);
+
+		Integer f = 0;
+		HashMap<String, String> nsPrefixes = new HashMap<String, String>();
+
+		Boolean docStarted = false;
+		Boolean headerWriten = false;
+		String rootTag = "document";
+
+		while (f < iss.size()) {
+
+			// Input
+			InputStream in = iss.get(f);
+			XMLInputFactory inFactory = XMLInputFactory.newInstance();
+			XMLStreamReader parser = inFactory.createXMLStreamReader(in);
+
+			// Handle the events
+			while (true) {
+				int event = parser.getEventType();
+				if (event == XMLStreamConstants.START_DOCUMENT) {
+					if (!docStarted) {
+						writer.writeStartDocument("UTF-8", "1.0");
+						docStarted = true;
+					}
+				} else if (event == XMLStreamConstants.COMMENT) {
+					writer.writeComment(parser.getText());
+				} else if (event == XMLStreamConstants.START_ELEMENT) {
+					for (int i = 0; i < parser.getNamespaceCount(); i++) {
+						String prefix = parser.getNamespacePrefix(i);
+						String uri = parser.getNamespaceURI(i);
+						if (prefix == null) {
+							prefix = "default";
+							writer.setDefaultNamespace(parser
+									.getNamespaceURI(i));
+						} else {
+							writer.setPrefix(prefix, uri);
+						}
+						nsPrefixes.put(prefix, uri);
+					}
+
+					boolean ignoredElement = ignoredElements.contains(parser
+							.getLocalName());
+					if (!ignoredElement) {
+						if (!headerWriten
+								|| !parser.getLocalName().equalsIgnoreCase(
+										rootTag)) {
+							if (parser.getNamespaceURI() != null) {
+								writer.writeStartElement(
+										parser.getNamespaceURI(),
+										parser.getLocalName());
+							} else {
+								writer.writeStartElement(parser.getLocalName());
+							}
+							if (!headerWriten) {
+								writer.writeDefaultNamespace(nsPrefixes
+										.get("default"));
+								for (String namespace : nsPrefixes.keySet()) {
+									if (!namespace.equalsIgnoreCase("default")) {
+										writer.writeNamespace(namespace,
+												nsPrefixes.get(namespace));
+									}
+								}
+							}
+							if (parser.getLocalName().equalsIgnoreCase(rootTag))
+								headerWriten = true;
+
+							for (int i = 0; i < parser.getAttributeCount(); i++) {
+								String name = parser.getAttributeLocalName(i);
+								String value = parser.getAttributeValue(i);
+								if (name.equalsIgnoreCase("pagesCount")) {
+									value = pageCount.toString();
+									headerWriten = true;
+								}
+								if (parser.getAttributeNamespace(i) != null) {
+									writer.writeAttribute(
+											parser.getAttributeNamespace(i),
+											name, value);
+								} else {
+									writer.writeAttribute(name, value);
+								}
+							}
+						}
+					}
+				} else if (event == XMLStreamConstants.CHARACTERS) {
+					writer.writeCharacters(parser.getText());
+				} else if (event == XMLStreamConstants.END_ELEMENT) {
+					boolean ignoredElement = ignoredElements.contains(parser
+							.getLocalName());
+					if (!ignoredElement) {
+						if (headerWriten
+								&& !parser.getLocalName().equalsIgnoreCase(
+										rootTag)) {
+							writer.writeEndElement();
+						}
+					}
+				} else if (event == XMLStreamConstants.END_DOCUMENT) {
+					// writer.writeEndElement();
+					if (f == iss.size() - 1) {
+						writer.writeEndDocument();
+					}
+					break;
+				}
+				if (!parser.hasNext()) {
+					break;
+				}
+				parser.next();
+			}
+			parser.close();
+			f++;
+		}
+		writer.writeEndDocument();
+		writer.flush();
+		writer.close();
+	}
+	
+	
+	/**
+	 * Merge Abbyy XMLResult(Abbyy Reports) Streams.  This operates directly on Streams and should be
+	 * suitable for processing over WebDAV for example
+	 * 
+	 * @param iss
+	 *            the List of InputStreams
+	 * @param os
+	 *            the OutputStram to write to.
+	 * @throws XMLStreamException
+	 *             the xML stream exception
+	 */
+	public static void mergeAbbyyXMLResults(List<InputStream> iss,
+			OutputStream os) throws XMLStreamException {
+
+		Integer pageCount = iss.size();
+		// Output
+		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
+		// outFactory.setProperty("javax.xml.stream.isPrefixDefaulting",Boolean.TRUE);
+
+		XMLStreamWriter writer = outFactory.createXMLStreamWriter(os);
+
+		Integer f = 0;
+		HashMap<String, String> nsPrefixes = new HashMap<String, String>();
+
+		Boolean docStarted = false;
+		Boolean headerWriten = false;
+		String rootTag = "XmlResult";
+
+		while (f < iss.size()) {
+
+			// Input
+			InputStream in = iss.get(f);
+			XMLInputFactory inFactory = XMLInputFactory.newInstance();
+			XMLStreamReader parser = inFactory.createXMLStreamReader(in);
+
+			// Handle the events
+			while (true) {
+				int event = parser.getEventType();
+				if (event == XMLStreamConstants.START_DOCUMENT) {
+					if (!docStarted) {
+						writer.writeStartDocument("UTF-8", "1.0");
+						docStarted = true;
+					}
+				} else if (event == XMLStreamConstants.COMMENT) {
+					writer.writeComment(parser.getText());
+				} else if (event == XMLStreamConstants.START_ELEMENT) {
+					for (int i = 0; i < parser.getNamespaceCount(); i++) {
+						String prefix = parser.getNamespacePrefix(i);
+						String uri = parser.getNamespaceURI(i);
+						if (prefix == null) {
+							prefix = "default";
+							writer.setDefaultNamespace(parser
+									.getNamespaceURI(i));
+						} else {
+							writer.setPrefix(prefix, uri);
+						}
+						nsPrefixes.put(prefix, uri);
+					}
+
+					if (!headerWriten
+							|| !parser.getLocalName().equalsIgnoreCase(
+									rootTag)) {
+						if (parser.getNamespaceURI() != null) {
+							writer.writeStartElement(
+									parser.getNamespaceURI(),
+									parser.getLocalName());
+						} else {
+							writer.writeStartElement(parser.getLocalName());
+						}
+						if (!headerWriten) {
+							writer.writeDefaultNamespace(nsPrefixes
+									.get("default"));
+							for (String namespace : nsPrefixes.keySet()) {
+								if (!namespace.equalsIgnoreCase("default")) {
+									writer.writeNamespace(namespace,
+											nsPrefixes.get(namespace));
+								}
+							}
+						}
+						if (parser.getLocalName().equalsIgnoreCase(rootTag))
+							headerWriten = true;
+
+						for (int i = 0; i < parser.getAttributeCount(); i++) {
+							String name = parser.getAttributeLocalName(i);
+							String value = parser.getAttributeValue(i);
+							if (name.equalsIgnoreCase("pagesCount")) {
+								value = pageCount.toString();
+								headerWriten = true;
+							}
+							if (parser.getAttributeNamespace(i) != null) {
+								writer.writeAttribute(
+										parser.getAttributeNamespace(i),
+										name, value);
+							} else {
+								writer.writeAttribute(name, value);
+							}
+						}
+					}
+				} else if (event == XMLStreamConstants.CHARACTERS) {
+					writer.writeCharacters(parser.getText());
+				} else if (event == XMLStreamConstants.END_ELEMENT) {
+						if (headerWriten
+								&& !parser.getLocalName().equalsIgnoreCase(
+										rootTag)) {
+							writer.writeEndElement();
+						}
+				} else if (event == XMLStreamConstants.END_DOCUMENT) {
+					// writer.writeEndElement();
+					if (f == iss.size() - 1) {
+						writer.writeEndDocument();
+					}
+					break;
+				}
+				if (!parser.hasNext()) {
+					break;
+				}
+				parser.next();
+			}
+			parser.close();
+			f++;
+		}
+		writer.writeEndDocument();
+		writer.flush();
+		writer.close();
+	}
+	
+	
+	/**
+	 * Merge Abbyy XMLResult(Abbyy Reports) files.
+	 * 
+	 * @param files
+	 *            the File's to merge
+	 * @param outFile
+	 *            the result file to write to
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws XMLStreamException
+	 *             the XML stream exception
+	 */
+	public static void mergeAbbyyXMLResults(List<File> files, File outFile)
+			throws IOException, XMLStreamException {
+		OutputStream os = new FileOutputStream(outFile);
+		List<InputStream> iss = new ArrayList<InputStream>();
+		int f = 0;
+		while (f < files.size()) {
+			iss.add(new FileInputStream(files.get(f)));
+			f++;
+		}
+		mergeAbbyyXMLResults(iss, os);
+	}
+	
+
+	/**
 	 * Merge Abbyy XML files.
 	 * 
 	 * @param files
@@ -243,7 +556,8 @@ public class FileMerger {
 	 * @throws XMLStreamException
 	 *             the XML stream exception
 	 */
-	public static void mergeAbbyyXML (List<File> files, File outFile) throws IOException, XMLStreamException {
+	public static void mergeAbbyyXML(List<File> files, File outFile)
+			throws IOException, XMLStreamException {
 		OutputStream os = new FileOutputStream(outFile);
 		List<InputStream> iss = new ArrayList<InputStream>();
 		int f = 0;
@@ -251,7 +565,10 @@ public class FileMerger {
 			iss.add(new FileInputStream(files.get(f)));
 			f++;
 		}
-		mergeAbbyyXML(iss, os);
+		if(ABBYY_VERSION_NUMBER.equals("v8")){
+			mergeAbbyyXMLv8(iss, os);
+		}else
+		mergeAbbyyXMLv10(iss, os);
 	}
 
 	/**
@@ -269,8 +586,9 @@ public class FileMerger {
 	 *             the document exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static void mergePDF (List<InputStream> iss, OutputStream os) throws IOException, DocumentException {
-		//Stolen from itext (com.lowagie.tools.concat_pdf) 
+	public static void mergePDF(List<InputStream> iss, OutputStream os)
+			throws IOException, DocumentException {
+		// Stolen from itext (com.lowagie.tools.concat_pdf)
 
 		int pageOffset = 0;
 		List<HashMap<String, Object>> master = new ArrayList<HashMap<String, Object>>();
@@ -283,10 +601,12 @@ public class FileMerger {
 			reader.consolidateNamedDestinations();
 			// we retrieve the total number of pages
 			int n = reader.getNumberOfPages();
-			List<HashMap<String, Object>> bookmarks = SimpleBookmark.getBookmark(reader);
+			List<HashMap<String, Object>> bookmarks = SimpleBookmark
+					.getBookmark(reader);
 			if (bookmarks != null) {
 				if (pageOffset != 0) {
-					SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);
+					SimpleBookmark
+							.shiftPageNumbers(bookmarks, pageOffset, null);
 				}
 				master.addAll(bookmarks);
 			}
@@ -330,7 +650,8 @@ public class FileMerger {
 	 * @throws DocumentException
 	 *             the document exception
 	 */
-	public static void mergePDF (List<File> files, File outFile) throws IOException, DocumentException {
+	public static void mergePDF(List<File> files, File outFile)
+			throws IOException, DocumentException {
 		OutputStream os = new FileOutputStream(outFile);
 		List<InputStream> iss = new ArrayList<InputStream>();
 		int f = 0;
@@ -353,11 +674,12 @@ public class FileMerger {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static void mergeTXT (List<InputStream> iss, OutputStream os) throws IOException {
+	public static void mergeTXT(List<InputStream> iss, OutputStream os)
+			throws IOException {
 		OutputStreamWriter osw = new OutputStreamWriter(os);
-		//Ascii page break dec 12, hex 0c		
+		// Ascii page break dec 12, hex 0c
 		char pb = (char) 12;
-		//Use the platform dependent separator here
+		// Use the platform dependent separator here
 		String seperator = System.getProperty("line.separator");
 
 		int f = 0;
@@ -389,7 +711,8 @@ public class FileMerger {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static void mergeTXT (List<File> files, File outFile) throws IOException {
+	public static void mergeTXT(List<File> files, File outFile)
+			throws IOException {
 		OutputStream os = new FileOutputStream(outFile);
 		List<InputStream> iss = new ArrayList<InputStream>();
 		int f = 0;
@@ -399,17 +722,15 @@ public class FileMerger {
 		}
 		mergeTXT(iss, os);
 	}
-	
 
-	public static void mergeHOCR(List<InputStream> hocrStreams, OutputStream resultStream)
- throws IOException, XMLStreamException {
+	public static void mergeHOCR(List<InputStream> hocrStreams,
+			OutputStream resultStream) throws IOException, XMLStreamException {
 
 		int fileCounter = 1;
 
 		Boolean docStarted = false;
 		Boolean htmlStarted = false;
 		Boolean insideHead = false;
-
 
 		Map<String, String> nsPrefixes = new HashMap<String, String>();
 
@@ -437,11 +758,14 @@ public class FileMerger {
 					String elementName = parser.getLocalName();
 					if (elementName.equals("head"))
 						insideHead = true;
-					boolean isFirstHtml = elementName.equals("html") && fileCounter == 1;
-					boolean isFirstBody = elementName.equals("body") && fileCounter == 1;
-						
-					
-					boolean ignoreMode = fileCounter > 1 && insideHead || elementName.equals("html") || elementName.equals("body");
+					boolean isFirstHtml = elementName.equals("html")
+							&& fileCounter == 1;
+					boolean isFirstBody = elementName.equals("body")
+							&& fileCounter == 1;
+
+					boolean ignoreMode = fileCounter > 1 && insideHead
+							|| elementName.equals("html")
+							|| elementName.equals("body");
 					if (!ignoreMode || isFirstHtml || isFirstBody) {
 						for (int i = 0; i < parser.getNamespaceCount(); i++) {
 							String prefix = parser.getNamespacePrefix(i);
@@ -459,9 +783,9 @@ public class FileMerger {
 								|| !parser.getLocalName().equalsIgnoreCase(
 										"html")) {
 							if (parser.getNamespaceURI() != null) {
-								writer.writeStartElement(parser
-										.getNamespaceURI(), parser
-										.getLocalName());
+								writer.writeStartElement(
+										parser.getNamespaceURI(),
+										parser.getLocalName());
 							} else {
 								writer.writeStartElement(parser.getLocalName());
 							}
@@ -488,13 +812,14 @@ public class FileMerger {
 												|| value.startsWith("word_") || value
 												.startsWith("xword_"))) {
 									String[] parts = value.split("_");
-									value = parts[0] + "_" + fileCounter + "_" + parts[2];
+									value = parts[0] + "_" + fileCounter + "_"
+											+ parts[2];
 
 								}
 								if (parser.getAttributeNamespace(i) != null) {
-									writer.writeAttribute(parser
-											.getAttributeNamespace(i), name,
-											value);
+									writer.writeAttribute(
+											parser.getAttributeNamespace(i),
+											name, value);
 								} else {
 									writer.writeAttribute(name, value);
 								}
@@ -505,12 +830,16 @@ public class FileMerger {
 					writer.writeCharacters(parser.getText());
 				} else if (event == XMLStreamConstants.END_ELEMENT) {
 					String elementName = parser.getLocalName();
-					boolean isLastHtml = elementName.equals("html") && fileCounter == hocrStreams.size();
-					boolean isLastBody = elementName.equals("body") && fileCounter == hocrStreams.size();
-					boolean ignoreMode = fileCounter > 1 && insideHead || elementName.equals("html") || elementName.equals("body");
+					boolean isLastHtml = elementName.equals("html")
+							&& fileCounter == hocrStreams.size();
+					boolean isLastBody = elementName.equals("body")
+							&& fileCounter == hocrStreams.size();
+					boolean ignoreMode = fileCounter > 1 && insideHead
+							|| elementName.equals("html")
+							|| elementName.equals("body");
 					if (!ignoreMode || isLastHtml || isLastBody)
 						writer.writeEndElement();
-					if (elementName.equals("head")){
+					if (elementName.equals("head")) {
 						insideHead = false;
 					}
 				} else if (event == XMLStreamConstants.END_DOCUMENT) {
@@ -531,7 +860,7 @@ public class FileMerger {
 
 	private static InputStream tidy(InputStream html) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		
+
 		Tidy tidy = new Tidy();
 		tidy.setXmlOut(true);
 		tidy.setXHTML(true);
@@ -540,16 +869,16 @@ public class FileMerger {
 		tidy.setShowWarnings(false);
 
 		tidy.parse(html, out);
-		
-		InputStream xhtmlStream = new ByteArrayInputStream(out
-				.toByteArray());
+
+		InputStream xhtmlStream = new ByteArrayInputStream(out.toByteArray());
 		return xhtmlStream;
-		
-//		System.out.println(new String(out.toByteArray()));
-//		return null;
+
+		// System.out.println(new String(out.toByteArray()));
+		// return null;
 	}
-	
-	public static void mergeHOCR (List<File> files, File outFile) throws IOException, XMLStreamException {
+
+	public static void mergeHOCR(List<File> files, File outFile)
+			throws IOException, XMLStreamException {
 		OutputStream os = new FileOutputStream(outFile);
 		List<InputStream> iss = new ArrayList<InputStream>();
 		int f = 0;
@@ -567,7 +896,7 @@ public class FileMerger {
 	 *            the {@link OCRFormat} to check
 	 * @return true if {@link OCRFormat} can be segmented, false otherwise
 	 */
-	public static Boolean isSegmentable (OCRFormat f) {
+	public static Boolean isSegmentable(OCRFormat f) {
 		if (SEGMENTABLE_FORMATS.contains(f)) {
 			return true;
 		}
@@ -582,7 +911,7 @@ public class FileMerger {
 	 * @return true if the whole Set of{@link OCRFormat}'scan be segmented,
 	 *         false otherwise
 	 */
-	public static Boolean isSegmentable (Set<OCRFormat> sf) {
+	public static Boolean isSegmentable(Set<OCRFormat> sf) {
 		for (OCRFormat f : sf) {
 			if (!isSegmentable(f)) {
 				return false;
@@ -607,9 +936,11 @@ public class FileMerger {
 	 * @see #mergePDF(List, File)
 	 * @see #mergeTXT(List, File)
 	 */
-	public static void mergeFiles (OCRFormat format, List<File> files, File outFile) throws MergeException {
+	public static void mergeFiles(OCRFormat format, List<File> files,
+			File outFile) throws MergeException {
 		try {
-			fileMergers.get(format).invoke(null, new Object[] { files, outFile });
+			fileMergers.get(format).invoke(null,
+					new Object[] { files, outFile });
 		} catch (Exception e) {
 			throw new MergeException(e);
 		}
@@ -632,7 +963,8 @@ public class FileMerger {
 	 * @see #mergePDF(List, OutputStream)
 	 * @see #mergeTXT(List, OutputStream)
 	 */
-	public static void mergeStreams (OCRFormat format, List<InputStream> iss, OutputStream os) throws MergeException {
+	public static void mergeStreams(OCRFormat format, List<InputStream> iss,
+			OutputStream os) throws MergeException {
 		try {
 			streamMergers.get(format).invoke(null, new Object[] { iss, os });
 		} catch (Exception e) {
