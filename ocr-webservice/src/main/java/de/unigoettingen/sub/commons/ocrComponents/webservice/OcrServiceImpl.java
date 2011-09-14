@@ -38,9 +38,13 @@ import java.util.Properties;
 import java.util.Set;
 
 
+import javax.annotation.Resource;
 import javax.jws.WebService;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.io.FileUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
@@ -68,6 +72,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 
 @WebService(endpointInterface = "de.unigoettingen.sub.commons.ocrComponents.webservice.OcrService")
 public class OcrServiceImpl implements OcrService {
+	@Resource
+	private WebServiceContext wsContext;
 	
 	private final String APP_NAME = "ocr-webservice";
 	
@@ -196,7 +202,7 @@ public class OcrServiceImpl implements OcrService {
 			aoo.setUri(uri);
 			OUTPUT_DEFINITIONS.put(ocrformat, aoo);
 			aop.addOutput(ocrformat, aoo);
-			URL whatismyip = null;
+			/*URL whatismyip = null;
 			try {
 				whatismyip = new URL("http://automation.whatismyip.com/n09230945.asp");
 				BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -208,9 +214,11 @@ public class OcrServiceImpl implements OcrService {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			
-			
+			}*/
+			  MessageContext mc = wsContext.getMessageContext();
+			  URI url = (URI)mc.get("javax.xml.ws.wsdl.description");
+			  String hostname = url.getHost();
+			  WEBSERVER_HOSTNAME = "http://"+hostname+"/"+APP_NAME+"/";
 			/*try {
 				InetAddress inet = InetAddress.getLocalHost(); 				         
 				WEBSERVER_HOSTNAME = "http://"+inet.getCanonicalHostName()+"/"+APP_NAME+"/";
