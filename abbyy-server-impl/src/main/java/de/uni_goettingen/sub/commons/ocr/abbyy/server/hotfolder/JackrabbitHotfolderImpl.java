@@ -242,10 +242,11 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		Integer responseCode;
 		try {
 			responseCode = client.executeMethod(method);
+			logger.trace("Response code in executeMethod: "+ responseCode);
 		} finally {
 			method.releaseConnection();
 		}
-		logger.trace("Response code: " + responseCode);
+//		logger.trace("Response code: " + responseCode);
 		if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
 			throw new IllegalStateException("Got HTTP Code " + responseCode
 					+ " for " + method.getURI());
