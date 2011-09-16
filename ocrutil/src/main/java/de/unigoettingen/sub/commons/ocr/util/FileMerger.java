@@ -139,7 +139,7 @@ public class FileMerger {
 	 * @throws XMLStreamException
 	 *             the xML stream exception
 	 */
-	public static void mergeAbbyyXMLv8(List<InputStream> iss, OutputStream os)
+	public static void mergeABByyXMLv8(List<InputStream> iss, OutputStream os)
 			throws XMLStreamException {
 
 		Integer pageCount = iss.size();
@@ -258,7 +258,7 @@ public class FileMerger {
 	 * @throws XMLStreamException
 	 *             the xML stream exception
 	 */
-	public static void mergeAbbyyXMLv10(List<InputStream> iss, OutputStream os)
+	public static void mergeABByyXMLv10(List<InputStream> iss, OutputStream os)
 			throws XMLStreamException {
 		Set<String> ignoredElements = new HashSet<String>();
 		ignoredElements.add("documentData");
@@ -564,13 +564,30 @@ public class FileMerger {
 		while (f < files.size()) {
 			iss.add(new FileInputStream(files.get(f)));
 			f++;
-		}
-		if(ABBYY_VERSION_NUMBER.equals("v8")){
-			mergeAbbyyXMLv8(iss, os);
-		}else
-		mergeAbbyyXMLv10(iss, os);
+		}	
+			mergeAbbyyXML(iss, os);	
 	}
-
+	
+	/**
+	 * Merge Abbyy XML files.
+	 * 
+	 * @param iss
+	 *            the InputStream's to merge
+	 * @param os
+	 *            the result OutputStream to write to
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws XMLStreamException
+	 *             the XML stream exception
+	 */
+	public static void mergeAbbyyXML(List<InputStream> iss,
+			OutputStream os) throws XMLStreamException {
+		if(ABBYY_VERSION_NUMBER.equals("v8")){
+			mergeABByyXMLv8(iss, os);
+		}else
+		mergeABByyXMLv10(iss, os);
+	}
+	
 	/**
 	 * Merge PDF Streams. This operates directly on Streams and should be
 	 * suitable for processing over WebDAV for example. The iText library is
