@@ -80,25 +80,32 @@ public class OcrServiceImpl implements OcrService {
 	/** The logger. */
 	protected static Logger logger = LoggerFactory
 			.getLogger(OcrServiceImpl.class);
-	/** The engine. */
+		
+	/** The engine. *//*
 	protected static OCREngine engine;
 	protected static String WEBSERVER_PATH,WEBSERVER_HOSTNAME;
 	protected static String LOCAL_PATH;
-	/** The language. */
+	*//** The language. *//*
 	protected static Set<Locale> langs;
-	/** The OUTPU t_ definitions. */
+	*//** The OUTPU t_ definitions. *//*
 	protected static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 	private String parent, jobName;
 	//private String FILE_SEPARATOR = System.getProperty("file.separator");
 	// The duration.
-	private Long duration = 0L;
+	private Long duration = 0L;*/
 	
-	ByUrlResponseType byUrlResponseType;
+	//ByUrlResponseType byUrlResponseType;
 
 	
 	@Override
 	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType part1) {
-		byUrlResponseType = new ByUrlResponseType();
+		ByUrlResponseType byUrlResponseType = new ByUrlResponseType();
+		OCREngine engine;
+		String WEBSERVER_PATH,WEBSERVER_HOSTNAME,LOCAL_PATH, parent, jobName;
+		Set<Locale> langs;
+		HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
+		Long duration = 0L;
+		
 		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
 				"contentWebservice.xml"));
 		OCREngineFactory ocrEngineFactory = (OCREngineFactory) factory
@@ -138,7 +145,7 @@ public class OcrServiceImpl implements OcrService {
 
 			String error = "ERROR: " + part1.getInputUrl()
 					+ " is null or No URL or no Image from type tif";
-			return byURLresponse(duration, error);
+			return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
 		
 		}else{
 			
@@ -151,14 +158,14 @@ public class OcrServiceImpl implements OcrService {
 			} catch (MalformedURLException e) {
 				logger.error("URL is Mal formed: " + part1.getInputUrl());
 				String error = "URL is Mal formed: " + part1.getInputUrl();
-				return byURLresponse(duration, error);
+				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
 			}
 
 			urlParts = inputuri.toString().split("/");
 			parent = urlParts[urlParts.length - 2];
 			jobName = urlParts[urlParts.length - 1].replace(".tif", "");
 			//is a random number after jobName
-			jobName = jobName + "_" + (int) ((Math.random()*((int) System.currentTimeMillis()))+1);
+			jobName = jobName + "_" + Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
 			File file = new File(LOCAL_PATH + parent + "/" + jobName
 					+ "/" + urlParts[urlParts.length - 1]);
 
@@ -168,7 +175,7 @@ public class OcrServiceImpl implements OcrService {
 				logger.error("ERROR CAN NOT COPY URL To File");
 				String error = "ERROR CAN NOT COPY URL: " + part1.getInputUrl()
 						+ " To Local File";
-				return byURLresponse(duration, error);
+				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
 			}
 
 			aop.setName(jobName);
@@ -196,7 +203,7 @@ public class OcrServiceImpl implements OcrService {
 				+ parent + "/" + jobName + "."
 				+ ocrformat.toString().toLowerCase();
 				file.delete();
-				return byURLresponse(duration, error);
+				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
 			}
 			// logger.debug("output Location " + uri.toString());
 			aoo.setUri(uri);
@@ -263,7 +270,7 @@ public class OcrServiceImpl implements OcrService {
 			if( !f.exists()){
 				logger.error("ERROR File CAN NOT Find: "+ f.toString());
 				String error = "ERROR File CAN NOT Find: "+ f.toString();
-				return byURLresponse(duration, error);
+				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
 			}
 			
 			byUrlResponseType.setMessage("Process finished successfully after " + duration + " milliseconds.");
@@ -297,15 +304,14 @@ public class OcrServiceImpl implements OcrService {
 	}
 
 	
-	ByUrlResponseType byURLresponse(Long duration, String error) {
-		byUrlResponseType.setMessage("Process finished unsuccessfully after "
-				+ duration + " milliseconds.");
+	ByUrlResponseType byURLresponse(String webserverPath, String error, ByUrlResponseType byUrlResponseType) {
+		byUrlResponseType.setMessage("Process finished unsuccessfully ");
 		byUrlResponseType.setOutputUrl("Output Url: ...");
 		byUrlResponseType.setProcessingLog(error);
-		byUrlResponseType.setProcessingUnit(WEBSERVER_PATH);
+		byUrlResponseType.setProcessingUnit(webserverPath);
 		byUrlResponseType.setReturncode(1);
 		byUrlResponseType.setSuccess(false);
-		byUrlResponseType.setToolProcessingTime(duration);
+		byUrlResponseType.setToolProcessingTime(0L);
 		return byUrlResponseType;
 	}
 }
