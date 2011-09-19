@@ -81,27 +81,13 @@ public class OcrServiceImpl implements OcrService {
 	protected static Logger logger = LoggerFactory
 			.getLogger(OcrServiceImpl.class);
 		
-	/** The engine. *//*
-	protected static OCREngine engine;
-	protected static String WEBSERVER_PATH,WEBSERVER_HOSTNAME;
-	protected static String LOCAL_PATH;
-	*//** The language. *//*
-	protected static Set<Locale> langs;
-	*//** The OUTPU t_ definitions. *//*
-	protected static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
-	private String parent, jobName;
-	//private String FILE_SEPARATOR = System.getProperty("file.separator");
-	// The duration.
-	private Long duration = 0L;*/
-	
-	//ByUrlResponseType byUrlResponseType;
-
 	
 	@Override
 	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType part1) {
 		ByUrlResponseType byUrlResponseType = new ByUrlResponseType();
 		OCREngine engine;
-		String WEBSERVER_PATH,WEBSERVER_HOSTNAME,LOCAL_PATH, parent, jobName;
+		String WEBSERVER_PATH,WEBSERVER_HOSTNAME,LOCAL_PATH, jobName;
+		int parent;
 		Set<Locale> langs;
 		HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 		Long duration = 0L;
@@ -162,10 +148,11 @@ public class OcrServiceImpl implements OcrService {
 			}
 
 			urlParts = inputuri.toString().split("/");
-			parent = urlParts[urlParts.length - 2];
+	//		parent = urlParts[urlParts.length - 2];
 			jobName = urlParts[urlParts.length - 1].replace(".tif", "");
+			parent = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
 			//is a random number after jobName
-			jobName = jobName + "_" + Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
+			jobName = jobName + "_" + parent;
 			File file = new File(LOCAL_PATH + parent + "/" + jobName
 					+ "/" + urlParts[urlParts.length - 1]);
 
@@ -222,10 +209,13 @@ public class OcrServiceImpl implements OcrService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}*/
-			  MessageContext mc = wsContext.getMessageContext();
-			  URI url = (URI)mc.get("javax.xml.ws.wsdl.description");
-			  String hostname = url.getHost();
-			  WEBSERVER_HOSTNAME = "http://"+hostname+"/"+APP_NAME+"/";
+			 if(properties.getProperty("hostname").equals("no") || properties.getProperty("hostname").equals(null)){
+				  MessageContext mc = wsContext.getMessageContext();
+				  URI url = (URI)mc.get("javax.xml.ws.wsdl.description");
+				  String hostname = url.getHost();
+				  WEBSERVER_HOSTNAME = "http://"+hostname+"/"+APP_NAME+"/"; 
+			  }else WEBSERVER_HOSTNAME = properties.getProperty("hostname");
+			  
 			/*try {
 				InetAddress inet = InetAddress.getLocalHost(); 				         
 				WEBSERVER_HOSTNAME = "http://"+inet.getCanonicalHostName()+"/"+APP_NAME+"/";
