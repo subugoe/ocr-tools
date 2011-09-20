@@ -264,23 +264,23 @@ public class OcrServiceImpl implements OcrService {
 			}
 			
 			byUrlResponseType.setMessage("Process finished successfully after " + duration + " milliseconds.");
-			byUrlResponseType.setOutputUrl(WEBSERVER_HOSTNAME + randomNumber + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
+			byUrlResponseType.setOutputUrl(WEBSERVER_HOSTNAME + "temp" + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
 			byUrlResponseType.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
-												"Using service: IMPACT Abbyy Fine Reader 8.0 Service "+ "\n" +
-												"Parameter processingUnit: "+ WEBSERVER_HOSTNAME + "\n" +
-												"URL of input image: "+ part1.getInputUrl()+ "\n" +
-												"Wrote file " + file.toString()+  "\n" +
-												"OUTFORMAT substitution variable value: "+ocrformat.toString()+ "\n" +
-												"OUTFILE substitution variable value: " + f.getAbsolutePath()+ "\n" +
-												"LANGUAGES substitution variable value: "+ langs.toString() + "\n" +
-												"INFILE substitution variable value: "+ file.toString()+  "\n" +
-												"INTEXTTYPE substitution variable value: "+ part1.getTextType().value()+ "\n" +
+												"Using service: OcrServiceImplService. "+ "\n" +
+												"Parameter processingUnit: "+ WEBSERVER_HOSTNAME + ".\n" +
+												"URL of input image: "+ part1.getInputUrl()+ ".\n" +
+												"Wrote file " + file.toString()+  ".\n" +
+												"OUTFORMAT substitution variable value: "+ocrformat.toString()+ ".\n" +
+												"OUTFILE substitution variable value: " + f.getAbsolutePath()+ ".\n" +
+												"LANGUAGES substitution variable value: "+ langs.toString() + ".\n" +
+												"INFILE substitution variable value: "+ file.toString()+  ".\n" +
+												"INTEXTTYPE substitution variable value: "+ part1.getTextType().value()+ ".\n" +
 												"Process finished successfully with code 0."+ "\n" +
 												"Output file has been created successfully.."+ "\n" +
 												"Output Url: " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
 												"Output Url-Abbyy-Result : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ ".xml.result.xml" + "\n" +
 												"Output Url-Summary-File : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "-textMD.xml" + "\n" + 
-												"Process finished successfully after " + duration + " milliseconds."
+												"Process finished successfully after " + duration + " milliseconds.."
 												);
 			
 			byUrlResponseType.setProcessingUnit(WEBSERVER_HOSTNAME);
