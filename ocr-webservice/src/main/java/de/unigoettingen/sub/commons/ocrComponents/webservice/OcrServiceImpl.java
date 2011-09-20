@@ -87,7 +87,7 @@ public class OcrServiceImpl implements OcrService {
 		ByUrlResponseType byUrlResponseType = new ByUrlResponseType();
 		OCREngine engine;
 		String WEBSERVER_PATH,WEBSERVER_HOSTNAME,LOCAL_PATH, jobName;
-		int parent;
+		int randomNumber;
 		Set<Locale> langs;
 		HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 		Long duration = 0L;
@@ -150,10 +150,10 @@ public class OcrServiceImpl implements OcrService {
 			urlParts = inputuri.toString().split("/");
 	//		parent = urlParts[urlParts.length - 2];
 			jobName = urlParts[urlParts.length - 1].replace(".tif", "");
-			parent = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
+			randomNumber = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
 			//is a random number after jobName
-			jobName = jobName + "_" + parent;
-			File file = new File(LOCAL_PATH + parent + "/" + jobName
+			jobName = "OcrServiceImplService_outputUrl"+ "_" + randomNumber;
+			File file = new File(LOCAL_PATH + randomNumber + "/" + jobName
 					+ "/" + urlParts[urlParts.length - 1]);
 
 			try {
@@ -179,15 +179,15 @@ public class OcrServiceImpl implements OcrService {
 			URI uri = null;
 			
 			try {
-				uri = new URI(new File(WEBSERVER_PATH).toURI()+ "/" + parent
+				uri = new URI(new File(WEBSERVER_PATH).toURI()+ "/" + "temp"
 						+ "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
 			} catch (URISyntaxException e) {
 				logger.error("URL is Mal formed: " + WEBSERVER_PATH 
-						+ parent + "/" + jobName + "."
+						+ "temp" + "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
 				String error = "URL is Mal formed: " + WEBSERVER_PATH 
-				+ parent + "/" + jobName + "."
+				+ "temp" + "/" + jobName + "."
 				+ ocrformat.toString().toLowerCase();
 				file.delete();
 				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
@@ -249,12 +249,12 @@ public class OcrServiceImpl implements OcrService {
 			
 			try {
 				FileUtils.deleteDirectory(file.getParentFile());
-				FileUtils.deleteDirectory(new File(LOCAL_PATH + parent));
+				FileUtils.deleteDirectory(new File(LOCAL_PATH + randomNumber));
 			} catch (IOException e) {
 				logger.error("ERROR CAN NOT deleteDirectory");
 			}
 
-			File f = new File(WEBSERVER_PATH + parent + "/" + jobName
+			File f = new File(WEBSERVER_PATH + "temp" + "/" + jobName
 					+ "." + ocrformat.toString().toLowerCase());
 			
 			if( !f.exists()){
@@ -264,7 +264,7 @@ public class OcrServiceImpl implements OcrService {
 			}
 			
 			byUrlResponseType.setMessage("Process finished successfully after " + duration + " milliseconds.");
-			byUrlResponseType.setOutputUrl(WEBSERVER_HOSTNAME + parent + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
+			byUrlResponseType.setOutputUrl(WEBSERVER_HOSTNAME + randomNumber + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
 			byUrlResponseType.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
 												"Using service: IMPACT Abbyy Fine Reader 8.0 Service "+ "\n" +
 												"Parameter processingUnit: "+ WEBSERVER_HOSTNAME + "\n" +
@@ -277,9 +277,9 @@ public class OcrServiceImpl implements OcrService {
 												"INTEXTTYPE substitution variable value: "+ part1.getTextType().value()+ "\n" +
 												"Process finished successfully with code 0."+ "\n" +
 												"Output file has been created successfully.."+ "\n" +
-												"Output Url: " + WEBSERVER_HOSTNAME + parent + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
-												"Output Url-Abbyy-Result : " + WEBSERVER_HOSTNAME + parent + "/" + jobName	+ ".xml.result.xml" + "\n" +
-												"Output Url-Summary-File : " + WEBSERVER_HOSTNAME + parent + "/" + jobName	+ "-textMD.xml" + "\n" + 
+												"Output Url: " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
+												"Output Url-Abbyy-Result : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ ".xml.result.xml" + "\n" +
+												"Output Url-Summary-File : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "-textMD.xml" + "\n" + 
 												"Process finished successfully after " + duration + " milliseconds."
 												);
 			
