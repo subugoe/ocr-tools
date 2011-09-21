@@ -274,9 +274,9 @@ public class OcrServiceImpl implements OcrService {
 												"INTEXTTYPE substitution variable value: "+ part1.getTextType().value()+ ".\n" +
 												"Process finished successfully with code 0."+ "\n" +
 												"Output file has been created successfully.."+ "\n" +
-												"Output Url: " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ "\n" +
-												"Output Url-Abbyy-Result : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ ".xml.result.xml" + "\n" +
-												"Output Url-Summary-File : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "-textMD.xml" + "\n" + 
+												"Output Url: " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ ".\n" +
+												"Output Url-Abbyy-Result : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ ".xml.result.xml" + ".\n" +
+												"Output Url-Summary-File : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "-textMD.xml" + ".\n" + 
 												"Process finished successfully after " + duration + " milliseconds.."
 												);
 			
