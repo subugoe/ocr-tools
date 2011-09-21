@@ -44,7 +44,7 @@
     
     <servlet-mapping>
         <servlet-name>default</servlet-name>
-        <url-pattern>/testdata/*</url-pattern>
+        <url-pattern>/temp/*</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>
