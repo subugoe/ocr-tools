@@ -87,8 +87,8 @@ public class AbbyyServerOCRTests {
 	@Before
 	public void init () throws Exception {
 		logger.debug("Starting Test");
-		filefrom = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile()+ "/results");
-		HOTFOLDER_TEST = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile()+ "/HOTFOLDER_TEST");
+		filefrom = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile()+ "/results");
+		HOTFOLDER_TEST = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile()+ "/HOTFOLDER_TEST");
 		HOTFOLDER_TEST.mkdir();
 	    server = new Server(8090);
 		ServletHolder davServletHolder = new ServletHolder(new DAVServlet());
@@ -136,13 +136,13 @@ public class AbbyyServerOCRTests {
 
 	@Test
 	public void copyToHotfolder() throws IOException, URISyntaxException{
-		for (String book : AbbyyOCRProcessTest.TEST_FOLDERS){
+		for (String book : AbbyyOCRProcessTest.testFolders){
 			for (OCRFormat f: AbbyyTicketTest.OUTPUT_DEFINITIONS.keySet()){
-				filefrom = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile()+ "/results"+ "/" + book + "." + f.toString().toLowerCase());
+				filefrom = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile()+ "/results"+ "/" + book + "." + f.toString().toLowerCase());
 				URI from = filefrom.toURI();
 				imp.copyFile(from, new URI("http://localhost:8090/output"+ "/" + book + "." + f.toString().toLowerCase()));
 			}
-			filefrom = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile()+ "/results"+ "/" + book + ".xml.result.xml" );
+			filefrom = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile()+ "/results"+ "/" + book + ".xml.result.xml" );
 			imp.copyFile(filefrom.toURI(), new URI("http://localhost:8090/output"+ "/" + book + ".xml.result.xml"));
 		}
 		
@@ -152,8 +152,8 @@ public class AbbyyServerOCRTests {
 	public void copyTestFilesToServer () throws Exception {
 		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
 		//ase.setHotfolder(hotfolder);
-		for (String book : AbbyyOCRProcessTest.TEST_FOLDERS) {
-			File testDir = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + "/hotfolder/" + HotfolderTest.INPUT + "/" + book);
+		for (String book : AbbyyOCRProcessTest.testFolders) {
+			File testDir = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile() + "/hotfolder/" + HotfolderTest.INPUT + "/" + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
 		//	List<File> imageDirs = OCRUtil.getTargetDirectories(testDir,extension);
 			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
@@ -172,7 +172,7 @@ public class AbbyyServerOCRTests {
 			}
 			//aop.setOcrOutputs();
 			//TODO: set the inout folder to new File(apacheVFSHotfolderImpl.getAbsolutePath() + "/" + INPUT_NAME);
-			File testTicket = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + "/"
+			File testTicket = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile() + "/"
 					+ HotfolderTest.INPUT
 					+ "/"
 					+ book

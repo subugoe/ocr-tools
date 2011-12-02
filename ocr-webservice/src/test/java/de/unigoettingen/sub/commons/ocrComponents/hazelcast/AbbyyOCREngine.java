@@ -102,7 +102,7 @@ public class AbbyyOCREngine {
 		} catch (InterruptedException e) {
 			logger.error("Got a problem with thread pool: ", e);
 		}
-		/*ISet <AbbyyOCRProcess> set = h.getSet("default");
+		/*ISet <AbbyyOCRProcess> set = hazel.getSet("default");
 		if(set.size() == 0) Hazelcast.shutdownAll();*/
 		System.out.println("************"+h.getCluster().getLocalMember());
 		h.shutdown();
