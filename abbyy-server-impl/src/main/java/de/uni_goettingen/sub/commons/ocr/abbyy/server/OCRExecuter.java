@@ -18,15 +18,11 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
-
-
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -38,11 +34,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ISet;
+import com.hazelcast.core.ItemListener;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
-
-
-
 
 /**
  * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
@@ -56,17 +51,14 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
  * @author abergna
  * @author cmahnke
  */
-public class OCRExecuter extends ThreadPoolExecutor implements Executor {
-	// TODO: There is a bug in here currently only one process per time is
-	// started
-	// The Constant logger.
+public class OCRExecuter extends ThreadPoolExecutor implements Executor,
+		ItemListener {
 	public final static Logger logger = LoggerFactory
 			.getLogger(OCRExecuter.class);
 
-	/** The max number of threads. */
 	protected Integer maxThreads;
 
-	/** The ispaused. paused the execution if true */
+	/** paused the execution if true */
 	private Boolean isPaused = false;
 
 	/*
@@ -83,16 +75,14 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 */
 	private Condition unpaused = pauseLock.newCondition();
 
-	//Comparator 
 	protected static Comparator<AbbyyOCRProcess> ORDER;
-	
-	//Hazelcast
+
 	protected HazelcastInstance h;
-	
-	// PriorityQueue for AbbyyOCRProcess
-	protected PriorityQueue<AbbyyOCRProcess> q ;
-	
-	protected Set <AbbyyOCRProcess> set; 
+
+	protected PriorityQueue<AbbyyOCRProcess> q;
+
+	protected ISet<AbbyyOCRProcess> queuedProcesses;
+	protected ISet<AbbyyOCRProcess> runningProcesses;
 
 	/**
 	 * hotfolder is used to access any file system like backend. This can be
@@ -122,7 +112,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 *            before they are executed. This queue will hold only the
 	 *            Runnable tasks submitted by the execute method.
 	 */
-	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder, HazelcastInstance h, ConfigParser config) {
+	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder,
+			HazelcastInstance h, ConfigParser config) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
 		this.config = config;
@@ -131,7 +122,12 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		this.h = h;
 		ORDER = new ItemComparator();
 		q = new PriorityQueue<AbbyyOCRProcess>(100, ORDER);
-		set = h.getSet("ocrProcess");
+
+		queuedProcesses = h.getSet("queued");
+		queuedProcesses.addItemListener(this, true);
+
+		runningProcesses = h.getSet("running");
+		runningProcesses.addItemListener(this, true);
 	}
 
 	/*
@@ -146,17 +142,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		super.beforeExecute(t, r);
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
-			set.add(abbyyOCRProcess);
-			q.clear();
-			q.addAll(set);
-			AbbyyOCRProcess abbyy = q.poll();
-			while (!abbyy.getiD_Process().equals(abbyyOCRProcess.getiD_Process())) {
-				q.clear();
-				q.addAll(set);
-				abbyy = q.poll();
-			}
-			set.remove(abbyyOCRProcess);
-			
 			try {
 				getFileSize(abbyyOCRProcess);
 			} catch (IllegalStateException e1) {
@@ -165,13 +150,40 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			} catch (IOException e1) {
 				logger.error("Could not execute MultiStatus method", e1);
 			} catch (URISyntaxException e1) {
-				logger.error("Error seting URI for OCR Engine", e1);
+				logger.error("Error setting URI for OCR Engine", e1);
+			}
+
+			waitIfPaused(t);
+
+			queuedProcesses.add(abbyyOCRProcess);
+			while (true) {
+				q.clear();
+				q.addAll(queuedProcesses);
+				AbbyyOCRProcess head = q.poll();
+				boolean currentIsHead = head.getiD_Process().equals(
+						abbyyOCRProcess.getiD_Process());
+
+				int maxProcesses = maxThreads;
+				int actualProcesses = runningProcesses.size();
+				boolean slotsFree = actualProcesses < maxProcesses;
+
+				if (slotsFree && currentIsHead) {
+					queuedProcesses.remove(abbyyOCRProcess);
+					runningProcesses.add(abbyyOCRProcess);
+					break;
+				} else {
+					pause();
+				}
+				waitIfPaused(t);
 			}
 
 		} else {
 			throw new IllegalStateException("Not a AbbyyOCRProcess object");
 		}
 
+	}
+
+	private void waitIfPaused(Thread t) {
 		pauseLock.lock();
 		try {
 			while (isPaused) {
@@ -182,6 +194,20 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		} finally {
 			pauseLock.unlock();
 		}
+
+	}
+
+	// if an item is removed from a Hazelcast set
+	@Override
+	public void itemRemoved(Object arg0) {
+		resume();
+
+	}
+
+	@Override
+	public void itemAdded(Object arg0) {
+		// don't care
+
 	}
 
 	/*
@@ -196,8 +222,16 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		super.afterExecute(r, e);
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
+
+			// hazelcast does not use the custom equals method, so you cannot
+			// delete abbyyOcrProcess directly
+			for (AbbyyOCRProcess ab : runningProcesses) {
+				if (ab.equals(abbyyOCRProcess)) {
+					runningProcesses.remove(ab);
+				}
+			}
 			try {
-				getFileSize(abbyyOCRProcess);				
+				getFileSize(abbyyOCRProcess);
 			} catch (IllegalStateException e1) {
 				logger.debug("wait because :", e1);
 				pause();
@@ -243,30 +277,24 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 * @param p
 	 *            represent the process
 	 * @return the Calculate size of the OCRImages representing this process
-	 * @throws URISyntaxException 
-	 * @throws IOException 
+	 * @throws URISyntaxException
+	 * @throws IOException
 	 */
-	protected void getFileSize(AbbyyOCRProcess p) throws IOException, URISyntaxException, IllegalStateException {
+	protected void getFileSize(AbbyyOCRProcess p) throws IOException,
+			URISyntaxException, IllegalStateException {
 		p.checkServerState();
 	}
-	
-	
+
 	protected void noSplitProcess(AbbyyOCRProcess p) {
 		super.execute(p);
 	}
+
 	@Override
 	public void execute(Runnable process) {
-		List<AbbyyOCRProcess> sp = ((AbbyyOCRProcess)process).split();
-		for (Runnable p: sp){
+		List<AbbyyOCRProcess> sp = ((AbbyyOCRProcess) process).split();
+		for (Runnable p : sp) {
 			super.execute(p);
-		}		
+		}
 	}
-	
+
 }
-
-
-
-
-
-
-

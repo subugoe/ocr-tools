@@ -35,8 +35,8 @@ public class AbbyyServerOCR implements Runnable  {
 		//ase.setHotfolder(hotfolder);
 		
 
-		for (String book : AbbyyOCRProcessTest.TEST_FOLDERS) {
-			File testDir = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + "/hotfolder/" + HotfolderTest.INPUT + "/" + book);
+		for (String book : AbbyyOCRProcessTest.testFolders) {
+			File testDir = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile() + "/hotfolder/" + HotfolderTest.INPUT + "/" + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
 		//	List<File> imageDirs = OCRUtil.getTargetDirectories(testDir,extension);
 			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
@@ -54,7 +54,7 @@ public class AbbyyServerOCR implements Runnable  {
 			}
 			//aop.setOcrOutputs();
 			//TODO: set the inout folder to new File(apacheVFSHotfolderImpl.getAbsolutePath() + "/" + INPUT_NAME);
-			File testTicket = new File(AbbyyOCRProcessTest.BASEFOLDER_FILE.getAbsoluteFile() + "/"
+			File testTicket = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile() + "/"
 					+ HotfolderTest.INPUT
 					+ "/"
 					+ book

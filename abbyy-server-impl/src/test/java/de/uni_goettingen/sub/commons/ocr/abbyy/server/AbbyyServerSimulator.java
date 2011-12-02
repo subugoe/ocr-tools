@@ -35,7 +35,6 @@ import de.unigoettingen.sub.commons.util.file.FileUtils;
 
 public class AbbyyServerSimulator extends Thread {
 	protected File hotfolder, inputHotfolder, outputHotfolder, errorHotfolder, expected, errorExpected, outputExpected;
-	public static String HOTFOLDER_NAME = "apacheVFSHotfolderImpl";
 	public static String INPUT_NAME = "input";
 	public static String OUTPUT_NAME = "output";
 	public static String ERROR_NAME = "error";

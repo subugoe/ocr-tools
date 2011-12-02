@@ -60,7 +60,7 @@ public class JackrabbitHotfolderImpTest {
 	XmlResult xm ;
 	protected static DocumentDocument documentDocument;
 	Document doc;
-	//private static File BASEFOLDER_FILE;
+	//private static File resources;
 	static JackrabbitHotfolderImpl imp;
 	static File WEBDAV;
 	final static Logger logger = LoggerFactory
@@ -123,12 +123,11 @@ public class JackrabbitHotfolderImpTest {
 	public void testOpenInputStream() throws Exception {
 		assertTrue(imp.exists(new URI("http://localhost:8090/xmlExport.xml")));
 		for (int i = 1 ; i <= 30 ; i++){
-			System.out.println(i);
 			isResult = imp.openInputStream(new URI("http://localhost:8090/xmlExport"+ i + ".xml"));
 			assertTrue(isResult != null);
 			documentDocument = DocumentDocument.Factory.parse(isResult);
 			doc = documentDocument.getDocument();
-		    System.out.println(doc.toString());
+		    
 		    isResult = null;
 		}	
 	}
@@ -150,13 +149,15 @@ public class JackrabbitHotfolderImpTest {
 		
 		imp.deleteIfExists(new URI("http://localhost:8090/from/FromTO"));
 		assertFalse(imp.exists(new URI("http://localhost:8090/from/FromTO")));
+		imp.deleteIfExists(new URI("http://localhost:8090/from"));
+		assertFalse(imp.exists(new URI("http://localhost:8090/from")));
 	}
 	
 	
 	@After
 	public void destroy() throws Exception {
 		server.stop();
-		System.out.println("Server Stopped");
+		
 	}
 
 	public static File getBaseFolderAsFile() {

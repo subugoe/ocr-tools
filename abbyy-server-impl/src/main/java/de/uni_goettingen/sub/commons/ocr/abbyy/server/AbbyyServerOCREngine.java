@@ -59,19 +59,18 @@ import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
 public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		OCREngine {
-	public static final String name = "0.5";
-	public static final String version = AbbyyServerOCREngine.class
+	public static final String version = "0.5";
+	public static final String name = AbbyyServerOCREngine.class
 			.getSimpleName();
 	
-	// The max threads.
+	// max running ocr processes in thread pool
 	protected static Integer maxThreads;
-	// protected ExecutorService pool = new OCRExecuter(maxThreads);
-	// The done date.
+
 	protected Long startTimeForProcess = null;
 	protected AbbyySerializerTextMD abbyySerializerTextMD;
-	// The done date.
+	
 	protected Long endTimeForProcess = null;
-	/** The Constant logger. */
+	
 	final static Logger logger = LoggerFactory
 			.getLogger(AbbyyServerOCREngine.class);
 
@@ -83,20 +82,17 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	/** single instance of AbbyyServerOCREngine. */
 	private static AbbyyServerOCREngine _instance, newInstance;
 
-	// The check server state.
 	protected static Boolean checkServerState = true;
 	protected static Boolean rest = false;
 
 	// OCR Processes
 	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
 
-//	protected HazelcastInstance h = Hazelcast.newHazelcastInstance(null);
-	protected HazelcastInstance h;
+	protected HazelcastInstance hazel;
+	
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
-	 * @throws FileSystemException
-	 *             the file system exception
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
@@ -114,15 +110,16 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	protected void start() {
 		started = true;
-		h = Hazelcast.newHazelcastInstance(null);
-		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder, h, config);
+		hazel = Hazelcast.newHazelcastInstance(null);
+		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder, hazel, config);
 
-		for (AbbyyOCRProcess p : processes) {
-			p.setTime(new Date().getTime());
-			if(!p.getSplitProcess()){
-				((OCRExecuter) pool).noSplitProcess(p);
-			}else pool.execute(p);
-				
+		for (AbbyyOCRProcess process : processes) {
+			process.setTime(new Date().getTime());
+			if(!process.getSplitProcess()){
+				((OCRExecuter) pool).noSplitProcess(process);
+			}else {
+				pool.execute(process);
+			}
 		}
 
 		pool.shutdown();
@@ -131,7 +128,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		} catch (InterruptedException e) {
 			logger.error("Got a problem with thread pool: ", e);
 		}
-		h.shutdown();
+		hazel.shutdown();
 	}
 	
 	
@@ -239,10 +236,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	public Observable addOcrProcess(OCRProcess process) {
 		// TODO: Check if this instanceof works as expected
 		if (process instanceof AbbyyOCRProcess) {
-			/*List<AbbyyOCRProcess> sp = ((AbbyyOCRProcess)process).split();
-			for (AbbyyOCRProcess acp : sp){
-				processes.add(acp);
-			}*/
      		processes.add((AbbyyOCRProcess) process);
 		} else {
 			processes.add(new AbbyyOCRProcess(process, config));
@@ -256,35 +249,35 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * @param directory
 	 *            the directory
 	 * @param extension
-	 *            the extension
+	 *            only directories containing files of this type will be processed
 	 * @return the abbyy ocr process
 	 */
 	public static AbbyyOCRProcess createProcessFromDir(File directory,
 			String extension) {
-		AbbyyOCRProcess ap = new AbbyyOCRProcess(config);
+		AbbyyOCRProcess process = new AbbyyOCRProcess(config);
 		List<File> imageDirs = OCRUtil.getTargetDirectories(directory,
 				extension);
 
-		for (File id : imageDirs) {
+		for (File dir : imageDirs) {
 			if (imageDirs.size() > 1) {
 				logger.error("Directory " + directory.getAbsolutePath()
 						+ " contains more then one image directories");
 				throw new OCRException(
 						"createProcessFromDir can currently create only one AbbyyOCRProcess!");
 			}
-			String jobName = id.getName();
-			for (File imageFile : OCRUtil.makeFileList(id, extension)) {
-				ap.setName(jobName);
+			String jobName = dir.getName();
+			for (File imageFile : OCRUtil.makeFileList(dir, extension)) {
+				process.setName(jobName);
 				// Remote URL isn't set here because we don't know it yet.
-				AbbyyOCRImage aoi = new AbbyyOCRImage(imageFile.toURI());
-				aoi.setSize(imageFile.length());
-				ap.addImage(aoi);
+				AbbyyOCRImage image = new AbbyyOCRImage(imageFile.toURI());
+				image.setSize(imageFile.length());
+				process.addImage(image);
 			}
-			ap.processTimeout = (long) ap.getOcrImages().size()
-					* ap.config.maxMillisPerFile;
+			process.processTimeout = (long) process.getOcrImages().size()
+					* process.config.maxMillisPerFile;
 		}
 
-		return ap;
+		return process;
 	}
 
 	@Override

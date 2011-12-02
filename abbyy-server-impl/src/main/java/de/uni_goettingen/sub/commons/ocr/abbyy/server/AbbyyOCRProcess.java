@@ -90,7 +90,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			.getLogger(AbbyyOCRProcess.class);
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
 	// TODO: Use static fields from the engine class here.
-	// The server url.
+	
 	protected URI serverUri;
 	
 	// The folder URLs.
@@ -109,15 +109,15 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	private Boolean done = true;
 
 	private Boolean isResult = false;
-	// The done date.
+	
 	private Long startTime = 0L;
-	//subProcesses
+	
 	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
-	//List of Name from all SubProcesses 
+	
 	private List<String> SubProcessName = new ArrayList<String>();
-	//Set of the Format from all SubProcesses
+	
 	private Set<OCRFormat> formatForSubProcess = new HashSet<OCRFormat>();
-	//Result files for all SubProcess
+	
 	protected Map<File, List<File>> ResultfilesForAllSubProcess = new HashMap<File, List<File>>();
 	//localOutput from CLI 
 	private String outResultUri = null;
@@ -126,14 +126,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	//Number of SubProcesses
 	protected int splitNumberForSubProcess;
 	
-	// The done date.
 	private Long endTime = 0L;
 	private Long processTimeResult = 0L;
 
 	protected Hotfolder hotfolder;
 	protected XmlParser xmlParser;
-	protected AbbyySerializerTextMD abbyySerializerTextMD;
-	protected OCRProcessMetadata ocrProcessMetadata;
+	transient protected AbbyySerializerTextMD abbyySerializerTextMD;
+	transient protected OCRProcessMetadata ocrProcessMetadata;
 	protected XmlResultDocument xmlResultDocument;
 	protected DocumentDocument xmlExportDocument;
 	protected XmlResult xmlResultEngine;
@@ -143,9 +142,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	private Long maxFiles;
 	private Long totalFileCount;
 	//ID Number for AbbyyOCRProcess
-	private String iD_Process ;
+	private String processId ;
 	private Long totalFileSize = 0l;
-	static Object monitor;
+	static Object monitor = new Object();
 
 
 	protected AbbyyOCRProcess(ConfigParser config) {
@@ -155,16 +154,23 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
 				config);
 		init();
-		monitor = new Object();
 	}
 	
+	protected AbbyyOCRProcess(OCRProcess process, ConfigParser config) {
+		super(process);
+		this.config = config;
+		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
+				config);
+		init();
+		throw new NotImplementedException("This constructor isn't finished");
+	}
+
 	private void init() {
 		if (!config.isParsed()) {
-			// config = config.parse();
 			throw new IllegalStateException();
 		}
-		iD_Process = config.getId_Process();
-		// Set constrains
+		processId = config.getId_Process();
+		// Set constraints
 		maxSize = config.getMaxSize();
 		maxFiles = config.getMaxFiles();
 
@@ -179,15 +185,20 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		}
 	}
 
-	protected AbbyyOCRProcess(OCRProcess process, ConfigParser config) {
-		super(process);
-		this.config = config;
-		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
-				config);
-		init();
-		throw new NotImplementedException("This constructor isn't finished");
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof AbbyyOCRProcess) {
+			AbbyyOCRProcess process = (AbbyyOCRProcess) obj;
+			return this.getiD_Process().equals(process.getiD_Process());
+		}
+		return false;
 	}
-
+	
+	@Override
+	public int hashCode() {
+		return this.getiD_Process().hashCode();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -201,12 +212,12 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		if (hotfolder == null) {
 			throw new IllegalStateException("No Hotfolder set!");
 		}
-		// setencoding for ocrProcessMetadata
+		
 		if (encoding.equals("UTF8")) {
 			ocrProcessMetadata.setEncoding("UTF-8");
 		} else
 			ocrProcessMetadata.setEncoding(encoding);
-		// set Language for ocrProcessMetadata
+		
 		if (langs != null) {
 			setLanguageforMetadata(langs);
 		}
@@ -1149,11 +1160,11 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	}
 
 	public String getiD_Process() {
-		return iD_Process;
+		return processId;
 	}
 
 	public void setiD_Process(String iD_Process) {
-		this.iD_Process = iD_Process;
+		this.processId = iD_Process;
 	}
 
 	

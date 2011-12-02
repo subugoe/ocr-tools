@@ -42,9 +42,6 @@ public class AbbyyServerSimulatorTest {
 		TEST_EXPECTED_FILE = new File(System.getProperty("user.dir") + File.separator +"src/test/resources/"+  EXPECTED);
 	}
 
-	/*public AbbyyServerSimulatorTest() {
-	}*/
-
 	@Test
 	public void testSimulator () {
 		sim = new AbbyyServerSimulator(TEST_HOTFOLDER_FILE, TEST_EXPECTED_FILE);

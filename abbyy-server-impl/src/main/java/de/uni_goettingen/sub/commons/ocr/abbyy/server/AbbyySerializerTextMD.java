@@ -18,10 +18,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import java.io.Serializable;
+
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.uni_goettingen.sub.commons.ocr.metadata.AbstractSerializerTextMD;
 
-public class AbbyySerializerTextMD extends AbstractSerializerTextMD {
+public class AbbyySerializerTextMD extends AbstractSerializerTextMD implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	protected AbbyySerializerTextMD(OCRProcessMetadata ocrProcessMetadata) {
 		super(ocrProcessMetadata);

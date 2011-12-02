@@ -182,10 +182,10 @@ public class OcrServiceImpl implements OcrService {
 						+ "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
 			} catch (URISyntaxException e) {
-				logger.error("URL is Mal formed: " + WEBSERVER_PATH 
+				logger.error("URL is Malformed: " + WEBSERVER_PATH 
 						+ "temp" + "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
-				String error = "URL is Mal formed: " + WEBSERVER_PATH 
+				String error = "URL is Malformed: " + WEBSERVER_PATH 
 				+ "temp" + "/" + jobName + "."
 				+ ocrformat.toString().toLowerCase();
 				file.delete();
@@ -229,15 +229,15 @@ public class OcrServiceImpl implements OcrService {
 				FileUtils.deleteDirectory(file.getParentFile());
 				FileUtils.deleteDirectory(new File(LOCAL_PATH + randomNumber));
 			} catch (IOException e) {
-				logger.error("ERROR CAN NOT deleteDirectory");
+				logger.error("ERROR CAN NOT delete Directory");
 			}
 
 			File f = new File(WEBSERVER_PATH + "temp" + "/" + jobName
 					+ "." + ocrformat.toString().toLowerCase());
 			
 			if( !f.exists()){
-				logger.error("ERROR File CAN NOT Find: "+ f.toString());
-				String error = "ERROR File CAN NOT Find: "+ f.toString();
+				logger.error("ERROR. CANNOT Find File: "+ f.toString());
+				String error = "ERROR. CANNOT Find File: "+ f.toString();
 				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
 			}
 			
