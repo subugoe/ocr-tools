@@ -169,7 +169,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		if (!config.isParsed()) {
 			throw new IllegalStateException();
 		}
-		processId = config.getId_Process();
+		processId = java.util.UUID.randomUUID().toString();
+		//processId = config.getId_Process();
 		// Set constraints
 		maxSize = config.getMaxSize();
 		maxFiles = config.getMaxFiles();

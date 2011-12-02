@@ -156,12 +156,14 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor,
 			waitIfPaused(t);
 
 			queuedProcesses.add(abbyyOCRProcess);
+			
+			// TODO: deadlock danger
 			while (true) {
 				q.clear();
 				q.addAll(queuedProcesses);
 				AbbyyOCRProcess head = q.poll();
-				boolean currentIsHead = head.getiD_Process().equals(
-						abbyyOCRProcess.getiD_Process());
+			
+				boolean currentIsHead = head.equals(abbyyOCRProcess);
 
 				int maxProcesses = maxThreads;
 				int actualProcesses = runningProcesses.size();
