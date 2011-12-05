@@ -20,14 +20,14 @@ public class HazelcastObserver {
 			System.out.println("-----------------");
 			System.out.println("waiting");
 			for (AbbyyOCRProcess pr : waiting) {
-				System.out.println(pr.getiD_Process());
+				System.out.println(pr.getName());
 			}
 
 			System.out.println();
 
 			System.out.println("running");
 			for (AbbyyOCRProcess pr : running) {
-				System.out.println(pr.getiD_Process());
+				System.out.println(pr.getName());
 			}
 
 			System.out.println("-----------------");
