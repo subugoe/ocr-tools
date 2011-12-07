@@ -113,7 +113,7 @@ public class OCRCli {
 	private static String ocrPriority = null;
 	
 	/** The splitProcess if splitProcess = yes. */
-	private static String splitProcess = "no";
+	private static String splitProcess = "yes";
 	
 	/** The engine. */
 	protected static OCREngine engine;
