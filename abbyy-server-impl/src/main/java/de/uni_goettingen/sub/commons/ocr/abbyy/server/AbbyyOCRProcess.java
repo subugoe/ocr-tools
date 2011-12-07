@@ -890,7 +890,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	protected List<AbbyyOCRProcess> split(){		
 		//Example: getOcrImages().size()=234 and  imagesNumberForSubprocess=50, 234 < 75=(50+25)
 		//so is optimal for Abbyy
-		if(getOcrImages().size() < (config.imagesNumberForSubprocess + (config.imagesNumberForSubprocess/2))){
+		if(getOcrImages().size() <= config.imagesNumberForSubprocess){
 			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
 			sp.add(this);
 			return sp;
@@ -925,7 +925,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		}
 		int listNumber = 1;
 		setSegmentation(true);
-		for(List<OCRImage> imgs : splitingImages(getOcrImages(), config.imagesNumberForSubprocess)){				
+		List<List<OCRImage>> imageChunks = splitingImages(getOcrImages(), config.imagesNumberForSubprocess);
+		for(List<OCRImage> imgs : imageChunks){				
 				AbbyyOCRProcess sP = null;
 				try {
 					sP = (AbbyyOCRProcess) this.clone();
@@ -937,8 +938,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					return null;
 				}
 				sP.setOcrImages(imgs);
-				sP.setName(name + "_" + listNumber + "oF" + splitNumberForSubProcess);			
-				SubProcessName.add(name + "_" + listNumber + "oF" + splitNumberForSubProcess);
+				sP.setName(name + "_" + listNumber + "of" + splitNumberForSubProcess);			
+				SubProcessName.add(name + "_" + listNumber + "of" + splitNumberForSubProcess);
 				String localuri = null;
 				for (OCRFormat f : outs.keySet()) {
 					OCROutput aoo = new AbbyyOCROutput();
@@ -976,35 +977,43 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	 * 
 	 * Advantage in Abbyy with Error tolerance
 	 * */
-	protected List<List<OCRImage>> splitingImages(List<OCRImage> ocrImages, int imagesNumberForSubprocess){
-		List<List<OCRImage>> splitingOcrImagesforSubProcess = new ArrayList<List<OCRImage>>();		
-		int divNumber = ocrImages.size()/imagesNumberForSubprocess;
-		int restNumber= (ocrImages.size() % imagesNumberForSubprocess);
-		if(restNumber >= imagesNumberForSubprocess/2){
-			splitNumberForSubProcess = divNumber + 1;
-		}else splitNumberForSubProcess = divNumber;	
+	protected List<List<OCRImage>> splitingImages(List<OCRImage> allImages, int chunkSize){
+		List<List<OCRImage>> allChunks = new ArrayList<List<OCRImage>>();		
+		int fullChunks = allImages.size() / chunkSize;
+		int restNumber = allImages.size() % chunkSize;
 		
-		int sn = 1, imageCounters = 0;		
-		List<OCRImage> ocrImagesforSubProcesses = new ArrayList<OCRImage>();
-		for(OCRImage o : ocrImages){
-			imageCounters++;
-			if(imagesNumberForSubprocess >= imageCounters && sn < splitNumberForSubProcess){					
-				ocrImagesforSubProcesses.add(o);									
-				if(imagesNumberForSubprocess == imageCounters){
-					splitingOcrImagesforSubProcess.add(ocrImagesforSubProcesses);
-					ocrImagesforSubProcesses = new ArrayList<OCRImage>();
-					imageCounters = 0;
-					sn++;
+		int chunkCounter = 1;
+		int imageCounter = 0;		
+		List<OCRImage> oneChunk = new ArrayList<OCRImage>();
+		for(OCRImage o : allImages){
+			imageCounter++;
+			if(imageCounter <= chunkSize  && chunkCounter <= fullChunks){					
+				oneChunk.add(o);									
+				if(chunkSize == imageCounter){
+					allChunks.add(oneChunk);
+					oneChunk = new ArrayList<OCRImage>();
+					imageCounter = 0;
+					chunkCounter++;
 				}				
 			}else{				
-				ocrImagesforSubProcesses.add(o);				
-				if(imageCounters == restNumber)
-				splitingOcrImagesforSubProcess.add(ocrImagesforSubProcesses);
+				oneChunk.add(o);				
+				if(imageCounter == restNumber)
+					allChunks.add(oneChunk);
 			}							
 		}
 		
-		return splitingOcrImagesforSubProcess;		
+		splitNumberForSubProcess = allChunks.size();
+		return allChunks;		
 	}
+	
+//	private List<List<OCRImage>> split(List<OCRImage> list, int targetSize) {
+//	    List<List<OCRImage>> lists = new ArrayList<List<OCRImage>>();
+//	    for (int i = 0; i < list.size(); i += targetSize) {
+//	        lists.add(list.subList(i, Math.min(i + targetSize, list.size())));
+//	    }
+//	    return lists;
+//	}
+//
 	
 	/**
 	 * Observer can respond via its update method on changes an observable. 

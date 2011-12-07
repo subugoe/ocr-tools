@@ -174,10 +174,20 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor,
 					AbbyyOCRProcess head = q.poll();
 
 					currentIsHead = head.equals(abbyyOCRProcess);
+
+//					System.out.println(currentIsHead);
+//					System.out.println(head.getName());
+//					while ((head = q.poll()) != null) {
+//						System.out.println(head.getName());
+//					}
 				}
 
 				if (slotsFree && currentIsHead) {
 					queuedProcesses.remove(abbyyOCRProcess);
+					System.out.println("removing " + abbyyOCRProcess.getName());
+					for (AbbyyOCRProcess a : queuedProcesses)
+						System.out.println(a.getName());
+					
 					runningProcesses.add(abbyyOCRProcess);
 					break;
 				} else {
@@ -301,7 +311,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor,
 	@Override
 	public void execute(Runnable process) {
 		List<AbbyyOCRProcess> sp = ((AbbyyOCRProcess) process).split();
-		for (Runnable p : sp) {
+		for (AbbyyOCRProcess p : sp) {
 			super.execute(p);
 		}
 	}
