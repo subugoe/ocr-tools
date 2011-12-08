@@ -938,8 +938,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					return null;
 				}
 				sP.setOcrImages(imgs);
-				sP.setName(name + "_" + listNumber + "of" + splitNumberForSubProcess);			
-				SubProcessName.add(name + "_" + listNumber + "of" + splitNumberForSubProcess);
+				sP.setName(name + "_" + listNumber + "oF" + splitNumberForSubProcess);			
+				SubProcessName.add(name + "_" + listNumber + "oF" + splitNumberForSubProcess);
 				String localuri = null;
 				for (OCRFormat f : outs.keySet()) {
 					OCROutput aoo = new AbbyyOCROutput();
@@ -1006,14 +1006,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		return allChunks;		
 	}
 	
-//	private List<List<OCRImage>> split(List<OCRImage> list, int targetSize) {
-//	    List<List<OCRImage>> lists = new ArrayList<List<OCRImage>>();
-//	    for (int i = 0; i < list.size(); i += targetSize) {
-//	        lists.add(list.subList(i, Math.min(i + targetSize, list.size())));
-//	    }
-//	    return lists;
-//	}
-//
 	
 	/**
 	 * Observer can respond via its update method on changes an observable. 
@@ -1025,40 +1017,37 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	 */
 	public void update(Observable o, Object arg) {
 		synchronized (monitor) {	   
-			boolean oneFinished = false;
 			for (AbbyyOCRProcess sub : subProcesses) {
-				oneFinished = sub.getIsFinished();
-				if (!oneFinished){
-					oneFinished = false;
+				boolean currentFinished = sub.getIsFinished();
+				if (!currentFinished){
 					processTimeResult = 0L;
-					break;
-				}	
+					return;
+				}
 				processTimeResult = processTimeResult + sub.processTimeResult;
 			}
-			if(oneFinished){
-				for (AbbyyOCRProcess sub : subProcesses) {
-					oneFinished = sub.failed;
-					if(oneFinished){
-						oneFinished = false;
-						break;
-					}else oneFinished = true;				
-				}
-				startTime = System.currentTimeMillis();
-				String uriTextMD = merge(oneFinished);
-				endTime = System.currentTimeMillis();
-				ocrProcessMetadata.setDuration(getDuration() + processTimeResult);
-				if(!uriTextMD.equals("FAILED")){
-					serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
-					RemoveSubProcessResults(ResultfilesForAllSubProcess);
-				}
-				 
+			// only get here when all processes are finished
+
+			boolean oneFailed = false;
+			for (AbbyyOCRProcess sub : subProcesses) {
+				oneFailed = sub.failed;
+				if (oneFailed)
+					break;				
 			}
+			startTime = System.currentTimeMillis();
+			String uriTextMD = merge(!oneFailed);
+			endTime = System.currentTimeMillis();
+			ocrProcessMetadata.setDuration(getDuration() + processTimeResult);
+			if(!uriTextMD.equals("FAILED")){
+				serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
+				RemoveSubProcessResults(ResultfilesForAllSubProcess);
+			}
+				 
 		}		
 	}
 
-	// merge if subProcessfailed is true 
+	// merge if nosubProcessfailed is true 
 	//merge Results and ProcessMetaData
-	private String merge(Boolean subProcessfailed) {	
+	private String merge(Boolean noSubProcessfailed) {	
 		String uriTextMD = null;
 		File abbyyMergedResult = null;
 		int i = 0, j =0;
@@ -1075,7 +1064,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				if ((f.toString().toLowerCase()).equals("xml") && j == 0) {
 					InputStream isDoc = null;
 					j++;
-					if(subProcessfailed){
+					if(noSubProcessfailed){
 						try {
 						isDoc = new FileInputStream(file);		
 						} catch (FileNotFoundException e) {
@@ -1090,7 +1079,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				if(i == 0){
 					fileResult = new File(outResultUri + "/" + sn + ".xml"+ config.reportSuffix);
 					InputStream isResult = null;
-					if(subProcessfailed){
+					if(noSubProcessfailed){
 						try {
 							isResult = new FileInputStream(fileResult);
 						} catch (FileNotFoundException e) {
@@ -1103,7 +1092,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				}		
 			}
 			i++;
-			if(subProcessfailed){
+			if(noSubProcessfailed){
 				logger.debug("Waiting... for Merge Proccessing");
 				//mergeFiles for input format if Supported
 				abbyyMergedResult = new File(outResultUri + "/" + name + "." + f.toString().toLowerCase());
@@ -1115,7 +1104,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					
 		}
 		try {
-			if(subProcessfailed){
+			if(noSubProcessfailed){
 				logger.debug("Waiting... for Merge Proccessing");
 				//mergeFiles for Abbyy Result xml.result.xml
 				abbyyMergedResult = new File(outResultUri + "/" + name + ".xml" + config.reportSuffix);

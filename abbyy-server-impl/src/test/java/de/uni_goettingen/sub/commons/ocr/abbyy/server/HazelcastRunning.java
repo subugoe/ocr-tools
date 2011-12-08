@@ -11,8 +11,8 @@ public class HazelcastRunning extends HazelcastObserver {
 
 	@Override
 	public void itemRemoved(Object item) {
-		AbbyyOCRProcess pr = (AbbyyOCRProcess) item;
-		System.out.println("REMOVED from 'running' " + pr.getName());
+//		AbbyyOCRProcess pr = (AbbyyOCRProcess) item;
+//		System.out.println("REMOVED from 'running' " + pr.getName());
 	}
 
 }
