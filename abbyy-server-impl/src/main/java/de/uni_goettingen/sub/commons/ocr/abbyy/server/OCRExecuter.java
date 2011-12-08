@@ -183,11 +183,11 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor,
 				}
 
 				if (slotsFree && currentIsHead) {
-					queuedProcesses.remove(abbyyOCRProcess);
-					System.out.println("removing " + abbyyOCRProcess.getName());
-					for (AbbyyOCRProcess a : queuedProcesses)
-						System.out.println(a.getName());
-					
+					// explicit searching is required
+					for (AbbyyOCRProcess ab : queuedProcesses) {
+						if (ab.equals(abbyyOCRProcess))
+							queuedProcesses.remove(ab);
+					}
 					runningProcesses.add(abbyyOCRProcess);
 					break;
 				} else {
