@@ -58,6 +58,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 
 /**
  * IMPACT Abbyy Fine Reader 8.0 Service. This service provides the basic
@@ -84,11 +85,11 @@ public class OcrServiceImpl implements OcrService {
 		
 		String inputUrlString = request.getInputUrl();
 		URL inputUrl = new URL(inputUrlString);
-		URLConnection uconn = inputUrl.openConnection();
-		String type = uconn.getContentType();
-
-		if (!type.equals("image/tiff"))
-			throw new IOException("Not a Tiff image! Was " + type);
+//		URLConnection uconn = inputUrl.openConnection();
+//		String type = uconn.getContentType();
+//
+//		if (!type.equals("image/tiff"))
+//			throw new IOException("Not a Tiff image! Was " + type);
 		
 		return inputUrl;
 	}
@@ -219,7 +220,8 @@ public class OcrServiceImpl implements OcrService {
 			logger.info("Starting recognize method");
 			engine.recognize();
 			
-			if(aop.getOcrProcessMetadata().getDuration() != 0L){
+			OCRProcessMetadata meta = aop.getOcrProcessMetadata();
+			if(meta != null && meta.getDuration() != 0L){
 				duration = aop.getOcrProcessMetadata().getDuration();
 			}
 			file.delete();
@@ -237,7 +239,7 @@ public class OcrServiceImpl implements OcrService {
 			
 			if( !f.exists()){
 				logger.error("ERROR. CANNOT Find File: "+ f.toString());
-				String error = "ERROR. CANNOT Find File: "+ f.toString();
+				String error = "File could not be processed: " + inputUrl;
 				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
 			}
 			

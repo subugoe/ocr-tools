@@ -252,6 +252,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		XMLExportSettings xmlSettings = XMLExportSettings.Factory
 				.newInstance(opts);
 
+		// coordinates for each character in output abbyy xml 
 		xmlSettings.setWriteCharactersFormatting(true);
 		xmlSettings.setWriteCharAttributes(true);
 
