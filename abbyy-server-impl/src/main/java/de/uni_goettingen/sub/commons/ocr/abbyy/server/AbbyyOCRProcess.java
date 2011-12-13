@@ -1070,8 +1070,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 						} catch (FileNotFoundException e) {
 							logger.error("Error contructing FileInputStream for: "+file.toString() , e);
 						}
-						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-								.parseXmlExport(isDoc);
+						
+						// TODO this causes an exception because the namespaces do not match anymore
+//						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+//								.parseXmlExport(isDoc);
 					}
 					
 				}
