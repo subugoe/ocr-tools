@@ -1,0 +1,42 @@
+http://ubuntuforums.org/showthread.php?t=1647350
+
+-- nötige Bibliotheken
+sudo apt-get install libpng12-dev
+sudo apt-get install libjpeg62-dev
+sudo apt-get install libtiff4-dev
+sudo apt-get install gcc
+sudo apt-get install g++
+sudo apt-get install automake
+
+-- leptonica
+wget http://www.leptonica.org/source/leptonlib-1.67.tar.gz
+tar -zxvf leptonlib-1.67.tar.gz
+cd leptonlib-1.67
+./configure
+make
+sudo checkinstall (follow the prompts and type "y" to create documentation directory. Enter a brief description then press enter twice)
+sudo ldconfig
+
+-- tesseract build
+cd ..
+wget http://tesseract-ocr.googlecode.com/files/tesseract-3.00.tar.gz
+tar -zxvf tesseract-3.00.tar.gz
+cd tesseract-3.00
+./runautoconf
+./configure
+make
+sudo checkinstall (follow the prompts and type "y" to create documentation directory. Enter a brief description then press enter twice)
+sudo ldconfig
+
+-- training data
+cd /usr/local/share/tessdata
+sudo wget http://tesseract-ocr.googlecode.com/files/eng.traineddata.gz
+sudo gunzip eng.traineddata.gz
+
+-- hocr Ausgabe einschalten
+cd /usr/local/share/tessdata/configs
+sudo vi hocr
+Put this in: "tessedit_create_hocr 1"
+
+-- benutzen
+tesseract <image> <target> [-l lang] [hocr]
