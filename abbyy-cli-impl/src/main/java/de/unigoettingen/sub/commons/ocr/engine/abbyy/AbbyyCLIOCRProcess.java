@@ -45,6 +45,11 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess, Runnable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7402569872261354815L;
+
 	final static Logger logger = LoggerFactory.getLogger(AbbyyCLIOCRProcess.class);
 
 	private List<String> cmd;
