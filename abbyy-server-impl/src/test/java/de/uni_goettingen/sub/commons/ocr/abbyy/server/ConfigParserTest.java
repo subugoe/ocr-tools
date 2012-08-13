@@ -55,7 +55,7 @@ public class ConfigParserTest {
 	@Test
 	public void testUrl () throws ConfigurationException {
 		cp = new ConfigParser().parse();
-		assertFalse(cp.getDebugAuth());
+		//assertFalse(cp.getDebugAuth());
 		assertNotNull(cp.getServerURL());
 	}
 

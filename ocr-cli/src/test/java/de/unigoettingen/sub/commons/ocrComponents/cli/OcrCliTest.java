@@ -36,10 +36,6 @@ public class OcrCliTest {
 	@Before
 	public void init() {
 		ocrCli = OCRCli.getInstance();
-	}
-
-	@Test
-	public void testCli() {
 
 		String[] args = new String[5];
 		args[0] = "-l de,en";
@@ -67,7 +63,8 @@ public class OcrCliTest {
 
 	@Test
 	public void testLanguage() {
-		assertTrue(ocrCli.langs.toString().equals("[ de, en]"));
+		System.out.println(ocrCli.langs.toString());
+		assertTrue(ocrCli.langs.toString().equals("[en,  de]"));
 
 	}
 
