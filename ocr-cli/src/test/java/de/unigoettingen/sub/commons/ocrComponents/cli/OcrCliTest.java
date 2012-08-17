@@ -63,8 +63,8 @@ public class OcrCliTest {
 
 	@Test
 	public void testLanguage() {
-		System.out.println(ocrCli.langs.toString());
-		assertTrue(ocrCli.langs.toString().equals("[en,  de]"));
+		assertTrue(ocrCli.langs.toString().contains("en"));
+		assertTrue(ocrCli.langs.toString().contains("de"));
 
 	}
 
