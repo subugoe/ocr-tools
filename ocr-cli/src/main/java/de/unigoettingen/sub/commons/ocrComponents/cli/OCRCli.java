@@ -113,16 +113,13 @@ public class OCRCli {
 	private static String ocrPriority = null;
 	
 	/** The splitProcess if splitProcess = yes. */
-	private static String splitProcess = "yes";
+	private static boolean splitProcess = false;
 	
 	/** The engine. */
 	protected static OCREngine engine;
 
 	/** The ocr process. */
 	protected static OCRProcess ocrProcess;
-
-	/** The OUTPU t_ definitions. */
-	protected static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 
 	static List<File> dirs = new ArrayList<File>();
 
@@ -133,7 +130,7 @@ public class OCRCli {
 		// Parameters
 		opts.addOption("r", false, "Recursive - scan for subdirectories");
 		opts.addOption("f", true, "Output format");
-		opts.addOption("l", true, "Languages - seperated by \",\"");
+		opts.addOption("l", true, "Languages - separated by \",\"");
 		opts.addOption("h", false, "Help");
 		opts.addOption("v", false, "Version");
 		opts.addOption("d", true, "Debuglevel");
@@ -141,7 +138,7 @@ public class OCRCli {
 		opts.addOption("t", true, "OCRTextTyp");
 		opts.addOption("o", true, "Output folder");
 		opts.addOption("p", true, "Priority");
-		opts.addOption("s", true, "Segmentation");
+		opts.addOption("s", false, "Segmentation");
 	}
 
 	/**
@@ -191,7 +188,8 @@ public class OCRCli {
 		for (String book : files) {
 			// logger.debug("Input Location " +
 			// System.getProperty("user.dir")+book);
-			File directory = new File(System.getProperty("user.dir")+book);
+			File directory = new File(book);
+			
 			getDirectories(directory);
 			if (dirs.size() == 0) {
 				logger.error("Directories is Empty : " + book);
@@ -202,40 +200,33 @@ public class OCRCli {
 
 					logger.debug("Creating Process for " + id.toString());
 					OCRProcess aop = engine.newOcrProcess();
-					List<OCRImage> imgs = new ArrayList<OCRImage>();
 					String jobName = id.getName();
+					aop.setName(jobName);
+					if (jobName == null) {
+						logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
+						aop.setName(UUID.randomUUID().toString());
+					}
+					List<OCRImage> imgs = new ArrayList<OCRImage>();
 					for (File imageFile : OCRUtil.makeFileList(id, extension)) {
-						aop.setName(jobName);
 						OCRImage aoi = engine.newOcrImage(imageFile.toURI());
 						aoi.setSize(imageFile.length());
-						if (jobName == null) {
-							logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
-							aop.setName(UUID.randomUUID().toString());
-						}
 						imgs.add(aoi);
 					}
 					aop.setOcrImages(imgs);
 
-					// add format
-					OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();
-
 					for (OCRFormat ocrformat : f) {
 						OCROutput aoo = engine.newOcrOutput();						
-						URI uri = new URI(
-						new File(System.getProperty("user.dir")).toURI()
-								+ localOutputDir + "/" + id.getName()
+						URI uri = new URI(new File(localOutputDir).toURI()
+								+ id.getName()
 								+ "." + ocrformat.toString().toLowerCase());
-						// logger.debug("output Location " + uri.toString());
+						logger.debug("output Location " + uri.toString());
 						aoo.setUri(uri);
-						aoo.setlocalOutput(System.getProperty("user.dir")+ "/" +localOutputDir);
-						OUTPUT_DEFINITIONS.put(ocrformat, aoo);
+						aoo.setlocalOutput(new File(localOutputDir).getAbsolutePath());
 						aop.addOutput(ocrformat, aoo);
 					}
 					// add language
 					aop.setLanguages(langs);
-					if(splitProcess.equals("yes")){
-						aop.setSplitProcess(true);
-					}
+					aop.setSplitProcess(splitProcess);
 					if(ocrPriority != null){
 						aop.setPriority(OCRPriority.valueOf(ocrPriority));
 					}else{
@@ -400,10 +391,7 @@ public class OCRCli {
 		}
 		//Segmentation
 		if(cmd.hasOption("s")){
-			if (cmd.getOptionValue("s") != null
-					&& !cmd.getOptionValue("s").equals("")) {
-				splitProcess = (cmd.getOptionValue("s")).toLowerCase();
-			}
+			splitProcess = true;
 		}
 		// OCRTextTyp
 		if (cmd.hasOption("t")) {
