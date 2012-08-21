@@ -122,6 +122,20 @@
 				<inputFiles> <file>${project.basedir}/src/main/resources</file> </inputFiles> 
 				<outputDirectory>${project.build.directory}/site/images</outputDirectory> 
 				</configuration> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-doap-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>site</id>
+						<phase>site</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>		
 		</plugins>
 	</build>
 	<dependencies>
