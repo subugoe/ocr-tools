@@ -128,7 +128,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		} catch (InterruptedException e) {
 			logger.error("Got a problem with thread pool: ", e);
 		}
-		hazel.shutdown();
+		hazel.getLifecycleService().shutdown();
 	}
 	
 	
