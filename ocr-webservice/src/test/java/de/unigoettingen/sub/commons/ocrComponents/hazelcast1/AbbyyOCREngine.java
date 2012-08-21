@@ -104,7 +104,7 @@ public class AbbyyOCREngine {
 		/*ISet <AbbyyOCRProcess> set = hazel.getSet("default");
 		if(set.size() == 0) Hazelcast.shutdownAll();*/
 		System.out.println("************"+h.getCluster().getLocalMember());
-		h.shutdown();
+		h.getLifecycleService().shutdown();
 	}
 	
 	
