@@ -19,33 +19,24 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import it.could.webdav.DAVServlet;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
-import org.apache.log4j.helpers.Loader;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
-
 import org.junit.Test;
-import it.could.webdav.DAVServlet;
-
 import org.mortbay.jetty.Server;
-
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument;
-import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument.Document;
-import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
-import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolderImpl;
 
@@ -55,32 +46,24 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfol
  */
 public class JackrabbitHotfolderImpTest {
 	static Server server;
-	private Context rootContext;
-	private static InputStream isResult = null;
-	protected static XmlResultDocument xmlResultDocument; 
-	XmlResult xm ;
-	protected static DocumentDocument documentDocument;
-	Document doc;
-	//private static File resources;
-	static JackrabbitHotfolderImpl imp;
-	static File WEBDAV;
-	final static Logger logger = LoggerFactory
-			.getLogger(JackrabbitHotfolderImpTest.class);
+	private static JackrabbitHotfolderImpl hotfolder;
+	private static File davFolder;
+	private static File resourcesFolder;
 
-	@Before
-	public void setUp() throws Exception {
-		File file = new File(System.getProperty("user.dir")
+	@BeforeClass
+	public static void setUp() throws Exception {
+		resourcesFolder = new File(System.getProperty("user.dir")
 				+ "/src/test/resources");
-		//File file = getBaseFolderAsFile();
-	    WEBDAV = new File(file.toString() + "/WEBDAV");
-		WEBDAV.mkdir();
+		davFolder = new File(System.getProperty("user.dir")
+				+ "/target/dav");
+//		delete(davFolder);
+		davFolder.mkdirs();
 	    server = new Server(8090);
 		ServletHolder davServletHolder = new ServletHolder(new DAVServlet());
-		davServletHolder.setInitParameter("rootPath", WEBDAV.toString()
-				.replace("file:/", ""));
-		rootContext = new Context(server, "/", Context.SESSIONS);
+		davServletHolder.setInitParameter("rootPath", davFolder.getAbsolutePath());
+		Context rootContext = new Context(server, "/", Context.SESSIONS);
 		rootContext.addServlet(davServletHolder, "/*");
-		imp = new JackrabbitHotfolderImpl("http://localhost:8090/", "user",
+		hotfolder = new JackrabbitHotfolderImpl("http://localhost:8090/", "user",
 				"pw");
 		server.start();
 	}
@@ -88,100 +71,91 @@ public class JackrabbitHotfolderImpTest {
 	
 	
 	@Test
-	public void testMKDIR() throws Exception {
-		imp.mkDir(new URI("http://localhost:8090/TestA"));
-		assertTrue(new File(WEBDAV.toString().replace("file:/", "")+ "/"+ "TestA").exists());
-		imp.mkDir(new URI("http://localhost:8090/TestB"));
-		assertTrue(new File(WEBDAV.toString().replace("file:/", "")+ "/"+ "TestB").exists());
+	public void testMkDir() throws IOException, URISyntaxException {
+		hotfolder.mkDir(new URI("http://localhost:8090/testMkDir"));
+		List<File> subFolders = Arrays.asList(davFolder.listFiles());
+
+		assertTrue(subFolders.toString().contains("testMkDir"));
 	}
 
-	@Ignore
 	@Test
-	public void testexists() throws Exception {
-		assertTrue(imp.exists(new URI("http://localhost:8090/TestA")));
-		assertTrue(imp.exists(new URI("http://localhost:8090/TestB")));
+	public void testExists() throws Exception {
+		new File(davFolder + "/testExists").mkdir();
+
+		assertTrue(hotfolder.exists(new URI("http://localhost:8090/testExists")));
 	}
 		
-	
-	@Test
-	public void testcopyfileFromServerToLocal() throws Exception {
-		WEBDAV = new File(WEBDAV.toString().replace("file:/", "")+ "/"+ "from/FromTO");
-		URI to = WEBDAV.toURI();
-		URI from = new URI("http://localhost:8090/to/FromTO");
-		imp.copyFile(from, to);
-		assertTrue(new File(WEBDAV.toString()).exists());
-	}
-	
 	@Ignore
 	@Test
-	public void testcopyfileFromLocalToServer() throws Exception {
-		WEBDAV = new File(WEBDAV.toString().replace("file:/", "")+ "/"+ "from/FromTO");
-		URI from = WEBDAV.toURI();
-		URI to = new URI("http://localhost:8090/TestA/FromTO");
-		imp.copyFile(from, to);
-		assertTrue(imp.exists(to));
+	public void testCopyFileFromServerToLocal() throws Exception {
+		davFolder = new File(davFolder.toString().replace("file:/", "")+ "/"+ "from/FromTO");
+		URI to = davFolder.toURI();
+		URI from = new URI("http://localhost:8090/to/FromTO");
+		hotfolder.copyFile(from, to);
+		assertTrue(new File(davFolder.toString()).exists());
+	}
+	
+	@Test
+	public void testCopyFileFromLocalToServer() throws Exception {
+		File sourceFile = new File(resourcesFolder + "/WEBDAV/xmlExport.xml");
+		URI from = sourceFile.toURI();
+		URI to = new URI("http://localhost:8090/xmlExport.xml");
+		hotfolder.copyFile(from, to);
+		
+		assertTrue(new File(davFolder + "/xmlExport.xml").exists());
 	}
 	
 	@Test
 	public void testOpenInputStream() throws Exception {
-		assertTrue(imp.exists(new URI("http://localhost:8090/xmlExport.xml")));
-		for (int i = 1 ; i <= 30 ; i++){
-			isResult = imp.openInputStream(new URI("http://localhost:8090/xmlExport"+ i + ".xml"));
-			assertTrue(isResult != null);
-			documentDocument = DocumentDocument.Factory.parse(isResult);
-			doc = documentDocument.getDocument();
-		    
-		    isResult = null;
-		}	
+		File source = new File(resourcesFolder + "/WEBDAV/xmlExport.xml");
+		File target = new File(davFolder + "/inputStream.xml");
+		FileUtils.copyFile(source, target);
+		InputStream isResult = hotfolder.openInputStream(new URI("http://localhost:8090/inputStream.xml"));
+		assertTrue(isResult != null);
 	}
 	
-
-	@Ignore
 	@Test
-	public void testdelete() throws Exception {
-		imp.delete(new URI("http://localhost:8090/TestA"));
-		assertFalse(imp.exists(new URI("http://localhost:8090/TestA")));
+	public void testDelete() throws Exception {
+		File toDelete = new File(davFolder + "/deleteTest");
+		toDelete.mkdir();
+		hotfolder.delete(new URI("http://localhost:8090/deleteTest"));
+
+		assertFalse(toDelete.exists());
 	}
 
-	@Ignore
 	@Test
-	public void testdeleteIfExists() throws Exception {
-		imp.deleteIfExists(new URI("http://localhost:8090/TestB"));
-		assertFalse(imp.exists(new URI("http://localhost:8090/TestB")));
-		
-		imp.deleteIfExists(new URI("http://localhost:8090/to/test"));
-		assertFalse(imp.exists(new URI("http://localhost:8090/to/test")));
-		
-		imp.deleteIfExists(new URI("http://localhost:8090/from/FromTO"));
-		assertFalse(imp.exists(new URI("http://localhost:8090/from/FromTO")));
-		imp.deleteIfExists(new URI("http://localhost:8090/from"));
-		assertFalse(imp.exists(new URI("http://localhost:8090/from")));
+	public void testDeleteIfExists() throws Exception {
+		File toDelete = new File(davFolder + "/deleteIfExists");
+		toDelete.mkdir();
+		hotfolder.deleteIfExists(new URI("http://localhost:8090/deleteIfExists"));
+
+		assertFalse(toDelete.exists());
+
+		hotfolder.deleteIfExists(new URI("http://localhost:8090/deleteIfExists"));
+		// no exception thrown
+		assertTrue(true);
 	}
 	
 	
-	@After
-	public void destroy() throws Exception {
-		imp.deleteIfExists(new URI("http://localhost:8090/TestA"));
-		imp.deleteIfExists(new URI("http://localhost:8090/TestB"));
-		
-		imp.deleteIfExists(new URI("http://localhost:8090/to/test"));
-		
-		imp.deleteIfExists(new URI("http://localhost:8090/from/FromTO"));
-		imp.deleteIfExists(new URI("http://localhost:8090/from"));
+	@AfterClass
+	public static void destroy() throws Exception {
+		delete(davFolder);
 		server.stop();
 		
 	}
-
-	public static File getBaseFolderAsFile() {
-		File basefolder;
-		// TODO: GDZ: Do wee really need to depend on Log4J here? I don't think
-		// so...
-		URL url = Loader.getResource("");
-		try {
-			basefolder = new File(url.toURI());
-		} catch (URISyntaxException ue) {
-			basefolder = new File(url.getPath());
+	
+	// deletes a complete directory structure
+	public static void delete(File file) {
+		if (file.isFile()) {
+			file.delete();
+		} else if (file.isDirectory() && Arrays.asList(file.list()).isEmpty()) {
+			file.delete();
+		} else {
+			for (File child : file.listFiles()) {
+				delete(child);
+			}
+			file.delete();
 		}
-		return basefolder;
 	}
+	
 }

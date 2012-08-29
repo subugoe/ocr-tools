@@ -140,6 +140,7 @@ public abstract class AbstractHotfolder implements Hotfolder {
 	public void deleteTmpFile(String name) throws IOException {
 		if (tmpfiles.containsKey(name)) {
 			tmpfiles.get(name).delete();
+			tmpfiles.remove(name);
 		}
 	}
 

@@ -224,7 +224,7 @@ public class AbbyyOCRProcessTest {
 			File testTicket = new File(resources.getAbsoluteFile()
 					+ File.separator + HotfolderTest.INPUT + File.separator
 					+ book + ".xml");
-			logger.equals("Deleting file " + testTicket.getAbsolutePath());
+			logger.debug("Deleting file " + testTicket.getAbsolutePath());
 			testTicket.delete();
 			// assertTrue(!testTicket.exists());
 		}
