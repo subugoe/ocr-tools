@@ -458,23 +458,14 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
 				new DefaultHttpMethodRetryHandler(3, false));
 
-		try {
-			// Execute the method.
-			Integer statusCode = client.executeMethod(method);
+		Integer statusCode = client.executeMethod(method);
 
-			if (statusCode != HttpStatus.SC_OK) {
-				logger.error("Method failed: " + method.getStatusLine());
-			}
-
-			return method.getResponseBodyAsStream();
-
-		} catch (IOException e) {
-			logger.error("Fatal transport error: ", e);
-		} finally {
-			// Release the connection.
-		//	method.releaseConnection();
+		if (statusCode != HttpStatus.SC_OK) {
+			logger.error("Method failed: " + method.getStatusLine());
+			throw new IOException(method.getStatusLine().toString());
 		}
-		return null;
+		return method.getResponseBodyAsStream();
+
 	}
 
 	@Override
