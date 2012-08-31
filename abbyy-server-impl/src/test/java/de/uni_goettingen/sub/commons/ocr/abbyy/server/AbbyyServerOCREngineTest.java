@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.vfs.FileSystemException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -57,7 +56,7 @@ public class AbbyyServerOCREngineTest {
 	protected static AbbyyServerSimulator ass = null;
 
 	@Before
-	public void init () throws FileSystemException, ConfigurationException, URISyntaxException {
+	public void init () throws ConfigurationException, URISyntaxException {
 		logger.debug("Starting Test");
 		ConfigParser config = new ConfigParser().parse();
 

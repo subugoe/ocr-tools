@@ -21,17 +21,19 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.vfs.AllFileSelector;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs2.AllFileSelector;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemManager;
+import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.Selectors;
+import org.apache.commons.vfs2.VFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,16 +44,16 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
  * The Class ApacheVFSHotfolderImpl is used to control the hotfolders used by
  * the Abbyy Recognition Server.
  */
-public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfolder {
+public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfolder, Serializable {
 	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(ApacheVFSHotfolderImpl.class);
 
-	protected ConfigParser config;
+	transient protected ConfigParser config;
 
 	private static Hotfolder _instance;
 
 	// The fsmanager.
-	protected FileSystemManager fsManager = null;
+	transient protected FileSystemManager fsManager = null;
 
 	// State variables
 	// The total file count.
@@ -70,7 +72,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	 */
 	private ApacheVFSHotfolderImpl() {
 		try {
-			VFS.setUriStyle(true);
+			//VFS.setUriStyle(true);
 			fsManager = VFS.getManager();
 		} catch (FileSystemException e) {
 			logger.error("Can't get file system manager", e);
@@ -86,6 +88,7 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 			serverUrl = config.getServerURL().replace("https://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
 		} else if (config.getUsername() != null && config.getPassword() != null && config.getServerURL().startsWith("http")) {
 			serverUrl = config.getServerURL().replace("http://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
+			config.setServerURL(serverUrl);
 		}
 	}
 
@@ -95,13 +98,14 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	//TODO: This is dangerous, check if the file exists!
 	@Override
 	public void copyFile (URI from, URI to) throws IOException {
-		FileObject remoteFile = fsManager.resolveFile(from.toString());
-		if (remoteFile.exists()) {
+		FileObject src = fsManager.resolveFile(from.toString());
+		FileObject dest = fsManager.resolveFile(to.toString());
+		if (dest.exists()) {
 			//TODO: There is an error in here.
 			throw new IOException("Remote file allready exists!");
 		}
-		FileObject localFile = fsManager.resolveFile(to.toString());
-		localFile.copyFrom(remoteFile, new AllFileSelector());
+		//localFile.copyFrom(remoteFile, new AllFileSelector());
+		dest.copyFrom(src, Selectors.SELECT_ALL);
 	}
 
 	/* (non-Javadoc)

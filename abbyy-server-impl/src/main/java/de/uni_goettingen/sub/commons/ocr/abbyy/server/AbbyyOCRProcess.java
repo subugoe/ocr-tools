@@ -50,7 +50,6 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.vfs.FileSystemException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,8 +257,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			// Set the file names and URIs
 			String tmpTicket = name + ".xml";
 			ticketUri = new URI(inputUri.toString() + tmpTicket);
-			errorTicketUri = new URI(errorUri.toURL() + tmpTicket);
-			errorResultUri = new URI(errorUri.toURL() + tmpTicket
+			errorTicketUri = new URI(errorUri.toString() + tmpTicket);
+			errorResultUri = new URI(errorUri.toString() + tmpTicket
 					+ config.reportSuffix);
 
 			if (config.dryRun) {

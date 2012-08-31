@@ -27,6 +27,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemManager;
+import org.apache.commons.vfs2.Selectors;
+import org.apache.commons.vfs2.VFS;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -92,7 +97,8 @@ public class HotfolderTest {
 		testImageTargetUri = testImageTargetFile.toURI();
 		logger.info("testImageTargetUri is " + testImageTargetUri);
 
-		target = testDirUri.toString() + "/" + getFileName(testImageUri);
+		//target = testDirUri.toString() + "/" + getFileName(testImageUri);
+		target = new File(System.getProperty("user.dir") + "/target") + "/" + getFileName(testImageUri);
 		apacheVFSHotfolderImpl = (ApacheVFSHotfolderImpl) ApacheVFSHotfolderImpl
 				.getInstance(new ConfigParser());
 	}
@@ -114,13 +120,13 @@ public class HotfolderTest {
 	}
 
 	// TODO bug not fixed in copy by apacheVFS 
-	@Ignore
+	//@Ignore
 	@Test
 	public void testCopy() throws IOException, URISyntaxException {
 		logger.debug("Copy " + testImageUri.toString() + " to " + target);
 		apacheVFSHotfolderImpl.copyFile(testImageUri, new URI(target));
 		assertTrue("File can't be found.",
-				new File(new URL(target).toURI()).exists());
+				new File(target).exists());
 	}
 
 	public static String getFileName(URI testImageUri2) {
@@ -141,6 +147,21 @@ public class HotfolderTest {
 	}
 
 
+//	@Test
+//	public void testBla() throws FileSystemException {
+//		FileSystemManager mgr = VFS.getManager();
+//		
+//		String cdir = System.getProperty("user.dir");
+//		
+//		System.out.println(cdir + "--------------------/src/test/resources/testDir/Band001test/00000001.tif");
+//		
+//        FileObject src = mgr.resolveFile(cdir + "/src/test/resources/testDir/Band001test/00000001.tif");
+//        FileObject dest = mgr.resolveFile(cdir + "/target/00000001.tif");
+// 
+//        dest.copyFrom(src, Selectors.SELECT_ALL);
+//
+//	}
+	
 	@AfterClass
 	public static void cleanup() {
 		logger.debug("Cleaning up");
