@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.vfs.FileSystemException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
