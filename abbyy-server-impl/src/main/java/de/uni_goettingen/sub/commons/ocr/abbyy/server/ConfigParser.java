@@ -21,7 +21,8 @@ public class ConfigParser {
 	protected Configuration config;
 	public final static String DEFAULT_CONFIG = "/AbbyyServerOCREngine.properties";
 	public final static String DEBUG_PROPERTY = "ocr.finereader.server.debug.auth";
-
+	public final static String SERVER_LOCK_FILE_NAME = "server.lock";
+	
 	//Default is 100 MB of storage
 	public final static Long DEFAULT_MAXSIZE = 100l * 1024l * 1024l;
 	public final static String PARAMETER_MAXSIZE = "maxSize";
@@ -59,7 +60,7 @@ public class ConfigParser {
 	protected String serverURL, input, output, error;
 
 	public final static String PARAMETER_HOTFOLDERCLASS = "hotfolderClass";
-	protected String hotfolderClass;
+	public String hotfolderClass;
 
 	//The different timeouts:
 	//Assume at least 1 second per file

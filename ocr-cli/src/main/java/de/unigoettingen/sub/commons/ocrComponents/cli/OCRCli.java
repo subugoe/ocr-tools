@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -123,6 +124,8 @@ public class OCRCli {
 
 	static List<File> dirs = new ArrayList<File>();
 
+	private static Map<String, String> extraOptions;
+	
 	/**
 	 * Inits the opts.
 	 */
@@ -139,6 +142,7 @@ public class OCRCli {
 		opts.addOption("o", true, "Output folder");
 		opts.addOption("p", true, "Priority");
 		opts.addOption("s", false, "Segmentation");
+		opts.addOption("O", true, "Further options, comma-separated. E.g. -O lock.overwrite=true,opt2=value2");
 	}
 
 	/**
@@ -164,6 +168,7 @@ public class OCRCli {
 		engine = ocrEngineFactory.newOcrEngine();
 
 		List<String> files = ocr.defaultOpts(args);
+		engine.setOptions(extraOptions);
 		if (files.size() > 1) {
 			logger.error("there are more folders, should be only one folder as Input");
 			System.exit(0);
@@ -437,8 +442,26 @@ public class OCRCli {
 				System.exit(0);
 			}
 		}
+		if (cmd.hasOption("O")) {
+			String extraOptionsString = cmd.getOptionValue("O");
+			if (extraOptionsString != null	&& !extraOptionsString.equals("")) {
+				extraOptions = new HashMap<String, String>();
+				parseExtraOptions(extraOptionsString);
+			}
+		}
 		// List of the directory wich are images
 		return cmd.getArgList();
 	}
 
+	private void parseExtraOptions(String extras) {
+		String[] extrasArray = extras.split(","); // opt1=a,opt2=b
+		for (String extraOpt : extrasArray) {
+			String[] keyAndValue = extraOpt.split("=");
+			String key = keyAndValue[0];
+			String value = keyAndValue[1];
+			extraOptions.put(key, value);
+		}
+		
+	}
+	
 }

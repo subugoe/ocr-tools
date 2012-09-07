@@ -19,28 +19,28 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
-
+import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.AbstractHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
@@ -87,7 +87,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	// OCR Processes
 	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
 
-	protected HazelcastInstance hazel;
+	protected Map<String, String> extraOptions = new HashMap<String, String>();
 	
 	/**
 	 * Instantiates a new abbyy server engine.
@@ -95,7 +95,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	private AbbyyServerOCREngine() throws ConfigurationException {
+	protected AbbyyServerOCREngine() throws ConfigurationException {
 		config = new ConfigParser().parse();
 		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
 				config);
@@ -109,16 +109,43 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	protected void start() {
 		started = true;
-		hazel = Hazelcast.newHazelcastInstance(null);
-		ExecutorService pool = new OCRExecuter(maxThreads, hotfolder, hazel, config);
+		
+		try {
+			String overwrite = extraOptions.get("lock.overwrite");
+			boolean overwriteLock = overwrite != null && overwrite.equals("true");
+
+			String serverLockFile = ConfigParser.SERVER_LOCK_FILE_NAME;
+			URI lockURI = new URI(config.getServerURL() + serverLockFile);
+			
+			if (overwriteLock) {
+				// delete lock if exists
+			}
+		
+			boolean lockExists = hotfolder.exists(lockURI);
+			
+			if (lockExists) {
+				// error
+			}
+			
+			OutputStream tempLock = hotfolder.createTmpFile("lock");
+			IOUtils.write("bla", tempLock);
+			hotfolder.copyTmpFile("lock", lockURI);
+			hotfolder.deleteTmpFile("lock");
+			
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		OCRExecuter pool = createPool();
 
 		for (AbbyyOCRProcess process : processes) {
 			process.setTime(new Date().getTime());
-			if(!process.getSplitProcess()){
-				((OCRExecuter) pool).noSplitProcess(process);
-			}else {
-				pool.execute(process);
-			}
+			boolean processSplitting = process.getSplitProcess(); 
+			pool.execute(process, processSplitting);
 		}
 
 		pool.shutdown();
@@ -127,9 +154,17 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		} catch (InterruptedException e) {
 			logger.error("Got a problem with thread pool: ", e);
 		}
-		hazel.getLifecycleService().shutdown();
+		
+		cleanUp();
 	}
 	
+	protected OCRExecuter createPool() {
+		return new OCRExecuter(maxThreads, hotfolder, config);
+	}
+	
+	protected void cleanUp() {
+		// eg shutdown something
+	}
 	
 	/**
 	 * Gets the single instance of AbbyyServerOCREngine.
@@ -273,7 +308,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 				process.addImage(image);
 			}
 			process.processTimeout = (long) process.getOcrImages().size()
-					* process.config.maxMillisPerFile;
+					* process.getConfig().maxMillisPerFile;
 		}
 
 		return process;
@@ -299,6 +334,17 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	@Override
 	public String getVersion() {
 		return version;
+	}
+
+	@Override
+	public void setOptions(Map<String, String> opts) {
+		extraOptions = opts;
+		
+	}
+
+	@Override
+	public Map<String, String> getOptions() {
+		return extraOptions;
 	}
 
 }

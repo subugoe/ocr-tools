@@ -22,6 +22,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 
 /**
@@ -172,4 +173,7 @@ public interface OCREngine {
 	 */
 	abstract public Boolean init();
 
+	abstract public void setOptions(Map<String, String> params);
+	
+	abstract public Map<String, String> getOptions();
 }

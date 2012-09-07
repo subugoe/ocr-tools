@@ -123,6 +123,16 @@
 				</resources>
 			</build>
 		</profile>
+		<profile>
+			<id>abbyy-multiuser</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources-abbyy-multiuser</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
 	</profiles>
 	<build>
 		<defaultGoal>package</defaultGoal>

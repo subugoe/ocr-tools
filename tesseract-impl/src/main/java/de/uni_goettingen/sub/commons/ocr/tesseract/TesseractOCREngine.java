@@ -1,5 +1,6 @@
 package de.uni_goettingen.sub.commons.ocr.tesseract;
 
+import java.util.Map;
 import java.util.Observable;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
@@ -100,5 +101,17 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 	 */
 	public OCRProcess newOcrProcess() {
 		return new TesseractOCRProcess();
+	}
+
+	@Override
+	public void setOptions(Map<String, String> params) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Map<String, String> getOptions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
