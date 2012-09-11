@@ -21,6 +21,8 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
@@ -89,6 +91,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 	protected Map<String, String> extraOptions = new HashMap<String, String>();
 	
+	protected URI lockURI;
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
@@ -112,32 +115,21 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		
 		try {
 			String overwrite = extraOptions.get("lock.overwrite");
-			boolean overwriteLock = overwrite != null && overwrite.equals("true");
+			boolean overwriteLock = (overwrite != null && overwrite.equals("true"));
 
 			String serverLockFile = ConfigParser.SERVER_LOCK_FILE_NAME;
-			URI lockURI = new URI(config.getServerURL() + serverLockFile);
+			lockURI = new URI(config.getServerURL() + serverLockFile);
 			
 			if (overwriteLock) {
-				// delete lock if exists
+				hotfolder.deleteIfExists(lockURI);
 			}
 		
-			boolean lockExists = hotfolder.exists(lockURI);
-			
-			if (lockExists) {
-				// error
-			}
-			
-			OutputStream tempLock = hotfolder.createTmpFile("lock");
-			IOUtils.write("bla", tempLock);
-			hotfolder.copyTmpFile("lock", lockURI);
-			hotfolder.deleteTmpFile("lock");
+			handleLock();
 			
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error("Error with server lock file " + lockURI, e1);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error with server lock file " + lockURI, e);
 		}
 		
 		OCRExecuter pool = createPool();
@@ -158,12 +150,37 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		cleanUp();
 	}
 	
+	protected void handleLock() throws IOException {
+		boolean lockExists = hotfolder.exists(lockURI);
+		
+		if (lockExists) {
+			throw new RuntimeException("Another client instance is running! See the lock file at " + lockURI);
+		}
+		writeLockFile();
+
+	}
+	
+	protected void writeLockFile() throws IOException {
+		String thisIp = InetAddress.getLocalHost().getHostAddress();
+		String thisId = ManagementFactory.getRuntimeMXBean().getName();
+		
+		OutputStream tempLock = hotfolder.createTmpFile("lock");
+		IOUtils.write("IP: " + thisIp + "\nID: " + thisId, tempLock);
+		hotfolder.copyTmpFile("lock", lockURI);
+		hotfolder.deleteTmpFile("lock");
+		
+	}
+	
 	protected OCRExecuter createPool() {
 		return new OCRExecuter(maxThreads, hotfolder, config);
 	}
 	
 	protected void cleanUp() {
-		// eg shutdown something
+		try {
+			hotfolder.delete(lockURI);
+		} catch (IOException e) {
+			logger.error("Error while deleting lock file: " + lockURI, e);
+		}
 	}
 	
 	/**

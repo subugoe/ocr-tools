@@ -1,5 +1,8 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
 
+import java.io.IOException;
+import java.util.Set;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,22 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	}
 
 	@Override
+	protected void handleLock() throws IOException {
+		Set<String> lockSet = Hazelcast.getSet("lockSet");
+		boolean lockExists = hotfolder.exists(lockURI);
+		
+		if (lockExists && !lockSet.contains("lockEntry")) {
+			throw new RuntimeException("Another client instance is running! See the lock file at " + lockURI);
+		}
+		if (!lockExists) {
+			writeLockFile();
+			lockSet.add("lockEntry");
+		}
+
+
+	}
+
+	@Override
 	protected OCRExecuter createPool() {
 		return new HazelcastOCRExecutor(maxThreads, hotfolder, config);
 	}
@@ -41,6 +60,14 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	@Override
 	protected void cleanUp() {
 		Hazelcast.getLifecycleService().shutdown();
+		if (Hazelcast.getCluster().getMembers().size() == 1) {
+			try {
+				hotfolder.delete(lockURI);
+			} catch (IOException e) {
+				logger.error("Error while deleting lock file: " + lockURI, e);
+			}
+
+		}
 	}
 	
 }
