@@ -168,7 +168,9 @@ public class OCRCli {
 		engine = ocrEngineFactory.newOcrEngine();
 
 		List<String> files = ocr.defaultOpts(args);
-		engine.setOptions(extraOptions);
+		if (extraOptions != null) {
+			engine.setOptions(extraOptions);
+		}
 		if (files.size() > 1) {
 			logger.error("there are more folders, should be only one folder as Input");
 			System.exit(0);
