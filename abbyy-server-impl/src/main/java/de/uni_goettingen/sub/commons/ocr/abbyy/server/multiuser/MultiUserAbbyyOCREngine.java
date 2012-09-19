@@ -36,19 +36,32 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 		return _instance;
 	}
 
+	/**
+	 * Handles the server lock with Hazelcast in mind. 
+	 * 
+	 */
 	@Override
 	protected void handleLock() throws IOException {
+		// the set is used as a hint for incoming instances that 
+		// it is OK to ignore the lock file on the server
 		Set<String> lockSet = Hazelcast.getSet("lockSet");
 		boolean lockExists = hotfolder.exists(lockURI);
 		
-		if (lockExists && !lockSet.contains("lockEntry")) {
-			throw new RuntimeException("Another client instance is running! See the lock file at " + lockURI);
-		}
 		if (!lockExists) {
+			// no lock file, ie no other processes running, so write it
 			writeLockFile();
+			// just add some string so that the next instances can check if it's there.
+			// "Registering" the external lock inside the current Hazelcast cluster
 			lockSet.add("lockEntry");
 		}
+		if (lockExists && !lockSet.contains("lockEntry")) {
+			// there is a lock file, but it is not "registered" in the running cluster
+			// which means another cluster or program instance is running.
+			throw new RuntimeException("Another client instance is running! See the lock file at " + lockURI);
+		}
 
+		// last case: lock exists and is "registered". Lock can be ignored, 
+		// because we are part of the right cluster.
 
 	}
 
@@ -61,6 +74,7 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	protected void cleanUp() {
 		Hazelcast.getLifecycleService().shutdown();
 		if (Hazelcast.getCluster().getMembers().size() == 1) {
+			// the current instance is the only one in the cluster, so the lock can be deleted.
 			try {
 				hotfolder.delete(lockURI);
 			} catch (IOException e) {
