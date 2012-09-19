@@ -121,6 +121,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 			lockURI = new URI(config.getServerURL() + serverLockFile);
 			
 			if (overwriteLock) {
+				// the lock is deleted here, but a new one is created later
 				hotfolder.deleteIfExists(lockURI);
 			}
 		
@@ -150,6 +151,12 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		cleanUp();
 	}
 	
+	/**
+	 * Controls the program flow depending on the state of the server lock.
+	 * Can be overwritten by subclasses to implement a different state management.
+	 * 
+	 * @throws IOException
+	 */
 	protected void handleLock() throws IOException {
 		boolean lockExists = hotfolder.exists(lockURI);
 		
@@ -160,6 +167,11 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 	}
 	
+	/**
+	 * Creates a lock file containing the IP address and an ID of the current JVM process.
+	 * 
+	 * @throws IOException
+	 */
 	protected void writeLockFile() throws IOException {
 		String thisIp = InetAddress.getLocalHost().getHostAddress();
 		String thisId = ManagementFactory.getRuntimeMXBean().getName();
@@ -171,6 +183,12 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		
 	}
 	
+	/**
+	 * Factory method for an executor. Subclasses can overwrite this method to
+	 * return their own implementation.
+	 * 
+	 * @return an instance of a pool/executor
+	 */
 	protected OCRExecuter createPool() {
 		return new OCRExecuter(maxThreads, hotfolder, config);
 	}
