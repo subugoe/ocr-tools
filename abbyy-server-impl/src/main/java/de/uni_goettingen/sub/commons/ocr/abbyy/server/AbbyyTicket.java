@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.ExportParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.ImageProcessingParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.InputFile;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.MSWordExportSettings;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.MSWordXMLExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.PDFExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
@@ -280,8 +282,13 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		FORMAT_FRAGMENTS.put(OCRFormat.TXT,
 				(OutputFileFormatSettings) txtSettings
 						.changeType(OutputFileFormatSettings.type));
+		
+		MSWordExportSettings docSettings = MSWordExportSettings.Factory
+				.newInstance(opts);
+		FORMAT_FRAGMENTS.put(OCRFormat.DOC,
+				(OutputFileFormatSettings) docSettings
+						.changeType(OutputFileFormatSettings.type));
 
-		FORMAT_FRAGMENTS.put(OCRFormat.DOC, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.HTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.PDFA, null);
@@ -314,7 +321,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		imageProcessingSettings = ImageProcessingParams.Factory.newInstance();
 
 		FORMAT_MAPPING = new HashMap<OCRFormat, String>();
-		FORMAT_MAPPING.put(OCRFormat.DOC, "DOC");
+		FORMAT_MAPPING.put(OCRFormat.DOC, "MSWord");
 		FORMAT_MAPPING.put(OCRFormat.HTML, "HTML");
 		FORMAT_MAPPING.put(OCRFormat.XHTML, "HTML");
 		FORMAT_MAPPING.put(OCRFormat.PDF, "PDF");
