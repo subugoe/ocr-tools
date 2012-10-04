@@ -135,7 +135,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		
 		OCRExecuter pool = createPool();
 
-		for (AbbyyOCRProcess process : processes) {
+		while (!processes.isEmpty()) {
+			AbbyyOCRProcess process = processes.poll();
 			process.setTime(new Date().getTime());
 			boolean processSplitting = process.getSplitProcess(); 
 			pool.execute(process, processSplitting);
@@ -149,6 +150,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		}
 		
 		cleanUp();
+		started = false;
 	}
 	
 	/**
