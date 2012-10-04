@@ -16,7 +16,7 @@
 			<artifactId>servlet-api</artifactId>
 			<version>2.4</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -45,5 +45,41 @@
 			<artifactId>util</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>de.uni-goettingen.sub</groupId>
+			<artifactId>abbyy-server-impl</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>3.0.1.RELEASE</version>
+		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
+			<id>abbyy</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources-abbyy</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>abbyy-multiuser</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources-abbyy-multiuser</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
+	
 </project>

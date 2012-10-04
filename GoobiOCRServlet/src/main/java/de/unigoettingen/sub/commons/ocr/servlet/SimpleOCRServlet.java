@@ -12,9 +12,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
@@ -33,7 +37,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 
 // TODO: Auto-generated Javadoc
@@ -91,6 +96,8 @@ public class SimpleOCRServlet extends HttpServlet {
 	/** The suffix. */
 	String suffix = null;
 
+	String jobName;
+	
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -127,16 +134,30 @@ public class SimpleOCRServlet extends HttpServlet {
 		files = createFileList(request.getParameter("imgrange"));
 		copyFiles(files);
 
+		
+		String workDir = cacheDir + path;
+		List<File> images = new ArrayList<File>();
 		for (String file : files) {
-			try {
-				logger.debug("Ocring " + file + " to " + file + ".txt");
-
-				ocr(file, file + ".txt");
-			} catch (Exception e) {
-				logger.error("Error while performing OCR: ", e);
-				throw new ServletException(e);
-			}
+			images.add(new File(workDir + file));
 		}
+		
+		try {
+			ocr(images);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+//		for (String file : files) {
+//			try {
+//				logger.debug("Ocring " + file + " to " + file + ".txt");
+//
+//				ocr(file, file + ".txt");
+//			} catch (Exception e) {
+//				logger.error("Error while performing OCR: ", e);
+//				throw new ServletException(e);
+//			}
+//		}
 
 		pw.println(createResponse(files));
 
@@ -162,18 +183,11 @@ public class SimpleOCRServlet extends HttpServlet {
 			throw new ServletException("Kein Startpunkt für das auflösen der Pfade gefunden.");
 		}
 
-		ocrScript = getServletConfig().getInitParameter(OCRSCRIPT_PARAMETER).toString();
-		System.setProperty("FineReaderEngine.cmd", ocrScript);
-		if (ocrScript == null) {
-			throw new ServletException("Kein OCR Programm angegeben.");
-		}
-
 		suffix = getServletConfig().getInitParameter(SUFFIX_PARAMETER).toString();
 		if (suffix == null) {
 			throw new ServletException("Kein Suffix für die Ergebnisse angegeben");
 		}
-
-		//getServletConfig().getInitParameter()
+		
 	}
 
 	/**
@@ -188,9 +202,8 @@ public class SimpleOCRServlet extends HttpServlet {
 
 		StringBuilder response = new StringBuilder();
 		String line;
-		for (String file : files) {
 			response.append("<pre>");
-			String txtfile = workDir + file + ".txt";
+			String txtfile = workDir + jobName + suffix;
 			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(txtfile), "UTF-8"));
 			if (!in.ready()) {
 				throw new IOException();
@@ -200,7 +213,6 @@ public class SimpleOCRServlet extends HttpServlet {
 			}
 			in.close();
 			response.append("</pre><hr/>");
-		}
 
 		return response.toString();
 	}
@@ -283,6 +295,10 @@ public class SimpleOCRServlet extends HttpServlet {
 		String toDir = cacheDir + path + File.separator;
 		String fromDir = dirPrefix + path + File.separator;
 
+		if(!new File(fromDir).exists()) {
+			throw new ServletException("Source path does not exist: " + fromDir);
+		}
+		
 		File tmp = new File(toDir);
 		if (!tmp.exists() && !tmp.mkdirs()) {
 			throw new ServletException("Couldn't create temp directory!");
@@ -302,7 +318,7 @@ public class SimpleOCRServlet extends HttpServlet {
 	 * @throws URISyntaxException the uRI syntax exception
 	 */
 	@SuppressWarnings("serial")
-	private void ocr (String in, String out) throws OCRException, URISyntaxException {
+	private void ocr (String in, String out) throws URISyntaxException {
 		String workDir = cacheDir + path;
 
 		URI infile = new URI(new File(workDir).toURI().toString() + in);
@@ -314,7 +330,7 @@ public class SimpleOCRServlet extends HttpServlet {
 
 		logger.trace("OCR engine loaded successfuly");
 		}else {
-			throw new OCRException("Couldn't initialize engine");
+			throw new RuntimeException("Couldn't initialize engine");
 		}
 
 		//Create output directory
@@ -338,6 +354,56 @@ public class SimpleOCRServlet extends HttpServlet {
 		op.setOcrOutputs(conf);
 		
 		oe.recognize(op);
+
+	}
+	
+	private void ocr(List<File> images) throws URISyntaxException {
+
+		String workDir = cacheDir + path;
+
+		
+		File folder = new File(cacheDir + path);
+		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
+				"context.xml"));
+		OCREngineFactory ocrEngineFactory = (OCREngineFactory) factory
+				.getBean("OCREngineFactory");
+
+		OCREngine engine = ocrEngineFactory.newOcrEngine();
+
+
+			logger.debug("Creating Process for " + folder.toString());
+			OCRProcess aop = engine.newOcrProcess();
+			jobName = folder.getName();
+			aop.setName(jobName);
+			if (jobName == null) {
+				logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
+				aop.setName(UUID.randomUUID().toString());
+			}
+			List<OCRImage> imgs = new ArrayList<OCRImage>();
+			for (File imageFile : images) {
+				OCRImage aoi = engine.newOcrImage(imageFile.toURI());
+				aoi.setSize(imageFile.length());
+				imgs.add(aoi);
+			}
+			aop.setOcrImages(imgs);
+
+				OCROutput aoo = engine.newOcrOutput();						
+				URI uri = new URI(new File(workDir).toURI()
+						+ jobName
+						+ suffix);
+				logger.debug("output Location " + uri.toString());
+				aoo.setUri(uri);
+				aoo.setlocalOutput(new File(workDir).getAbsolutePath());
+				aop.addOutput(OCRFormat.TXT, aoo);
+			// add language
+			aop.setLanguages(new HashSet<Locale>(){{add(new Locale(lang));}});
+			aop.setTextTyp(OCRTextTyp.valueOf("NORMAL"));
+			engine.addOcrProcess(aop);
+
+			
+			logger.info("Starting recognize method");
+			engine.recognize();
+			logger.debug("recognize Finished");
 
 	}
 }
