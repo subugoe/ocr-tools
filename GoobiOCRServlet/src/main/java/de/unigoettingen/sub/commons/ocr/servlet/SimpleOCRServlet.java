@@ -398,6 +398,7 @@ public class SimpleOCRServlet extends HttpServlet {
 			// add language
 			aop.setLanguages(new HashSet<Locale>(){{add(new Locale(lang));}});
 			aop.setTextTyp(OCRTextTyp.valueOf("NORMAL"));
+			aop.setPriority(OCRPriority.ABOVENORMAL);
 			engine.addOcrProcess(aop);
 
 			
