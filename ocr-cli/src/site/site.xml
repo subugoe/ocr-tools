@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="ocr-cli">
 	 <body>
+	 	<menu ref="parent"/>
 	 	<menu name="OCR-CLI">
 		   <item name="Übersicht" href="ocrview.html"/>
 		   <item name=" Installations- und Nutzungsanweisungen" href="InstructionOfUtilisation.html"/>
