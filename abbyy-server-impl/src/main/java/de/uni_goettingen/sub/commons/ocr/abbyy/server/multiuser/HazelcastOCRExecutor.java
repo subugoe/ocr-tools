@@ -13,14 +13,14 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.ItemComparator;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRExecuter;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 
-public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener<AbbyyOCRProcess>{
+public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener{
 
 	protected static Comparator<AbbyyOCRProcess> ORDER;
 
 	protected PriorityQueue<AbbyyOCRProcess> q;
 
 	protected ISet<AbbyyOCRProcess> queuedProcesses;
-	protected ISet<AbbyyOCRProcess> runningProcesses;
+	protected ISet<String> runningProcesses;
 
 	public HazelcastOCRExecutor(Integer maxThreads, Hotfolder hotfolder,
 			ConfigParser config) {
@@ -43,12 +43,11 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener<Ab
 
 			queuedProcesses.add(abbyyOCRProcess);
 
-			// TODO: deadlock danger
+			// TODO: deadlock danger? Maybe use hazelcast's distributed lock
 			while (true) {
 
 				boolean currentIsHead = false;
 				boolean slotsFree = false;
-				
 				synchronized (queuedProcesses) {
 					
 					int maxProcesses = maxThreads;
@@ -60,21 +59,18 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener<Ab
 					AbbyyOCRProcess head = q.poll();
 
 					currentIsHead = head.equals(abbyyOCRProcess);
-
-//					System.out.println(currentIsHead);
-//					System.out.println(head.getName());
-//					while ((head = q.poll()) != null) {
-//						System.out.println(head.getName());
-//					}
 				}
 
 				if (slotsFree && currentIsHead) {
 					// explicit searching is required
 					for (AbbyyOCRProcess ab : queuedProcesses) {
-						if (ab.equals(abbyyOCRProcess))
+						if (ab.equals(abbyyOCRProcess)){
 							queuedProcesses.remove(ab);
+							queuedProcesses.remove(abbyyOCRProcess);
+						}
 					}
-					runningProcesses.add(abbyyOCRProcess);
+
+					runningProcesses.add(abbyyOCRProcess.getiD_Process());
 					break;
 				} else {
 					pause();
@@ -90,13 +86,13 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener<Ab
 
 	// if an item is removed from a Hazelcast set
 	@Override
-	public void itemRemoved(AbbyyOCRProcess arg0) {
+	public void itemRemoved(Object arg0) {
 		resume();
 
 	}
 
 	@Override
-	public void itemAdded(AbbyyOCRProcess arg0) {
+	public void itemAdded(Object arg0) {
 		// don't care
 
 	}
@@ -106,14 +102,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener<Ab
 		super.afterExecute(r, e);
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
-
-			// hazelcast does not use the custom equals method, so you cannot
-			// delete abbyyOcrProcess directly
-			for (AbbyyOCRProcess ab : runningProcesses) {
-				if (ab.equals(abbyyOCRProcess)) {
-					runningProcesses.remove(ab);
-				}
-			}
+			runningProcesses.remove(abbyyOCRProcess.getiD_Process());
 		} else {
 			throw new IllegalStateException("Not a AbbyyOCRProcess object");
 		}

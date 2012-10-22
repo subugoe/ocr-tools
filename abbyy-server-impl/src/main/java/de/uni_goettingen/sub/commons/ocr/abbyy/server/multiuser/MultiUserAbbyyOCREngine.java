@@ -57,7 +57,11 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 		if (lockExists && !lockSet.contains("lockEntry")) {
 			// there is a lock file, but it is not "registered" in the running cluster
 			// which means another cluster or program instance is running.
-			throw new RuntimeException("Another client instance is running! See the lock file at " + lockURI);
+			try {
+				throw new RuntimeException("Another client instance is running! See the lock file at " + lockURI);
+			} finally {
+				Hazelcast.getLifecycleService().shutdown();
+			}
 		}
 
 		// last case: lock exists and is "registered". Lock can be ignored, 
@@ -72,16 +76,18 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 
 	@Override
 	protected void cleanUp() {
-		Hazelcast.getLifecycleService().shutdown();
-		if (Hazelcast.getCluster().getMembers().size() == 1) {
-			// the current instance is the only one in the cluster, so the lock can be deleted.
-			try {
+		try {
+			if (Hazelcast.getCluster().getMembers().size() == 1) {
+				// the current instance is the only one in the cluster, so the
+				// lock can be deleted.
 				hotfolder.delete(lockURI);
-			} catch (IOException e) {
-				logger.error("Error while deleting lock file: " + lockURI, e);
 			}
-
+		} catch (IOException e) {
+			logger.error("Error while deleting lock file: " + lockURI, e);
+		} finally {
+			Hazelcast.getLifecycleService().shutdown();
 		}
+
 	}
 	
 }
