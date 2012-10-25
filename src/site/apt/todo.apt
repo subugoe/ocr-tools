@@ -1,17 +1,25 @@
-Todos and Ideas
+Todos und Ideen
 
- * TODO: Migrate old implementation
+ * Fortgeschritte Features der alten Implementierung übernehmen
 
- * TODO: Work on the TODOs of the API
+  * FormatKonvertierung
 
- * TODO: Migrate the existing Goobi OCR to this new infrastructure (done), add unit tests
+  * JMX monitoring
 
- * TODO: Add a dummy implementation of the OCR API for unit testing (partly done)
+ * Wenn vorhandenen TODO Tags abarbeiten
 
- * TODO: Add a check for duplicates
+ * Unittests
 
- * TODO: Add textMD serialization
+  * Für die OCR des Goobi Metadateneditors
 
- * IDEA: Add an implementation based on Tesseract and / or OCRopus
+  * Vorhandene aber deaktivierte Tests aktivieren
 
- * IDEA: Add JMX monitoring
+  * WebDAV Test Server nutzen
+
+  * Unit Test für Hazelcast wenn möglich
+
+  * Mock OCR Engine für Unit Tests, wenn noch notwendig 
+
+ * Dokumentation sollte aus dem Wiki gelöscht und im Rahmen der Maven Site zusammengeführt werden
+
+
