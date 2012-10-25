@@ -66,8 +66,7 @@ public interface OCRProcessMetadata {
 	 * Sets a string representation of the line break used in the results. One
 	 * of "CR, "CR/LF" or "LF".
 	 * 
-	 * @param linebrreak
-	 *            the linebrreak
+	 * @param linebreak the linebreak
 	 */
 	abstract public void setLinebreak(String linebreak);
 
@@ -94,7 +93,6 @@ public interface OCRProcessMetadata {
 	 * Sets the document type. This is valid for "SGML", "XML", "HTML" and
 	 * "XHTML" and should reference a DTD or schema, if possible by using a URI.
 	 * 
-	 * @return the document type
 	 */
 	abstract public void setDocumentType(String documentType);
 
@@ -125,14 +123,12 @@ public interface OCRProcessMetadata {
 	/**
 	 * Sets the name of the software used to encode / recognize the text.
 	 * 
-	 * @return the software name
 	 */
 	abstract public void setSoftwareName(String softwareName);
 
 	/**
 	 * Sets the name of the software used to encode / recognize the text.
 	 * 
-	 * @return the software name
 	 */
 	abstract public void setSoftwareVersion(String softwareVersion);
 
@@ -180,8 +176,6 @@ public interface OCRProcessMetadata {
 	/**
 	 * Sets the scripts and / or fonts used in this text.
 	 * 
-	 * @param scripts
-	 *            the new scripts
 	 */
 	abstract public void setScripts(List<String> scripts);
 
@@ -198,8 +192,6 @@ public interface OCRProcessMetadata {
 	 * Sets a text note for the {OCRProcess}. This can be any string describing
 	 * the recognized text.
 	 * 
-	 * @param textNote
-	 *            the new text note
 	 */
 	abstract public void setTextNote(String textNote);
 
@@ -208,7 +200,6 @@ public interface OCRProcessMetadata {
 	 * general note to the processing / recognition process. Implementors may
 	 * choose this to encode additional machine readable data as escaped XML.
 	 * 
-	 * @return the processing note
 	 * @throws IOException
 	 */
 	abstract public void setProcessingNote(String processingNote);
@@ -230,7 +221,6 @@ public interface OCRProcessMetadata {
 	 * the engine isn't able to report the confidence level based on a process
 	 * an {@link java.lang.UnsupportedOperationException} should be thrown.
 	 * 
-	 * @return the character accuracy
 	 */
 	abstract public void setCharacterAccuracy(BigDecimal totalChar,
 			BigDecimal totalUncerChar);

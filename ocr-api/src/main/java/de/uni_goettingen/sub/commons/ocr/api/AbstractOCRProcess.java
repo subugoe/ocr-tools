@@ -298,7 +298,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 *            the output, the output settings for the given format
 	 * @see OCRFormat
 	 * @see OCROutput
-	 * @see setOcrOutputs(Map);
+	 * @see #setOcrOutputs(Map);
 	 */
 	public void addOutput (OCRFormat format, OCROutput output) {
 		ocrOutputs.put(format, output);

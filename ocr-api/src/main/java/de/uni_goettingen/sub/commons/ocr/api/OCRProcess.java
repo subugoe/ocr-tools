@@ -188,7 +188,6 @@ public interface OCRProcess {
 	 * a {@link java.lang.UnsupportedOperationException}. The location and / or
 	 * name of this method may change in future releases.
 	 * 
-	 * @return the OCR output metadata
 	 * @see OCRProcessMetadata
 	 */
 	abstract void setOcrProcessMetadata(OCRProcessMetadata ocrProcessMetadata);
@@ -410,7 +409,7 @@ public interface OCRProcess {
 	/**
 	 * Sets the segmentation from CLI.
 	 *
-	 * @param segmentaion the new segmentation 
+	 * @param splitProcess the new segmentation 
 	 */
-	abstract public void setSplitProcess(Boolean SplitProcess);
+	abstract public void setSplitProcess(Boolean splitProcess);
 }

@@ -64,8 +64,7 @@ public interface OCROutput {
 	 * Sets the String Dir for the result. If {@link #isResult()} is true, the result
 	 * should be at this location.
 	 * 
-	 * @param String dir
-	 *            the new dir
+	 * @param uri the new dir
 	 */
 	abstract public void setlocalOutput (String uri);
 	
