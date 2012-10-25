@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="ocr-tools">
 	 <body>
-	 	 <menu name="Dokumentation">
+	 	<menu name="Dokumentation">
 		   <item name="Übersicht" href="overview.html"/>
 		   <item name="Installation" href="installation.html"/>
-		 </menu>
-	 
+                   <item name="Möglicher Verbessetungen und Erweiterungen" href="todo.html"/>
+                </menu>
 	 	<menu ref="modules"/>
 	 	<menu ref="reports"/>
 	 </body>

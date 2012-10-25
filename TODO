@@ -1,9 +1,0 @@
-Todos and Ideas
-- TODO: Migrate old implementation
-- TODO: Work on the TODOs of the API
-- TODO: Migrate the existing Goobi OCR to this new infrastructure (done), add unit tests
-- TODO: Add a dummy implementation of the OCR API for unit testing (partly done)
-- TODO: Add a check for duplicates
-- TODO: Add textMD serialization
-- IDEA: Add an implementation based on Tesseract and / or OCRopus
-- IDEA: Add JMX monitoring
