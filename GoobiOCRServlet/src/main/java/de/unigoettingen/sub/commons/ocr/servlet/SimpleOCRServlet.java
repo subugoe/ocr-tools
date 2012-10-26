@@ -44,45 +44,45 @@ public class SimpleOCRServlet extends HttpServlet {
 	private static final long serialVersionUID = -6874162548956424669L;
 	
 	/** The Constant title. */
-	final static String TITLE = "GDZ Simple-OCR 0.0.3 - Java";
+	static final String TITLE = "GDZ Simple-OCR 0.0.3 - Java";
 		
 	/** The Constant LANG_PARAMETER. */
-	final static String LANG_PARAMETER = "defaultLang";
+	static final String LANG_PARAMETER = "defaultLang";
 	
 	/** The Constant CACHEDIR_PARAMETER. */
-	final static String CACHEDIR_PARAMETER = "cacheDir";
+	static final String CACHEDIR_PARAMETER = "cacheDir";
 	
 	/** The Constant DIRPREFIX_PARAMETER. */
-	final static String DIRPREFIX_PARAMETER = "dirPrefix";
+	static final String DIRPREFIX_PARAMETER = "dirPrefix";
 	
 	/** The Constant OCRSCRIPT_PARAMETER. */
-	final static String OCRSCRIPT_PARAMETER = "ocrScript";
+	static final String OCRSCRIPT_PARAMETER = "ocrScript";
 	
 	/** The Constant SUFFIX_PARAMETER. */
-	final static String SUFFIX_PARAMETER = "suffix";
+	static final String SUFFIX_PARAMETER = "suffix";
 	
 	/** The Constant logger. */
-	final static Logger logger = LoggerFactory.getLogger(SimpleOCRServlet.class);
+	static final Logger logger = LoggerFactory.getLogger(SimpleOCRServlet.class);
 
 	/** The Constant DOWNLOAD_PATH. */
-	final static String DOWNLOAD_PATH = "url-download";
+	static final String DOWNLOAD_PATH = "url-download";
 
 	//String lang = "German";
 	/** The default language */
-	String defaultLang = null;
+	private String defaultLang = null;
 	
 	//String cacheDir = new String("c:\\tmp\\");
 	/** The cache dir. */
-	String cacheDir = null;
+	private String cacheDir = null;
 	//String dirPrefix = new String("\\\\gdz-wrk1\\goobi-ocr$\\");
 	/** The dir prefix. */
-	String dirPrefix = null;
+	private String dirPrefix = null;
 	//String ocrScript = "c:\\Programme\\Abbyy FineReader Engine 8.1\\Samples\\Visual C++ (Raw)\\CLEI2\\Release\\clei.exe";
 	/** The ocr script. */
-	String ocrScript = null;
+	private String ocrScript = null;
 	//String suffix = ".txt";
 	/** The suffix. */
-	String suffix = null;
+	private String suffix = null;
 
 	//String jobName;
 	
