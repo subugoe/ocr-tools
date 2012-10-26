@@ -177,7 +177,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 			pb = buildCmd();
 		} catch (URISyntaxException e1) {
 			logger.error("Can't create process builder, probaly there is a problem with the locations of result files");
-			throw new OCRException("Can't create external process!");
+			throw new OCRException("Can't create external process!", e1);
 		}
 		pb.redirectErrorStream(true);
 		try {
@@ -198,7 +198,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 						break;
 					}
 				}
-				if (line != null && !line.equals("\n") && line.length() > 5) {
+				if (!line.equals("\n") && line.length() > 5) {
 					if (i < 100) {
 						logger.trace(line);
 					}

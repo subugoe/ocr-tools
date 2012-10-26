@@ -44,14 +44,14 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OCREngine {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyCLIOCREngine.class);
 
-	private final String name = "Abbyy Finereader Engine";
-	private final String version = "8.1";
-	public final static Map<OCRFormat, String> FORMAT_MAPPING;
-	public final static Map<OCRFormat, List<String>> FORMAT_SETTINGS;
-	protected final static List<String> engineSettings;
-	public final static Map<Integer, String> ORIENTATION_MAPPINGS;
+	private static final String name = "Abbyy Finereader Engine";
+	private static final String version = "8.1";
+	public static final Map<OCRFormat, String> FORMAT_MAPPING;
+	public static final Map<OCRFormat, List<String>> FORMAT_SETTINGS;
+	protected static final List<String> engineSettings;
+	public static final Map<Integer, String> ORIENTATION_MAPPINGS;
 
-	public final static Integer SEGSIZE = 300;
+	public static final Integer SEGSIZE = 300;
 
 	//This needs to be a list to be able to use preconfigured parameters
 	protected static List<String> cmd;
@@ -309,7 +309,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	@Override
 	public Boolean stop () {
 		// TODO Auto-generated method stub
-		return null;
+		return true;
 	}
 
 	@SuppressWarnings("serial")
