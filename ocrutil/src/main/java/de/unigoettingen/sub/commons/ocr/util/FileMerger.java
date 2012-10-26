@@ -339,9 +339,9 @@ public class FileMerger {
 									}
 								}
 							}
-							if (parser.getLocalName().equalsIgnoreCase(rootTag))
+							if (parser.getLocalName().equalsIgnoreCase(rootTag)) {
 								headerWriten = true;
-
+                                                        }
 							for (int i = 0; i < parser.getAttributeCount(); i++) {
 								String name = parser.getAttributeLocalName(i);
 								String value = parser.getAttributeValue(i);
@@ -471,9 +471,9 @@ public class FileMerger {
 								}
 							}
 						}
-						if (parser.getLocalName().equalsIgnoreCase(rootTag))
+						if (parser.getLocalName().equalsIgnoreCase(rootTag)) {
 							headerWriten = true;
-
+                                                }
 						for (int i = 0; i < parser.getAttributeCount(); i++) {
 							String name = parser.getAttributeLocalName(i);
 							String value = parser.getAttributeValue(i);
@@ -643,7 +643,7 @@ public class FileMerger {
 				++i;
 				page = writer.getImportedPage(reader, i);
 				writer.addPage(page);
-				System.out.println("Processed page " + i);
+				logger.info("Processed page " + i);
 			}
 			writer.freeReader(reader);
 			f++;
@@ -773,8 +773,9 @@ public class FileMerger {
 					writer.writeComment(parser.getText());
 				} else if (event == XMLStreamConstants.START_ELEMENT) {
 					String elementName = parser.getLocalName();
-					if (elementName.equals("head"))
+					if (elementName.equals("head")) {
 						insideHead = true;
+                                        }
 					boolean isFirstHtml = elementName.equals("html")
 							&& fileCounter == 1;
 					boolean isFirstBody = elementName.equals("body")
@@ -854,8 +855,9 @@ public class FileMerger {
 					boolean ignoreMode = fileCounter > 1 && insideHead
 							|| elementName.equals("html")
 							|| elementName.equals("body");
-					if (!ignoreMode || isLastHtml || isLastBody)
+					if (!ignoreMode || isLastHtml || isLastBody) {
 						writer.writeEndElement();
+                                        }
 					if (elementName.equals("head")) {
 						insideHead = false;
 					}
@@ -887,11 +889,8 @@ public class FileMerger {
 
 		tidy.parse(html, out);
 
-		InputStream xhtmlStream = new ByteArrayInputStream(out.toByteArray());
-		return xhtmlStream;
+		return (InputStream) new ByteArrayInputStream(out.toByteArray());
 
-		// System.out.println(new String(out.toByteArray()));
-		// return null;
 	}
 
 	public static void mergeHOCR(List<File> files, File outFile)
