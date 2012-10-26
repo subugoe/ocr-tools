@@ -8,6 +8,7 @@
 	</parent>
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>ocr-tools</artifactId>
+        <name>SUB Commons OCR Tools</name>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
