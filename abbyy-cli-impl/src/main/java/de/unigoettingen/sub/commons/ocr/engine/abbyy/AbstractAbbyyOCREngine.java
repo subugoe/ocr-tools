@@ -44,8 +44,7 @@ public abstract class AbstractAbbyyOCREngine extends AbstractOCREngine implement
 
 	protected static Configuration loadConfig (String configName) {
 		URL configUrl = AbstractAbbyyOCREngine.class.getResource("/" + configName);
-		PropertiesConfiguration pc = loadConfig(configUrl);
-		return pc;
+		return loadConfig(configUrl);
 	}
 
 	//TODO:Add configurable mappings, this can be used for other Finereader based implementations as well
