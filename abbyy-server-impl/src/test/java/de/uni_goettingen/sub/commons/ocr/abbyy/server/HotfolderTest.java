@@ -124,7 +124,7 @@ public class HotfolderTest {
 	@Test
 	public void testCopy() throws IOException, URISyntaxException {
 		logger.debug("Copy " + testImageUri.toString() + " to " + target);
-		apacheVFSHotfolderImpl.copyFile(testImageUri, new URI(target));
+		apacheVFSHotfolderImpl.copyFile(testImageUri, new File(target).toURI());
 		assertTrue("File can't be found.",
 				new File(target).exists());
 	}
@@ -142,8 +142,8 @@ public class HotfolderTest {
 
 	@Test
 	public void testDelete() throws IOException, URISyntaxException {
-		apacheVFSHotfolderImpl.delete(new URI(target));
-		assertTrue(!apacheVFSHotfolderImpl.exists(new URI(target)));
+		apacheVFSHotfolderImpl.delete(new File(target).toURI());
+		assertTrue(!apacheVFSHotfolderImpl.exists(new File(target).toURI()));
 	}
 
 
