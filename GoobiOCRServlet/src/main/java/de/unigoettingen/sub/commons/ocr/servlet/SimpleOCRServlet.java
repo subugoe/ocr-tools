@@ -1,21 +1,16 @@
 package de.unigoettingen.sub.commons.ocr.servlet;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -28,9 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -40,6 +32,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
+import java.io.BufferedReader;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -51,7 +44,7 @@ public class SimpleOCRServlet extends HttpServlet {
 	private static final long serialVersionUID = -6874162548956424669L;
 	
 	/** The Constant title. */
-	final static String title = "GDZ Simple-OCR 0.0.3 - Java";
+	final static String TITLE = "GDZ Simple-OCR 0.0.3 - Java";
 	
 	/** The path. */
 	protected String path;
@@ -104,7 +97,8 @@ public class SimpleOCRServlet extends HttpServlet {
 	@Override
 	public void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		//TODO: URL Einbauen
-		URL url = null;
+		/*
+                URL url = null;
 		if (request.getParameter("url") != null) {
 			try {
 				url = new URL(request.getParameter("url"));
@@ -113,11 +107,11 @@ public class SimpleOCRServlet extends HttpServlet {
 			}
 			//String urlPath = download(url);
 		}
-
+                */
 		response.setContentType("text/html");
 		PrintWriter pw = response.getWriter();
 		pw.println("<html><head>");
-		pw.println("<title>" + title + "</title></head><body>");
+		pw.println("<title>" + TITLE + "</title></head><body>");
 		pw.println("<h1>Ergebnis:</h1><hr>");
 
 		if (request.getParameter("lang") != null) {
@@ -318,7 +312,8 @@ public class SimpleOCRServlet extends HttpServlet {
 	 * @throws URISyntaxException the uRI syntax exception
 	 */
 	@SuppressWarnings("serial")
-	private void ocr (String in, String out) throws URISyntaxException {
+	/*
+        private void ocr (String in, String out) throws URISyntaxException {
 		String workDir = cacheDir + path;
 
 		URI infile = new URI(new File(workDir).toURI().toString() + in);
@@ -356,6 +351,7 @@ public class SimpleOCRServlet extends HttpServlet {
 		oe.recognize(op);
 
 	}
+        */
 	
 	private void ocr(List<File> images) throws URISyntaxException {
 
