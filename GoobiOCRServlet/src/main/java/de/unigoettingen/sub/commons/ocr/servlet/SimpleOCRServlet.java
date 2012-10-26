@@ -45,10 +45,7 @@ public class SimpleOCRServlet extends HttpServlet {
 	
 	/** The Constant title. */
 	final static String TITLE = "GDZ Simple-OCR 0.0.3 - Java";
-	
-	/** The path. */
-	protected String path;
-	
+		
 	/** The Constant LANG_PARAMETER. */
 	final static String LANG_PARAMETER = "defaultLang";
 	
@@ -71,11 +68,9 @@ public class SimpleOCRServlet extends HttpServlet {
 	final static String DOWNLOAD_PATH = "url-download";
 
 	//String lang = "German";
-	/** The lang. */
-	String lang = null;
+	/** The default language */
+	String defaultLang = null;
 	
-	/** The files. */
-	List<String> files = null;
 	//String cacheDir = new String("c:\\tmp\\");
 	/** The cache dir. */
 	String cacheDir = null;
@@ -89,7 +84,7 @@ public class SimpleOCRServlet extends HttpServlet {
 	/** The suffix. */
 	String suffix = null;
 
-	String jobName;
+	//String jobName;
 	
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -113,10 +108,12 @@ public class SimpleOCRServlet extends HttpServlet {
 		pw.println("<html><head>");
 		pw.println("<title>" + TITLE + "</title></head><body>");
 		pw.println("<h1>Ergebnis:</h1><hr>");
-
+                String lang, path;
 		if (request.getParameter("lang") != null) {
 			lang = request.getParameter("lang");
-		}
+		} else {
+                    lang = defaultLang;
+                }
 		if (request.getParameter("path") != null) {
 			path = normalizePath(request.getParameter("path"));
 		} else {
@@ -125,10 +122,9 @@ public class SimpleOCRServlet extends HttpServlet {
 		if (request.getParameter("imgrange") == null) {
 			throw new ServletException("<h1>fehlende Eingabedaten</h1>");
 		}
-		files = createFileList(request.getParameter("imgrange"));
-		copyFiles(files);
+		List<String> files = createFileList(request.getParameter("imgrange"));
+		copyFiles(files, path);
 
-		
 		String workDir = cacheDir + path;
 		List<File> images = new ArrayList<File>();
 		for (String file : files) {
@@ -136,10 +132,10 @@ public class SimpleOCRServlet extends HttpServlet {
 		}
 		
 		try {
-			ocr(images);
+			ocr(images, lang, path);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("Malformed URL;", e);
+
 		}
 		
 //		for (String file : files) {
@@ -153,7 +149,7 @@ public class SimpleOCRServlet extends HttpServlet {
 //			}
 //		}
 
-		pw.println(createResponse(files));
+		pw.println(createResponse(path, getJobName(path)));
 
 	}
 
@@ -162,8 +158,8 @@ public class SimpleOCRServlet extends HttpServlet {
 	 */
 	@Override
 	public void init () throws ServletException {
-		lang = getServletConfig().getInitParameter(LANG_PARAMETER).toString();
-		if (lang == null) {
+		defaultLang = getServletConfig().getInitParameter(LANG_PARAMETER).toString();
+		if (defaultLang == null) {
 			throw new ServletException("Keine Defaultsprache angegeben");
 		}
 
@@ -191,7 +187,7 @@ public class SimpleOCRServlet extends HttpServlet {
 	 * @return the string
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	private String createResponse (List<String> filelist) throws IOException {
+	private String createResponse (String path, String jobName) throws IOException {
 		String workDir = cacheDir + path;
 
 		StringBuilder response = new StringBuilder();
@@ -285,7 +281,7 @@ public class SimpleOCRServlet extends HttpServlet {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws ServletException the servlet exception
 	 */
-	private boolean copyFiles (List<String> files) throws IOException, ServletException {
+	private boolean copyFiles (List<String> files, String path) throws IOException, ServletException {
 		String toDir = cacheDir + path + File.separator;
 		String fromDir = dirPrefix + path + File.separator;
 
@@ -353,11 +349,14 @@ public class SimpleOCRServlet extends HttpServlet {
 	}
         */
 	
-	private void ocr(List<File> images) throws URISyntaxException {
-
+        private String getJobName (String path) {
+            File folder = new File(cacheDir + path);
+            return folder.getName();
+        }
+        
+	private void ocr(List<File> images, final String lang, String path) throws URISyntaxException {
+                //String jobName
 		String workDir = cacheDir + path;
-
-		
 		File folder = new File(cacheDir + path);
 		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
 				"context.xml"));
@@ -366,10 +365,9 @@ public class SimpleOCRServlet extends HttpServlet {
 
 		OCREngine engine = ocrEngineFactory.newOcrEngine();
 
-
 			logger.debug("Creating Process for " + folder.toString());
 			OCRProcess aop = engine.newOcrProcess();
-			jobName = folder.getName();
+			String jobName = getJobName(path);
 			aop.setName(jobName);
 			if (jobName == null) {
 				logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
@@ -397,7 +395,6 @@ public class SimpleOCRServlet extends HttpServlet {
 			aop.setPriority(OCRPriority.ABOVENORMAL);
 			engine.addOcrProcess(aop);
 
-			
 			logger.info("Starting recognize method");
 			engine.recognize();
 			logger.debug("recognize Finished");
