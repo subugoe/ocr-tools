@@ -41,13 +41,13 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 
-public class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OCREngine {
+public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OCREngine {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyCLIOCREngine.class);
 
-	protected final String name = "Abby Finereader Engine";
-	protected final String version = "8.1";
+	private final String name = "Abbyy Finereader Engine";
+	private final String version = "8.1";
 	public final static Map<OCRFormat, String> FORMAT_MAPPING;
-	public static Map<OCRFormat, List<String>> FORMAT_SETTINGS;
+	public final static Map<OCRFormat, List<String>> FORMAT_SETTINGS;
 	protected final static List<String> engineSettings;
 	public final static Map<Integer, String> ORIENTATION_MAPPINGS;
 
@@ -286,8 +286,7 @@ public class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OCREngi
 					thread.join();
 					//TODO: Merge resutls here
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Merge failed: ", e);
 				}
 			}
 
