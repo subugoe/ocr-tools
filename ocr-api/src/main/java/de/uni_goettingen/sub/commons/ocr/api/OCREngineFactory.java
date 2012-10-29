@@ -27,12 +27,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
  * @author cmahnke
  * @since 0.9
  */
-public class OCREngineFactory {
+public final class OCREngineFactory {
 	
 	/** The field _instance contains the reference to this singleton. */
-	private static OCREngineFactory neWInstance,_instance = null;
+	private static OCREngineFactory neWInstance,instance = null;
 	private OCREngine engine;
 
+	private static volatile Object myLock = new Object();
 	/**
 	 * Instantiates a new OCR engine factory.
 	 */
@@ -46,10 +47,14 @@ public class OCREngineFactory {
 	 * @return the OCR engine factory
 	 */
 	public static OCREngineFactory getInstance () {
-		if (_instance == null) {
-			_instance = new OCREngineFactory();
+		if (instance == null) { 
+			synchronized(OCREngineFactory.myLock) {
+				if (instance == null) { // Double-Checked Locking 
+					instance = new OCREngineFactory();
+				}
+			}
 		}
-		return _instance;
+		return instance;
 
 	}
 

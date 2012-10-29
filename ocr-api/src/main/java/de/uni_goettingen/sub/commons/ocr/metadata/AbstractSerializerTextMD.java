@@ -30,18 +30,15 @@ import java.util.Map;
 
 import noNamespace.TextMDDocument;
 import noNamespace.TextMDDocument.TextMD;
-import noNamespace.TextMDDocument.TextMD.AltLanguage;
 import noNamespace.TextMDDocument.TextMD.CharacterInfo;
 import noNamespace.TextMDDocument.TextMD.CharacterInfo.ByteSize;
 import noNamespace.TextMDDocument.TextMD.CharacterInfo.CharacterSize;
 import noNamespace.TextMDDocument.TextMD.Encoding;
 import noNamespace.TextMDDocument.TextMD.CharacterInfo.Linebreak.Enum;
-import noNamespace.TextMDDocument.TextMD.Encoding.EncodingAgent;
 import noNamespace.TextMDDocument.TextMD.Encoding.EncodingPlatform;
 import noNamespace.TextMDDocument.TextMD.Encoding.EncodingSoftware;
 import noNamespace.TextMDDocument.TextMD.Language;
 import noNamespace.TextMDDocument.TextMD.MarkupBasis;
-import noNamespace.TextMDDocument.TextMD.MarkupLanguage;
 
 import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
@@ -345,11 +342,11 @@ public abstract class AbstractSerializerTextMD implements SerializerTextMD {
 //		encoding.setQUALITY("good");
 		
 		// encoding_platform
-		EncodingPlatform encoding_platform = encoding.addNewEncodingPlatform();
+		EncodingPlatform encodingPlatform = encoding.addNewEncodingPlatform();
 
 		if (ocrProcessMetadata.getLinebreak() != null
 				&& !ocrProcessMetadata.getLinebreak().equals("")) {
-			encoding_platform
+			encodingPlatform
 					.setLinebreak(noNamespace.TextMDDocument.TextMD.Encoding.EncodingPlatform.Linebreak.Enum
 							.forString(ocrProcessMetadata.getLinebreak()));
 		}

@@ -62,7 +62,7 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	private BigDecimal wordAccuracy;
 
 	/** The character accuracy. */
-	private BigDecimal characterAccuracy = new BigDecimal(0.0);
+	private BigDecimal characterAccuracy = new BigDecimal("0.0");
 
 	/** The duration. */
 	private Long duration;

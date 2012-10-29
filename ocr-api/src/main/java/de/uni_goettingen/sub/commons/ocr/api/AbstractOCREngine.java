@@ -21,8 +21,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * The Class AbstractOCREngine is a abstract super class for {@link OCREngine}
@@ -76,10 +74,6 @@ public abstract class AbstractOCREngine implements OCREngine {
 	 */
 	public OCRImage newOcrImage(URI imageUri) {
 		return new AbstractOCRImage(imageUri) {
-			@Override
-			public void setUri(URI uri) {
-				super.setUri(uri);
-			}
 		};
 	}
 
@@ -90,10 +84,6 @@ public abstract class AbstractOCREngine implements OCREngine {
 	 */
 	public OCROutput newOcrOutput() {
 		return new AbstractOCROutput() {
-			@Override
-			public void setUri(URI uri) {
-				super.setUri(uri);
-			}
 		};
 	}
 
@@ -104,25 +94,7 @@ public abstract class AbstractOCREngine implements OCREngine {
 	 */
 	public OCRProcess newOcrProcess() {
 		return new AbstractOCRProcess() {
-			@Override
-			public void setName(String name) {
-				super.setName(name);
-			}
-
-			@Override
-			public void addLanguage(Locale lang) {
-				super.addLanguage(lang);
-			}
-
-			@Override
-			public void setOcrOutputs(Map<OCRFormat, OCROutput> ocrOutput) {
-				super.setOcrOutputs(ocrOutput);
-			}
-
-			@Override
-			public void setOcrImages(List<OCRImage> ocrImages) {
-				super.setOcrImages(ocrImages);
-			}
+			private static final long serialVersionUID = 5339229036182449822L;
 		};
 	}
 

@@ -34,15 +34,15 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
 public class ByUrlRequestType {
 
 	@XmlElement(defaultValue = "HIGH")
-	protected OCRPriority ocrPriorityType;
+	private OCRPriority ocrPriorityType;
 	@XmlElement(defaultValue = "NORMAL")
-	protected OCRTextTyp textType;
+	private OCRTextTyp textType;
 	@XmlElement(defaultValue = "TXT")
-	protected OCRFormat outputFormat;
-	protected RecognitionLanguages ocrlanguages;
+	private OCRFormat outputFormat;
+	private RecognitionLanguages ocrlanguages;
 	@XmlElement(required = true, defaultValue = "http://vmext21-069.gwdg.de/test.tif")
 	@XmlSchemaType(name = "anyURI")
-	protected String inputUrl;
+	private String inputUrl;
 
 	
 	

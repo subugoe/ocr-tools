@@ -226,7 +226,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#isFinished()
 	 */
 	public Boolean isFinished () {
-		return isFinished();
+		return isFinished;
 	}
 
 	/* (non-Javadoc)

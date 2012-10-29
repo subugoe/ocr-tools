@@ -81,9 +81,6 @@ public enum OCRFormat {
 	/** The name. */
 	private final String name;
 
-	/** The formats. */
-	protected static Map<String, OCRFormat> formats = new HashMap<String, OCRFormat>();
-
 	/**
 	 * Instantiates a new OCR format.
 	 * 

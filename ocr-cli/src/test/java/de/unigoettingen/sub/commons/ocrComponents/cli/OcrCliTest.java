@@ -35,7 +35,7 @@ public class OcrCliTest {
 
 	@Before
 	public void init() {
-		ocrCli = OCRCli.getInstance();
+		ocrCli = new OCRCli();
 
 		String[] args = new String[5];
 		args[0] = "-l de,en";

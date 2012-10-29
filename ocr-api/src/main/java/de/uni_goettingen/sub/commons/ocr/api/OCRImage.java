@@ -98,7 +98,7 @@ public interface OCRImage {
 		MIXED(-1);
 
 		/** The DEGREE set for this Enum */
-		public final Integer DEGREE;
+		private final Integer degree;
 
 		/**
 		 * Instantiates a new orientation.
@@ -107,7 +107,7 @@ public interface OCRImage {
 		 *            the degree
 		 */
 		Orientation(Integer degree) {
-			this.DEGREE = degree;
+			this.degree = degree;
 		}
 
 		/**
@@ -116,7 +116,7 @@ public interface OCRImage {
 		 * @return the degree, returns -1 if {@link Orientation} is set to MIXED
 		 */
 		public Integer getDegree() {
-			return DEGREE;
+			return degree;
 		}
 
 	}
