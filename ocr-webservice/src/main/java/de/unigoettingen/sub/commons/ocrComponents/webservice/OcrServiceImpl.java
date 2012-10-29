@@ -22,11 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -74,10 +72,10 @@ public class OcrServiceImpl implements OcrService {
 	@Resource
 	private WebServiceContext wsContext;
 	
-	private final String APP_NAME = "ocr-webservice";
+	private final String appName = "ocr-webservice";
 	
 	/** The logger. */
-	protected static Logger logger = LoggerFactory
+	private final static Logger LOGGER = LoggerFactory
 			.getLogger(OcrServiceImpl.class);
 		
 	
@@ -98,10 +96,10 @@ public class OcrServiceImpl implements OcrService {
 	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType request) {
 		ByUrlResponseType byUrlResponseType = new ByUrlResponseType();
 		OCREngine engine;
-		String WEBSERVER_PATH,WEBSERVER_HOSTNAME,LOCAL_PATH, jobName;
+		String webserverPath,webserverHostname,localPath, jobName;
 		int randomNumber;
 		Set<Locale> langs;
-		HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
+		HashMap<OCRFormat, OCROutput> outputDefinitions;
 		Long duration = 0L;
 
 		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
@@ -117,21 +115,21 @@ public class OcrServiceImpl implements OcrService {
 			properties.load(stream);
 			stream.close();
 		} catch (IOException e) {
-			logger.error("Error reading configuration", e);
+			LOGGER.error("Error reading configuration", e);
 		}
 		
-		LOCAL_PATH = properties.getProperty("localpath");
-		if(LOCAL_PATH == null || LOCAL_PATH.equals("")){
-			LOCAL_PATH = System.getProperty("java.io.tmpdir");
+		localPath = properties.getProperty("localpath");
+		if(localPath == null || localPath.equals("")){
+			localPath = System.getProperty("java.io.tmpdir");
 		}
-		if(!LOCAL_PATH.endsWith("/")){
-			LOCAL_PATH = LOCAL_PATH + "/";
+		if(!localPath.endsWith("/")){
+			localPath = localPath + "/";
 		}
 		
-		WEBSERVER_PATH = properties.getProperty("webserverpath");
+		webserverPath = properties.getProperty("webserverpath");
 		
-		if(WEBSERVER_PATH == null || WEBSERVER_PATH.equals("")){
-			WEBSERVER_PATH = System.getProperty("ocrWebservice.root");
+		if(webserverPath == null || webserverPath.equals("")){
+			webserverPath = System.getProperty("ocrWebservice.root");
 		}
 
 
@@ -140,8 +138,8 @@ public class OcrServiceImpl implements OcrService {
 			inputUrl = getUrl(request);
 		} catch (IOException e) {
 			String error = "URL Error: " + e.getMessage();
-			logger.error(error);
-			return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
+			LOGGER.error(error);
+			return byURLresponse(webserverPath, error, byUrlResponseType);
 		}
 
 		engine = ocrEngineFactory.newOcrEngine();
@@ -154,16 +152,16 @@ public class OcrServiceImpl implements OcrService {
 			randomNumber = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
 			
 			jobName = "OcrServiceImplService_outputUrl"+ "_" + randomNumber;
-			File file = new File(LOCAL_PATH + randomNumber + "/" + jobName
+			File file = new File(localPath + randomNumber + "/" + jobName
 					+ "/" + randomNumber + ".tif");
 
 			try {
 				FileUtils.copyURLToFile(inputUrl, file);
 			} catch (IOException e) {
-				logger.error("ERROR CAN NOT COPY URL To File");
+				LOGGER.error("ERROR CAN NOT COPY URL To File");
 				String error = "ERROR CAN NOT COPY URL: " + request.getInputUrl()
 						+ " To Local File";
-				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
+				return byURLresponse(webserverPath, error, byUrlResponseType);
 			}
 
 			aop.setName(jobName);
@@ -173,36 +171,41 @@ public class OcrServiceImpl implements OcrService {
 			aop.setOcrImages(imgs);
 
 			// add format
-			OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();
+			outputDefinitions = new HashMap<OCRFormat, OCROutput>();
 
 			OCROutput aoo = engine.newOcrOutput();
 			URI uri = null;
-			
+			String temp = "temp";
 			try {
-				uri = new URI(new File(WEBSERVER_PATH).toURI()+ "/" + "temp"
+				uri = new URI(new File(webserverPath).toURI()+ "/" + temp
 						+ "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
 			} catch (URISyntaxException e) {
-				logger.error("URL is Malformed: " + WEBSERVER_PATH 
-						+ "temp" + "/" + jobName + "."
+				LOGGER.error("URL is Malformed: " + webserverPath 
+						+ temp + "/" + jobName + "."
 						+ ocrformat.toString().toLowerCase());
-				String error = "URL is Malformed: " + WEBSERVER_PATH 
-				+ "temp" + "/" + jobName + "."
+				String error = "URL is Malformed: " + webserverPath 
+				+ temp + "/" + jobName + "."
 				+ ocrformat.toString().toLowerCase();
-				file.delete();
-				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
+				boolean wasDeleted = file.delete();
+				if (!wasDeleted) {
+					LOGGER.error("Could not delete file " + file.getAbsolutePath());
+				}
+				return byURLresponse(webserverPath, error, byUrlResponseType);
 			}
 			
 			aoo.setUri(uri);
-			OUTPUT_DEFINITIONS.put(ocrformat, aoo);
+			outputDefinitions.put(ocrformat, aoo);
 			aop.addOutput(ocrformat, aoo);
 
-			if(properties.getProperty("hostname").equals("no") || properties.getProperty("hostname").equals(null)){
+			if(properties.getProperty("hostname") == null || properties.getProperty("hostname").equals("no")){
 				  MessageContext mc = wsContext.getMessageContext();
 				  URI url = (URI)mc.get("javax.xml.ws.wsdl.description");
 				  String hostname = url.getHost();
-				  WEBSERVER_HOSTNAME = "http://"+hostname+"/"+APP_NAME+"/"; 
-			  }else WEBSERVER_HOSTNAME = properties.getProperty("hostname");
+				  webserverHostname = "http://"+hostname+"/"+appName+"/"; 
+			  }else {
+				  webserverHostname = properties.getProperty("hostname");
+			  }
 			  
 			
 			langs = new HashSet<Locale>();
@@ -217,7 +220,7 @@ public class OcrServiceImpl implements OcrService {
 			aop.setTextTyp(OCRTextTyp.fromValue(request.getTextType().value()));
 			engine.addOcrProcess(aop);
 
-			logger.info("Starting recognize method");
+			LOGGER.info("Starting recognize method");
 			engine.recognize();
 			
 			OCRProcessMetadata meta = aop.getOcrProcessMetadata();
@@ -225,45 +228,45 @@ public class OcrServiceImpl implements OcrService {
 				duration = aop.getOcrProcessMetadata().getDuration();
 			}
 			file.delete();
-			logger.debug("Delete File: "+ file.toString());
+			LOGGER.debug("Delete File: "+ file.toString());
 			
 			try {
 				FileUtils.deleteDirectory(file.getParentFile());
-				FileUtils.deleteDirectory(new File(LOCAL_PATH + randomNumber));
+				FileUtils.deleteDirectory(new File(localPath + randomNumber));
 			} catch (IOException e) {
-				logger.error("ERROR CAN NOT delete Directory");
+				LOGGER.error("ERROR CAN NOT delete Directory");
 			}
 
-			File f = new File(WEBSERVER_PATH + "temp" + "/" + jobName
+			File f = new File(webserverPath + temp + "/" + jobName
 					+ "." + ocrformat.toString().toLowerCase());
 			
 			if( !f.exists()){
-				logger.error("ERROR. CANNOT Find File: "+ f.toString());
+				LOGGER.error("ERROR. CANNOT Find File: "+ f.toString());
 				String error = "File could not be processed: " + inputUrl;
-				return byURLresponse(WEBSERVER_PATH, error, byUrlResponseType);
+				return byURLresponse(webserverPath, error, byUrlResponseType);
 			}
-			
+			String newLine = ".\n";
 			byUrlResponseType.setMessage("Process finished successfully after " + duration + " milliseconds.");
-			byUrlResponseType.setOutputUrl(WEBSERVER_HOSTNAME + "temp" + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
+			byUrlResponseType.setOutputUrl(webserverHostname + temp + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
 			byUrlResponseType.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
 												"Using service: OcrServiceImplService. "+ "\n" +
-												"Parameter processingUnit: "+ WEBSERVER_HOSTNAME + ".\n" +
-												"URL of input image: "+ request.getInputUrl()+ ".\n" +
-												"Wrote file " + file.toString()+  ".\n" +
-												"OUTFORMAT substitution variable value: "+ocrformat.toString()+ ".\n" +
-												"OUTFILE substitution variable value: " + f.getAbsolutePath()+ ".\n" +
-												"LANGUAGES substitution variable value: "+ langs.toString() + ".\n" +
-												"INFILE substitution variable value: "+ file.toString()+  ".\n" +
-												"INTEXTTYPE substitution variable value: "+ request.getTextType().value()+ ".\n" +
+												"Parameter processingUnit: "+ webserverHostname + newLine +
+												"URL of input image: "+ request.getInputUrl()+ newLine +
+												"Wrote file " + file.toString()+  newLine +
+												"OUTFORMAT substitution variable value: "+ocrformat.toString()+ newLine +
+												"OUTFILE substitution variable value: " + f.getAbsolutePath()+ newLine +
+												"LANGUAGES substitution variable value: "+ langs.toString() + newLine +
+												"INFILE substitution variable value: "+ file.toString()+  newLine +
+												"INTEXTTYPE substitution variable value: "+ request.getTextType().value()+ newLine +
 												"Process finished successfully with code 0."+ "\n" +
 												"Output file has been created successfully.."+ "\n" +
-												"Output Url: " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ ".\n" +
-												"Output Url-Abbyy-Result : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ ".xml.result.xml" + ".\n" +
-												"Output Url-Summary-File : " + WEBSERVER_HOSTNAME + "temp" + "/" + jobName	+ "-textMD.xml" + ".\n" + 
+												"Output Url: " + webserverHostname + temp + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ newLine +
+												"Output Url-Abbyy-Result : " + webserverHostname + temp + "/" + jobName	+ ".xml.result.xml" + newLine +
+												"Output Url-Summary-File : " + webserverHostname + temp + "/" + jobName	+ "-textMD.xml" + newLine + 
 												"Process finished successfully after " + duration + " milliseconds.."
 												);
 			
-			byUrlResponseType.setProcessingUnit(WEBSERVER_HOSTNAME);
+			byUrlResponseType.setProcessingUnit(webserverHostname);
 			byUrlResponseType.setReturncode(0);
 			byUrlResponseType.setSuccess(true);
 			byUrlResponseType.setToolProcessingTime(duration);									

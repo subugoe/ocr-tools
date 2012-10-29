@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 public class RecognitionLanguages {
 
 	@XmlElement(defaultValue = "de")
-	protected List<RecognitionLanguage> recognitionLanguage;
+	private List<RecognitionLanguage> recognitionLanguage;
 
 	public List<RecognitionLanguage> getRecognitionLanguage() {
 		if (recognitionLanguage == null) {

@@ -38,17 +38,17 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class ByUrlResponseType {
 
-    protected boolean success;
-    protected int returncode;
+    private boolean success;
+    private int returncode;
     @XmlElement(required = true)
-    protected String message;
-    protected Long toolProcessingTime;
+    private String message;
+    private Long toolProcessingTime;
     @XmlElement(required = true)
-    protected String processingLog;
+    private String processingLog;
     @XmlElement(required = true)
-    protected String processingUnit;
+    private String processingUnit;
     @XmlSchemaType(name = "anyURI")
-    protected String outputUrl;
+    private String outputUrl;
 
    
     

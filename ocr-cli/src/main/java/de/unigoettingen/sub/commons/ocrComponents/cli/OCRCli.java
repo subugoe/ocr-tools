@@ -73,36 +73,23 @@ public class OCRCli {
 	public final static String version = "0.0.4";
 
 	/** The logger. */
-	protected static Logger logger = LoggerFactory
+	private final static Logger LOGGER = LoggerFactory
 			.getLogger(de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli.class);
 
 	/** The opts. */
-	protected static Options opts = new Options();
+	private final static Options opts = new Options();
 
 	/** The local output dir. */
-	protected static String localOutputDir = null;
+	static String localOutputDir = null;
 
 	/** The extension. */
-	protected static String extension = "tif";
+	private static String extension = "tif";
 
 	/** The language. */
-	protected static Set<Locale> langs;
+	static Set<Locale> langs;
 
-	/** The config. */
-	protected HierarchicalConfiguration config;
-	// public String defaultConfig = "server-config.xml";
-	// Settings for Ticket creation
 	/** The recursive mode. */
-	protected Boolean recursiveMode = true;
-
-	/** The args. */
-	String[] args;
-
-	/** The write remote prefix. */
-	protected static Boolean writeRemotePrefix = true;
-
-	/** The _instance. */
-	protected static OCRCli _instance;
+	private static boolean recursiveMode = true;
 
 	/** The foramt. as example TXT, XML or PDF.. */
 	static List<OCRFormat> f = new ArrayList<OCRFormat>();
@@ -117,12 +104,9 @@ public class OCRCli {
 	private static boolean splitProcess = false;
 	
 	/** The engine. */
-	protected static OCREngine engine;
+	private static OCREngine engine;
 
-	/** The ocr process. */
-	protected static OCRProcess ocrProcess;
-
-	static List<File> dirs = new ArrayList<File>();
+	private static List<File> dirs = new ArrayList<File>();
 
 	private static Map<String, String> extraOptions;
 	
@@ -157,9 +141,8 @@ public class OCRCli {
 	 */
 	public static void main(String[] args) throws IOException,
 			URISyntaxException {
-		logger.debug("Creating OCRCli instance");
-		OCRCli ocr = OCRCli.getInstance();
-		logger.debug("Creating OCREngineFactory instance");
+		initOpts();
+		LOGGER.debug("Creating OCREngineFactory instance");
 		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
 				"context.xml"));
 		OCREngineFactory ocrEngineFactory = (OCREngineFactory) factory
@@ -167,12 +150,12 @@ public class OCRCli {
 
 		engine = ocrEngineFactory.newOcrEngine();
 
-		List<String> files = ocr.defaultOpts(args);
+		List<String> files = defaultOpts(args);
 		if (extraOptions != null) {
 			engine.setOptions(extraOptions);
 		}
 		if (files.size() > 1) {
-			logger.error("there are more folders, should be only one folder as Input");
+			LOGGER.error("there are more folders, should be only one folder as Input");
 			System.exit(0);
 		}
 		if (files.size() == 1) {
@@ -199,18 +182,18 @@ public class OCRCli {
 			
 			getDirectories(directory);
 			if (dirs.size() == 0) {
-				logger.error("Directories is Empty : " + book);
+				LOGGER.error("Directories is Empty : " + book);
 				System.exit(0);
 			}
 			for (File id : dirs) {
 				if (OCRUtil.makeFileList(id, extension).size() != 0) {
 
-					logger.debug("Creating Process for " + id.toString());
+					LOGGER.debug("Creating Process for " + id.toString());
 					OCRProcess aop = engine.newOcrProcess();
 					String jobName = id.getName();
 					aop.setName(jobName);
-					if (jobName == null) {
-						logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
+					if (jobName.equals("")) {
+						LOGGER.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
 						aop.setName(UUID.randomUUID().toString());
 					}
 					List<OCRImage> imgs = new ArrayList<OCRImage>();
@@ -226,7 +209,7 @@ public class OCRCli {
 						URI uri = new URI(new File(localOutputDir).toURI()
 								+ id.getName()
 								+ "." + ocrformat.toString().toLowerCase());
-						logger.debug("output Location " + uri.toString());
+						LOGGER.debug("output Location " + uri.toString());
 						aoo.setUri(uri);
 						aoo.setlocalOutput(new File(localOutputDir).getAbsolutePath());
 						aop.addOutput(ocrformat, aoo);
@@ -237,7 +220,7 @@ public class OCRCli {
 					if(ocrPriority != null){
 						aop.setPriority(OCRPriority.valueOf(ocrPriority));
 					}else{
-						logger.error("the process ended, ocrPriority is null");
+						LOGGER.error("the process ended, ocrPriority is null");
 						System.exit(0);
 					}
 					aop.setTextTyp(OCRTextTyp.valueOf(ocrTextTyp));
@@ -245,9 +228,9 @@ public class OCRCli {
 				}
 			}
 		}
-		logger.info("Starting recognize method");
+		LOGGER.info("Starting recognize method");
 		engine.recognize();
-		logger.debug("recognize Finished");
+		LOGGER.debug("recognize Finished");
 	}
 
 	static void getDirectories(File aFile) {
@@ -259,7 +242,7 @@ public class OCRCli {
 					getDirectories(listOfFiles[i]);
 				}
 			} else {
-				logger.error(" [ACCESS DENIED]");
+				LOGGER.error(" [ACCESS DENIED]");
 			}
 		}
 	}
@@ -271,24 +254,13 @@ public class OCRCli {
 	 *            the arguments
 	 * @return the list
 	 */
-	public List<String> configureFromArgs(String[] args) {
+	public static List<String> configureFromArgs(String[] args) {
 		// list of the directory
-		List<String> files = defaultOpts(args);
-		return files;
+
+		return defaultOpts(args);
 
 	}
 
-	/**
-	 * Gets the single instance of OCRCli.
-	 * 
-	 * @return single instance of OCRCli
-	 */
-	public static OCRCli getInstance() {
-		if (_instance == null) {
-			_instance = new OCRCli();
-		}
-		return _instance;
-	}
 
 	/**
 	 * Instantiates a new oCR cli.
@@ -326,7 +298,7 @@ public class OCRCli {
 	 *            the args
 	 * @return the list
 	 */
-	protected List<String> defaultOpts(String[] args) {
+	protected static List<String> defaultOpts(String[] args) {
 
 		String cmdName = "OCRRunner [opts] files";
 		CommandLine cmd = null;
@@ -337,13 +309,12 @@ public class OCRCli {
 			cmd = parser.parse(opts, args);
 
 		} catch (ParseException e) {
-			e.printStackTrace();
+			LOGGER.error("Illegal options", e);
 			System.exit(3);
 		}
 
 		if (cmd.getArgList().isEmpty()) {
-			logger.trace("No Input Files!");
-			System.out.println("No Input Files!");
+			LOGGER.trace("No Input Files!");
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp(cmdName, opts);
 			System.exit(1);
@@ -376,8 +347,8 @@ public class OCRCli {
 		// Debug
 		if (cmd.hasOption("d")) {
 			// logger.setLevel(Level.toLevel(cmd.getOptionValue("d")));
-			logger.debug(cmd.getOptionValue("d"));
-			logger.trace("Debuglevel: " + cmd.getOptionValue("d"));
+			LOGGER.debug(cmd.getOptionValue("d"));
+			LOGGER.trace("Debuglevel: " + cmd.getOptionValue("d"));
 		}
 
 		// Sprache
@@ -388,10 +359,10 @@ public class OCRCli {
 			langs.add(new Locale("de"));
 		}
 		for (Locale lang : langs) {
-			logger.trace("Language: " + lang.getLanguage());
+			LOGGER.trace("Language: " + lang.getLanguage());
 		}
 
-		logger.trace("Parsing Options");
+		LOGGER.trace("Parsing Options");
 
 		if (cmd.hasOption("r")) {
 			recursiveMode = true;
@@ -407,9 +378,9 @@ public class OCRCli {
 				ocrTextTyp = cmd.getOptionValue("t");
 				try {
 					OCRProcess.OCRTextTyp.valueOf(ocrTextTyp).ordinal();
-					logger.trace("ocrTextTyp: " + ocrTextTyp);
+					LOGGER.trace("ocrTextTyp: " + ocrTextTyp);
 				} catch (IllegalArgumentException e) {
-					logger.error("the process ended, This ocrTextTyp < "
+					LOGGER.error("the process ended, This ocrTextTyp < "
 							+ ocrTextTyp + " > is not supported");
 					System.exit(0);
 
@@ -424,14 +395,14 @@ public class OCRCli {
 				ocrPriority = cmd.getOptionValue("p");
 				try {
 					OCRProcess.OCRPriority.valueOf(ocrPriority).ordinal();
-					logger.trace("ocrPriority: " + ocrPriority);
+					LOGGER.trace("ocrPriority: " + ocrPriority);
 				} catch (IllegalArgumentException e) {
-					logger.error("the process ended, This ocrPriority < "
+					LOGGER.error("the process ended, This ocrPriority < "
 							+ ocrPriority + " > is not supported");
 					System.exit(0);
 
 				}
-			}else ocrPriority = "NORMAL";
+			}else {ocrPriority = "NORMAL";}
 		}
 		// Output foler
 		if (cmd.hasOption("o")) {
@@ -439,7 +410,7 @@ public class OCRCli {
 					&& !cmd.getOptionValue("o").equals("")) {
 				localOutputDir = cmd.getOptionValue("o");
 			} else {
-				logger.error("the process ended, This localOutputDir < "
+				LOGGER.error("the process ended, This localOutputDir < "
 						+ localOutputDir + " > is null");
 				System.exit(0);
 			}
@@ -455,7 +426,7 @@ public class OCRCli {
 		return cmd.getArgList();
 	}
 
-	private void parseExtraOptions(String extras) {
+	private static void parseExtraOptions(String extras) {
 		String[] extrasArray = extras.split(","); // opt1=a,opt2=b
 		for (String extraOpt : extrasArray) {
 			String[] keyAndValue = extraOpt.split("=");
