@@ -1,194 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>de.unigoettingen.sub.commons</groupId>
-		<artifactId>commons-parent</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
-	</parent>
-	<groupId>de.uni-goettingen.sub</groupId>
-	<artifactId>ocr-tools</artifactId>
-        <name>SUB Commons OCR Tools</name>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<modules>
-		<module>abbyy-server-impl</module>
-		<module>ocr-cli</module>
-		<module>ocr-api</module>
-		<module>abbyy-cli-impl</module>
-		<module>ocrutil</module>
-		<module>GoobiOCRServlet</module>
-		<!-- <module>dummy-impl</module> -->
-		<module>ocr-webservice</module>
-		<module>tesseract-impl</module>
-	</modules>
-	<developers>
-		<developer>
-			<id>cmahnke</id>
-			<name>Christian Mahnke</name>
-			<email>mahnke@sub.uni-goettingen.de</email>
-			<roles>
-			</roles>
-		</developer>
-		<developer>
-			<id>abergna</id>
-			<name>Mohamed Abergna</name>
-			<email>abergna@sub.uni-goettingen.de</email>
-			<roles>
-			</roles>
-		</developer>
-	</developers>
-	<organization>
-		<name>SUB Göttingen</name>
-		<url>http://www.sub.uni-goettingen.de</url>
-	</organization>
-	<repositories>
-		<repository>
-			<id>archiva.internal.http</id>
-			<name>Archiva Managed Internal Repository</name>
-			<url>http://repository.bibforge.org/archiva/repository/internal</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>archiva.snapshots.http</id>
-			<name>Archiva Managed Snapshot Repository</name>
-			<url>http://repository.bibforge.org/archiva/repository/snapshots</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<ciManagement>
-		<system>hudson</system>
-		<url>https://ci.bibforge.org/hudson/job/massenDigiMathe/</url>
-		<notifiers>
-			<notifier>
-				<type>mail</type>
-				<sendOnError>true</sendOnError>
-				<sendOnFailure>true</sendOnFailure>
-				<sendOnSuccess>false</sendOnSuccess>
-				<sendOnWarning>false</sendOnWarning>
-				<configuration>
-					<address>mahnke@sub.uni-goettingen.de</address>
-				</configuration>
-			</notifier>
-		</notifiers>
-	</ciManagement>
-	<build>
-		<defaultGoal>package</defaultGoal>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.5</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.0.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<fork>true</fork>
-					<showDeprecation>true</showDeprecation>
-					<showWarnings>true</showWarnings>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<forkMode>pertest</forkMode>
-					<argLine>-Xms256m -Xmx512m</argLine>
-					<testFailureIgnore>false</testFailureIgnore>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.0</version>
-			</plugin>
-			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>argouml-maven-plugin</artifactId> 
-				<version>1.0-SNAPSHOT</version> <executions> <execution> <phase>pre-site</phase> 
-				<goals> <goal>transform</goal> </goals> </execution> </executions> <configuration> 
-				<inputFiles> <file>${project.basedir}/src/main/resources</file> </inputFiles> 
-				<outputDirectory>${project.build.directory}/site/images</outputDirectory> 
-				</configuration> </plugin> -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-doap-plugin</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<id>site</id>
-						<phase>site</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>		
-		</plugins>
-	</build>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.7</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<distributionManagement>
-		<repository>
-			<id>archiva.internal</id>
-			<name>Internal Release Repository</name>
-			<url>https://repository.bibforge.org/archiva/repository/internal</url>
-		</repository>
-		<snapshotRepository>
-			<id>archiva.snapshots</id>
-			<name>Internal Snapshot Repository</name>
-			<url>https://repository.bibforge.org/archiva/repository/snapshots</url>
-		</snapshotRepository>
-		<!--<site>
-			<id>site.server</id>
-			<url>dav:http://develop.sub.uni-goettingen.de/maven-sites/${project.groupId}/ocr-tools-${project.version}</url>
-		</site>
-	-->
-	<site>
-			<id>local-site</id>
-			<name>Local deployed site</name>
-			<url>file://${user.dir}/target/site-deploy</url>
-		</site>
-	</distributionManagement>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>Codehaus Snapshots</id>
-			<url>http://snapshots.repository.codehaus.org/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>  <!-- Workaround for MNG-2974, see note below -->
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.5.1</version>
-			</plugin>
-		
-		</plugins>
-	</reporting>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.unigoettingen.sub.commons</groupId>
+        <artifactId>commons-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+    </parent>
+    <groupId>de.uni-goettingen.sub</groupId>
+    <artifactId>ocr-tools</artifactId>
+    <name>SUB Commons OCR Tools</name>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>abbyy-server-impl</module>
+        <module>ocr-cli</module>
+        <module>ocr-api</module>
+        <module>abbyy-cli-impl</module>
+        <module>ocrutil</module>
+        <module>GoobiOCRServlet</module>
+        <!-- <module>dummy-impl</module> -->
+        <module>ocr-webservice</module>
+        <module>tesseract-impl</module>
+    </modules>
+    <developers>
+        <developer>
+            <id>cmahnke</id>
+            <name>Christian Mahnke</name>
+            <email>mahnke@sub.uni-goettingen.de</email>
+            <roles>
+            </roles>
+        </developer>
+        <developer>
+            <id>abergna</id>
+            <name>Mohamed Abergna</name>
+            <email>abergna@sub.uni-goettingen.de</email>
+            <roles>
+            </roles>
+        </developer>
+        <developer>
+            <id>neumann</id>
+            <name>Dennis Neumann</name>
+            <email>neumann@sub.uni-goettingen.de</email>
+            <roles>
+            </roles>
+        </developer>
+    </developers>
+    <organization>
+        <name>SUB Göttingen</name>
+        <url>http://www.sub.uni-goettingen.de</url>
+    </organization>
+    <repositories>
+        <repository>
+            <id>archiva.internal.http</id>
+            <name>Archiva Managed Internal Repository</name>
+            <url>http://repository.bibforge.org/archiva/repository/internal</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>archiva.snapshots.http</id>
+            <name>Archiva Managed Snapshot Repository</name>
+            <url>http://repository.bibforge.org/archiva/repository/snapshots</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <ciManagement>
+        <system>hudson</system>
+        <url>https://ci.bibforge.org/hudson/job/massenDigiMathe/</url>
+        <notifiers>
+            <notifier>
+                <type>mail</type>
+                <sendOnError>true</sendOnError>
+                <sendOnFailure>true</sendOnFailure>
+                <sendOnSuccess>false</sendOnSuccess>
+                <sendOnWarning>false</sendOnWarning>
+                <configuration>
+                    <address>mahnke@sub.uni-goettingen.de</address>
+                </configuration>
+            </notifier>
+        </notifiers>
+    </ciManagement>
+    <build>
+        <defaultGoal>package</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <fork>true</fork>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>pertest</forkMode>
+                    <argLine>-Xms256m -Xmx512m</argLine>
+                    <testFailureIgnore>false</testFailureIgnore>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.0</version>
+            </plugin>
+            <!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>argouml-maven-plugin</artifactId> 
+        				<version>1.0-SNAPSHOT</version> <executions> <execution> <phase>pre-site</phase> 
+        				<goals> <goal>transform</goal> </goals> </execution> </executions> <configuration> 
+        				<inputFiles> <file>${project.basedir}/src/main/resources</file> </inputFiles> 
+        				<outputDirectory>${project.build.directory}/site/images</outputDirectory> 
+        				</configuration> </plugin> -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-doap-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>site</id>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>		
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <distributionManagement>
+        <repository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>https://repository.bibforge.org/archiva/repository/internal</url>
+        </repository>
+        <snapshotRepository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>https://repository.bibforge.org/archiva/repository/snapshots</url>
+        </snapshotRepository>
+        <site>
+            <id>site.server</id>
+            <url>dav:http://develop.sub.uni-goettingen.de/maven-sites/${project.groupId}/${project.artifactId}-${project.version}</url>
+        </site>
+        <!--
+        <site>
+            <id>local-site</id>
+            <name>Local deployed site</name>
+            <url>file://${user.dir}/target/site-deploy</url>
+        </site>
+        -->
+    </distributionManagement>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>Codehaus Snapshots</id>
+            <url>http://snapshots.repository.codehaus.org/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>  <!-- Workaround for MNG-2974, see note below -->
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>
