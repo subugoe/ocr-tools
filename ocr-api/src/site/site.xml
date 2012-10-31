@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="ocr-api">
-	 <body>
-	 	<menu ref="parent"/>
-	 	<menu ref="reports"/>
-	 </body>
+    <body>
+        <menu name="Dokumentation">
+            <item name="Möglicher Verbessetungen und Erweiterungen" href="todo.html"/>
+        </menu>
+        <menu ref="modules"/>
+        <menu ref="reports"/>
+    </body>
 </project>
