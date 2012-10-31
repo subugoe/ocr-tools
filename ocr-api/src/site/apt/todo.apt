@@ -1,0 +1,11 @@
+Todos und Ideen
+ 
+ * Schnittstellen für eigene Namen/Wertpaare inklusive Validierung hin zufügen
+
+ * Observer zur OCR Engine hinzufügen, kann auch über JMX realisiert werden
+
+ * Spaltung von Abtrakten Klassen und Interfaces für sauberere Abhängigkeiten
+
+ * Eine Möglichkeit hinzufügen da sich Engines automatisch finden lassen, z.B. Tesseract als default
+
+ * Prüfen ob einige Setter gelöscht werden können
