@@ -1,0 +1,6 @@
+<project name="tesseract-impl">
+	 <body>
+	 	<menu ref="parent"/>
+	 <menu ref="reports"/>
+	 </body>
+</project>
