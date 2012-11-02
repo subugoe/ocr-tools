@@ -1068,6 +1068,12 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 						isDoc = new FileInputStream(file);		
 						} catch (FileNotFoundException e) {
 							logger.error("Error contructing FileInputStream for: "+file.toString() , e);
+						} finally {
+							try {
+								isDoc.close();
+							} catch (IOException e) {
+								logger.error("Could not close Stream.", e);
+							}
 						}
 						
 						// TODO this causes an exception because the namespaces do not match anymore

@@ -360,6 +360,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		} catch (IOException e) {
 			logger.error("IO (read of ticket ) failed", e);
 		}
+		if (ticketDoc == null) {
+			return;
+		}
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
 
