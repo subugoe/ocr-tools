@@ -6,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Locale;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +29,8 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger;
  */
 public class TesseractOCRProcess extends AbstractOCRProcess implements
 		OCRProcess {
+
+	private static final long serialVersionUID = 4819408808755150623L;
 
 	/** The logger. */
 	protected static Logger logger = LoggerFactory
@@ -178,6 +177,7 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 
 		} else {
 			try {
+				result = new File(tempPath);
 				InputStream is = image.getUri().toURL().openStream();
 				BufferedOutputStream bos = new BufferedOutputStream(
 						new FileOutputStream(result));
@@ -191,11 +191,9 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 				bos.close();
 
 			} catch (MalformedURLException e) {
-				logger.error("Not a URL: " + image.getUri());
-				e.printStackTrace();
+				logger.error("Not a URL: " + image.getUri(), e);
 			} catch (IOException e) {
-				logger.error("Error while downloading or saving image.");
-				e.printStackTrace();
+				logger.error("Error while downloading or saving image.", e);
 			}
 
 		}

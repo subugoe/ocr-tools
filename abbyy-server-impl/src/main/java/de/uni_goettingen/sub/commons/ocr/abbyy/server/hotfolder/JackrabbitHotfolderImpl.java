@@ -87,8 +87,8 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	final static Logger logger = LoggerFactory
 			.getLogger(JackrabbitHotfolderImpl.class);
 	private long mkColWait = 300l;
-	protected static HttpClient client = null;
-	private static Hotfolder _instance;
+	transient protected HttpClient client = null;
+	private static Hotfolder instance;
 
 	/**
 	 * 
@@ -322,11 +322,11 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		}
 	}
 
-	public static Hotfolder getInstance(ConfigParser config) {
-		if (_instance == null) {
-			_instance = new JackrabbitHotfolderImpl(config);
+	public static synchronized Hotfolder getInstance(ConfigParser config) {
+		if (instance == null) {
+			instance = new JackrabbitHotfolderImpl(config);
 		}
-		return _instance;
+		return instance;
 	}
 
 	@Override
@@ -357,12 +357,12 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	@Override
 	// TODO: Finish this
 	public Boolean isDirectory(URI uri) throws IOException {
-		MultiStatus multiStatus;
-		try {
-			multiStatus = propFind(uri);
-		} catch (DavException e) {
-			throw new IOException("Could not execute MultiStatus method", e);
-		}
+//		MultiStatus multiStatus;
+//		try {
+//			multiStatus = propFind(uri);
+//		} catch (DavException e) {
+//			throw new IOException("Could not execute MultiStatus method", e);
+//		}
 		/*
 		 * multiStatus.g
 		 * 

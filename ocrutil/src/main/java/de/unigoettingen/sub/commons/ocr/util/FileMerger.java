@@ -72,7 +72,7 @@ public class FileMerger {
 	public final static List<OCRFormat> SEGMENTABLE_FORMATS;
 
 	/** Abbyy version number. */
-	public static String ABBYY_VERSION_NUMBER = "v10";
+	public static String abbyyVersionNumber = "v10";
 	/**
 	 * This list the mapping from {@link OCRFormat} to methods for File based
 	 * merging.
@@ -197,10 +197,11 @@ public class FileMerger {
 						if (!headerWriten) {
 							writer.writeDefaultNamespace(nsPrefixes
 									.get("default"));
-							for (String namespace : nsPrefixes.keySet()) {
+							for (Map.Entry<String, String> entry : nsPrefixes.entrySet()) {
+								String namespace = entry.getKey();
 								if (!namespace.equalsIgnoreCase("default")) {
 									writer.writeNamespace(namespace,
-											nsPrefixes.get(namespace));
+											entry.getValue());
 								}
 							}
 						}
@@ -332,10 +333,11 @@ public class FileMerger {
 							if (!headerWriten) {
 								writer.writeDefaultNamespace(nsPrefixes
 										.get("default"));
-								for (String namespace : nsPrefixes.keySet()) {
+								for (Map.Entry<String, String> entry : nsPrefixes.entrySet()) {
+									String namespace = entry.getKey();
 									if (!namespace.equalsIgnoreCase("default")) {
 										writer.writeNamespace(namespace,
-												nsPrefixes.get(namespace));
+												entry.getValue());
 									}
 								}
 							}
@@ -464,10 +466,11 @@ public class FileMerger {
 						if (!headerWriten) {
 							writer.writeDefaultNamespace(nsPrefixes
 									.get("default"));
-							for (String namespace : nsPrefixes.keySet()) {
+							for (Map.Entry<String, String> entry : nsPrefixes.entrySet()) {
+								String namespace = entry.getKey();
 								if (!namespace.equalsIgnoreCase("default")) {
 									writer.writeNamespace(namespace,
-											nsPrefixes.get(namespace));
+											entry.getValue());
 								}
 							}
 						}
@@ -582,7 +585,7 @@ public class FileMerger {
 	 */
 	public static void mergeAbbyyXML(List<InputStream> iss,
 			OutputStream os) throws XMLStreamException {
-		if(ABBYY_VERSION_NUMBER.equals("v8")){
+		if(abbyyVersionNumber.equals("v8")){
 			mergeABByyXMLv8(iss, os);
 		}else
 		mergeABByyXMLv10(iss, os);
@@ -710,6 +713,7 @@ public class FileMerger {
 			}
 			osw.write(pb);
 
+			br.close();
 			isr.close();
 			f++;
 		}
@@ -810,10 +814,11 @@ public class FileMerger {
 							if (!htmlStarted) {
 								writer.writeDefaultNamespace(nsPrefixes
 										.get("default"));
-								for (String namespace : nsPrefixes.keySet()) {
+								for (Map.Entry<String, String> entry : nsPrefixes.entrySet()) {
+									String namespace = entry.getKey();
 									if (!namespace.equalsIgnoreCase("default")) {
 										writer.writeNamespace(namespace,
-												nsPrefixes.get(namespace));
+												entry.getValue());
 									}
 								}
 								htmlStarted = true;

@@ -17,11 +17,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 
 
-public class ItemComparator implements Comparator<AbbyyOCRProcess> {
+public class ItemComparator implements Comparator<AbbyyOCRProcess>, Serializable {
+
+	private static final long serialVersionUID = -7384087423486059961L;
 
 	@Override
 	public int compare(AbbyyOCRProcess item1, AbbyyOCRProcess item2) {

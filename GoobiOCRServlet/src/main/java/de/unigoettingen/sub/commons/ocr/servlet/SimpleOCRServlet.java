@@ -369,7 +369,7 @@ public class SimpleOCRServlet extends HttpServlet {
 			OCRProcess aop = engine.newOcrProcess();
 			String jobName = getJobName(path);
 			aop.setName(jobName);
-			if (jobName == null) {
+			if (jobName.equals("")) {
 				logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
 				aop.setName(UUID.randomUUID().toString());
 			}

@@ -65,7 +65,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 			.getSimpleName();
 	
 	// max running ocr processes in thread pool
-	protected static Integer maxThreads;
+	protected Integer maxThreads;
 
 	protected Long startTimeForProcess = null;
 	protected AbbyySerializerTextMD abbyySerializerTextMD;
@@ -81,9 +81,9 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	protected Hotfolder hotfolder;
 	protected OCRProcessMetadata ocrProcessMetadata;
 	/** single instance of AbbyyServerOCREngine. */
-	private static AbbyyServerOCREngine _instance, newInstance;
+	private static AbbyyServerOCREngine instance, newInstance;
 
-	protected static Boolean checkServerState = true;
+	protected Boolean checkServerState = true;
 	protected static Boolean rest = false;
 
 	// OCR Processes
@@ -210,17 +210,17 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * 
 	 */
 
-	public static AbbyyServerOCREngine getInstance() {
+	public static synchronized AbbyyServerOCREngine getInstance() {
 
-		if (_instance == null) {
+		if (instance == null) {
 			try {
-				_instance = new AbbyyServerOCREngine();
+				instance = new AbbyyServerOCREngine();
 			} catch (ConfigurationException e) {
 				logger.error("Can't read configuration", e);
 				throw new OCRException(e);
 			}
 		}
-		return _instance;
+		return instance;
 	}
 
 	public static AbbyyServerOCREngine newOCREngine() {	
@@ -360,7 +360,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	@Override
 	public Boolean stop() {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 	@Override

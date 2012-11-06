@@ -67,7 +67,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 	/** The xml export. */
 	protected Document xmlExport;
 	
-	protected BigDecimal totalChar = new BigDecimal(0.0), totalUncerChar = new BigDecimal(0.0);
+	protected BigDecimal totalChar = new BigDecimal("0.0"), totalUncerChar = new BigDecimal("0.0");
 	
 	/** The Constant NAMESPACE. */
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
