@@ -18,7 +18,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 
 public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, EntryListener{
 
-	protected static Comparator<AbbyyOCRProcess> ORDER;
+	protected Comparator<AbbyyOCRProcess> order;
 
 	protected PriorityQueue<AbbyyOCRProcess> q;
 
@@ -28,8 +28,8 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 	public HazelcastOCRExecutor(Integer maxThreads, Hotfolder hotfolder,
 			ConfigParser config) {
 		super(maxThreads, hotfolder, config);
-		ORDER = new ItemComparator();
-		q = new PriorityQueue<AbbyyOCRProcess>(100, ORDER);
+		order = new ItemComparator();
+		q = new PriorityQueue<AbbyyOCRProcess>(100, order);
 
 		queuedProcesses = Hazelcast.getMap("queued");
 		queuedProcesses.addEntryListener(this, true);
@@ -44,7 +44,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
 
-			queuedProcesses.put(abbyyOCRProcess.getiD_Process(), abbyyOCRProcess);
+			queuedProcesses.put(abbyyOCRProcess.getProcessId(), abbyyOCRProcess);
 
 			// TODO: deadlock danger? Maybe use hazelcast's distributed lock
 			while (true) {
@@ -65,8 +65,8 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 				}
 
 				if (slotsFree && currentIsHead) {
-					queuedProcesses.remove(abbyyOCRProcess.getiD_Process());
-					runningProcesses.add(abbyyOCRProcess.getiD_Process());
+					queuedProcesses.remove(abbyyOCRProcess.getProcessId());
+					runningProcesses.add(abbyyOCRProcess.getProcessId());
 					break;
 				} else {
 					pause();
@@ -99,7 +99,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 		super.afterExecute(r, e);
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
-			runningProcesses.remove(abbyyOCRProcess.getiD_Process());
+			runningProcesses.remove(abbyyOCRProcess.getProcessId());
 		} else {
 			throw new IllegalStateException("Not a AbbyyOCRProcess object");
 		}

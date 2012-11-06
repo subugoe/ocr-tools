@@ -56,7 +56,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	//This needs to be a list to be able to use preconfigured parameters
 	protected static List<String> cmd;
 
-	private static AbbyyCLIOCREngine _instance;
+	private static AbbyyCLIOCREngine instance;
 
 	private Boolean deleteTmp = false;
 
@@ -121,11 +121,11 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	 * 
 	 */
 
-	public static AbbyyCLIOCREngine getInstance () {
-		if (_instance == null) {
-			_instance = new AbbyyCLIOCREngine();
+	public static synchronized AbbyyCLIOCREngine getInstance () {
+		if (instance == null) {
+			instance = new AbbyyCLIOCREngine();
 		}
-		return _instance;
+		return instance;
 	}
 
 	@Override
@@ -213,8 +213,8 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 
 			//delete tmp files
 			if (deleteTmp) {
-				for (OCRFormat oef : outputSegments.keySet()) {
-					for (String s : outputSegments.get(oef)) {
+				for (Map.Entry<OCRFormat, ArrayList<String>> entry : outputSegments.entrySet()) {
+					for (String s : entry.getValue()) {
 						new File(s).delete();
 					}
 				}
@@ -315,11 +315,12 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	@SuppressWarnings("serial")
 	protected static void mergeResultFiles (Map<OCRFormat, AbbyyOCROutput> outputs) {
 		Map<OCRFormat, Exception> exceptions = new HashMap<OCRFormat, Exception>();
-		for (OCRFormat f : outputs.keySet()) {
+		for (Map.Entry<OCRFormat, AbbyyOCROutput> entry : outputs.entrySet()) {
+			OCRFormat f = entry.getKey();
 			if (FileMerger.isSegmentable(f)) {
 				throw new OCRException("Format " + f.toString() + " isn't mergable!");
 			}
-			final AbbyyOCROutput o = outputs.get(f);
+			final AbbyyOCROutput o = entry.getValue();
 			File file = new File(o.getUri());
 			//Convert URI list to File list, the hardly readable way ;-)
 			List<File> inputFiles = new ArrayList<File>() {

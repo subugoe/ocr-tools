@@ -27,7 +27,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -44,13 +43,15 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
  * The Class ApacheVFSHotfolderImpl is used to control the hotfolders used by
  * the Abbyy Recognition Server.
  */
-public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfolder, Serializable {
+public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfolder, Serializable {
+	private static final long serialVersionUID = 2628453844788155875L;
+
 	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(ApacheVFSHotfolderImpl.class);
 
 	transient protected ConfigParser config;
 
-	private static Hotfolder _instance;
+	private static Hotfolder instance;
 
 	// The fsmanager.
 	transient protected FileSystemManager fsManager = null;
@@ -130,7 +131,8 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	 */
 	@Override
 	public Boolean exists (URI uri) throws FileSystemException {
-		if (fsManager.resolveFile(uri.toString()).exists()) {
+		FileObject fo = fsManager.resolveFile(uri.toString());
+		if (fo.exists()) {
 			return true;
 		} else {
 			return false;
@@ -211,10 +213,10 @@ public class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfold
 	 * @return the hotfolder
 	 */
 	public static Hotfolder getInstance (ConfigParser config) {
-		if (_instance == null) {
-			_instance = new ApacheVFSHotfolderImpl(config);
+		if (instance == null) {
+			instance = new ApacheVFSHotfolderImpl(config);
 		}
-		return _instance;
+		return instance;
 	}
 
 	/**

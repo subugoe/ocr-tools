@@ -83,7 +83,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		Runnable {
 
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -402196937662439454L;
 	// The Constant logger.
 	public final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcess.class);
@@ -129,7 +129,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	private Long processTimeResult = 0L;
 
 	protected Hotfolder hotfolder;
-	protected XmlParser xmlParser;
+	transient protected XmlParser xmlParser;
 	transient protected AbbyySerializerTextMD abbyySerializerTextMD;
 	transient protected OCRProcessMetadata ocrProcessMetadata;
 	protected XmlResultDocument xmlResultDocument;
@@ -189,14 +189,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	public boolean equals(Object obj) {
 		if (obj instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess process = (AbbyyOCRProcess) obj;
-			return this.getiD_Process().equals(process.getiD_Process());
+			return this.getProcessId().equals(process.getProcessId());
 		}
 		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		return this.getiD_Process().hashCode();
+		return this.getProcessId().hashCode();
 	}
 	
 	/*
@@ -315,9 +315,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					//for Serializer
 					List<URI> listOfLocalURI = new ArrayList<URI>();
 					// Everything should be ok, get the files
-					for (OCRFormat f : outputs.keySet()) {
-						final AbbyyOCROutput o = (AbbyyOCROutput) outputs
-								.get(f);
+					for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
+						final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
 						if (o.isSingleFile()) {
 							URI remoteUri = o.getRemoteUri();
 							URI localUri = o.getUri();
@@ -340,9 +339,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 								}
 							} catch (Exception e) {
 								logger.debug("Can NOT Copy from " + remoteUri
-										+ " to " + localUri);
+										+ " to " + localUri, e);
 								throw new OCRException("Can NOT Copy from "
-										+ remoteUri + " to " + localUri);
+										+ remoteUri + " to " + localUri, e);
 							}
 							if (new File(localUri).exists()) {
 								logger.debug("Deleting remote file "
@@ -351,7 +350,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 							}
 						} else {
 							// The results are fragmented, merge them
-							mergeResult(f, o);
+							mergeResult(entry.getKey(), o);
 						}
 					}
 					endTime = System.currentTimeMillis();
@@ -428,11 +427,11 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			xmlParser = null;
 			try {	
 				cleanImages(convertList(getOcrImages()));
-				if (isResult != true)
+				if (!isResult)
 				cleanOutputs(getOcrOutputs());
 				hotfolder.deleteIfExists(errorResultUri);
 				hotfolder.deleteIfExists(ticketUri);
-				if (outputResultUri != null || isResult != true) {
+				if (outputResultUri != null || !isResult) {
 					hotfolder.deleteIfExists(outputResultUri);
 				}
 				if(obs != null && getSegmentation()) {
@@ -485,7 +484,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		logger.debug("Creating " + name + "-textMD.xml");
 		if(getSegmentation()){
 			abbyySerializerTextMD.write(new File(textMD));
-			logger.debug("TextMD Created " + textMD.toString());
+			logger.debug("TextMD Created " + textMD);
 		}else{
 			Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
 			OCRFormat lastKey = getLastKey(outputs);
@@ -548,8 +547,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		Boolean check = true;
 		Boolean putfalse = false;
 		Map<URI, Boolean> expectedUris = new HashMap<URI, Boolean>();
-		for (OCRFormat of : results.keySet()) {
-			final AbbyyOCROutput o = (AbbyyOCROutput) results.get(of);
+		for (Map.Entry<OCRFormat, OCROutput> entry : results.entrySet()) {
+			final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
 			if (o.isSingleFile()) {
 				URI u = o.getRemoteUri();
 				expectedUris.put(u, false);
@@ -579,7 +578,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				break;
 			}
 			if (System.currentTimeMillis() > start + timeout) {
-				check = false;
+				//check = false;
 				isResult = true;
 				logger.debug("Waited to long - fail");
 				throw new TimeoutExcetion();
@@ -754,10 +753,12 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	@Override
 	public void setOcrOutputs(Map<OCRFormat, OCROutput> outputs) {
 		StringBuffer sb = new StringBuffer();
-		for (OCRFormat format : outputs.keySet()) {
-			addOutput(format, outputs.get(format));
+		for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
+			OCRFormat format = entry.getKey();
+			addOutput(format, entry.getValue());
 			// set Format for ocrProcessMetadata
-			sb.append(format.toString() + " ");
+			sb.append(format.toString());
+			sb.append(" ");
 		}
 		ocrProcessMetadata.setFormat(sb.toString());
 	}
@@ -821,8 +822,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	 */
 	private void cleanOutputs(final Map<OCRFormat, OCROutput> outputs)
 			throws IOException {
-		for (OCRFormat of : outputs.keySet()) {
-			AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(of);
+		for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
+			AbbyyOCROutput out = (AbbyyOCROutput) entry.getValue();
 			URI remoteUri = out.getRemoteUri();
 			logger.trace("Trying to remove output from output folder: "
 					+ remoteUri.toString());
@@ -905,7 +906,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			}
 			//rename subProcess ID
 			for(AbbyyOCRProcess subProcess : cloneProcess()){	
-				subProcess.setiD_Process(getiD_Process()+ subProcess.getName());
+				subProcess.setProcessId(getProcessId()+ subProcess.getName());
 				subProcesses.add(subProcess);		
 			}
 			return subProcesses;
@@ -940,9 +941,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				sP.setName(name + "_" + listNumber + "oF" + splitNumberForSubProcess);			
 				SubProcessName.add(name + "_" + listNumber + "oF" + splitNumberForSubProcess);
 				String localuri = null;
-				for (OCRFormat f : outs.keySet()) {
+				for (Map.Entry<OCRFormat, OCROutput> entry : outs.entrySet()) {
 					OCROutput aoo = new AbbyyOCROutput();
-					URI localUri = outs.get(f).getUri();
+					URI localUri = entry.getValue().getUri();
 //					if(localUri.isAbsolute())
 					localuri = localUri.toString().replace(name, sP.getName());
 					try {
@@ -950,9 +951,11 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					} catch (URISyntaxException e) {
 						logger.error("Error contructing localUri URL: "+ localuri , e);
 					}
-					aoo.setUri(localUri);				
-					if(sP.ocrOutputs.size() == 0)
-					sP.addOutput(f, aoo);
+					aoo.setUri(localUri);	
+					OCRFormat f = entry.getKey();
+					if(sP.ocrOutputs.size() == 0) {
+						sP.addOutput(f, aoo);
+					}
 					formatForSubProcess.add(f);
 				}	
 				sP.setTime(new Date().getTime());
@@ -1038,7 +1041,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			ocrProcessMetadata.setDuration(getDuration() + processTimeResult);
 			if(!uriTextMD.equals("FAILED")){
 				serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
-				RemoveSubProcessResults(ResultfilesForAllSubProcess);
+				removeSubProcessResults(ResultfilesForAllSubProcess);
 			}
 				 
 		}		
@@ -1065,12 +1068,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					j++;
 					if(noSubProcessfailed){
 						try {
-						isDoc = new FileInputStream(file);		
+							isDoc = new FileInputStream(file);		
 						} catch (FileNotFoundException e) {
 							logger.error("Error contructing FileInputStream for: "+file.toString() , e);
 						} finally {
 							try {
-								isDoc.close();
+								if (isDoc != null) {
+									isDoc.close();
+								}
 							} catch (IOException e) {
 								logger.error("Could not close Stream.", e);
 							}
@@ -1103,7 +1108,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				logger.debug("Waiting... for Merge Proccessing");
 				//mergeFiles for input format if Supported
 				abbyyMergedResult = new File(outResultUri + "/" + name + "." + f.toString().toLowerCase());
-				FileMerger.ABBYY_VERSION_NUMBER = config.abbyyVersionNumber;
+				FileMerger.abbyyVersionNumber = config.abbyyVersionNumber;
 				FileMerger.mergeFiles(f, files, abbyyMergedResult);
 				logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED");
 				ResultfilesForAllSubProcess.put(abbyyMergedResult, files);	
@@ -1132,7 +1137,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	}
 	
 	//remove local files from the list after merge if the mergeResults Exists
-	protected void RemoveSubProcessResults(Map<File, List<File>> Resultfiles){
+	protected void removeSubProcessResults(Map<File, List<File>> Resultfiles){
 		@SuppressWarnings("rawtypes")
 		Iterator k = Resultfiles.keySet().iterator();
 		File abbyyMergedResult = (File) k.next();
@@ -1147,16 +1152,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			
 	}
 		
-	
 
-	 /* Implemented method from the interface Cloneable 
-    This method can throw a CloneNotSupportedException */
-    protected Object clone() throws CloneNotSupportedException
-    {
-        /* clone method of the superclass */
-        return super.clone();
-    }
-	
 	public Observer getObs() {
 		return obs;
 	}
@@ -1165,12 +1161,12 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		this.obs = obs;
 	}
 
-	public String getiD_Process() {
+	public String getProcessId() {
 		return processId;
 	}
 
-	public void setiD_Process(String iD_Process) {
-		this.processId = iD_Process;
+	public void setProcessId(String processId) {
+		this.processId = processId;
 	}
 
 	

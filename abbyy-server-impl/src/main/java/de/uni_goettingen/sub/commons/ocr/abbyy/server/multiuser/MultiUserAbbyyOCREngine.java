@@ -17,23 +17,24 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	final static Logger logger = LoggerFactory
 			.getLogger(MultiUserAbbyyOCREngine.class);
 
-	private static MultiUserAbbyyOCREngine _instance;
+	private static MultiUserAbbyyOCREngine instance;
 	
-	private MultiUserAbbyyOCREngine() throws ConfigurationException {
+	
+	protected MultiUserAbbyyOCREngine() throws ConfigurationException {
 		super();
 	}
 
-	public static MultiUserAbbyyOCREngine getInstance() {
+	public static synchronized MultiUserAbbyyOCREngine getInstance() {
 
-		if (_instance == null) {
+		if (instance == null) {
 			try {
-				_instance = new MultiUserAbbyyOCREngine();
+				instance = new MultiUserAbbyyOCREngine();
 			} catch (ConfigurationException e) {
 				logger.error("Can't read configuration", e);
 				throw new OCRException(e);
 			}
 		}
-		return _instance;
+		return instance;
 	}
 
 	/**
