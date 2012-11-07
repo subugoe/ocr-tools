@@ -98,8 +98,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			client = initConnection(config.getServerURL(),
 					config.getUsername(), config.getPassword());
 		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Security Exception", e);
 		} catch (IOException e) {
 			logger.error(
 					"Got an IOException while initilizing Jackrabbit Hotfolder implementation",
@@ -114,8 +113,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			client = initConnection(local,
 					user, pw);
 		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Security Exception", e);
 		} catch (IOException e) {
 			logger.error(
 					"Got an IOException while initilizing Jackrabbit Hotfolder implementation",
@@ -391,7 +389,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 				uriList.add(new URI(path));
 			} catch (URISyntaxException e) {
 				logger.error("Error while coverting URI.");
-				throw new RuntimeException(e);
+				throw new IllegalStateException(e);
 			}
 		}
 		return uriList;

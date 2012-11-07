@@ -98,7 +98,7 @@ public class ConfigParser {
 	public final static String DEFAULT_LOCALOUTPUTLOCATION = ".";
 	protected String serverOutputLocation, localOutputLocation;
     //ID Process
-	protected String id_Process;
+	protected String processId;
 	//
 	public final static String ABBYY_VERSION = "abbyyVersionNumber";
 	protected String abbyyVersionNumber;
@@ -219,7 +219,7 @@ public class ConfigParser {
 		maxMillisPerFile = config.getLong(PARAMETER_MAXMILLISPERFILE, DEFAULT_MAXMILLISPERFILE);
 		maxOCRTimeout = config.getLong(PARAMETER_MAXOCRTIMEOUT, DEFAULT_MAXOCRTIMEOUT);
 
-		id_Process = java.util.UUID.randomUUID().toString();
+		processId = java.util.UUID.randomUUID().toString();
 		abbyyVersionNumber = config.getString(ABBYY_VERSION, null);
 		
 		copyOnly = config.getBoolean(PARAMETER_COPYONLY, DEFAULT_COPYONLY);
@@ -419,12 +419,12 @@ public class ConfigParser {
 		return ticketTmpStore;
 	}
 
-	public String getId_Process() {
-		return id_Process;
+	public String getProcessId() {
+		return processId;
 	}
 
-	public void setId_Process(String id_Process) {
-		this.id_Process = id_Process;
+	public void setProcessId(String processId) {
+		this.processId = processId;
 	}
 
 }

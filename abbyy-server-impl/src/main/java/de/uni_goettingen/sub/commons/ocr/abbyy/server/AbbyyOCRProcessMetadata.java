@@ -56,10 +56,10 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 	private static final long serialVersionUID = 1L;
 
 	/** The xml result document. */
-	protected static XmlResultDocument xmlResultDocument;
+	static XmlResultDocument xmlResultDocument;
 
 	/** The xml export document. */
-	protected static DocumentDocument xmlExportDocument;
+	static DocumentDocument xmlExportDocument;
 
 	/** The xml resul. */
 	protected XmlResult xmlResultEngine;

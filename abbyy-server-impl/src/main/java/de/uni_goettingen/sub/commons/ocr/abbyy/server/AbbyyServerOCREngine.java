@@ -25,6 +25,7 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -163,7 +164,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		boolean lockExists = hotfolder.exists(lockURI);
 		
 		if (lockExists) {
-			throw new RuntimeException("Another client instance is running! See the lock file at " + lockURI);
+			throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockURI);
 		}
 		writeLockFile();
 
