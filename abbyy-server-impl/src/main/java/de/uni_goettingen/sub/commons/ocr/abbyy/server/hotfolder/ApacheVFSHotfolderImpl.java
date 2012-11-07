@@ -77,7 +77,7 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 			fsManager = VFS.getManager();
 		} catch (FileSystemException e) {
 			logger.error("Can't get file system manager", e);
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 
@@ -132,11 +132,7 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 	@Override
 	public Boolean exists (URI uri) throws FileSystemException {
 		FileObject fo = fsManager.resolveFile(uri.toString());
-		if (fo.exists()) {
-			return true;
-		} else {
-			return false;
-		}
+		return fo.exists();
 	}
 
 	@Override
@@ -212,7 +208,7 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 	 *            the config
 	 * @return the hotfolder
 	 */
-	public static Hotfolder getInstance (ConfigParser config) {
+	public static synchronized Hotfolder getInstance (ConfigParser config) {
 		if (instance == null) {
 			instance = new ApacheVFSHotfolderImpl(config);
 		}

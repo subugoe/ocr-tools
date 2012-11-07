@@ -85,7 +85,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	
 	private static final long serialVersionUID = -402196937662439454L;
 	// The Constant logger.
-	public final static Logger logger = LoggerFactory
+	private final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcess.class);
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
 	// TODO: Use static fields from the engine class here.
@@ -113,11 +113,11 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	
 	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
 	
-	private List<String> SubProcessName = new ArrayList<String>();
+	private List<String> subProcessNames = new ArrayList<String>();
 	
 	private Set<OCRFormat> formatForSubProcess = new HashSet<OCRFormat>();
 	
-	protected Map<File, List<File>> ResultfilesForAllSubProcess = new HashMap<File, List<File>>();
+	protected Map<File, List<File>> resultfilesForAllSubProcess = new HashMap<File, List<File>>();
 	//localOutput from CLI 
 	private String outResultUri = null;
 	private Observer obs;
@@ -131,7 +131,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	protected Hotfolder hotfolder;
 	transient protected XmlParser xmlParser;
 	transient protected AbbyySerializerTextMD abbyySerializerTextMD;
-	transient protected OCRProcessMetadata ocrProcessMetadata;
+	
 	protected XmlResultDocument xmlResultDocument;
 	protected DocumentDocument xmlExportDocument;
 	protected XmlResult xmlResultEngine;
@@ -215,9 +215,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		
 		if (encoding.equals("UTF8")) {
 			ocrProcessMetadata.setEncoding("UTF-8");
-		} else
+		} else {
 			ocrProcessMetadata.setEncoding(encoding);
-		
+		}
 		if (langs != null) {
 			setLanguageforMetadata(langs);
 		}
@@ -235,17 +235,17 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			if (aoi.getRemoteFileName() == null) {
 				aoi.setRemoteFileName(remoteFileName);
 			}
-			URI remoteUri, errorUri = null;
+			URI remoteImageUri, errorImageUri = null;
 			try {
-				errorUri = new URI(this.errorUri.toString() + remoteFileName);
-				remoteUri = new URI(inputUri.toString() + remoteFileName);
+				errorImageUri = new URI(this.errorUri.toString() + remoteFileName);
+				remoteImageUri = new URI(inputUri.toString() + remoteFileName);
 			} catch (URISyntaxException e) {
 				logger.error("Error contructing remote URL.");
 				throw new OCRException(e);
 			}
 			if (aoi.getRemoteUri() == null) {
-				aoi.setRemoteUri(remoteUri);
-				aoi.setErrorUri(errorUri);
+				aoi.setRemoteUri(remoteImageUri);
+				aoi.setErrorUri(errorImageUri);
 			}
 
 		}
@@ -363,9 +363,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 						for (URI l : listOfLocalURI) {
 							if ((l.toString())
 									.endsWith("xml" + config.reportSuffix)) {
-								InputStream isResult = new FileInputStream(new File(l));
+								InputStream resultStream = new FileInputStream(new File(l));
 								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-										.parseXmlResult(isResult);
+										.parseXmlResult(resultStream);
 							}
 							if ((l.toString()).endsWith(name + ".xml")) {
 								InputStream isDoc = new FileInputStream(new File(l));
@@ -427,8 +427,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			xmlParser = null;
 			try {	
 				cleanImages(convertList(getOcrImages()));
-				if (!isResult)
-				cleanOutputs(getOcrOutputs());
+				if (!isResult) {
+					cleanOutputs(getOcrOutputs());
+				}
 				hotfolder.deleteIfExists(errorResultUri);
 				hotfolder.deleteIfExists(ticketUri);
 				if (outputResultUri != null || !isResult) {
@@ -559,8 +560,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			}
 		}
 		while (check) {
-			for (URI u : expectedUris.keySet()) {
-				if (!expectedUris.get(u) && hotfolder.exists(u)) {
+			for (Map.Entry<URI, Boolean> entry : expectedUris.entrySet()) {
+				URI u = entry.getKey();
+				Boolean bool = entry.getValue();
+				if (!bool && hotfolder.exists(u)) {
 					logger.debug(u.toString() + " is available");
 					expectedUris.put(u, true);
 				} else {
@@ -648,22 +651,19 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	@SuppressWarnings("serial")
 	public void checkServerState() throws URISyntaxException, IOException, IllegalStateException {
 		if (maxSize != 0 && maxFiles != 0) {
 
 			// check if a slash is already appended
-			final URI serverUri = new URI(config.getServerURL());
-			Map<URI, Long> sizeMap = new HashMap<URI, Long>() {
-				{
-					put(new URI(serverUri.toString() + config.getInput() + "/"),
-							0l);
-					put(new URI(serverUri.toString() + config.getOutput() + "/"),
-							0l);
-					put(new URI(serverUri.toString() + config.getError() + "/"),
-							0l);
-				}
-			};
+			final URI configServerUri = new URI(config.getServerURL());
+			Map<URI, Long> sizeMap = new HashMap<URI, Long>(); 
+			sizeMap.put(new URI(configServerUri.toString() + config.getInput()
+					+ "/"), 0l);
+			sizeMap.put(new URI(configServerUri.toString() + config.getOutput()
+					+ "/"), 0l);
+			sizeMap.put(new URI(configServerUri.toString() + config.getError()
+					+ "/"), 0l);				
+			
 
 			for (URI uri : sizeMap.keySet()) {
 				sizeMap.put(uri, hotfolder.getTotalSize(uri));
@@ -693,7 +693,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		}
 	}
 
-	@SuppressWarnings("serial")
 	private void mergeResult(final OCRFormat format, final AbbyyOCROutput output)
 			throws IOException, MergeException {
 		if (!FileMerger.isSegmentable(format)) {
@@ -704,13 +703,12 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		// layer
 		OutputStream os = new FileOutputStream(new File(output.getUri()));
 		// Convert URI list to File list, the hardly readable way ;-)
-		List<InputStream> inputFiles = new ArrayList<InputStream>() {
-			{
-				for (URI u : output.getResultFragments()) {
-					add(hotfolder.openInputStream(u));
-				}
-			}
-		};
+		List<InputStream> inputFiles = new ArrayList<InputStream>();
+			
+		for (URI u : output.getResultFragments()) {
+			inputFiles.add(hotfolder.openInputStream(u));
+		}			
+		
 		FileMerger.mergeStreams(format, inputFiles, os);
 	}
 
@@ -856,10 +854,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			logger.trace("Trying to remove image from input folder: "
 					+ remoteUri.toString());
 			hotfolder.deleteIfExists(remoteUri);
-			URI errorUri = image.getErrorUri();
+			URI errorImageUri = image.getErrorUri();
 			logger.trace("Trying to remove image from error folder: "
-					+ errorUri.toString());
-			hotfolder.deleteIfExists(errorUri);
+					+ errorImageUri.toString());
+			hotfolder.deleteIfExists(errorImageUri);
 		}
 	}
 	//Language for MetaData
@@ -898,8 +896,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			// setencoding for ocrProcessMetadata
 			if (encoding.equals("UTF8")) {
 				ocrProcessMetadata.setEncoding("UTF-8");
-			} else
+			} else {
 				ocrProcessMetadata.setEncoding(encoding);
+			}
 			// set Language for ocrProcessMetadata
 			if (langs != null) {
 				setLanguageforMetadata(langs);
@@ -939,7 +938,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				}
 				sP.setOcrImages(imgs);
 				sP.setName(name + "_" + listNumber + "oF" + splitNumberForSubProcess);			
-				SubProcessName.add(name + "_" + listNumber + "oF" + splitNumberForSubProcess);
+				subProcessNames.add(name + "_" + listNumber + "oF" + splitNumberForSubProcess);
 				String localuri = null;
 				for (Map.Entry<OCRFormat, OCROutput> entry : outs.entrySet()) {
 					OCROutput aoo = new AbbyyOCROutput();
@@ -999,8 +998,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				}				
 			}else{				
 				oneChunk.add(o);				
-				if(imageCounter == restNumber)
+				if(imageCounter == restNumber) {
 					allChunks.add(oneChunk);
+				}
 			}							
 		}
 		
@@ -1032,8 +1032,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			boolean oneFailed = false;
 			for (AbbyyOCRProcess sub : subProcesses) {
 				oneFailed = sub.failed;
-				if (oneFailed)
-					break;				
+				if (oneFailed) {
+					break;		
+				}
 			}
 			startTime = System.currentTimeMillis();
 			String uriTextMD = merge(!oneFailed);
@@ -1041,7 +1042,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			ocrProcessMetadata.setDuration(getDuration() + processTimeResult);
 			if(!uriTextMD.equals("FAILED")){
 				serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
-				removeSubProcessResults(ResultfilesForAllSubProcess);
+				removeSubProcessResults(resultfilesForAllSubProcess);
 			}
 				 
 		}		
@@ -1060,7 +1061,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 						+ " isn't mergable!");
 			}
 			List<File> files = new ArrayList<File>(); 
-			for(String sn : SubProcessName){				
+			for(String sn : subProcessNames){				
 				File fileResult,file = new File(outResultUri + "/" + sn + "." + f.toString().toLowerCase());
 				//parse only once enough for ProcessMetadata
 				if ((f.toString().toLowerCase()).equals("xml") && j == 0) {
@@ -1090,15 +1091,15 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				files.add(file); 
 				if(i == 0){
 					fileResult = new File(outResultUri + "/" + sn + ".xml"+ config.reportSuffix);
-					InputStream isResult = null;
+					InputStream resultStream = null;
 					if(noSubProcessfailed){
 						try {
-							isResult = new FileInputStream(fileResult);
+							resultStream = new FileInputStream(fileResult);
 						} catch (FileNotFoundException e) {
 							logger.error("Error contructing FileInputStream for: "+fileResult.toString() , e);
 						}
 						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-								.parseXmlResult(isResult);
+								.parseXmlResult(resultStream);
 					}					
 					fileResults.add(fileResult);			
 				}		
@@ -1111,7 +1112,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				FileMerger.abbyyVersionNumber = config.abbyyVersionNumber;
 				FileMerger.mergeFiles(f, files, abbyyMergedResult);
 				logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED");
-				ResultfilesForAllSubProcess.put(abbyyMergedResult, files);	
+				resultfilesForAllSubProcess.put(abbyyMergedResult, files);	
 			}
 					
 		}
@@ -1121,7 +1122,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				//mergeFiles for Abbyy Result xml.result.xml
 				abbyyMergedResult = new File(outResultUri + "/" + name + ".xml" + config.reportSuffix);
 				FileMerger.mergeAbbyyXMLResults(fileResults , abbyyMergedResult);
-				ResultfilesForAllSubProcess.put(abbyyMergedResult, fileResults);
+				resultfilesForAllSubProcess.put(abbyyMergedResult, fileResults);
 				logger.debug(name + ".xml" + config.reportSuffix+ " MERGED");			
 				uriTextMD = outResultUri + "/" + name;
 			}else {
@@ -1137,16 +1138,16 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	}
 	
 	//remove local files from the list after merge if the mergeResults Exists
-	protected void removeSubProcessResults(Map<File, List<File>> Resultfiles){
+	protected void removeSubProcessResults(Map<File, List<File>> resultFiles){
 		@SuppressWarnings("rawtypes")
-		Iterator k = Resultfiles.keySet().iterator();
+		Iterator k = resultFiles.keySet().iterator();
 		File abbyyMergedResult = (File) k.next();
 		if(abbyyMergedResult.exists()){
-			List<File> files =  (List<File>) Resultfiles.get(abbyyMergedResult);
+			List<File> files =  (List<File>) resultFiles.get(abbyyMergedResult);
 			for(File file : files){
 				file.delete(); 
 				//second delete if still exists 
-				if(file.exists()) file.delete();
+				if(file.exists()) {file.delete();}
 		    }
 		}
 			

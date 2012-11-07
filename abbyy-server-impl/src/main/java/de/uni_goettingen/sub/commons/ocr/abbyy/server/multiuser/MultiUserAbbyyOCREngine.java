@@ -1,6 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
 
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
 import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -59,7 +60,7 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 			// there is a lock file, but it is not "registered" in the running cluster
 			// which means another cluster or program instance is running.
 			try {
-				throw new RuntimeException("Another client instance is running! See the lock file at " + lockURI);
+				throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockURI);
 			} finally {
 				Hazelcast.getLifecycleService().shutdown();
 			}

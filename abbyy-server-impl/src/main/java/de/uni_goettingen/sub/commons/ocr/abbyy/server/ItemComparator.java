@@ -30,10 +30,11 @@ public class ItemComparator implements Comparator<AbbyyOCRProcess>, Serializable
 	public int compare(AbbyyOCRProcess item1, AbbyyOCRProcess item2) {
 		int prio = item1.getPriority().compareTo(item2.getPriority());
 		
-		if (prio != 0)
+		if (prio != 0) {
 			return prio;
-		else
+		} else {
 			return item1.getTime().compareTo(item2.getTime());
+		}
 	}
 
 }
