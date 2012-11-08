@@ -1,0 +1,15 @@
+ ---
+ Packaging
+ ---
+ Christian Mahnke
+ ---
+ 2012-11-08
+ ---
+
+Vereinfachtes Packaging
+
+ Beim Übersetzen der CLI Schnittstelle kann direkt eine Konfigurationsdatei übergeben werden. Dazu muss einfach die Umgebungsvariabele <<<ocr.config>>> benutzt werden um den Pfad und Namen der Datei zu übergeben.
+
++--------------------------------+
+mvn -Docr.config=filename package
++--------------------------------+ 
