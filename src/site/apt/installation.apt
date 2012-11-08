@@ -64,9 +64,9 @@ mvn package -Pabbyy-multiuser
     
   Das CLI-Tool kann direkt mit 
   
-+-------+
++---------------------------+
 java -jar cli.jar <options>
-+-----+
++---------------------------+
 
   ausgeführt werden (siehe Dokumentation im Modul für Details).
   
