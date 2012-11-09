@@ -1,0 +1,79 @@
+Synchronisierung mit Hazelcast
+
+* Problem
+
+  Der Abbyy Recognition Server überwacht einen Hotfolder und bearbeitet sofort einen Band, 
+  der hineinkopiert wird. Je nach Konfiguration können auch mehrere Bände parallel bearbeitet
+  werden. Nachkommende Bände werden in eine Warteschlange eingereiht. Dieses Vorgehen kann 
+  keine bestimmte Antwortzeit für eine Anfrage garantieren, was allerdings für unsere 
+  synchrone Webservice-Schnittstelle gewährleistet sein muss.
+
+* Lösungskonzept
+
+  1. Priorität
+
+  Webservice-Anfragen müssen mit höherer Priorität behandelt werden, d. h. automatisch an 
+  den Anfang der Warteschlange bewegt werden. Die Anfragen mit derselben Priorität müssen 
+  unter sich weiterhin im FIFO-Verfahren abgearbeitet werden.
+
+  2. Dateisegmentierung
+
+  Ein Band kann mehrere Hundert Seiten enthalten und die Bearbeitung kann nicht pausiert werden. 
+  D. h. wenn alle parallelen Bearbeitungsplätze belegt sind, müsste die Webservice-Anfrage immer 
+  noch auf einen Band warten. Um diese Wartezeit zu begrenzen, muss jeder Band vor der 
+  Bearbeitung in kleinere Stücke bestimmter Größe aufgeteilt werden. Die Wartezeit verkürzt 
+  sich somit auf maximal die Abarbeitung eines solchen Stückes. Nach der Berabeitung der 
+  einzelnen Stücke müssen diese wieder zu einem Ergebnis-Band zusammengesetzt werden.
+
+* Implementierung
+
+  1. Priorität
+
+  Jeder OCRProcess enthält eine von 5 möglichen Prioritäten (Enumeration OCRProcess.OCRPriority) 
+  und einen Zeitstempel. Nach diesen beiden Kriterien können OCRProcesses miteinander verglichen 
+  werden (Klasse ItemComparator). Die Java-Standardklasse PriorityQueue übernimmt die Sortierung 
+  aller wartenden Processes.
+
+  Die wartenden Processes verschiedener Frontends (CLI, Web Service) befinden sich in verschiedenen 
+  JVMs. Aus diesem Grund wurde eine Interprozesskommunikation mittels Hazelcast implementiert. Das 
+  erlaubt es, alle wartenden OCRProcesses in einer zentralen Datenstruktur zu halten.
+
+  Hazelcast hat keine priorisierende Warteschlange, deswegen werden Referenzen zu den wartenden 
+  Processes in einer Map gespeichert. Als Schlüssel dienen die IDs der Processes. Im Konstruktor des 
+  OCRExecuter (ein Thread Pool) wird diese Map (namens "queued") initialisiert und dadurch 
+  gleichzeitig für andere 
+  JVMs zur Verfügung gestellt. Der nächste Aufruf des Konstruktors in einer anderen JVM findet 
+  stattdessen die bereits initialisierte Map. In die Map werden alle ankommenden Processes
+  eingetragen und werden noch nicht ausgeführt.
+
+  Wenn ein OCRProcess im OCRExecutor ausgeführt wird (in der Klasse AbbyyServerOCREngine), dann wird 
+  zunächst eine Referenz des Process in die Hazelcast-Map geschrieben (HazelcastExecutor.beforeExecute()). Der 
+  Inhalt der Map (die Values) wird dann in eine lokale PriorityQueue kopiert, um die wartenden Processes nach 
+  Priorität zu sortieren. Dabei wird festgestellt, ob der eigene Process sich ganz vorne eingereiht hat. 
+  Falls ja, wird er aus der Map wieder entfernt und ausgeführt. Ansonsten wird gewartet, bis der eigene 
+  Process an der Reihe ist.
+  
+  Die maximale Anzahl der parallel laufenden Processes wird mit Hilfe des Hazelcast-Sets namens "running"
+  kontrolliert. Hier werden alle IDs der laufenden Processes eingetragen und wieder entfernt, sobald
+  der entsprechende Process beendet ist. 
+
+  2. Dateisegmentierung
+
+  Jeder Band, der mehr als eine bestimmte Anzahl Seiten hat, wird in kleine Teil-Bände aufgeteilt, die 
+  jeweils anstatt des großen Bandes verarbeitet werden. Die Teil-Bände werden jeweils in einen Unter-Process 
+  gesteckt (vom selben Datentyp wie der Ober-Process) und in der Liste AbbyyOCRProcess.subProcesses 
+  gespeichert. Die split()-Methode liefert alle Unter-Processes, bzw. nur den Process selber, wenn 
+  dieser zu klein ist, um geteilt werden zu müssen. Alle Unter-Processes werden hintereinander 
+  ausgeführt (OCRExecuter.execute()).
+
+  Nachdem alle Unter-Processes durchgelaufen sind, können die Teil-Ergebnisse zusammengefasst werden. 
+  Um den richtigen Zeitpunkt dafür zu ermitteln, wird das Beobachter-Muster benutzt. Ein AbbyyOCRProcess 
+  ist dafür gleichzeitig Observer und Observable. Die Unter-Processes erhalten eine Referenz auf ihren 
+  Ober-Process und rufen am Ende der Ausführung dessen update()-Methode auf. Sobald sich alle auf diese 
+  Weise zurückgemeldet haben, werden die Ergebnisse zu einem großen zusammengefasst 
+  (AbbyyOCRProcess.merge()).
+
+* Achtung!!
+
+  Hazelcast verwendet standardmäßig den UDP-Port 54327, um eine Verbindung zwischen den JVMs zu 
+  ermöglichen. Wenn eine Firewall verwendet wird, muss dieser explizit freigeschaltet sein. 

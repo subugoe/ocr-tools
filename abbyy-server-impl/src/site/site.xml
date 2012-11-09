@@ -2,6 +2,10 @@
 <project name="abbyy-server-impl">
 	 <body>
 	 	<menu ref="parent"/>
-	 <menu ref="reports"/>
+        <menu name="Dokumentation">
+            <item name="Multiuser-Betrieb mit Hazelcast" href="hazelcast.html"/>
+            <item name="Konfiguration" href="config.html"/>
+        </menu>
+	 	<menu ref="reports"/>
 	 </body>
 </project>

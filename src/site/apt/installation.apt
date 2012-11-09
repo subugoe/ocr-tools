@@ -111,7 +111,8 @@ java -jar cli.jar <options>
   Hier müssen alle IP-Adressen und/oder Host-Namen eingetragen werden, die am Cluster teilnehmen sollen.
   Anwendungen, die auf diesen Rechnern gestartet werden, finden sich dann automatisch und verbinden sich zu 
   einem Cluster. Dazu muss zumindest der Port 5801 auf jedem Rechner offen sein. Falls auf einem Rechner 
-  mehr als eine Anwendung laufen soll, müssen hier noch weitere Ports geöffnet werden (5802, 5803, usw.)
+  mehr als eine Anwendung laufen soll, müssen hier noch weitere Ports geöffnet werden (5802, 5803, usw. und
+  UDP-Port 54327)
 
 * Anmerkungen zum Tesseract-Betrieb
 

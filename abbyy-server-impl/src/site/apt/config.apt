@@ -1,0 +1,31 @@
+Konfiguration per XML-Datei
+
+  Die Abbyy-Implementierung kann in der folgenden Datei konfiguriert werden:
+  
++-----------------------+
+resources/AbbyyServerOCREngine.xml
++-----------------------+
+
+  Wichtige Felder:
+  
+  - serverUrl, username, password: Verbindungsdaten zum WebDAV-Server, auf dem sich die Hotfolder 
+    von Abbyy befinden
+    
+  - input, output, error: Hotfolder die von Abbyy gelesen (input), bzw. beschrieben (output, error) werden
+  
+  - imagesNumberForSubprocess: maximale Anzahl von Bildern pro Prozess. Gilt nur, wenn Multiuser-Betrieb 
+    und Dateisegmentierung eingeschaltet sind.
+    
+  - maxThreads: maximale Anzahl von parallel laufenden Prozessen. Achtung: Bei Dateisegmentierung 
+    könnte bereits ein Prozess alle Slots belegen, wenn er in entsprechend viele Teil-Prozesse segmentiert 
+    wird.
+    
+  - hotfolderClass: Implementierung, die den Dateitransfer zu den Hotfoldern übernimmt. Mögliche Werte:
+    
++----------------+
+  Für WebDAV:
+    de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolderImpl
+    
+  Für andere Protokolle(z. B. file, ftp)
+    de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ApacheVFSHotfolderImpl
++----------------+
