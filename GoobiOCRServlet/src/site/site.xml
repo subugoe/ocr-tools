@@ -1,6 +1,9 @@
 <project name="GoobiOCRServlet">
 	 <body>
 	 	<menu ref="parent"/>
+        <menu name="Dokumentation">
+            <item name="Konfiguration und Bedienung" href="config.html"/>
+        </menu>
 	 	<menu ref="reports"/>
 	 </body>
 </project>
