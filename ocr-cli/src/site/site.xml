@@ -4,8 +4,9 @@
 	 	<menu ref="parent"/>
 	 	<menu name="OCR-CLI">
 		   <item name="Übersicht" href="ocrview.html"/>
+		   <item name="Starten per Kommandozeile" href="clistart.html"/>
 		   <item name="Installations- und Nutzungsanweisungen" href="InstructionOfUtilisation.html"/>
-                   <item name="Installation mit eigener Konfiguration" href="packaging.html"/>
+           <item name="Installation mit eigener Konfiguration" href="packaging.html"/>
 		 </menu>
 	 	<menu ref="reports"/>
 	 </body>
