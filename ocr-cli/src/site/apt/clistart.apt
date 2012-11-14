@@ -1,0 +1,90 @@
+Einfaches Starten auf der Kommandozeile
+
+  Syntax:
+  
++------------------+
+  java -jar cli.jar -l <languages> -f <output_file_format> -t <text_type> -o <output_path> <input_path>
++------------------+
+
+  Beispiel:
+  
++------------------+
+  java -jar cli.jar -l de,en,ru -f TXT -t GOTHIC -o /tmp/myresults /tmp/myimages
++------------------+
+
+  Parameter:
+  
+  * -l <languages>: 
+    eine oder mehrere Sprachen, durch Kommas getrennt. Nach 
+    {{{http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt}ISO 369}}
+    
+  * -f <output_file_format>: 
+    Format für die Ausgabedateien. Mögliche Werte:
+    
+    * TXT
+    
+    * XML
+    
+    * PDF
+    
+    * PDFA
+    
+    * HTML
+    
+    * XHTML
+    
+    * DOC
+    
+    * HOCR
+    
+    * METADATA
+    
+  * -t <text_type>:
+    Typ des zu erkennenden Textes. Mögliche Werte (Für Details siehe OCRProcess.OCRTextTyp):
+    
+    * NORMAL
+    
+    * TYPEWRITER
+    
+    * MATRIX
+    
+    * OCR_A
+    
+    * OCR_B
+    
+    * MICR_E13B
+    
+    * GOTHIC
+    
+  * -o <output_path>:
+    Verzeichnis für die Ausgabedateien
+    
+  * <input_path>:
+    Verzeichnis mit den Eingabedateien. Alle Unterverzeichnisse werden standardmäßig
+    nach tif-Dateien durchsucht. Ein anderer Dateityp kann mit -e <extension> angegeben werden.
+  
+  Weitere optionale Parameter:
+  
+  * -h:
+    Hilfe
+  
+  * -e <extension>:
+    Dateierweiterung bzw. -typ. Default ist "tif".
+  
+  * -p <priority>:
+    
+    * HIGH
+    
+    * ABOVENORMAL
+    
+    * NORMAL
+    
+    * BELOWNORMAL
+    
+    * LOW
+    
+  * -s: Einschalten der Dateisegmentierung
+  
+  * -O: weitere Optionen, die direkt an die Implementierung weitergereicht werden
+  
+    * -Olock.overwrite=true: Die Lock-Datei auf dem WebDAV-Server wird ignoriert und notfalls überschrieben.
