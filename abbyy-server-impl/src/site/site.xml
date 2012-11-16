@@ -3,6 +3,7 @@
 	 <body>
 	 	<menu ref="parent"/>
         <menu name="Dokumentation">
+            <item name="Übersicht und Konzept" href="overview.html"/>
             <item name="Multiuser-Betrieb mit Hazelcast" href="hazelcast.html"/>
             <item name="Konfiguration" href="config.html"/>
         </menu>

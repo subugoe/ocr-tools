@@ -418,30 +418,6 @@
 
   
   
-
- 
- *<< 1.6 Zugangsdaten für den OCR Server>>
- 
- user: 
- pw:
- 
- <<WebDav URLs sind:>>
- 
-  + {{http://dl380-130.gbv.de/webdav/GDZ/input}}
-  
-  + {{http://dl380-130.gbv.de/webdav/GDZ/output}}
-  
-  + {{http://dl380-130.gbv.de/webdav/GDZ/error}}
- 
- bzw.
- 
-  + {{https://dl380-130.gbv.de/webdav/GDZ/input}}
-  
-  + {{https://dl380-130.gbv.de/webdav/GDZ/output}}
-  
-  + {{https://dl380-130.gbv.de/webdav/GDZ/error}}
-  
- 
  
  
 <<2 Links & Informationen>>
