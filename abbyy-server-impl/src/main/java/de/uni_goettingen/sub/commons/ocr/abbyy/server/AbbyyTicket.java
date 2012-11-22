@@ -377,8 +377,11 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		Map<OCRFormat, OCROutput> outputs = new HashMap<OCRFormat, OCROutput>();
 		for (OutputFileFormatSettings offs : params.getExportFormatList()) {
 			if (offs.isSetOutputFileFormat()) {
-				OCRFormat format = OCRFormat.parseOCRFormat(offs
-						.getOutputFileFormat());
+				String fileFormat = offs.getOutputFileFormat();
+				if(fileFormat.equals("Text")) {
+					fileFormat = "TXT";
+				}
+				OCRFormat format = OCRFormat.parseOCRFormat(fileFormat);
 				String location = offs.getOutputLocation();
 				AbbyyOCROutput aoo = new AbbyyOCROutput();
 				aoo.setRemoteLocation(location);

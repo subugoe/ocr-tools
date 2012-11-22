@@ -19,19 +19,23 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.xmlbeans.XmlException;
 import org.junit.After;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.util.file.FileUtils;
 
 public class AbbyyServerSimulator extends Thread {
 	protected File hotfolder, inputHotfolder, outputHotfolder, errorHotfolder, expected, errorExpected, outputExpected;
@@ -44,7 +48,7 @@ public class AbbyyServerSimulator extends Thread {
 
 	protected List<Thread> processes = new ArrayList<Thread>();
 
-	protected static Long wait = 2000l;
+	protected static Long wait = 1000l;
 
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerSimulator.class);
 
@@ -55,7 +59,7 @@ public class AbbyyServerSimulator extends Thread {
 	protected static Long maxWait = 1000l * 60l * 15l;
 
 	public AbbyyServerSimulator(File hotfolder, File expactations) {
-		//ApacheVFSHotfolderImpl is the input directory
+		
 		this.hotfolder = hotfolder;
 		this.expected = expactations;
 
@@ -115,14 +119,14 @@ public class AbbyyServerSimulator extends Thread {
 		}
 	}
 
-	protected void removeJob (File file) throws XmlException, IOException {
-		List<String> files = AbbyyTicketTest.parseFilesFromTicket(file);
+	protected void removeJob (File ticket) throws XmlException, IOException {
+		List<String> files = getFileNamesFromTicket(ticket);
 		for (String str : files) {
-			new File(hotfolder.getAbsolutePath() + File.separator + str).delete();
+			new File(inputHotfolder.getAbsolutePath() + File.separator + str).delete();
 		}
-		//delete the ticket
+		
 		logger.info("Deleted referenced files, now deleting ticket");
-		file.delete();
+		ticket.delete();
 	}
 
 	protected void checkDirectory (File dir) throws XmlException, IOException {
@@ -130,7 +134,7 @@ public class AbbyyServerSimulator extends Thread {
 
 		List<File> inputContents = Arrays.asList(dir.listFiles());
 		if (inputContents.size() < 1) {
-			logger.info("No files in input folder.");
+			//logger.info("No files in input folder.");
 			return;
 		}
 
@@ -151,8 +155,40 @@ public class AbbyyServerSimulator extends Thread {
 		}
 	}
 
+	protected String getResultFileType(File ticket) throws IOException {
+		
+		Map<String, String> typeMapping = new HashMap<String, String>();
+		typeMapping.put("Text", "txt");
+		typeMapping.put("XML", "xml");
+		typeMapping.put("PDF", "pdf");
+		typeMapping.put("HTML", "html");
+		typeMapping.put("MSWord", "doc");
+		
+		String ticketString = IOUtils.toString(new FileInputStream(ticket));
+		Pattern pattern = Pattern.compile("OutputFileFormat=\"(.+?)\"");
+		Matcher matcher = pattern.matcher(ticketString);
+		matcher.find();
+		String abbyyType = matcher.group(1);
+		
+		return typeMapping.get(abbyyType);
+	}
+	
+	protected List<String> getFileNamesFromTicket(File ticket) throws IOException {
+		String ticketString = IOUtils.toString(new FileInputStream(ticket));
+		Pattern pattern = Pattern.compile("<InputFile Name=\"(.+?)\"");
+		Matcher matcher = pattern.matcher(ticketString);
+		
+		List<String> fileNames = new ArrayList<String>();
+		while (matcher.find()) {
+			fileNames.add(matcher.group(1));
+		}
+		
+		return fileNames;
+	}
+	
 	protected Long calculateWait (File file) throws XmlException, IOException {
-		List<String> files = AbbyyTicketTest.parseFilesFromTicket(file);
+		List<String> files = getFileNamesFromTicket(file);
+		
 		return files.size() * wait;
 	}
 
@@ -167,9 +203,9 @@ public class AbbyyServerSimulator extends Thread {
 
 	@After
 	protected void clean () {
-		FileUtils.deleteInDir(inputHotfolder);
-		FileUtils.deleteInDir(outputHotfolder);
-		FileUtils.deleteInDir(errorHotfolder);
+		de.unigoettingen.sub.commons.util.file.FileUtils.deleteInDir(inputHotfolder);
+		de.unigoettingen.sub.commons.util.file.FileUtils.deleteInDir(outputHotfolder);
+		de.unigoettingen.sub.commons.util.file.FileUtils.deleteInDir(errorHotfolder);
 	}
 
 	private Thread createCopyThread (final Long wait, final File ticket) {
@@ -177,11 +213,12 @@ public class AbbyyServerSimulator extends Thread {
 			@Override
 			public void run () {
 				try {
-					String name = ticket.getName();
-					name = name.substring(0, name.indexOf(".xml"));
+					String jobName = ticket.getName();
+					jobName = jobName.substring(0, jobName.indexOf(".xml"));
+					String resultExtension = getResultFileType(ticket);
 					//Remove the files
 					removeJob(ticket);
-					logger.info("Removed files for " + name + ", waiting " + wait + " mili seconds");
+					logger.info("Removed files for " + jobName + ", waiting " + wait + " mili seconds");
 					sleep(wait);
 					//Check if this Thread waits to long
 					if (System.currentTimeMillis() > startTime + AbbyyServerSimulator.maxWait) {
@@ -190,17 +227,26 @@ public class AbbyyServerSimulator extends Thread {
 					}
 					//Copy the files to the right location
 					Boolean foundResult = false;
-					if (resultsOutput.containsKey(name)) {
-						FileUtils.copyDirectory(resultsOutput.get(name), outputHotfolder);
+					if (resultsOutput.containsKey(jobName)) {
+						de.unigoettingen.sub.commons.util.file.FileUtils.copyDirectory(resultsOutput.get(jobName), outputHotfolder);
 						foundResult = true;
 					}
-					if (resultsError.containsKey(name)) {
-						FileUtils.copyDirectory(resultsError.get(name), errorHotfolder);
+					if (resultsError.containsKey(jobName)) {
+						de.unigoettingen.sub.commons.util.file.FileUtils.copyDirectory(resultsError.get(jobName), errorHotfolder);
 						foundResult = true;
 					}
 					if (!foundResult) {
-						logger.error("Fond no prepared result for " + name);
-						this.interrupt();
+						logger.info("Found no prepared result for " + jobName + ", using generic samples instead");
+						File samples = new File(expected, "samples");
+						
+						File ocrResultSample = new File(samples, "sample." + resultExtension);
+						File ocrResult = new File(outputHotfolder, jobName + "." + resultExtension);
+						FileUtils.copyFile(ocrResultSample, ocrResult);
+
+						File xmlResultSample = new File(samples, "sample.xml.result.xml");
+						File xmlResult = new File(outputHotfolder, jobName + ".xml.result.xml");
+						FileUtils.copyFile(xmlResultSample, xmlResult);
+												
 					}
 
 				} catch (InterruptedException e) {
