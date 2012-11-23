@@ -145,7 +145,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	private Long totalFileSize = 0l;
 	static Object monitor = new Object();
 
-
+	private boolean alreadyBeenHere = false;
+	
 	protected AbbyyOCRProcess(ConfigParser config) {
 		super();
 		this.config = config;
@@ -1029,6 +1030,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			}
 			// only get here when all processes are finished
 
+			// it might happen that a subprocess (not the last one) must wait too 
+			// long in the monitor and gets here after the last one, because it 
+			// also finds out that all subprocesses have finished
+			if (alreadyBeenHere) {
+				return;
+			}
+			alreadyBeenHere = true;
+			
 			boolean oneFailed = false;
 			for (AbbyyOCRProcess sub : subProcesses) {
 				oneFailed = sub.failed;
@@ -1137,20 +1146,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		return uriTextMD;
 	}
 	
-	//remove local files from the list after merge if the mergeResults Exists
+	//remove local files from the list after merge
 	protected void removeSubProcessResults(Map<File, List<File>> resultFiles){
-		@SuppressWarnings("rawtypes")
-		Iterator k = resultFiles.keySet().iterator();
-		File abbyyMergedResult = (File) k.next();
-		if(abbyyMergedResult.exists()){
-			List<File> files =  (List<File>) resultFiles.get(abbyyMergedResult);
-			for(File file : files){
-				file.delete(); 
-				//second delete if still exists 
-				if(file.exists()) {file.delete();}
-		    }
+		for(List<File> files : resultFiles.values()) {
+			for(File file : files) {
+				file.delete();
+			}
 		}
-			
 	}
 		
 
