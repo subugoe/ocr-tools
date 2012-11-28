@@ -18,8 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
+import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +37,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.internal.runners.statements.Fail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,9 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ApacheVFSHotfolderImpl;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 public class AbbyyServerOCREngineTest {
@@ -55,7 +60,7 @@ public class AbbyyServerOCREngineTest {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngineTest.class);
 	protected static AbbyyServerSimulator ass = null;
 
-	@Before
+	//@Before
 	public void init () throws ConfigurationException, URISyntaxException {
 		logger.debug("Starting Test");
 		ConfigParser config = new ConfigParser().parse();
@@ -65,9 +70,63 @@ public class AbbyyServerOCREngineTest {
 
 		assertNotNull(uri);
 
-		ass = new AbbyyServerSimulator(HotfolderTest.TEST_HOTFOLDER_FILE, HotfolderTest.TEST_EXPECTED_FILE);
+		ass = new AbbyyServerSimulator(DAV_FOLDER, EXPECTED_ROOT);
 		ass.start();
 	}
+	
+	@Test
+	public void getInstance() {
+		AbbyyServerOCREngine engine = AbbyyServerOCREngine.getInstance();
+		assertNotNull(engine);
+	}
+	
+	@Test
+	public void newImage() {
+		AbbyyServerOCREngine engine = AbbyyServerOCREngine.getInstance();
+		OCRImage image = engine.newOcrImage(null);
+		assertTrue(image instanceof AbbyyOCRImage);
+	}
+	
+	@Test
+	public void newProcess() {
+		AbbyyServerOCREngine engine = AbbyyServerOCREngine.getInstance();
+		OCRProcess process = engine.newOcrProcess();
+		assertTrue(process instanceof AbbyyOCRProcess);
+	}
+	
+	@Test
+	public void newOutput() {
+		AbbyyServerOCREngine engine = AbbyyServerOCREngine.getInstance();
+		OCROutput output = engine.newOcrOutput();
+		assertTrue(output instanceof AbbyyOCROutput);
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public void recognizeNoProcesses() {
+		AbbyyServerOCREngine engine = AbbyyServerOCREngine.getInstance();
+		engine.recognize();
+	}
+	
+	@Ignore
+	@Test(expected=IllegalStateException.class)
+	public void recognizeNoServer() {
+		AbbyyServerOCREngine engine = AbbyyServerOCREngine.getInstance();
+		OCRProcess process = engine.newOcrProcess();
+		engine.recognize(process);
+	}
+	
+	@Ignore
+	@Test
+	public void recognizeEmptyProcess() throws Exception {
+		MyServers.startDavServer();
+		AbbyyServerOCREngine engine = AbbyyServerOCREngine.getInstance();
+		OCRProcess process = engine.newOcrProcess();
+		engine.recognize(process);
+		Thread.sleep(500000);
+	}
+	
+	
+	
 	@Ignore
 	@Test
 	public void checkThread () throws InterruptedException {
@@ -82,13 +141,13 @@ public class AbbyyServerOCREngineTest {
 		assertNotNull(ase);
 
 		for (String book : AbbyyOCRProcessTest.testFolders) {
-			File testDir = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
+			File testDir = new File(RESOURCES.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
 			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
 			assertNotNull(aop);
 			aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			//TODO: set the inout folder to new File(apacheVFSHotfolderImpl.getAbsolutePath() + File.separator + INPUT_NAME);
-			File testTicket = new File(AbbyyOCRProcessTest.resources.getAbsoluteFile() + File.separator
+			File testTicket = new File(RESOURCES.getAbsoluteFile() + File.separator
 					+ HotfolderTest.INPUT
 					+ File.separator
 					+ book
@@ -232,7 +291,7 @@ public class AbbyyServerOCREngineTest {
 
 	}
 
-	@After
+	//@After
 	public void stop () throws InterruptedException {
 		ass.interrupt();
 		ass.join();

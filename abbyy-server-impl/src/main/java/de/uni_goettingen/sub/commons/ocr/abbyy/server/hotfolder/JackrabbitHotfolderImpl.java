@@ -46,6 +46,7 @@ import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
@@ -105,21 +106,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 					e);
 		}
 	}
-	/**
-	 * is just for JUnitTest
-	 */
-	public JackrabbitHotfolderImpl(String local, String user, String pw){
-		try {
-			client = initConnection(local,
-					user, pw);
-		} catch (GeneralSecurityException e) {
-			logger.error("Security Exception", e);
-		} catch (IOException e) {
-			logger.error(
-					"Got an IOException while initilizing Jackrabbit Hotfolder implementation",
-					e);
-		}
-	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -192,7 +179,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 
 		// Since we use the multithreaded Connection manager we have to wait
 		// until the directory is created
-		// The problem doesn't accoure in debug mode since the main thread is
+		// The problem doesn't occur in debug mode since the main thread is
 		// slower there
 		// You get a 403 if you try to PUT something in an non existing
 		// COLection
@@ -224,23 +211,27 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		executeMethod(client, put);
 	}
 
-	private Integer head(URI uri) throws HttpException, IOException {
+	private Integer head(URI uri) {
 		HeadMethod head = new HeadMethod(uri.toString());
-		Integer status;
+		Integer status = 0;
 		try {
 			status = client.executeMethod(head);
+		} catch (IOException e) {
+			throw new IllegalStateException("Error connecting to server. URL is " + uri, e);
 		} finally {
 			head.releaseConnection();
 		}
 		return status;
 	}
 
-	private static Integer executeMethod(HttpClient client, DavMethod method)
-			throws IOException {
+	private static Integer executeMethod(HttpClient client, DavMethod method) 
+	throws URIException {
 		Integer responseCode;
 		try {
 			responseCode = client.executeMethod(method);
 			logger.trace("Response code in executeMethod: "+ responseCode);
+		} catch (IOException e) {
+			throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), e);
 		} finally {
 			method.releaseConnection();
 		}
@@ -253,7 +244,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	}
 
 	@SuppressWarnings("deprecation")
-	public static HttpClient initConnection(String webdavURL,
+	private static HttpClient initConnection(String webdavURL,
 			String webdavUsername, String webdavPassword)
 			throws GeneralSecurityException, IOException {
 		Protocol easyhttps = new Protocol("https",

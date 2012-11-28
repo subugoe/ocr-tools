@@ -9,10 +9,10 @@ public class ServerMain {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		ServerStarter.startAbbyyDavServer(9001);
+		MyServers.startDavServer(9001);
 
-		File hotfolder = ServerStarter.davFolder;
-		File expected = new File(System.getProperty("user.dir") + "/src/test/resources/expected");
+		File hotfolder = PathConstants.DAV_FOLDER;
+		File expected = PathConstants.EXPECTED_ROOT;
 		
 		AbbyyServerSimulator sim = new AbbyyServerSimulator(hotfolder, expected);
 		
