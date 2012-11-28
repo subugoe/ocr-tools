@@ -290,10 +290,14 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	@Override
 	public Observable recognize() {
-		if (!started && !processes.isEmpty()) {
-			start();
-		} else if (processes.isEmpty()) {
-			throw new IllegalStateException("Queue is empty!");
+		try {
+			if (!started && !processes.isEmpty()) {
+				start();
+			} else if (processes.isEmpty()) {
+				throw new IllegalStateException("Queue is empty!");
+			}
+		} finally {
+			started = false;
 		}
 		return null;
 	}

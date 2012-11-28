@@ -18,52 +18,52 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 public class ConfigParserTest {
 
 	final static Logger logger = LoggerFactory.getLogger(ConfigParserTest.class);
 
-	protected static ConfigParser cp = null;
-
-	@BeforeClass
-	public static void init () throws ConfigurationException {
-		try {
-			cp = new ConfigParser().parse();
-		} catch (RuntimeException e) {
-			logger.info("If run from Maven an Exception is expected", e);
-		}
-		assertNotNull(cp);
+	@Test
+	public void newConfig() {
+		ConfigParser config = new ConfigParser().parse();
+		assertNotNull(config);
 	}
-
+	
+	@Test(expected=OCRException.class)
+	public void newConfigException() {
+		new ConfigParser().parse(null);
+		fail();
+	}
+	
 	@Test
 	public void testConfiguration () {
-		cp = new ConfigParser().parse();
-		assertNotNull(cp.getConfig());
-	}
-
-	@Test
-	public void testUrl () throws ConfigurationException {
-		cp = new ConfigParser().parse();
-		//assertFalse(cp.getDebugAuth());
-		assertNotNull(cp.getServerURL());
+		ConfigParser config = new ConfigParser().parse();
+		assertNotNull(config.getConfig());
+		assertNotNull(config.getServerURL());
+		assertNotNull(config.getInput());
+		assertNotNull(config.getError());
+		assertNotNull(config.getOutput());
+		assertTrue(config.getMaxFiles() > 0);
+		assertTrue(config.getMaxSize() > 0);
+		assertTrue(config.getMaxThreads() > 0);
+		assertNotNull(config.getHotfolderClass());
+		assertNotNull(config.getCheckServerState());
 	}
 
 	@Test
 	public void testAuth () throws ConfigurationException {
 		System.setProperty(ConfigParser.DEBUG_PROPERTY, "true");
-		cp = new ConfigParser().parse();
-		assertTrue(cp.getDebugAuth());
+		ConfigParser config = new ConfigParser().parse();
+		assertTrue(config.getDebugAuth());
 	}
 
 }

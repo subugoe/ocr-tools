@@ -11,20 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ServerStarter {
-	final static Logger logger = LoggerFactory.getLogger(ServerStarter.class);
+public class MyServers {
+	final static Logger logger = LoggerFactory.getLogger(MyServers.class);
 	private static Server davServer = null; // 9001
 
-	public static final File davFolder = new File(System.getProperty("user.dir")
-			+ "/target/dav");
+	private static final File davFolder = PathConstants.DAV_FOLDER;
 	
-	public static void startAbbyyDavServer(int port) throws Exception {
-		startDavServer(port);
-		new File(davFolder, "input").mkdir();
-		new File(davFolder, "output").mkdir();
-		new File(davFolder, "error").mkdir();
+	public static void startDavServer() throws Exception {
+		startDavServer(PathConstants.DAV_PORT);
 	}
-	
+		
 	public static void startDavServer(int port) throws Exception {
 	    
 		davFolder.mkdirs();
@@ -39,6 +35,10 @@ public class ServerStarter {
 		logger.info("Started Webdav Server on port " + port);
 		logger.info("Mapped directory is " + davFolder);
 
+	}
+	
+	public static void stopDavServer() throws Exception {
+		davServer.stop();
 	}
 
 }

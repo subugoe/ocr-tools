@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -55,69 +57,66 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
-@SuppressWarnings("serial")
+
 public class AbbyyOCRProcessTest {
 	final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcessTest.class);
-	public static File resources = new File(System.getProperty("user.dir")
-			+ "/src/test/resources");
 
-	private static String resourcesDir = System.getProperty("user.dir")
-			+ "/src/test/resources";
 	public static List<String> testFolders;
 	protected static String extension = "tif";
 	private static HashMap<OCRFormat, OCROutput> outputs;
 	static {
-		testFolders = new ArrayList<String>() {
-			{
-				add("PPN129323640_0010");
-				add("PPN31311157X_0102");
-				add("PPN514401303_1890");
-				add("PPN514854804_0001");
-			}
-		};
+		testFolders = new ArrayList<String>();	
+		testFolders.add("PPN129323640_0010");
+		testFolders.add("PPN31311157X_0102");
+		testFolders.add("PPN514401303_1890");
+		testFolders.add("PPN514854804_0001");
+			
 		
 		URI resultUri = null;
 		try {
-			resultUri = new URI(new File(resourcesDir).toURI() + "/results/"
+			resultUri = new URI(RESOURCES.toURI() + "/target/results/"
 					+ "result");
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ExceptionInInitializerError(e);
 		}
 
 		final AbbyyOCROutput aoo = new AbbyyOCROutput(resultUri);
 		aoo.setRemoteFilename("result");
 
-		outputs = new HashMap<OCRFormat, OCROutput>() {
-			{
-				put(OCRFormat.XML, aoo);
-			}
-		};
+		outputs = new HashMap<OCRFormat, OCROutput>();
+		outputs.put(OCRFormat.XML, aoo);
 
+	}
+
+	@Test
+	public void newAbbyyProcess() {
+		AbbyyOCRProcess aop = (AbbyyOCRProcess) AbbyyServerOCREngine
+				.getInstance().newOcrProcess();
+		assertNotNull(aop);
 	}
 
 	@Test
 	public void createAbbyyProcess() throws IOException {
 		for (String book : testFolders) {
-			File testDir = new File(resourcesDir + "/input/" + book);
+			File testDir = new File(LOCAL_INPUT, book);
 			List<File> files = OCRUtil.makeFileList(testDir, extension);
 			assertTrue(files.size() != 0);
 
 			AbbyyOCRProcess aop = (AbbyyOCRProcess) AbbyyServerOCREngine
 					.getInstance().newOcrProcess();
-			assertNotNull(aop);
 			aop.setOcrOutputs(outputs);
-			File testTicket = new File(resourcesDir + "/input/" + book + ".xml");
+			File testTicket = new File(MISC, book + ".xml");
 			aop.write(new FileOutputStream(testTicket), testDir.getName());
 
 		}
 	}
 
+	@Ignore
 	@Test
 	public void checkTicketCount() throws IOException, XmlException {
 		for (String book : testFolders) {
-			File testDir = new File(resources.getAbsoluteFile()
+			File testDir = new File(RESOURCES.getAbsoluteFile()
 					+ File.separator + HotfolderTest.INPUT + File.separator
 					+ book);
 			logger.debug("Creating AbbyyOCRProcess for "
@@ -128,7 +127,7 @@ public class AbbyyOCRProcessTest {
 						.getInstance().newOcrProcess();
 				assertNotNull(aop);
 				aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
-				File testTicket = new File(resources.getAbsoluteFile()
+				File testTicket = new File(RESOURCES.getAbsoluteFile()
 						+ File.separator + HotfolderTest.INPUT + File.separator
 						+ book + ".xml");
 				aop.write(new FileOutputStream(testTicket), testDir.getName());
@@ -142,7 +141,7 @@ public class AbbyyOCRProcessTest {
 			}
 		}
 	}
-
+	
 	@Test
 	public void createProcessViaAPI() throws MalformedURLException,
 			URISyntaxException {
@@ -152,7 +151,7 @@ public class AbbyyOCRProcessTest {
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
 			OCRImage ocri = mock(OCRImage.class);
-			String imageUrl = resources.toURI().toURL().toString() + i;
+			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
 			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 			logger.debug("Added url to list: " + imageUrl);
 			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
@@ -221,9 +220,7 @@ public class AbbyyOCRProcessTest {
 	public static void cleanup() {
 		logger.debug("Cleaning up");
 		for (String book : testFolders) {
-			File testTicket = new File(resources.getAbsoluteFile()
-					+ File.separator + HotfolderTest.INPUT + File.separator
-					+ book + ".xml");
+			File testTicket = new File(MISC, book + ".xml");
 			logger.debug("Deleting file " + testTicket.getAbsolutePath());
 			testTicket.delete();
 			// assertTrue(!testTicket.exists());

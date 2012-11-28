@@ -130,7 +130,7 @@ public class AbbyyServerSimulator extends Thread {
 	}
 
 	protected void checkDirectory (File dir) throws XmlException, IOException {
-		logger.debug("Checking directory: " + dir.getAbsolutePath());
+		logger.trace("Checking directory: " + dir.getAbsolutePath());
 
 		List<File> inputContents = Arrays.asList(dir.listFiles());
 		if (inputContents.size() < 1) {
