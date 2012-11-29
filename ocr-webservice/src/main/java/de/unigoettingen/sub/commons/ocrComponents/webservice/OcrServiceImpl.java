@@ -55,7 +55,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 
 /**
@@ -217,7 +217,7 @@ public class OcrServiceImpl implements OcrService {
 			aop.setLanguages(langs);
 			aop.setPriority(OCRPriority.fromValue(request.getOcrPriorityType()
 					.value()));
-			aop.setTextTyp(OCRTextTyp.fromValue(request.getTextType().value()));
+			aop.setTextType(OCRTextType.fromValue(request.getTextType().value()));
 			engine.addOcrProcess(aop);
 
 			LOGGER.info("Starting recognize method");

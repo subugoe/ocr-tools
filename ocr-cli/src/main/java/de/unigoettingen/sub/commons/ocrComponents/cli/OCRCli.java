@@ -55,7 +55,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
@@ -223,7 +223,7 @@ public class OCRCli {
 						LOGGER.error("the process ended, ocrPriority is null");
 						System.exit(0);
 					}
-					aop.setTextTyp(OCRTextTyp.valueOf(ocrTextTyp));
+					aop.setTextType(OCRTextType.valueOf(ocrTextTyp));
 					engine.addOcrProcess(aop);
 				}
 			}
@@ -377,7 +377,7 @@ public class OCRCli {
 					&& !cmd.getOptionValue("t").equals("")) {
 				ocrTextTyp = cmd.getOptionValue("t");
 				try {
-					OCRProcess.OCRTextTyp.valueOf(ocrTextTyp).ordinal();
+					OCRProcess.OCRTextType.valueOf(ocrTextTyp).ordinal();
 					LOGGER.trace("ocrTextTyp: " + ocrTextTyp);
 				} catch (IllegalArgumentException e) {
 					LOGGER.error("the process ended, This ocrTextTyp < "

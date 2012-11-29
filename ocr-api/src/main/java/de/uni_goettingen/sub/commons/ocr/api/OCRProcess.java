@@ -241,7 +241,7 @@ public interface OCRProcess {
 	 * 
 	 * @return the texttyp
 	 */
-	abstract OCRTextTyp getTextTyp();
+	abstract OCRTextType getTextType();
 
 	/**
 	 * Sets the texttyp. to describe the type of recognized text
@@ -249,7 +249,7 @@ public interface OCRProcess {
 	 * @param t
 	 *            the new texttyp
 	 */
-	abstract void setTextTyp(OCRTextTyp t);
+	abstract void setTextType(OCRTextType t);
 
 	/**
 	 * The Enum TextTyp. This enum represents 7 states of different
@@ -258,7 +258,7 @@ public interface OCRProcess {
 	 */
 	@XmlType(name = "inputTextType")
 	@XmlEnum
-	public enum OCRTextTyp{
+	public enum OCRTextType{
 		
 		/** The Normal type, This value corresponds to common typographic text. */
 		NORMAL("Normal"),
@@ -298,7 +298,7 @@ public interface OCRProcess {
 		
 		 private final String value;
 
-		 OCRTextTyp(String v) {
+		 OCRTextType(String v) {
 		        value = v;
 		    }
 
@@ -306,8 +306,8 @@ public interface OCRProcess {
 		        return value;
 		    }
 
-		    public static OCRTextTyp fromValue(String v) {
-		        for (OCRTextTyp c: OCRTextTyp.values()) {
+		    public static OCRTextType fromValue(String v) {
+		        for (OCRTextType c: OCRTextType.values()) {
 		            if (c.value.equals(v)) {
 		                return c;
 		            }

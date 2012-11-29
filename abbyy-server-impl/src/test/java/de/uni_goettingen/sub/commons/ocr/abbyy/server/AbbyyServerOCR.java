@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 public class AbbyyServerOCR implements Runnable  {
@@ -38,18 +38,18 @@ public class AbbyyServerOCR implements Runnable  {
 		
 
 		for (String book : AbbyyOCRProcessTest.testFolders) {
-			File testDir = new File(RESOURCES.getAbsoluteFile() + "/hotfolder/" + HotfolderTest.INPUT + "/" + book);
+			File testDir = new File(RESOURCES.getAbsoluteFile() + "/hotfolder/" + "input" + "/" + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
 		//	List<File> imageDirs = OCRUtil.getTargetDirectories(testDir,extension);
-			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
+			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, "tif");
 			aop.addLanguage(Locale.GERMAN);
-			aop.setTextTyp(OCRTextTyp.NORMAL);
+			aop.setTextType(OCRTextType.NORMAL);
 			assertNotNull(aop);
 			for (OCRFormat f: AbbyyTicketTest.OUTPUT_DEFINITIONS.keySet()) {
 				//Call the copy contructor to get rid of mock objects
 				AbbyyOCROutput aoo = new AbbyyOCROutput((AbbyyOCROutput) AbbyyTicketTest.OUTPUT_DEFINITIONS.get(f));
 					//(AbbyyOCROutput) AbbyyTicketTest.OUTPUT_DEFINITIONS.get(f);
-				URI uri = new URI(AbbyyTicketTest.BASEFOLDER_FILE.toURI() + "LOCAL" + "/" + book + "." + f.toString().toLowerCase());
+				URI uri = new URI(RESOURCES.toURI() + "LOCAL" + "/" + book + "." + f.toString().toLowerCase());
 				aoo.setUri(uri);
 				aop.addOutput(f, aoo);
 				
@@ -57,7 +57,7 @@ public class AbbyyServerOCR implements Runnable  {
 			//aop.setOcrOutputs();
 			//TODO: set the inout folder to new File(apacheVFSHotfolderImpl.getAbsolutePath() + "/" + INPUT_NAME);
 			File testTicket = new File(RESOURCES.getAbsoluteFile() + "/"
-					+ HotfolderTest.INPUT
+					+ "input"
 					+ "/"
 					+ book
 					+ ".xml");

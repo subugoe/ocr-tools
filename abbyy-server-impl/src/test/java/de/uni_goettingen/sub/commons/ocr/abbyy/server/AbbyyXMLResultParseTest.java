@@ -51,7 +51,7 @@ public class AbbyyXMLResultParseTest {
 
 	@Before
 	public void init() throws Exception {
-		File fileresult = new File(AbbyyTicketTest.BASEFOLDER_FILE
+		File fileresult = new File(PathConstants.RESOURCES
 				+ "/hotfolder/" + "xmlresult.xml.result.xml");
 		isResult = new FileInputStream(fileresult);
 		XmlOptions options = new XmlOptions();

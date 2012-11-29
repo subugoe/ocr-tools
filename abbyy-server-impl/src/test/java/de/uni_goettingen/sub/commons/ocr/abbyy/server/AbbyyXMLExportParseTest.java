@@ -48,7 +48,7 @@ public class AbbyyXMLExportParseTest {
 	@Before
 	public void init() throws XmlException, IOException {
 
-		File filexmlExport = new File(AbbyyTicketTest.BASEFOLDER_FILE
+		File filexmlExport = new File(PathConstants.RESOURCES
 				+ "/hotfolder/" + "xmlExport.xml");
 		isDoc = new FileInputStream(filexmlExport);
 		isDocString = new FileInputStream(filexmlExport);

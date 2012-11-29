@@ -23,6 +23,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -61,75 +63,58 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
-@SuppressWarnings("serial")
+
 public class AbbyyTicketTest {
-	final static Logger logger = LoggerFactory.getLogger(AbbyyTicketTest.class);
-	public static String EXTENSION = "tif";
-	public static File BASEFOLDER_FILE;
-//	public static String OUTPUT_LOCATION = "D:\\Recognition\\GDZ\\output";
-	public static String RESULTS = "results";
+	private final static Logger logger = LoggerFactory.getLogger(AbbyyTicketTest.class);
 	public static File TICKET_FILE;
 	public static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 
-	private static OCRProcess ocrp = null;
+	private static OCRProcess process = null;
 
 	private static FileOutputStream ticketStream;
 	private static OCRImage ocri = null;
 
-	protected String name = "testTicket";
-
 	private AbbyyTicket abbyyTicket;
 
 	static {
-		BASEFOLDER_FILE = new File(System.getProperty("user.dir")
-				+ "/src/test/resources");
-		ocrp = mock(OCRProcess.class);
-		when(ocrp.getLanguages()).thenReturn(new HashSet<Locale>() {
+		process = mock(OCRProcess.class);
+		when(process.getLanguages()).thenReturn(new HashSet<Locale>() {
+			private static final long serialVersionUID = -847225577844475697L;
 			{
 				add(Locale.GERMAN);
 				add(new Locale("la"));
 			}
 		});
-		TICKET_FILE = new File(BASEFOLDER_FILE.getAbsolutePath()
-				+ "/abbyyTicket.xml");
+		TICKET_FILE = new File(MISC, "abbyyTicket.xml");
 
 		URI resultUri = null;
 		try {
-			resultUri = new URI(BASEFOLDER_FILE.toURI() + "/" + RESULTS + "/"
+			resultUri = new URI(DAV_OUTPUT.toURI() + "/" + "result" + "/"
 					+ "result");
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		final AbbyyOCROutput aoo = new AbbyyOCROutput(resultUri);
 		aoo.setRemoteFilename("result");
 
-		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>() {
-			{
-				put(OCRFormat.XML, aoo);
-			}
-		};
+		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();
+		OUTPUT_DEFINITIONS.put(OCRFormat.XML, aoo);
 	}
 
 	@BeforeClass
 	public static void init() throws FileNotFoundException,
 			MalformedURLException, URISyntaxException {
 
-		// This s just here to display the works of the mocking framework
-		assertTrue("This should never happen",
-				ocrp.getLanguages().contains(Locale.GERMAN));
-
 		// Create some mock images
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
 			ocri = mock(OCRImage.class);
-			String imageUrl = BASEFOLDER_FILE.toURI().toURL().toString() + i;
+			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
 			when(ocri.getUri()).thenReturn(new URI(imageUrl));
-			logger.debug("Added url to list: " + imageUrl);
 			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
 			assertTrue(imageUrl.equals(aoi.getUri().toString()));
 			aoi.setRemoteFileName("remoteName" + i);
@@ -137,29 +122,28 @@ public class AbbyyTicketTest {
 		}
 
 		assertTrue(imgList.size() == 10);
-		when(ocrp.getOcrImages()).thenReturn(imgList);
-		assertTrue(ocrp.getOcrImages().size() == 10);
+		when(process.getOcrImages()).thenReturn(imgList);
+		assertTrue(process.getOcrImages().size() == 10);
 
 		when(ocri.getUri()).thenReturn(new File("/tmp").toURI());
 
-		when(ocrp.getOcrOutputs()).thenReturn(OUTPUT_DEFINITIONS);
+		when(process.getOcrOutputs()).thenReturn(OUTPUT_DEFINITIONS);
 
 	}
 
 	@Test
 	public void writeTicket() throws IOException {
-		assertNotNull("base path is null", BASEFOLDER_FILE);
-		abbyyTicket = new AbbyyTicket(ocrp);
+		abbyyTicket = new AbbyyTicket(process);
 		abbyyTicket.setConfig(new ConfigParser().parse());
 		abbyyTicket.processTimeout = AbbyyTicket.config.maxMillisPerFile
-				* ocrp.getOcrImages().size();
-		assertTrue((AbbyyTicket.config.maxMillisPerFile * ocrp.getOcrImages()
+				* process.getOcrImages().size();
+		assertTrue((AbbyyTicket.config.maxMillisPerFile * process.getOcrImages()
 				.size()) == 100000);
 
-		abbyyTicket.setTextTyp(OCRTextTyp.NORMAL);
+		abbyyTicket.setTextType(OCRTextType.NORMAL);
 		// Use a stream to check if we to write it directly into a Stream
 		ticketStream = new FileOutputStream(TICKET_FILE);
-		abbyyTicket.write(ticketStream, name);
+		abbyyTicket.write(ticketStream, "testTicket");
 
 		String ticket = StreamUtils.dumpInputStream(new FileInputStream(
 				TICKET_FILE));
@@ -192,11 +176,11 @@ public class AbbyyTicketTest {
 		}
 
 		// Compare the files from the abbyyTicket with the mock object
-		Integer numFiles = ocrp.getOcrImages().size();
+		Integer numFiles = process.getOcrImages().size();
 		logger.debug("Checking " + numFiles + " files");
 		List<String> ticketFiles = parseFilesFromTicket(TICKET_FILE, 10);
 		for (int i = 0; i < numFiles; i++) {
-			String mFilename = ((AbbyyOCRImage) ocrp.getOcrImages().get(i))
+			String mFilename = ((AbbyyOCRImage) process.getOcrImages().get(i))
 					.getRemoteFileName();
 			String tFilename = ticketFiles.get(i);
 			logger.debug("File from mock object: " + mFilename);
@@ -213,7 +197,6 @@ public class AbbyyTicketTest {
 				logger.debug("Output location for format " + format.name()
 						+ " is " + location);
 				assertTrue(OUTPUT_DEFINITIONS.containsKey(format));
-//				assertTrue(((AbbyyOCROutput) OUTPUT_DEFINITIONS.get(format)).getRemoteLocation().equals(location));
 			}
 		}
 	}
@@ -248,9 +231,8 @@ public class AbbyyTicketTest {
 	@AfterClass
 	public static void cleanup() {
 		logger.debug("Cleaning up");
-		// TODO delete Don't work
-		TICKET_FILE.delete();
-		//assertTrue("File wasn't deleted", TICKET_FILE.exists());
+		
+		//TICKET_FILE.delete();
 	}
 
 }
