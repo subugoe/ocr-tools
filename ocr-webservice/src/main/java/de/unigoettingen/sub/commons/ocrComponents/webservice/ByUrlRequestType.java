@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ByUrlRequestType", propOrder = { "ocrPriorityType",
@@ -36,7 +36,7 @@ public class ByUrlRequestType {
 	@XmlElement(defaultValue = "HIGH")
 	private OCRPriority ocrPriorityType;
 	@XmlElement(defaultValue = "NORMAL")
-	private OCRTextTyp textType;
+	private OCRTextType textType;
 	@XmlElement(defaultValue = "TXT")
 	private OCRFormat outputFormat;
 	private RecognitionLanguages ocrlanguages;
@@ -74,7 +74,7 @@ public class ByUrlRequestType {
 	 * @return possible object is {@link InputTextType }
 	 * 
 	 */
-	public OCRTextTyp getTextType() {
+	public OCRTextType getTextType() {
 		return textType;
 	}
 
@@ -84,7 +84,7 @@ public class ByUrlRequestType {
 	 * @param textTypes
 	 *            the new text types
 	 */
-	public void setTextType(OCRTextTyp value) {
+	public void setTextType(OCRTextType value) {
 		this.textType = value;
 	}
 

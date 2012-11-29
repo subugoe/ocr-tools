@@ -40,11 +40,11 @@ public class OCRProcessMetadataImplTest {
 
 	@Before
 	public void init() throws Exception {
-		File fileresult = new File(AbbyyTicketTest.BASEFOLDER_FILE
+		File fileresult = new File(PathConstants.RESOURCES
 				+ "/hotfolder/" + "xmlresult.xml.result.xml");
 		isResult = new FileInputStream(fileresult);
 		File filexmlexport;
-		filexmlexport = new File(AbbyyTicketTest.BASEFOLDER_FILE
+		filexmlexport = new File(PathConstants.RESOURCES
 				+ "/hotfolder/" + "xmlExport.xml");
 		isDoc = new FileInputStream(filexmlexport);
 		ocrProcessMetadataImpl = new AbbyyOCRProcessMetadata();

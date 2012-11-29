@@ -30,7 +30,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 import java.io.BufferedReader;
 
@@ -391,7 +391,7 @@ public class SimpleOCRServlet extends HttpServlet {
 				aop.addOutput(OCRFormat.TXT, aoo);
 			// add language
 			aop.setLanguages(new HashSet<Locale>(){{add(new Locale(lang));}});
-			aop.setTextTyp(OCRTextTyp.valueOf("NORMAL"));
+			aop.setTextType(OCRTextType.valueOf("NORMAL"));
 			aop.setPriority(OCRPriority.ABOVENORMAL);
 			engine.addOcrProcess(aop);
 

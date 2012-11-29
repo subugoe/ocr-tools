@@ -141,14 +141,14 @@ public class AbbyyServerOCREngineTest {
 		assertNotNull(ase);
 
 		for (String book : AbbyyOCRProcessTest.testFolders) {
-			File testDir = new File(RESOURCES.getAbsoluteFile() + File.separator + HotfolderTest.INPUT + File.separator + book);
+			File testDir = new File(RESOURCES.getAbsoluteFile() + File.separator + "input" + File.separator + book);
 			logger.debug("Creating AbbyyOCRProcess for " + testDir.getAbsolutePath());
-			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, AbbyyTicketTest.EXTENSION);
+			AbbyyOCRProcess aop = AbbyyServerOCREngine.createProcessFromDir(testDir, "tif");
 			assertNotNull(aop);
 			aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
 			//TODO: set the inout folder to new File(apacheVFSHotfolderImpl.getAbsolutePath() + File.separator + INPUT_NAME);
 			File testTicket = new File(RESOURCES.getAbsoluteFile() + File.separator
-					+ HotfolderTest.INPUT
+					+ "input"
 					+ File.separator
 					+ book
 					+ ".xml");

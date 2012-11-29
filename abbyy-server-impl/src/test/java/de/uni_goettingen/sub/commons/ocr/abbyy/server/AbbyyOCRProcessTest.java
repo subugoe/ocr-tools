@@ -116,9 +116,7 @@ public class AbbyyOCRProcessTest {
 	@Test
 	public void checkTicketCount() throws IOException, XmlException {
 		for (String book : testFolders) {
-			File testDir = new File(RESOURCES.getAbsoluteFile()
-					+ File.separator + HotfolderTest.INPUT + File.separator
-					+ book);
+			File testDir = new File(LOCAL_INPUT, book);
 			logger.debug("Creating AbbyyOCRProcess for "
 					+ testDir.getAbsolutePath());
 			if (OCRUtil.makeFileList(testDir, extension).size() != 0) {
@@ -127,9 +125,7 @@ public class AbbyyOCRProcessTest {
 						.getInstance().newOcrProcess();
 				assertNotNull(aop);
 				aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
-				File testTicket = new File(RESOURCES.getAbsoluteFile()
-						+ File.separator + HotfolderTest.INPUT + File.separator
-						+ book + ".xml");
+				File testTicket = new File(LOCAL_INPUT, book + ".xml");
 				aop.write(new FileOutputStream(testTicket), testDir.getName());
 				logger.debug("Wrote AbbyyTicket:\n"
 						+ StreamUtils.dumpInputStream(new FileInputStream(

@@ -95,7 +95,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	 */
 	public final static Map<OCRFormat, String> FORMAT_MAPPING;
 
-	protected final static Map<OCRTextTyp, String> TEXTTYP_MAP;
+	protected final static Map<OCRTextType, String> TEXTTYP_MAP;
 
 	/** Predefined recognition parameters */
 	protected static RecognitionParams recognitionSettings;
@@ -303,14 +303,14 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 		recognitionSettings = RecognitionParams.Factory.newInstance();
 		// Might be Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B, Gothic
-		TEXTTYP_MAP = new HashMap<OCRTextTyp, String>();
-		TEXTTYP_MAP.put(OCRTextTyp.NORMAL, "Normal");
-		TEXTTYP_MAP.put(OCRTextTyp.TYPEWRITER, "Typewriter");
-		TEXTTYP_MAP.put(OCRTextTyp.MATRIX, "Matrix");
-		TEXTTYP_MAP.put(OCRTextTyp.OCR_A, "OCR_A");
-		TEXTTYP_MAP.put(OCRTextTyp.OCR_B, "OCR_B");
-		TEXTTYP_MAP.put(OCRTextTyp.MICR_E13B, "MICR_E13B");
-		TEXTTYP_MAP.put(OCRTextTyp.GOTHIC, "Gothic");
+		TEXTTYP_MAP = new HashMap<OCRTextType, String>();
+		TEXTTYP_MAP.put(OCRTextType.NORMAL, "Normal");
+		TEXTTYP_MAP.put(OCRTextType.TYPEWRITER, "Typewriter");
+		TEXTTYP_MAP.put(OCRTextType.MATRIX, "Matrix");
+		TEXTTYP_MAP.put(OCRTextType.OCR_A, "OCR_A");
+		TEXTTYP_MAP.put(OCRTextType.OCR_B, "OCR_B");
+		TEXTTYP_MAP.put(OCRTextType.MICR_E13B, "MICR_E13B");
+		TEXTTYP_MAP.put(OCRTextType.GOTHIC, "Gothic");
 		
 		//priorities: Low, BelowNormal, Normal, AboveNormal, High
 		PRIORITY_MAP = new HashMap<OCRPriority, String>();		
@@ -434,7 +434,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 		if (texttyp != null) {
 			recognitionSettings.setTextTypeArray(new String[] { TEXTTYP_MAP
-					.get(getTextTyp()) });
+					.get(getTextType()) });
 		}
 		// Use predefined variables here
 		RecognitionParams recognitionParams = (RecognitionParams) recognitionSettings
