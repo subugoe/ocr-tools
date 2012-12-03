@@ -1,4 +1,4 @@
-package de.uni_goettingen.sub.commons.ocr.abbyy.server;
+package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
 
 
 import java.util.EventListener;
@@ -9,6 +9,8 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.ISet;
 import com.hazelcast.core.ItemListener;
+
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 
 public class HazelcastObserver implements ItemListener, EntryListener {
 
