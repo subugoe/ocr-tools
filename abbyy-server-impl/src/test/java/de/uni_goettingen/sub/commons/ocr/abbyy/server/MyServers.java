@@ -1,5 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.DAV_FOLDER;
+import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.EXPECTED_ROOT;
 import it.could.webdav.DAVServlet;
 
 import java.io.File;
@@ -13,7 +15,8 @@ import org.slf4j.LoggerFactory;
 
 public class MyServers {
 	final static Logger logger = LoggerFactory.getLogger(MyServers.class);
-	private static Server davServer = null; // 9001
+	private static Server davServer;
+	private static AbbyyServerSimulator abbyyServer;
 
 	private static final File davFolder = PathConstants.DAV_FOLDER;
 	
@@ -40,5 +43,13 @@ public class MyServers {
 	public static void stopDavServer() throws Exception {
 		davServer.stop();
 	}
+	
+	public static void startAbbyySimulator() {
+		abbyyServer = new AbbyyServerSimulator(DAV_FOLDER, EXPECTED_ROOT);
+		abbyyServer.start();
+	}
 
+	public static void stopAbbyySimulator() {
+		abbyyServer.finish();
+	}
 }

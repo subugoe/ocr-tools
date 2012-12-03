@@ -1,4 +1,4 @@
-package de.uni_goettingen.sub.commons.ocr.abbyy.server;
+package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 
 /*
 
@@ -37,6 +37,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.MyServers;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolderImpl;
 

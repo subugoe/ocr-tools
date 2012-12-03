@@ -1,4 +1,6 @@
-package de.uni_goettingen.sub.commons.ocr.abbyy.server;
+package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
+
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 
 public class HazelcastRunning extends HazelcastObserver {
 

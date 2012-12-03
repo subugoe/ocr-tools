@@ -201,13 +201,16 @@ public class AbbyyServerSimulator extends Thread {
 		return false;
 	}
 
-	@After
 	protected void clean () {
 		de.unigoettingen.sub.commons.util.file.FileUtils.deleteInDir(inputHotfolder);
 		de.unigoettingen.sub.commons.util.file.FileUtils.deleteInDir(outputHotfolder);
 		de.unigoettingen.sub.commons.util.file.FileUtils.deleteInDir(errorHotfolder);
 	}
 
+	public void finish() {
+		finish = true;
+	}
+	
 	private Thread createCopyThread (final Long wait, final File ticket) {
 		return new Thread() {
 			@Override
