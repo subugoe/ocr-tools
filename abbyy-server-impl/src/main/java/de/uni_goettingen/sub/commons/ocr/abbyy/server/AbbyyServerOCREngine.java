@@ -310,6 +310,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	@Override
 	public Observable addOcrProcess(OCRProcess process) {
+		checkProcessState(process);
+
 		// TODO: Check if this instanceof works as expected
 		if (process instanceof AbbyyOCRProcess) {
      		processes.add((AbbyyOCRProcess) process);
@@ -319,6 +321,16 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		return null;
 	}
 
+	private void checkProcessState(OCRProcess process) {
+		if (process.getOcrOutputs() == null || process.getOcrOutputs().isEmpty()) {
+			throw new IllegalStateException("The OCR process has no outputs");
+		}
+
+		if (process.getOcrImages() == null || process.getOcrImages().isEmpty()) {
+			throw new IllegalStateException("The OCR process has input images");
+		}
+	}
+	
 	/**
 	 * Creates the process from directory.
 	 * 

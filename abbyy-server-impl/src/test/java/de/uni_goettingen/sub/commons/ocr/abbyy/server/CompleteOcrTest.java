@@ -40,6 +40,11 @@ public class CompleteOcrTest {
 		MyServers.stopAbbyySimulator();
 	}
 
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		MyServers.stopDavServer();
+	}
+
 	// The simplest use case: ocr one image to a text file
 	@Test
 	public void oneImage() {
