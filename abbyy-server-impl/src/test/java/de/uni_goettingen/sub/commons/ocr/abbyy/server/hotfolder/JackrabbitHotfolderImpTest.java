@@ -178,7 +178,7 @@ public class JackrabbitHotfolderImpTest {
 	@AfterClass
 	public static void destroy() throws Exception {
 		// delete(DAV_ROOT);
-		// MyServers.stopDavServer();
+		MyServers.stopDavServer();
 	}
 
 	// deletes a complete directory structure
