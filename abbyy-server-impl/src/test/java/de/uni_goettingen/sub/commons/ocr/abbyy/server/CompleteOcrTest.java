@@ -64,8 +64,7 @@ public class CompleteOcrTest {
 		OCRFormat format = OCRFormat.TXT;
 		OCROutput output = engine.newOcrOutput();
 		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
-		URI outputUri = outputFile.toURI();
-		output.setUri(outputUri);
+		output.setUri(outputFile.toURI());
 		process.addOutput(format, output);
 		
 		engine.addOcrProcess(process);
