@@ -35,13 +35,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.VFS;
 import org.apache.xmlbeans.XmlException;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -57,7 +61,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
-
 public class AbbyyOCRProcessTest {
 	final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcessTest.class);
@@ -65,14 +68,15 @@ public class AbbyyOCRProcessTest {
 	public static List<String> testFolders;
 	protected static String extension = "tif";
 	private static HashMap<OCRFormat, OCROutput> outputs;
+	private static ConfigParser config;
+
 	static {
-		testFolders = new ArrayList<String>();	
+		testFolders = new ArrayList<String>();
 		testFolders.add("PPN129323640_0010");
 		testFolders.add("PPN31311157X_0102");
 		testFolders.add("PPN514401303_1890");
 		testFolders.add("PPN514854804_0001");
-			
-		
+
 		URI resultUri = null;
 		try {
 			resultUri = new URI(RESOURCES.toURI() + "/target/results/"
@@ -88,7 +92,31 @@ public class AbbyyOCRProcessTest {
 		outputs.put(OCRFormat.XML, aoo);
 
 	}
+	
+	@BeforeClass
+	public static void initBeforeClass() throws Exception {
+		config = new ConfigParser().parse();
+		MyServers.startDavServer();
+	}
+	
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		MyServers.stopDavServer();
+	}
 
+	@Before
+	public void init() {
+		for (File file : LOCAL_OUTPUT.listFiles()) {
+			file.delete();
+		}
+		MyServers.startAbbyySimulator();
+	}
+	
+	@After
+	public void tearDown() {
+		MyServers.stopAbbyySimulator();
+	}
+	
 	@Test
 	public void newAbbyyProcess() {
 		AbbyyOCRProcess aop = (AbbyyOCRProcess) AbbyyServerOCREngine
@@ -97,47 +125,70 @@ public class AbbyyOCRProcessTest {
 	}
 
 	@Test
-	public void createAbbyyProcess() throws IOException {
-		for (String book : testFolders) {
-			File testDir = new File(LOCAL_INPUT, book);
-			List<File> files = OCRUtil.makeFileList(testDir, extension);
-			assertTrue(files.size() != 0);
+	public void executeWithOneImage() throws InterruptedException, IOException {
+		String jobName = "oneImageBook";
+		runProcessInThread(jobName, false);
 
-			AbbyyOCRProcess aop = (AbbyyOCRProcess) AbbyyServerOCREngine
-					.getInstance().newOcrProcess();
-			aop.setOcrOutputs(outputs);
-			File testTicket = new File(MISC, book + ".xml");
-			aop.write(new FileOutputStream(testTicket), testDir.getName());
-
-		}
+		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
+		assertTrue(outputFile.exists());
 	}
 
-	@Ignore
 	@Test
-	public void checkTicketCount() throws IOException, XmlException {
-		for (String book : testFolders) {
-			File testDir = new File(LOCAL_INPUT, book);
-			logger.debug("Creating AbbyyOCRProcess for "
-					+ testDir.getAbsolutePath());
-			if (OCRUtil.makeFileList(testDir, extension).size() != 0) {
-				logger.debug("Creating Process for " + testDir.toString());
-				AbbyyOCRProcess aop = (AbbyyOCRProcess) AbbyyServerOCREngine
-						.getInstance().newOcrProcess();
-				assertNotNull(aop);
-				aop.setOcrOutputs(AbbyyTicketTest.OUTPUT_DEFINITIONS);
-				File testTicket = new File(LOCAL_INPUT, book + ".xml");
-				aop.write(new FileOutputStream(testTicket), testDir.getName());
-				logger.debug("Wrote AbbyyTicket:\n"
-						+ StreamUtils.dumpInputStream(new FileInputStream(
-								testTicket)));
-				assertTrue(
-						"This fails if the number of files between ticket and file system differs.",
-						AbbyyTicketTest.parseFilesFromTicket(testTicket).size() == aop
-								.getOcrImages().size());
+	public void executeWithManyImages() throws InterruptedException, IOException {
+		String jobName = "threeImagesBook";
+		runProcessInThread(jobName, false);
+
+		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
+		assertTrue(outputFile.exists());
+	}
+
+	@Test
+	public void executeWithSplitting() throws InterruptedException, IOException {
+		String jobName = "threeImagesBook";
+		runProcessInThread(jobName, true);
+
+		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
+		assertTrue(outputFile.exists());
+	}
+
+	public void runProcessInThread(String jobName, boolean split) throws IOException, InterruptedException {
+		AbbyyOCRProcess process = new AbbyyOCRProcess(config);
+		process.setName(jobName);
+		process.setSplitProcess(split);
+		
+		File bookDir = new File(LOCAL_INPUT, jobName);
+
+		File[] imageFiles = bookDir.listFiles();
+		for (File imageFile : imageFiles) {
+			AbbyyOCRImage image = new AbbyyOCRImage(imageFile.toURI());
+			process.addImage(image);
+		}
+
+		OCRFormat format = OCRFormat.TXT;
+		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
+		AbbyyOCROutput output = new AbbyyOCROutput(outputFile.toURI());
+		output.setlocalOutput(LOCAL_OUTPUT.getAbsolutePath());
+
+		process.addOutput(format, output);
+		
+		if (split) {
+			List<AbbyyOCRProcess> processes = process.split();
+			List<Thread> runningThreads = new ArrayList<Thread>();
+			for (AbbyyOCRProcess sub : processes) {
+				Thread thread = new Thread(sub);
+				thread.start();
+				runningThreads.add(thread);
 			}
+			for (Thread t : runningThreads) {
+				t.join();
+			}
+		} else {
+			Thread thread = new Thread(process);
+			thread.start();
+			thread.join();
 		}
 	}
-	
+
 	@Test
 	public void createProcessViaAPI() throws MalformedURLException,
 			URISyntaxException {
@@ -156,8 +207,6 @@ public class AbbyyOCRProcessTest {
 			imgList.add(aoi);
 		}
 		op.setOcrImages(imgList);
-		// AbbyyOCRProcess aop = (AbbyyOCRProcess) op;
-		// aop.write(out, identifier)
 
 	}
 
@@ -178,49 +227,4 @@ public class AbbyyOCRProcessTest {
 		}
 		op.setOcrImages(imgList);
 	}
-
-	@Ignore
-	@Test
-	public void testUrlSchemaResolver() throws URISyntaxException,
-			FileSystemException {
-		URI webdavUrl = new URI("webdav://localhost/file");
-		// This should fail
-		logger.debug("Set URI to " + webdavUrl.toString());
-		Boolean mue = false;
-		try {
-			new URL(webdavUrl.toString());
-		} catch (MalformedURLException e) {
-			mue = true;
-			logger.trace("Got MalformedURLException as expected", e);
-		}
-		assertTrue(mue);
-		mue = false;
-
-		// This shouldn't fail
-		// DefaultFileSystemManager fsm = new DefaultFileSystemManager();
-		// fsm.addProvider("webdav", new WebdavFileProvider());
-		// VFS.getManager().resolveURI(webdavUrl.toString());
-		URL.setURLStreamHandlerFactory(VFS.getManager()
-				.getURLStreamHandlerFactory());
-		try {
-			new URL(webdavUrl.toString());
-		} catch (MalformedURLException e) {
-			mue = true;
-			logger.trace(
-					"Got MalformedURLException, this shouldn't happen here.", e);
-		}
-		assertFalse(mue);
-	}
-
-	@AfterClass
-	public static void cleanup() {
-		logger.debug("Cleaning up");
-		for (String book : testFolders) {
-			File testTicket = new File(MISC, book + ".xml");
-			logger.debug("Deleting file " + testTicket.getAbsolutePath());
-			testTicket.delete();
-			// assertTrue(!testTicket.exists());
-		}
-	}
-
 }

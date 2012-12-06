@@ -165,6 +165,7 @@ public class AbbyyServerOCREngineTest {
 		opts.put("lock.overwrite", "true");
 		engine.setOptions(opts);
 		recognizeOneImage(engine);
+		assertFalse(lock.exists());
 	}
 	
 	private void recognizeOneImage(OCREngine engine) {		
