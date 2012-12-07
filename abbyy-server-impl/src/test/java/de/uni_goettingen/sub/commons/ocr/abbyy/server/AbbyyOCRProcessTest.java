@@ -18,35 +18,24 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.VFS;
-import org.apache.xmlbeans.XmlException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,45 +43,17 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
-import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 public class AbbyyOCRProcessTest {
 	final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcessTest.class);
 
-	public static List<String> testFolders;
-	protected static String extension = "tif";
-	private static HashMap<OCRFormat, OCROutput> outputs;
 	private static ConfigParser config;
 
-	static {
-		testFolders = new ArrayList<String>();
-		testFolders.add("PPN129323640_0010");
-		testFolders.add("PPN31311157X_0102");
-		testFolders.add("PPN514401303_1890");
-		testFolders.add("PPN514854804_0001");
-
-		URI resultUri = null;
-		try {
-			resultUri = new URI(RESOURCES.toURI() + "/target/results/"
-					+ "result");
-		} catch (URISyntaxException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-
-		final AbbyyOCROutput aoo = new AbbyyOCROutput(resultUri);
-		aoo.setRemoteFilename("result");
-
-		outputs = new HashMap<OCRFormat, OCROutput>();
-		outputs.put(OCRFormat.XML, aoo);
-
-	}
-	
 	@BeforeClass
 	public static void initBeforeClass() throws Exception {
 		config = new ConfigParser().parse();
@@ -151,6 +112,27 @@ public class AbbyyOCRProcessTest {
 		assertTrue(outputFile.exists());
 	}
 
+	@Test
+	public void equality() {
+		AbbyyOCRProcess a1 = new AbbyyOCRProcess(config);
+		AbbyyOCRProcess a2 = new AbbyyOCRProcess(config);
+		assertFalse(a1.equals(a2));
+		assertFalse(a1.hashCode() == a2.hashCode());
+	}
+	
+	@Test
+	public void calculateSize() {
+		AbbyyOCRProcess process = new AbbyyOCRProcess(config);
+		AbbyyOCRImage im1 = new AbbyyOCRImage(new File("/test1").toURI());
+		im1.setSize(1L);
+		AbbyyOCRImage im2 = new AbbyyOCRImage(new File("/test2").toURI());
+		im2.setSize(2L);
+		process.addImage(im1);
+		process.addImage(im2);
+		long totalSize = process.calculateSize();
+		assertEquals(3L, totalSize);
+	}
+	
 	public void runProcessInThread(String jobName, boolean split) throws IOException, InterruptedException {
 		AbbyyOCRProcess process = new AbbyyOCRProcess(config);
 		process.setName(jobName);
@@ -197,7 +179,7 @@ public class AbbyyOCRProcessTest {
 		OCRProcess op = ase.newOcrProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
-			OCRImage ocri = mock(OCRImage.class);
+			OCRImage ocri = mock(AbstractOCRImage.class);
 			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
 			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 			logger.debug("Added url to list: " + imageUrl);
