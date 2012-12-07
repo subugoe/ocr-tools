@@ -59,6 +59,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCROutput;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyTicket;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -112,7 +113,7 @@ public class AbbyyTicketTest {
 		// Create some mock images
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
 		for (int i = 0; i < 10; i++) {
-			ocri = mock(OCRImage.class);
+			ocri = mock(AbstractOCRImage.class);
 			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
 			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);

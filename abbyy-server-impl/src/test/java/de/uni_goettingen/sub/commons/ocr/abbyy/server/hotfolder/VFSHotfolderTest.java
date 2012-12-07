@@ -18,16 +18,19 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 
  */
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -53,7 +56,7 @@ public class VFSHotfolderTest {
 		testImageUri = testImageFile.toURI();
 
 		apacheVFSHotfolderImpl = (ApacheVFSHotfolderImpl) ApacheVFSHotfolderImpl
-				.getInstance(new ConfigParser());
+				.getInstance(new ConfigParser().parse());
 	}
 
 	@Test
@@ -98,4 +101,29 @@ public class VFSHotfolderTest {
 		assertFalse(testFile.exists());
 	}
 	
+	@Test
+	public void listURIs() throws IOException {
+		URI folder = LOCAL_INPUT.toURI();
+		List<URI> children = apacheVFSHotfolderImpl.listURIs(folder);
+		assertTrue(children.toString().contains("oneImageBook"));
+	}
+	
+	@Test
+	public void tempFile() throws IOException {
+		OutputStream os = apacheVFSHotfolderImpl.createTmpFile("tempfile");
+		assertNotNull(os);
+		File destFile = new File(MISC, "temp.file");
+		URI dest = destFile.toURI();
+		apacheVFSHotfolderImpl.copyTmpFile("tempfile", dest);
+		assertTrue(destFile.exists());
+		
+		destFile.delete();
+	}
+	
+	@Test
+	public void openInputStream() throws IOException {
+		URI uri = new File(LOCAL_INPUT, "xmlExport.xml").toURI();
+		InputStream is = apacheVFSHotfolderImpl.openInputStream(uri);
+		assertNotNull(is);
+	}
 }

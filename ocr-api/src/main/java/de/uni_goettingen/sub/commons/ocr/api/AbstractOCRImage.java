@@ -44,7 +44,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 	protected Orientation orientation;
 
 	/** the size of the image, if known. */
-	private Long size = 0l;
+	protected Long size = 0l;
 
 	/**
 	 * Instantiates a new abstract OCRImage using a given {@link URI}.
@@ -77,6 +77,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 */
 	public AbstractOCRImage(OCRImage i) {
 		this(i.getUri(), i.getOrientation());
+		this.size = ((AbstractOCRImage)i).getSize();
 	}
 
 	/**

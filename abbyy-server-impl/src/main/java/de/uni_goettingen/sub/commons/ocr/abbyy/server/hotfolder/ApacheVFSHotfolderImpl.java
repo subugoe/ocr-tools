@@ -190,13 +190,13 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 	public Boolean copyTmpFile (String tmpFile, URI to) throws IOException {
 		if (!fsManager.resolveFile(config.getTicketTmpStore() + tmpFile).exists()) {
 			logger.error(config.getTicketTmpStore() + tmpFile + "doesn't exist!");
-		} else {
 			return false;
 		}
 		try {
 			copyFile(new URI(config.getTicketTmpStore() + tmpFile), to);
 		} catch (URISyntaxException e) {
-			logger.error("Couldn't creste URI for tempory file", e);
+			logger.error("Couldn't create URI for temporary file", e);
+			return false;
 		}
 		return true;
 	}

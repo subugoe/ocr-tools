@@ -46,9 +46,6 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	/** This represents the URI if the images is part of a failed process. */
 	private URI errorUri;
 
-	/** the size of the image, if known. */
-	private Long size = 0l;
-
 	/**
 	 * Instantiates a new AbbyyOCRImage.
 	 * 
@@ -169,24 +166,6 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 	 */
 	public void setRemoteUri(URI remoteUri) {
 		this.remoteUri = remoteUri;
-	}
-
-	/**
-	 * Gets the size of file
-	 * 
-	 * @return the size
-	 */
-	public Long getSize() {
-		return size;
-	}
-
-	/**
-	 * Sets the size of file
-	 * 
-	 * @param size
-	 */
-	public void setSize(Long size) {
-		this.size = size;
 	}
 
 	/**
