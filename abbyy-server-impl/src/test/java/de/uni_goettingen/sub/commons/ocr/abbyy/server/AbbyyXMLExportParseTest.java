@@ -38,7 +38,7 @@ public class AbbyyXMLExportParseTest {
 
 	protected static DocumentDocument documentDocument;
 	Document doc;
-	private static InputStream isDoc, isDocString;
+	private static InputStream isDoc;
 	final static Logger logger = LoggerFactory
 			.getLogger(AbbyyXMLExportParseTest.class);
 
@@ -48,10 +48,9 @@ public class AbbyyXMLExportParseTest {
 	@Before
 	public void init() throws XmlException, IOException {
 
-		File filexmlExport = new File(PathConstants.RESOURCES
-				+ "/hotfolder/" + "xmlExport.xml");
+		File filexmlExport = new File(PathConstants.LOCAL_INPUT,
+				"xmlExport.xml");
 		isDoc = new FileInputStream(filexmlExport);
-		isDocString = new FileInputStream(filexmlExport);
 		documentDocument = DocumentDocument.Factory.parse(isDoc);
 		doc = documentDocument.getDocument();
 

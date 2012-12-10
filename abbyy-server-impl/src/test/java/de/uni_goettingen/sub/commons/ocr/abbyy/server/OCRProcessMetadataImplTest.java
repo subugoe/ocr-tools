@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import org.slf4j.Logger;
@@ -40,27 +39,18 @@ public class OCRProcessMetadataImplTest {
 
 	@Before
 	public void init() throws Exception {
-		File fileresult = new File(PathConstants.RESOURCES
-				+ "/hotfolder/" + "xmlresult.xml.result.xml");
+		File fileresult = new File(PathConstants.LOCAL_INPUT,
+				"xmlresult.xml.result.xml");
 		isResult = new FileInputStream(fileresult);
 		File filexmlexport;
-		filexmlexport = new File(PathConstants.RESOURCES
-				+ "/hotfolder/" + "xmlExport.xml");
+		filexmlexport = new File(PathConstants.LOCAL_INPUT,
+				"xmlExport.xml");
 		isDoc = new FileInputStream(filexmlexport);
 		ocrProcessMetadataImpl = new AbbyyOCRProcessMetadata();
 		ocrProcessMetadataImpl.parseXmlExport(isDoc);
 		ocrProcessMetadataImpl.parseXmlResult(isResult);
 	}
 	
-	@Ignore
-	@Test
-	public void getDocumentType() {
-		logger.debug(ocrProcessMetadataImpl.getDocumentType());
-		assertTrue((ocrProcessMetadataImpl.getDocumentType())
-				.equals("http://www.abbyy.com/FineReader_xml/FineReader6-schema-v1.xml"));
-		System.out.println(ocrProcessMetadataImpl.getDocumentType());
-	}
-
 	@Test
 	public void getSoftwareName() {
 		assertTrue((ocrProcessMetadataImpl.getSoftwareName())
@@ -83,7 +73,7 @@ public class OCRProcessMetadataImplTest {
 	public void getProcessingNote() throws IOException {
 		String inputStreamprocessingNote = ocrProcessMetadataImpl
 				.getProcessingNote();
-		logger.debug(inputStreamprocessingNote);
+		//logger.debug(inputStreamprocessingNote);
 		assertTrue(inputStreamprocessingNote.toString() != "");
 
 	}
