@@ -25,10 +25,8 @@ import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -43,7 +41,6 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -51,11 +48,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 public class AbbyyServerOCREngineTest {
-	public static OCREngine abbyy;
-	public Hotfolder hotfolder;
-	protected List<File> directories = new ArrayList<File>();
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngineTest.class);
-	protected static AbbyyServerSimulator ass = null;
 
 	@BeforeClass
 	public static void initBeforeClass() throws Exception {

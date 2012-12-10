@@ -6,7 +6,7 @@ public class PathConstants {
 
 	public final static File RESOURCES = new File(
 			System.getProperty("user.dir") + "/src/test/resources");
-	public final static File LOCAL_INPUT = new File(RESOURCES, "input");
+	public final static File LOCAL_INPUT = new File(RESOURCES, "localInput");
 	
 	public final static File EXPECTED_ROOT = new File(
 			System.getProperty("user.dir") + "/src/test/resources/expected");

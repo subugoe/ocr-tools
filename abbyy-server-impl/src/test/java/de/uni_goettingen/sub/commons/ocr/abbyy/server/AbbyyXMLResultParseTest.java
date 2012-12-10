@@ -47,12 +47,10 @@ public class AbbyyXMLResultParseTest {
 
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
 
-	// private static final Factory NewInstanceInstantiator = null;
-
 	@Before
 	public void init() throws Exception {
-		File fileresult = new File(PathConstants.RESOURCES
-				+ "/hotfolder/" + "xmlresult.xml.result.xml");
+		File fileresult = new File(PathConstants.LOCAL_INPUT,
+				"xmlresult.xml.result.xml");
 		isResult = new FileInputStream(fileresult);
 		XmlOptions options = new XmlOptions();
 		// Set the namespace

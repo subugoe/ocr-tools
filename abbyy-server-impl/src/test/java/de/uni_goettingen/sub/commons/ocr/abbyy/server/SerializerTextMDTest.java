@@ -1,5 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -26,8 +28,8 @@ public class SerializerTextMDTest {
 	static {
 		BASEFOLDER_FILE = new File(System.getProperty("user.dir")
 				+ "/src/test/resources");
-		TextMD_FILE = new File(BASEFOLDER_FILE.toString()
-				+ "/textMD/textMD.xml");
+		TextMD_FILE = new File(PathConstants.LOCAL_OUTPUT,
+				"textMD.xml");
 
 	}
 
@@ -54,6 +56,7 @@ public class SerializerTextMDTest {
 	public void writeTicket() throws IOException {
 		serializerTextMD = new AbbyySerializerTextMD(ocrProcess);
 		serializerTextMD.write(TextMD_FILE);
+		assertTrue(TextMD_FILE.exists());
 	}
 
 }
