@@ -40,7 +40,7 @@ public class ByUrlRequestType {
 	@XmlElement(defaultValue = "TXT")
 	private OCRFormat outputFormat;
 	private RecognitionLanguages ocrlanguages;
-	@XmlElement(required = true, defaultValue = "http://vmext21-069.gwdg.de/test.tif")
+	@XmlElement(required = true, defaultValue = "http://localhost:9003/test.tif")
 	@XmlSchemaType(name = "anyURI")
 	private String inputUrl;
 

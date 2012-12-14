@@ -94,18 +94,7 @@ public class OcrServiceImpl implements OcrService {
 	
 	@Override
 	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType request) {
-		ByUrlResponseType byUrlResponseType = new ByUrlResponseType();
-		OCREngine engine;
-		String webserverPath,webserverHostname,localPath, jobName;
-		int randomNumber;
-		Set<Locale> langs;
-		HashMap<OCRFormat, OCROutput> outputDefinitions;
-		Long duration = 0L;
-
-		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
-				"contentWebservice.xml"));
-		OCREngineFactory ocrEngineFactory = (OCREngineFactory) factory
-				.getBean("OCREngineFactory");
+		ByUrlResponseType response = new ByUrlResponseType();
 
 		Properties properties = new Properties();
 		InputStream stream;
@@ -118,7 +107,7 @@ public class OcrServiceImpl implements OcrService {
 			LOGGER.error("Error reading configuration", e);
 		}
 		
-		localPath = properties.getProperty("localpath");
+		String localPath = properties.getProperty("localpath");
 		if(localPath == null || localPath.equals("")){
 			localPath = System.getProperty("java.io.tmpdir");
 		}
@@ -126,7 +115,7 @@ public class OcrServiceImpl implements OcrService {
 			localPath = localPath + "/";
 		}
 		
-		webserverPath = properties.getProperty("webserverpath");
+		String webserverPath = properties.getProperty("webserverpath");
 		
 		if(webserverPath == null || webserverPath.equals("")){
 			webserverPath = System.getProperty("ocrWebservice.root");
@@ -139,19 +128,23 @@ public class OcrServiceImpl implements OcrService {
 		} catch (IOException e) {
 			String error = "URL Error: " + e.getMessage();
 			LOGGER.error(error);
-			return byURLresponse(webserverPath, error, byUrlResponseType);
+			return byURLresponse(webserverPath, error, response);
 		}
 
-		engine = ocrEngineFactory.newOcrEngine();
+		XmlBeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource(
+				"contentWebservice.xml"));
+		OCREngineFactory ocrEngineFactory = (OCREngineFactory) beanFactory
+				.getBean("OCREngineFactory");
+		OCREngine engine = ocrEngineFactory.newOcrEngine();
 		OCRProcess aop = engine.newOcrProcess();
 
 		OCRFormat ocrformat = request.getOutputFormat();
 		
 			List<OCRImage> imgs = new ArrayList<OCRImage>();
 
-			randomNumber = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
+			int randomNumber = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
 			
-			jobName = "OcrServiceImplService_outputUrl"+ "_" + randomNumber;
+			String jobName = "OcrServiceImplService_outputUrl"+ "_" + randomNumber;
 			File file = new File(localPath + randomNumber + "/" + jobName
 					+ "/" + randomNumber + ".tif");
 
@@ -161,7 +154,7 @@ public class OcrServiceImpl implements OcrService {
 				LOGGER.error("ERROR CAN NOT COPY URL To File");
 				String error = "ERROR CAN NOT COPY URL: " + request.getInputUrl()
 						+ " To Local File";
-				return byURLresponse(webserverPath, error, byUrlResponseType);
+				return byURLresponse(webserverPath, error, response);
 			}
 
 			aop.setName(jobName);
@@ -171,7 +164,7 @@ public class OcrServiceImpl implements OcrService {
 			aop.setOcrImages(imgs);
 
 			// add format
-			outputDefinitions = new HashMap<OCRFormat, OCROutput>();
+			HashMap<OCRFormat, OCROutput> outputDefinitions = new HashMap<OCRFormat, OCROutput>();
 
 			OCROutput aoo = engine.newOcrOutput();
 			URI uri = null;
@@ -191,13 +184,14 @@ public class OcrServiceImpl implements OcrService {
 				if (!wasDeleted) {
 					LOGGER.error("Could not delete file " + file.getAbsolutePath());
 				}
-				return byURLresponse(webserverPath, error, byUrlResponseType);
+				return byURLresponse(webserverPath, error, response);
 			}
 			
 			aoo.setUri(uri);
 			outputDefinitions.put(ocrformat, aoo);
 			aop.addOutput(ocrformat, aoo);
 
+			String webserverHostname = "";
 			if(properties.getProperty("hostname") == null || properties.getProperty("hostname").equals("no")){
 				  MessageContext mc = wsContext.getMessageContext();
 				  URI url = (URI)mc.get("javax.xml.ws.wsdl.description");
@@ -208,7 +202,7 @@ public class OcrServiceImpl implements OcrService {
 			  }
 			  
 			
-			langs = new HashSet<Locale>();
+			Set<Locale> langs = new HashSet<Locale>();
 			
 			for (RecognitionLanguage r : request.getOcrlanguages()
 					.getRecognitionLanguage()) {
@@ -224,6 +218,7 @@ public class OcrServiceImpl implements OcrService {
 			engine.recognize();
 			
 			OCRProcessMetadata meta = aop.getOcrProcessMetadata();
+			Long duration = 0L;
 			if(meta != null && meta.getDuration() != 0L){
 				duration = aop.getOcrProcessMetadata().getDuration();
 			}
@@ -237,18 +232,18 @@ public class OcrServiceImpl implements OcrService {
 				LOGGER.error("ERROR CAN NOT delete Directory");
 			}
 
-			File f = new File(webserverPath + temp + "/" + jobName
+			File f = new File(webserverPath + "/" + temp + "/" + jobName
 					+ "." + ocrformat.toString().toLowerCase());
 			
 			if( !f.exists()){
 				LOGGER.error("ERROR. CANNOT Find File: "+ f.toString());
 				String error = "File could not be processed: " + inputUrl;
-				return byURLresponse(webserverPath, error, byUrlResponseType);
+				return byURLresponse(webserverPath, error, response);
 			}
 			String newLine = ".\n";
-			byUrlResponseType.setMessage("Process finished successfully after " + duration + " milliseconds.");
-			byUrlResponseType.setOutputUrl(webserverHostname + temp + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
-			byUrlResponseType.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
+			response.setMessage("Process finished successfully after " + duration + " milliseconds.");
+			response.setOutputUrl(webserverHostname + temp + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
+			response.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
 												"Using service: OcrServiceImplService. "+ "\n" +
 												"Parameter processingUnit: "+ webserverHostname + newLine +
 												"URL of input image: "+ request.getInputUrl()+ newLine +
@@ -266,13 +261,13 @@ public class OcrServiceImpl implements OcrService {
 												"Process finished successfully after " + duration + " milliseconds.."
 												);
 			
-			byUrlResponseType.setProcessingUnit(webserverHostname);
-			byUrlResponseType.setReturncode(0);
-			byUrlResponseType.setSuccess(true);
-			byUrlResponseType.setToolProcessingTime(duration);									
+			response.setProcessingUnit(webserverHostname);
+			response.setReturncode(0);
+			response.setSuccess(true);
+			response.setToolProcessingTime(duration);									
 		
 
-		return byUrlResponseType;
+		return response;
 		
 	}
 
