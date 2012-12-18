@@ -13,7 +13,7 @@
   <init-param>
    <description>Cache location</description>
    <param-name>cacheDir</param-name>
-   <param-value>/tmp/</param-value>
+   <param-value>#CACHE_DIR_TO_REPLACE#</param-value>
    <!-- Example for a Windows System
    <param-value>e:\\tmp\\</param-value>
    -->
@@ -21,7 +21,7 @@
   <init-param>
    <description>Directory prefix for matching given paths</description>
    <param-name>dirPrefix</param-name>
-   <param-value>/home/dennis/digi/images/</param-value>
+   <param-value>#DIR_PREFIX_TO_REPLACE#</param-value>
    <!-- EXample for a UNC name (Windows)
    <param-value>\\\\gdz-wrk1\\goobi-ocr$\\</param-value>
    -->

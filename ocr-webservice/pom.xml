@@ -159,7 +159,7 @@
 			<version>1.2</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>commons-ssl</groupId>
 			<artifactId>not-yet-commons-ssl</artifactId>
 			<version>0.3.11</version>
@@ -171,7 +171,7 @@
 			<version>0.3.11</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+ -->		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>1.6</version>
