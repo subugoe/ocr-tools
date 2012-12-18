@@ -49,11 +49,36 @@
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>abbyy-server-impl</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jtidy</artifactId>
+					<groupId>net.sf.jtidy</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 			<version>3.0.1.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>httpunit</groupId>
+			<artifactId>httpunit</artifactId>
+			<version>1.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jtidy</groupId>
+			<artifactId>jtidy</artifactId>
+			<version>4aug2000r7-dev</version>
+			<scope>test</scope>
+		</dependency>
+            
+		<dependency>
+			<groupId>org.mozilla</groupId>
+			<artifactId>rhino</artifactId>
+			<version>1.7R4</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<profiles>
