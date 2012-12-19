@@ -334,7 +334,11 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 */
 	@Override
 	public void setProcessingNote(String processingNote) {
-		this.processingNote = this.processingNote + processingNote;
+		if (this.processingNote == null) {
+			this.processingNote = processingNote;
+		} else {
+			this.processingNote = this.processingNote + processingNote;
+		}
 	}
 
 	/*

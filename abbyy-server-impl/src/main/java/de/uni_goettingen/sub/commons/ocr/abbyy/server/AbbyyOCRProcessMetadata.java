@@ -113,7 +113,7 @@ public class AbbyyOCRProcessMetadata extends AbstractOCRProcessMetadata
 			setTotalUncerChar( new BigDecimal(xmlResultEngine
 					.getStatistics().getUncertainCharacters()));
 			this.setCharacterAccuracy(totalChar, totalUncerChar);
-			this.setProcessingNote(xmlResultEngine.toString());
+			this.setProcessingNote(xmlResultDocument.toString());
 		}
 	}
 
