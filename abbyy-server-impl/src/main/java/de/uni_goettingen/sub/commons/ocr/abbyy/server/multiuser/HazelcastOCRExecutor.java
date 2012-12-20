@@ -6,6 +6,7 @@ import java.util.PriorityQueue;
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.EntryListener;
 import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.ISet;
 import com.hazelcast.core.ItemListener;
@@ -26,15 +27,15 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 	protected ISet<String> runningProcesses;
 
 	public HazelcastOCRExecutor(Integer maxThreads, Hotfolder hotfolder,
-			ConfigParser config) {
+			ConfigParser config, HazelcastInstance hazelcast) {
 		super(maxThreads, hotfolder, config);
 		order = new ItemComparator();
 		q = new PriorityQueue<AbbyyOCRProcess>(100, order);
 
-		queuedProcesses = Hazelcast.getMap("queued");
+		queuedProcesses = hazelcast.getMap("queued");
 		queuedProcesses.addEntryListener(this, true);
 
-		runningProcesses = Hazelcast.getSet("running");
+		runningProcesses = hazelcast.getSet("running");
 		runningProcesses.addItemListener(this, true);
 	}
 
