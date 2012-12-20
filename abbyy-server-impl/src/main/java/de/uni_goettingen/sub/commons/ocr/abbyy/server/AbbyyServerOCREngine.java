@@ -93,6 +93,9 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	protected Map<String, String> extraOptions = new HashMap<String, String>();
 	
 	protected URI lockURI;
+	
+	private static Object monitor = new Object();
+	
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
@@ -121,12 +124,14 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 			String serverLockFile = ConfigParser.SERVER_LOCK_FILE_NAME;
 			lockURI = new URI(config.getServerURL() + serverLockFile);
 			
-			if (overwriteLock) {
-				// the lock is deleted here, but a new one is created later
-				hotfolder.deleteIfExists(lockURI);
+			// need to synchronize because of the Web Service
+			synchronized(monitor) {
+				if (overwriteLock) {
+					// the lock is deleted here, but a new one is created later
+					hotfolder.deleteIfExists(lockURI);
+				}
+				handleLock();
 			}
-		
-			handleLock();
 			
 		} catch (IOException e1) {
 			logger.error("Error with server lock file " + lockURI, e1);
@@ -150,7 +155,10 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 			logger.error("Got a problem with thread pool: ", e);
 		}
 		
-		cleanUp();
+		// need to synchronize because of the Web Service
+		synchronized(monitor) {
+			cleanUp();
+		}
 		started = false;
 	}
 	
@@ -198,7 +206,9 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	
 	protected void cleanUp() {
 		try {
-			hotfolder.delete(lockURI);
+			if (hotfolder.exists(lockURI)) {
+				hotfolder.delete(lockURI);
+			}
 		} catch (IOException e) {
 			logger.error("Error while deleting lock file: " + lockURI, e);
 		}
@@ -224,6 +234,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		return instance;
 	}
 
+	// we need this for our Web Service, because each request needs its own instance
 	public static AbbyyServerOCREngine newOCREngine() {	
 			try {
 				newInstance = new AbbyyServerOCREngine();

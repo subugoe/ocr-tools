@@ -15,7 +15,7 @@
 
 	<bean id="multiAbbyyServerOCREngine" name="multiAbbyyServerOCREngine"
 		class="de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser.MultiUserAbbyyOCREngine"
-		factory-method="getInstance">
+		factory-method="newOCREngine">
 	</bean>
 
 
