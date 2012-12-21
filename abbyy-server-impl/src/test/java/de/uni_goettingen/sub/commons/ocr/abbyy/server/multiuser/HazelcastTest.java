@@ -40,6 +40,9 @@ public class HazelcastTest {
 
 	@Before
 	public void setUp() throws Exception {
+		for (File file : LOCAL_OUTPUT.listFiles()) {
+			file.delete();
+		}
 		MyServers.startAbbyySimulator();
 	}
 
