@@ -65,6 +65,7 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	 */
 	@Override
 	protected void handleLock() throws IOException {
+		boolean isShutdown = false;
 		
 		// we probably must synchronize cluster-wide
 		Lock lock = hazelcast.getLock("monitor");
@@ -90,6 +91,7 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 					throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockURI);
 				} finally {
 					hazelcast.getLifecycleService().shutdown();
+					isShutdown = true;
 				}
 			}
 			
@@ -99,7 +101,10 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	
 			
 		} finally {
-			lock.unlock();
+			// can only use the lock if hazelcast is still active
+			if (!isShutdown) {
+				lock.unlock();
+			}
 		}
 	}
 
@@ -110,31 +115,21 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 
 	@Override
 	protected void cleanUp() {
-		boolean isShutdown = false;
-		
 		// we probably must synchronize cluster-wide
 		Lock lock = hazelcast.getLock("monitor");
 		lock.lock();
-		try {
 
-			try {
-				if (hazelcast.getCluster().getMembers().size() == 1) {
-					// the current instance is the only one in the cluster, so the
-					// lock can be deleted.
-					hotfolder.delete(lockURI);
-				}
-			} catch (IOException e) {
-				logger.error("Error while deleting lock file: " + lockURI, e);
-			} finally {
-				hazelcast.getLifecycleService().shutdown();
-				isShutdown = true;
+		try {
+			if (hazelcast.getCluster().getMembers().size() == 1) {
+				// the current instance is the only one in the cluster, so the
+				// lock file can be deleted.
+				hotfolder.delete(lockURI);
 			}
-			
+		} catch (IOException e) {
+			logger.error("Error while deleting lock file: " + lockURI, e);
 		} finally {
-			// can only use the lock if hazelcast is still active
-			if (!isShutdown) {
-				lock.unlock();
-			}
+			lock.unlock();
+			hazelcast.getLifecycleService().shutdown();
 		}
 
 	}
