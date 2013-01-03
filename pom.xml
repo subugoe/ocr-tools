@@ -13,6 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
+        <module>abbyy-schemas</module>
         <module>abbyy-server-impl</module>
         <module>ocr-cli</module>
         <module>ocr-api</module>
