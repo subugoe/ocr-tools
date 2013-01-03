@@ -142,8 +142,11 @@ public class AbbyyOCRProcessTest {
 
 		File[] imageFiles = bookDir.listFiles();
 		for (File imageFile : imageFiles) {
-			AbbyyOCRImage image = new AbbyyOCRImage(imageFile.toURI());
-			process.addImage(image);
+			// could be the .svn directory
+			if(imageFile.isFile()) {
+				AbbyyOCRImage image = new AbbyyOCRImage(imageFile.toURI());
+				process.addImage(image);
+			}
 		}
 
 		OCRFormat format = OCRFormat.TXT;
