@@ -18,6 +18,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -143,7 +144,13 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 			FileObject[] children = directory.getChildren();
 			for (int i = 0; i < children.length; i++) {
 				try {
-					uriList.add(new URI(children[i].getName().toString()));
+					String path = children[i].getName().toString();
+					if (path.startsWith("file")) {
+						// file paths can have spaces, toURI() takes care of them
+						uriList.add(new File(path).toURI());
+					} else {
+						uriList.add(new URI(path));
+					}
 				} catch (URISyntaxException e) {
 					logger.error("Error while coverting URI.");
 					throw new RuntimeException(e);
