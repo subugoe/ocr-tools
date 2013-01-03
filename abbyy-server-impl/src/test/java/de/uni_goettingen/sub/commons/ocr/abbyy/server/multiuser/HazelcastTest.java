@@ -70,9 +70,12 @@ public class HazelcastTest {
 		
 		List<OCRImage> images = new ArrayList<OCRImage>();
 		for (File imageFile : inputDir.listFiles()) {
-			URI imageUri = imageFile.toURI();
-			OCRImage image = engine.newOcrImage(imageUri);
-			images.add(image);
+			// could be a dir like eg .svn
+			if (imageFile.isFile()) {
+				URI imageUri = imageFile.toURI();
+				OCRImage image = engine.newOcrImage(imageUri);
+				images.add(image);
+			}
 		}
 		process.setOcrImages(images);
 		
