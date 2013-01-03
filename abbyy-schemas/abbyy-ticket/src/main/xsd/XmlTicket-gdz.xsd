@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:tns="http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd">
+	<!--
+	with namespace related fixes from Christian Mahnke <mahnke@sub.uni-goettingen.de>
+	-->
+	<xs:annotation>
+		<xs:documentation xml:lang="en">Schema for representing XmlTicket object in ABBYY Recognition Server 2.0. Copyright 2001 - 2008 ABBYY, Inc.</xs:documentation>
+	</xs:annotation>
+	<xs:element name="XmlTicket">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="1" minOccurs="0" name="Name" type="xs:string"/>
+				<xs:element maxOccurs="1" minOccurs="0" name="UserName" type="xs:string"/>
+				<xs:element maxOccurs="unbounded" minOccurs="1" name="InputFile" type="tns:InputFile"/>
+				<xs:element maxOccurs="1" minOccurs="0" name="ImageProcessingParams" type="tns:ImageProcessingParams"/>
+				<xs:element maxOccurs="1" minOccurs="0" name="ImageConversionParams" type="tns:ImageConversionParams"/>
+				<xs:element maxOccurs="1" minOccurs="0" name="RecognitionParams" type="tns:RecognitionParams"/>
+				<xs:element maxOccurs="1" minOccurs="0" name="ExportParams" type="tns:ExportParams"/>
+				<xs:element name="UserProperty" type="xs:string"/>
+			</xs:sequence>
+			<xs:attribute name="Id" type="xs:string"/>
+			<xs:attribute name="Priority" type="xs:string"/>
+			<xs:attribute name="OCRTimeout" type="xs:integer"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="InputFile">
+		<xs:attribute name="Name" type="xs:string"/>
+		<xs:attribute name="Password" type="xs:string"/>
+		<xs:attribute name="FileModificationTime" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="ImageProcessingParams">
+		<xs:attribute name="Deskew" type="xs:boolean"/>
+		<xs:attribute name="RemoveGarbage" type="xs:boolean"/>
+		<xs:attribute name="RemoveTexture" type="xs:boolean"/>
+		<xs:attribute name="SplitDualPages" type="xs:boolean"/>
+		<xs:attribute name="ConvertToBWFormat" type="xs:boolean"/>
+		<xs:attribute name="RotationType" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="ImageConversionParams">
+		<xs:attribute name="OutputFormat" type="xs:string"/>
+		<xs:attribute name="OutputFileNamingRule" type="xs:string"/>
+		<xs:attribute name="RetainMultipageImages" type="xs:boolean"/>
+		<xs:attribute name="Resolution" type="xs:integer"/>
+		<xs:attribute name="JpegQuality" type="xs:integer"/>
+	</xs:complexType>
+	<xs:complexType name="RecognitionParams">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="TextType" type="xs:string"/>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="Language" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="RecognitionQuality" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="ExportParams">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="ExportFormat" type="tns:OutputFileFormatSettings"/>
+			<xs:element name="XMLResultLocation" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="DocumentSeparationMethod" type="xs:string"/>
+		<xs:attribute name="XMLResultPublishingMethod" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="OutputFileFormatSettings">
+		<xs:sequence>
+			<xs:element name="NamingRule" type="xs:string"/>
+			<xs:element name="OutputLocation" type="xs:string"/>
+			<xs:element name="SharePointUrl" type="xs:string"/>
+			<xs:element name="DocumentLibrary" type="xs:string"/>
+			<xs:element name="SmtpSettings" type="tns:SmtpExportSettings"/>
+		</xs:sequence>
+		<xs:attribute name="OutputFileFormat" type="xs:string"/>
+		<xs:attribute name="KeepLastModifiedDate" type="xs:boolean"/>
+		<xs:attribute name="OutputFlowType" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="RTFExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="PaperWidth" type="xs:integer"/>
+			<xs:attribute name="PaperHeight" type="xs:integer"/>
+			<xs:attribute name="RTFSynthesisMode" type="xs:string"/>
+			<xs:attribute name="ForceFixedPageSize" type="xs:boolean"/>
+			<xs:attribute name="WritePictures" type="xs:boolean"/>
+			<xs:attribute name="HighlightErrorsWithBackgroundColor" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="DocxExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="PaperWidth" type="xs:integer"/>
+			<xs:attribute name="PaperHeight" type="xs:integer"/>
+			<xs:attribute name="RTFSynthesisMode" type="xs:string"/>
+			<xs:attribute name="ForceFixedPageSize" type="xs:boolean"/>
+			<xs:attribute name="WritePictures" type="xs:boolean"/>
+			<xs:attribute name="HighlightErrorsWithBackgroundColor" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="MSWordExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="PaperWidth" type="xs:integer"/>
+			<xs:attribute name="PaperHeight" type="xs:integer"/>
+			<xs:attribute name="RTFSynthesisMode" type="xs:string"/>
+			<xs:attribute name="ForceFixedPageSize" type="xs:boolean"/>
+			<xs:attribute name="WritePictures" type="xs:boolean"/>
+			<xs:attribute name="HighlightErrorsWithBackgroundColor" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="MSWordXMLExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="PaperWidth" type="xs:integer"/>
+			<xs:attribute name="PaperHeight" type="xs:integer"/>
+			<xs:attribute name="RTFSynthesisMode" type="xs:string"/>
+			<xs:attribute name="ForceFixedPageSize" type="xs:boolean"/>
+			<xs:attribute name="WritePictures" type="xs:boolean"/>
+			<xs:attribute name="WriteCustomXmlTags" type="xs:boolean"/>
+			<xs:attribute name="HighlightErrorsWithBackgroundColor" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="HTMLExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="CodePage" type="xs:string"/>
+			<xs:attribute name="CodePageType" type="xs:string"/>
+			<xs:attribute name="SynthesisMode" type="xs:string"/>
+			<xs:attribute name="FormatMode" type="xs:string"/>
+			<xs:attribute name="SeparatePages" type="xs:boolean"/>
+			<xs:attribute name="WritePictures" type="xs:boolean"/>
+			<xs:attribute name="UseUnicode" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="XLExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="IgnoreTextOutsideTables" type="xs:boolean"/>
+			<xs:attribute name="ConvertNumericValuesToNumbers" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="XlsxExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="IgnoreTextOutsideTables" type="xs:boolean"/>
+			<xs:attribute name="ConvertNumericValuesToNumbers" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="XMLExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="WriteCharAttributes" type="xs:boolean"/>
+			<xs:attribute name="WriteExtendedCharAttributes" type="xs:boolean"/>
+			<xs:attribute name="WriteCharactersFormatting" type="xs:boolean"/>
+			<xs:attribute name="WriteNonDeskewedCoordinates" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TextExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="CodePage" type="xs:string"/>
+			<xs:attribute name="CodePageType" type="xs:string"/>
+			<xs:attribute name="EncodingType" type="xs:string"/>
+			<xs:attribute name="InsertEmptyLineBetweenParagraphs" type="xs:boolean"/>
+			<xs:attribute name="ExportParagraphsAsOneLine" type="xs:boolean"/>
+			<xs:attribute name="UsePageBreaks" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CSVExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="CodePage" type="xs:string"/>
+			<xs:attribute name="CodePageType" type="xs:string"/>
+			<xs:attribute name="EncodingType" type="xs:string"/>
+			<xs:attribute name="UsePageBreaks" type="xs:boolean"/>
+			<xs:attribute name="TablesOnly" type="xs:boolean"/>
+			<xs:attribute name="TabSeparator" type="xs:string"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="SummaryInfoItem">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Value" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="HeaderAndFooterSettings">
+		<xs:sequence>
+			<xs:element name="FontName" type="xs:string"/>
+			<xs:element name="LeftHeader" type="xs:string"/>
+			<xs:element name="CentralHeader" type="xs:string"/>
+			<xs:element name="RightHeader" type="xs:string"/>
+			<xs:element name="LeftFooter" type="xs:string"/>
+			<xs:element name="CentralFooter" type="xs:string"/>
+			<xs:element name="RightFooter" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="FontSize" type="xs:integer"/>
+		<xs:attribute name="IsBold" type="xs:boolean"/>
+		<xs:attribute name="IsItalic" type="xs:boolean"/>
+		<xs:attribute name="IsUnderlined" type="xs:boolean"/>
+		<xs:attribute name="IsInInches" type="xs:boolean"/>
+		<xs:attribute name="StartingNumber" type="xs:integer"/>
+		<xs:attribute name="NumberOfDigits" type="xs:integer"/>
+		<xs:attribute name="TextColor" type="xs:integer"/>
+		<xs:attribute name="TopMargin" type="xs:double"/>
+		<xs:attribute name="BottomMargin" type="xs:double"/>
+		<xs:attribute name="LeftMargin" type="xs:double"/>
+		<xs:attribute name="RightMargin" type="xs:double"/>
+	</xs:complexType>
+	<xs:complexType name="PDFExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:sequence>
+				<xs:element maxOccurs="1" minOccurs="0" name="PDFEncryptionSettings" type="tns:PDFEncryptionSettings"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="Summary" type="tns:SummaryInfoItem"/>
+				<xs:element maxOccurs="1" minOccurs="0" name="HeaderAndFooter" type="tns:HeaderAndFooterSettings"/>
+			</xs:sequence>
+			<xs:attribute name="ExportMode" type="xs:string"/>
+			<xs:attribute name="Quality" type="xs:integer"/>
+			<xs:attribute name="PictureResolution" type="xs:integer"/>
+			<xs:attribute name="ReplaceUncertainWordsWithImages" type="xs:boolean"/>
+			<xs:attribute name="WriteTaggedPdf" type="xs:boolean"/>
+			<xs:attribute name="IsEncryptionRequested" type="xs:boolean"/>
+			<xs:attribute name="UseImprovedCompression" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PDFAExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="Summary" type="tns:SummaryInfoItem"/>
+				<xs:element maxOccurs="1" minOccurs="0" name="HeaderAndFooter" type="tns:HeaderAndFooterSettings"/>
+			</xs:sequence>
+			<xs:attribute name="ExportMode" type="xs:string"/>
+			<xs:attribute name="Quality" type="xs:integer"/>
+			<xs:attribute name="PictureResolution" type="xs:integer"/>
+			<xs:attribute name="ReplaceUncertainWordsWithImages" type="xs:boolean"/>
+			<xs:attribute name="WriteTaggedPdf" type="xs:boolean"/>
+			<xs:attribute name="UseImprovedCompression" type="xs:boolean"/>
+			<xs:attribute name="Write1ACompliant" type="xs:boolean"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TiffExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="Compression" type="xs:string"/>
+			<xs:attribute name="Color" type="xs:string"/>
+			<xs:attribute name="Resolution" type="xs:integer"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="JpegExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="Compression" type="xs:integer"/>
+			<xs:attribute name="Color" type="xs:string"/>
+			<xs:attribute name="Resolution" type="xs:integer"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="J2kExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+			<xs:attribute name="Compression" type="xs:integer"/>
+			<xs:attribute name="Color" type="xs:string"/>
+			<xs:attribute name="Resolution" type="xs:integer"/>
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="NoConversionExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="InternalFormatExportSettings">
+		<xs:complexContent> <xs:extension base="tns:OutputFileFormatSettings">
+		</xs:extension>
+    </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PDFEncryptionSettings">
+		<xs:attribute name="UserPassword" type="xs:string"/>
+		<xs:attribute name="OwnerPassword" type="xs:string"/>
+		<xs:attribute name="EncryptionLevel" type="xs:string"/>
+		<xs:attribute name="AllowPrinting" type="xs:boolean"/>
+		<xs:attribute name="AllowPrintingExt" type="xs:boolean"/>
+		<xs:attribute name="AllowModifyingContent" type="xs:boolean"/>
+		<xs:attribute name="AllowExtractingTextAndGraphics" type="xs:boolean"/>
+		<xs:attribute name="AllowAddingTextAnnotations" type="xs:boolean"/>
+		<xs:attribute name="AllowFillingFormFields" type="xs:boolean"/>
+		<xs:attribute name="AllowExtractingTextAndGraphicsExt" type="xs:boolean"/>
+		<xs:attribute name="AllowDocumentAssembling" type="xs:boolean"/>
+	</xs:complexType>
+	<xs:complexType name="SmtpExportSettings">
+		<xs:sequence>
+			<xs:element name="ServerHostName" type="xs:string"/>
+			<xs:element name="SenderAddress" type="xs:string"/>
+			<xs:element name="Password" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="PortNumber" type="xs:integer"/>
+		<xs:attribute name="ServerRequiresAuthentication" type="xs:boolean"/>
+	</xs:complexType>
+</xs:schema>
