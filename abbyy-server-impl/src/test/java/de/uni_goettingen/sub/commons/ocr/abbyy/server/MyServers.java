@@ -18,25 +18,25 @@ public class MyServers {
 	private static Server davServer;
 	private static AbbyyServerSimulator abbyyServer;
 
-	private static final File davFolder = PathConstants.DAV_FOLDER;
-	
+	private final static File lock = new File(DAV_FOLDER, ConfigParser.SERVER_LOCK_FILE_NAME);
+
 	public static void startDavServer() throws Exception {
 		startDavServer(PathConstants.DAV_PORT);
 	}
 		
 	public static void startDavServer(int port) throws Exception {
 	    
-		davFolder.mkdirs();
+		DAV_FOLDER.mkdirs();
 	    davServer = new Server(port);
 		ServletHolder davServletHolder = new ServletHolder(new DAVServlet());
-		davServletHolder.setInitParameter("rootPath", davFolder.toString()
+		davServletHolder.setInitParameter("rootPath", DAV_FOLDER.toString()
 				.replace("file:/", ""));
 		Context rootContext = new Context(davServer, "/", Context.SESSIONS);
 		rootContext.addServlet(davServletHolder, "/*");
 
 		davServer.start();
 		logger.info("Started Webdav Server on port " + port);
-		logger.info("Mapped directory is " + davFolder);
+		logger.info("Mapped directory is " + DAV_FOLDER);
 
 	}
 	
@@ -47,9 +47,13 @@ public class MyServers {
 	public static void startAbbyySimulator() {
 		abbyyServer = new AbbyyServerSimulator(DAV_FOLDER, EXPECTED_ROOT);
 		abbyyServer.start();
+		if (lock.exists())
+			lock.delete();
 	}
 
 	public static void stopAbbyySimulator() {
+		if (lock.exists())
+			lock.delete();
 		abbyyServer.finish();
 	}
 }
