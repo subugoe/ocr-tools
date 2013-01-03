@@ -25,8 +25,10 @@ import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -150,8 +152,17 @@ public class AbbyyServerOCREngineTest {
 	}
 	
 	private void recognizeOneImage(OCREngine engine) {		
-		OCRProcess process = AbbyyServerOCREngine.createProcessFromDir(
-				new File(LOCAL_INPUT, "oneImageBook"), "tif");
+		OCRProcess process = engine.newOcrProcess();
+		File inputBook = new File(LOCAL_INPUT, "oneImageBook");
+		String jobName = inputBook.getName();
+		process.setName(jobName);
+		
+		URI imageUri = new File(inputBook, "00000001.tif").toURI();
+		OCRImage image = engine.newOcrImage(imageUri);
+		List<OCRImage> images = new ArrayList<OCRImage>();
+		images.add(image);
+		process.setOcrImages(images);
+
 		OCRFormat format = OCRFormat.TXT;
 		OCROutput output = engine.newOcrOutput();
 		File outputFile = new File(LOCAL_OUTPUT, "oneImageBook.txt");
