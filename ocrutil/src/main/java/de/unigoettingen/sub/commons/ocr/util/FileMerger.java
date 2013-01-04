@@ -413,7 +413,7 @@ public class FileMerger {
 		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
 		// outFactory.setProperty("javax.xml.stream.isPrefixDefaulting",Boolean.TRUE);
 
-		XMLStreamWriter writer = outFactory.createXMLStreamWriter(os);
+		XMLStreamWriter writer = outFactory.createXMLStreamWriter(os, "UTF-8");
 
 		Integer f = 0;
 		HashMap<String, String> nsPrefixes = new HashMap<String, String>();
