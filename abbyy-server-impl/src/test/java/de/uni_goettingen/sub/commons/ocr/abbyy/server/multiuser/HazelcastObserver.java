@@ -57,25 +57,21 @@ public class HazelcastObserver implements ItemListener, EntryListener {
 
 	@Override
 	public void entryAdded(EntryEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void entryEvicted(EntryEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void entryRemoved(EntryEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void entryUpdated(EntryEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
