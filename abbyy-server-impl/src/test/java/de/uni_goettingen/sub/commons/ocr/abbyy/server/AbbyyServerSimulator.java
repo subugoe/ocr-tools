@@ -108,7 +108,6 @@ public class AbbyyServerSimulator extends Thread {
 					try {
 						t.join();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -142,11 +141,7 @@ public class AbbyyServerSimulator extends Thread {
 
 				String ticket = f.getName();
 				logger.debug("Found XML: " + ticket);
-				//String name = ticket.substring(0, ticket.indexOf(".xml"));
-
-				//TODO: Parse ticket here;
 				Long wait = calculateWait(f);
-				//TODO: Create  new Thread which waits and copies the files afterwards
 				Thread serverProcess = createCopyThread(wait, f);
 				serverProcess.start();
 				processes.add(serverProcess);
@@ -252,13 +247,10 @@ public class AbbyyServerSimulator extends Thread {
 					}
 
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (XmlException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
