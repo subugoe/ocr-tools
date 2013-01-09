@@ -55,8 +55,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument;
-import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument.Document;
+import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument;
+import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument.Document;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
 
@@ -1092,8 +1092,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 						}
 						
 						// TODO this causes an exception because the namespaces do not match anymore
-//						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-//								.parseXmlExport(isDoc);
+						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+								.parseXmlExport(isDoc);
 					}
 					
 				}

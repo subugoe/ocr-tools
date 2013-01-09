@@ -236,8 +236,8 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 */
 	@Override
 	public void setSoftwareVersion(String softwareVersion) {
-		String[] splittArray = softwareVersion.split(" ");
-		this.softwareVersion = splittArray[1];
+		String[] splitArray = softwareVersion.split(" ");
+		this.softwareVersion = splitArray.length > 1 ? splitArray[1] : "";
 	}
 
 	/*

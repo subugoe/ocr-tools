@@ -30,8 +30,8 @@ import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument;
-import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument.Document;
+import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument;
+import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument.Document;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
 
