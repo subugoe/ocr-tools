@@ -1,6 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.api.exceptions;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class OCRException is a {@link RuntimeException} to signal OCR related
  * errors. <b>Please note: The API isn't using any checked exceptions.</b>

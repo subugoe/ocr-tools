@@ -180,7 +180,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#
 	 * getDocumentTypeVersion()
 	 */
-	// TODO
 	@Override
 	public String getDocumentTypeVersion() {
 		return documentTypeVersion;
@@ -281,7 +280,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 * @see
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#getScripts()
 	 */
-	// TODO
 	@Override
 	public List<String> getScripts() {
 		return scripts;
@@ -294,7 +292,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setScripts(java
 	 * .util.List)
 	 */
-	// TODO
 	@Override
 	public void setScripts(List<String> scripts) {
 		this.scripts = scripts;
@@ -306,7 +303,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 * @see
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#getTextNote()
 	 */
-	// TODO
 	@Override
 	public String getTextNote() {
 		return textNote;
@@ -319,7 +315,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setTextNote(
 	 * java.lang.String)
 	 */
-	// TODO
 	@Override
 	public void setTextNote(String textNote) {
 		this.textNote = textNote;
@@ -387,7 +382,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#getWordAccuracy
 	 * ()
 	 */
-	// TODO
 	@Override
 	public BigDecimal getWordAccuracy() throws IOException {
 		// TODO NotImplementedException
@@ -401,7 +395,6 @@ public abstract class AbstractOCRProcessMetadata implements OCRProcessMetadata {
 	 * de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata#setWordAccuracy
 	 * (java.math.BigDecimal)
 	 */
-	// TODO
 	@Override
 	public void setWordAccuracy(BigDecimal wordAccuracy) {
 		this.wordAccuracy = wordAccuracy;

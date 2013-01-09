@@ -26,7 +26,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface OCRProcessMetadata can be used to obtain a description of the.
  * 
