@@ -78,7 +78,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.unigoettingen.sub.commons</groupId>
-			<artifactId>abbyyXML</artifactId>
+			<artifactId>abbyy-xml-10</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>

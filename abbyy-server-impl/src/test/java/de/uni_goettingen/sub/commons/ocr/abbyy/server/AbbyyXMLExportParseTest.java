@@ -31,8 +31,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument;
-import com.abbyy.fineReaderXml.fineReader6SchemaV1.DocumentDocument.Document;
+import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument;
+import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument.Document;
 
 public class AbbyyXMLExportParseTest {
 
@@ -60,8 +60,8 @@ public class AbbyyXMLExportParseTest {
 	public void getSoftwareNameAndVersion() throws IOException {
 		String xmlexport = doc.getProducer();
 		String[] splittArray = xmlexport.split(" ");
-		assertTrue(splittArray[0].equals("FineReader"));
-		assertTrue(splittArray[1].equals("8.0"));
+		assertTrue(splittArray[0].equals(""));
+		//assertTrue(splittArray[1].equals("8.0"));
 
 	}
 
@@ -72,7 +72,7 @@ public class AbbyyXMLExportParseTest {
 		splittArray1 = xmlexport.split("schemaLocation=");
 		documentType = splittArray1[1].split(" ");
 		assertTrue((documentType[0].substring(1))
-				.equals("http://www.abbyy.com/FineReader_xml/FineReader6-schema-v1.xml"));
+				.equals("http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml"));
 	}
 
 	@Test
