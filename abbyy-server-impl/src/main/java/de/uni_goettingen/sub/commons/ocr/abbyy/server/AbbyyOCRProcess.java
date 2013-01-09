@@ -703,7 +703,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		// TODO: Use the hotfolder stuff here, since we can redirect IO in this
 		// layer
 		OutputStream os = new FileOutputStream(new File(output.getUri()));
-		// Convert URI list to File list, the hardly readable way ;-)
+		
 		List<InputStream> inputFiles = new ArrayList<InputStream>();
 			
 		for (URI u : output.getResultFragments()) {
@@ -1091,7 +1091,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 							}
 						}
 						
-						// TODO this causes an exception because the namespaces do not match anymore
 						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
 								.parseXmlExport(isDoc);
 					}

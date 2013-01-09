@@ -206,7 +206,6 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 		if (protocol.equals("file")) {
 			return new File(output.getUri().getPath() + postfix);
 		} else {
-			// TODO handle remote output uris
 			throw new RuntimeException("Unsupported protocol for outputs: "
 					+ protocol);
 		}

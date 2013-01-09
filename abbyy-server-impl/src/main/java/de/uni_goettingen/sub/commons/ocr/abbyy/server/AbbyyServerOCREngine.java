@@ -412,7 +412,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 	@Override
 	public Boolean stop() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

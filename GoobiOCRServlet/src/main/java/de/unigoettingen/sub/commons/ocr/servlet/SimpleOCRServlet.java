@@ -34,7 +34,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 import java.io.BufferedReader;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SimpleOCRServlet.
  */

@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ApacheVFSHotfolderImpl is used to control the hotfolders used by
  * the Abbyy Recognition Server.

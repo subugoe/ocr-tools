@@ -103,8 +103,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	/** Predefined image processing parameters */
 	protected final static ImageProcessingParams imageProcessingSettings;
 
-	// TODO: Add priorities: Low, BelowNormal, Normal, AboveNormal, High
-	//protected String priority = "Normal";
 	protected final static Map<OCRPriority, String> PRIORITY_MAP;
 	
 	protected static String encoding = "UTF8";

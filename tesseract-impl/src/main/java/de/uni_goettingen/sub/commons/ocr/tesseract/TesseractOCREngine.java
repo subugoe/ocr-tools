@@ -105,13 +105,11 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 
 	@Override
 	public void setOptions(Map<String, String> params) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public Map<String, String> getOptions() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

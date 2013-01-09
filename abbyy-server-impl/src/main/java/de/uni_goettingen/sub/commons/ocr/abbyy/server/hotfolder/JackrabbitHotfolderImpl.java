@@ -21,9 +21,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 
  */
 
-//TODO: Make this work
-//TODO: Write a test for it
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -459,7 +456,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 
 	@Override
 	public Long getSize(URI uri) throws IOException {
-		// TODO Auto-generated method stub
+		
 		throw new NotImplementedException();
 		// return null;
 	}
