@@ -22,12 +22,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.ClassPathResource;
+
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 
 /**
@@ -158,27 +160,15 @@ public abstract class AbstractHotfolder implements Hotfolder {
 		return new FileOutputStream(tmpFile);
 	}
 
-	public static Hotfolder getHotfolder(String cls, ConfigParser config) {
-		Class<?> c;
-		try {
-			c = Class.forName(cls);
-			return (Hotfolder) c.getMethod("getInstance",
-					new Class[] { ConfigParser.class }).invoke(null,
-					new Object[] { config });
-		} catch (ClassNotFoundException e) {
-			logger.error("Class Not Found... ", e);
-		} catch (IllegalArgumentException e) {
-			logger.error("Illegal Argument Exception should be thrown ", e);
-		} catch (SecurityException e) {
-			logger.error("Security Exception ", e);
-		} catch (IllegalAccessException e) {
-			logger.error("Illegal Access Exception ", e);
-		} catch (InvocationTargetException e) {
-			logger.error("Invocation Target Exception ", e);
-		} catch (NoSuchMethodException e) {
-			logger.error("Unable to load action: ", e);
-		}
-		return null;
+	abstract protected void setConfig(ConfigParser config);
+	
+	public static Hotfolder getHotfolder(ConfigParser config) {
+		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
+				"contextAbbyy.xml"));
+		AbstractHotfolder hotfolder = (AbstractHotfolder) factory
+				.getBean("HotfolderImpl");
+		hotfolder.setConfig(config);
+		return hotfolder;
 	}
 
 }

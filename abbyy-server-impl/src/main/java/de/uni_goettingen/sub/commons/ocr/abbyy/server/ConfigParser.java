@@ -60,7 +60,6 @@ public class ConfigParser {
 	protected String serverURL, input, output, error;
 
 	public final static String PARAMETER_HOTFOLDERCLASS = "hotfolderClass";
-	public String hotfolderClass;
 
 	//The different timeouts:
 	//Assume at least 1 second per file
@@ -206,8 +205,6 @@ public class ConfigParser {
 		input = config.getString(PARAMETER_INPUT, DEFAULT_INPUT);
 		output = config.getString(PARAMETER_OUTPUT, DEFAULT_OUTPUT);
 		error = config.getString(PARAMETER_ERROR, DEFAULT_ERROR);
-
-		hotfolderClass = config.getString(PARAMETER_HOTFOLDERCLASS, null);
 
 		checkServerState = config.getBoolean(PARAMETER_CHECKSERVERSTATE, DEFAULT_CHECKSERVERSTATE);
 
@@ -391,21 +388,6 @@ public class ConfigParser {
 	 */
 	public String getPassword () {
 		return password;
-	}
-
-	/**
-	 * @return the hotfolderClass
-	 */
-	public String getHotfolderClass () {
-		return hotfolderClass;
-	}
-
-	/**
-	 * @param hotfolderClass
-	 *            the hotfolderClass to set
-	 */
-	public void setHotfolderClass (String hotfolderClass) {
-		this.hotfolderClass = hotfolderClass;
 	}
 
 	public Boolean isParsed () {

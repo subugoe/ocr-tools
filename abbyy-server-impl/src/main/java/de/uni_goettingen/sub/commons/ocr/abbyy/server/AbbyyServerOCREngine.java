@@ -111,8 +111,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	protected AbbyyServerOCREngine() throws ConfigurationException {
 		config = new ConfigParser().parse();
-		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
-				config);
+		hotfolder = AbstractHotfolder.getHotfolder(config);
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
 		initJMX();
@@ -123,7 +122,9 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	    MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 	    try {
 	    	ObjectName name = new ObjectName("AbbyyServerOCREngine:name=OCR");
-			server.registerMBean( this, name );
+	    	if (!server.isRegistered(name)) {
+	    		server.registerMBean(this, name);
+	    	}
 		} catch (InstanceAlreadyExistsException e) {
 			logger.warn("Problem while registering MBean", e);
 		} catch (MBeanRegistrationException e) {
