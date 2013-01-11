@@ -92,6 +92,12 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	 * 
 	 */
 	private JackrabbitHotfolderImpl(ConfigParser config) {
+		setConfig(config);
+	}
+	private JackrabbitHotfolderImpl() {
+	}
+	
+	protected void setConfig(ConfigParser config) {
 		try {
 			client = initConnection(config.getServerURL(),
 					config.getUsername(), config.getPassword());
@@ -311,6 +317,13 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	public static synchronized Hotfolder getInstance(ConfigParser config) {
 		if (instance == null) {
 			instance = new JackrabbitHotfolderImpl(config);
+		}
+		return instance;
+	}
+
+	public static synchronized Hotfolder getInstance() {
+		if (instance == null) {
+			instance = new JackrabbitHotfolderImpl();
 		}
 		return instance;
 	}

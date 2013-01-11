@@ -83,20 +83,12 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 
 	private ApacheVFSHotfolderImpl(ConfigParser config) {
 		this();
-		this.config = config;
-		//Construct the login part.
-		if (config.getUsername() != null && config.getPassword() != null && config.getServerURL().startsWith("https")) {
-			serverUrl = config.getServerURL().replace("https://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
-		} else if (config.getUsername() != null && config.getPassword() != null && config.getServerURL().startsWith("http")) {
-			serverUrl = config.getServerURL().replace("http://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
-			config.setServerURL(serverUrl);
-		}
+		setConfig(config);
 	}
 
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.net.URI, java.net.URI)
 	 */
-	//TODO: This is dangerous, check if the file exists!
 	@Override
 	public void copyFile (URI from, URI to) throws IOException {
 		FileObject src = fsManager.resolveFile(from.toString());
@@ -220,6 +212,12 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 		}
 		return instance;
 	}
+	public static synchronized Hotfolder getInstance () {
+		if (instance == null) {
+			instance = new ApacheVFSHotfolderImpl();
+		}
+		return instance;
+	}
 
 	/**
 	 * Sets the config.
@@ -227,8 +225,15 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 	 * @param config
 	 *            the new config
 	 */
-	public void setConfig (ConfigParser config) {
+	protected void setConfig (ConfigParser config) {
 		this.config = config;
+		//Construct the login part.
+		if (config.getUsername() != null && config.getPassword() != null && config.getServerURL().startsWith("https")) {
+			serverUrl = config.getServerURL().replace("https://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
+		} else if (config.getUsername() != null && config.getPassword() != null && config.getServerURL().startsWith("http")) {
+			serverUrl = config.getServerURL().replace("http://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
+			config.setServerURL(serverUrl);
+		}
 	}
 
 	/* (non-Javadoc)

@@ -1,9 +1,9 @@
-Konfiguration per XML-Datei
+Konfiguration per properties-Datei
 
   Die Abbyy-Implementierung kann in der folgenden Datei konfiguriert werden:
   
 +-----------------------+
-resources/AbbyyServerOCREngine.xml
+resources/AbbyyServerOCREngine.properties
 +-----------------------+
 
   Wichtige Felder:
@@ -20,8 +20,17 @@ resources/AbbyyServerOCREngine.xml
     könnte bereits ein Prozess alle Slots belegen, wenn er in entsprechend viele Teil-Prozesse segmentiert 
     wird.
     
-  - hotfolderClass: Implementierung, die den Dateitransfer zu den Hotfoldern übernimmt. Mögliche Werte:
     
+Auswahl der Hotfolder-Implementierung
+
+  Der Hotfolder wird mit Hilfe von Spring ausgewählt. Die Konfigurationsdatei ist:
+  
++----------+
+resources/contextAbbyy.xml
++-----------+
+
+  Um eine Klasse auszuwählen, muss hier der Wert vom "class"-Attribut geändeert werden:
+   
 +----------------+
   Für WebDAV:
     de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolderImpl

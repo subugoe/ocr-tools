@@ -151,16 +151,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		super();
 		this.config = config;
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
-		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
-				config);
+		hotfolder = AbstractHotfolder.getHotfolder(config);
 		init();
 	}
 	
 	protected AbbyyOCRProcess(OCRProcess process, ConfigParser config) {
 		super(process);
 		this.config = config;
-		hotfolder = AbstractHotfolder.getHotfolder(config.hotfolderClass,
-				config);
+		hotfolder = AbstractHotfolder.getHotfolder(config);
 		init();
 		throw new NotImplementedException("This constructor isn't finished");
 	}
