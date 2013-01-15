@@ -35,13 +35,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -67,11 +60,10 @@ import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
  */
 
 public class AbbyyServerOCREngine extends AbstractOCREngine implements
-		OCREngine, AbbyyServerOCREngineMBean {
+		OCREngine {
 	public static final String version = "0.5";
 	public static final String name = AbbyyServerOCREngine.class
 			.getSimpleName();
-	
 	// max running ocr processes in thread pool
 	protected Integer maxThreads;
 
@@ -103,6 +95,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	
 	private static Object monitor = new Object();
 	
+	private OCRExecuter pool;
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
@@ -114,27 +107,35 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		hotfolder = AbstractHotfolder.getHotfolder(config);
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
-		initJMX();
 	}
 
 	
-	private void initJMX() {
-	    MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-	    try {
-	    	ObjectName name = new ObjectName("AbbyyServerOCREngine:name=OCR");
-	    	if (!server.isRegistered(name)) {
-	    		server.registerMBean(this, name);
-	    	}
-		} catch (InstanceAlreadyExistsException e) {
-			logger.warn("Problem while registering MBean", e);
-		} catch (MBeanRegistrationException e) {
-			logger.warn("Problem while registering MBean", e);
-		} catch (NotCompliantMBeanException e) {
-			logger.warn("Problem while registering MBean", e);
-		} catch (MalformedObjectNameException e) {
-			logger.warn("Problem while registering MBean", e);
+	/* start JMX methods */
+	public String getWaitingProcesses() {
+		String names = "";
+		for (Runnable r : pool.getQueue()) {
+			OCRProcess p = (OCRProcess) r;
+			names += p.getName() + " ";
 		}
+		return names;
 	}
+	
+	public int getWaitingProcessesCount() {
+		return pool.getQueue().size();
+	}
+	
+	public int getRunningProcessesCount() {
+		return pool.getActiveCount();
+	}
+	
+	public void removeWaitingProcesses() {
+		pool.getQueue().clear();
+	}
+	
+	public void removeAllProcesses() {
+		pool.shutdownNow();
+	}
+	/* end JMX methods */
 	
 	/**
 	 * Start the threadPooling
@@ -165,7 +166,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 			logger.error("Error with server lock file " + lockURI, e);
 		}
 		
-		OCRExecuter pool = createPool();
+		pool = createPool();
 
 		while (!processes.isEmpty()) {
 			AbbyyOCRProcess process = processes.poll();
@@ -349,7 +350,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	public Observable addOcrProcess(OCRProcess process) {
 		checkProcessState(process);
 
-		// TODO: Check if this instanceof works as expected
 		if (process instanceof AbbyyOCRProcess) {
      		processes.add((AbbyyOCRProcess) process);
 		} else {
@@ -420,7 +420,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	public String getName() {
 		return name;
 	}
-
+	
 	@Override
 	public String getVersion() {
 		return version;

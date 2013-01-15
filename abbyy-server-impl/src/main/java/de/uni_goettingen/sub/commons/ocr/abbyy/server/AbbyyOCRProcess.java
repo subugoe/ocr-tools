@@ -1077,6 +1077,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					if(noSubProcessfailed){
 						try {
 							isDoc = new FileInputStream(file);		
+							((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+								.parseXmlExport(isDoc);
 						} catch (FileNotFoundException e) {
 							logger.error("Error contructing FileInputStream for: "+file.toString() , e);
 						} finally {
@@ -1089,8 +1091,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 							}
 						}
 						
-						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-								.parseXmlExport(isDoc);
 					}
 					
 				}

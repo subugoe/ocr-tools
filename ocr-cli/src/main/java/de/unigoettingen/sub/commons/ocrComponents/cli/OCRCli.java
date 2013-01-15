@@ -46,6 +46,8 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -143,10 +145,10 @@ public class OCRCli {
 			URISyntaxException {
 		initOpts();
 		LOGGER.debug("Creating OCREngineFactory instance");
-		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
-				"context.xml"));
-		OCREngineFactory ocrEngineFactory = (OCREngineFactory) factory
-				.getBean("OCREngineFactory");
+
+		ApplicationContext ac = new ClassPathXmlApplicationContext("context.xml");
+		OCREngineFactory ocrEngineFactory = (OCREngineFactory) ac
+					.getBean("OCREngineFactory");
 
 		engine = ocrEngineFactory.newOcrEngine();
 
