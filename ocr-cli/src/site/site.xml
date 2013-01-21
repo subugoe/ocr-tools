@@ -5,6 +5,7 @@
 	 	<menu name="OCR-CLI">
 		   <item name="Starten per Kommandozeile" href="clistart.html"/>
            <item name="Installation mit eigener Konfiguration" href="packaging.html"/>
+           <item name="Monitoring mit JMX" href="jmx.html"/>
 		 </menu>
 	 	<menu ref="reports"/>
 	 </body>
