@@ -85,6 +85,11 @@ Einfaches Starten auf der Kommandozeile
     
   * -s: Einschalten der Dateisegmentierung
   
-  * -O: weitere Optionen, die direkt an die Implementierung weitergereicht werden
+  * -O: weitere Optionen, die direkt an die Implementierung weitergereicht werden. Bei mehreren durch Kommata 
+    getrennt
   
-    * -Olock.overwrite=true: Die Lock-Datei auf dem WebDAV-Server wird ignoriert und notfalls überschrieben.
+    * -Olock.overwrite=true: Die Lock-Datei auf dem WebDAV-Server wird ignoriert und notfalls überschrieben
+      (nur für Abbyy Server).
+      
+    * -Ooutput.xml.charcoordinates=true: Ausgabe von Koordinaten für jeden Buchstaben (nur für Abbyy XML).
+    

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XmlTicket OCRTimeout="100000" Priority="Normal">
+  <InputFile Name="remoteName0"/>
+  <InputFile Name="remoteName1"/>
+  <InputFile Name="remoteName2"/>
+  <InputFile Name="remoteName3"/>
+  <InputFile Name="remoteName4"/>
+  <InputFile Name="remoteName5"/>
+  <InputFile Name="remoteName6"/>
+  <InputFile Name="remoteName7"/>
+  <InputFile Name="remoteName8"/>
+  <InputFile Name="remoteName9"/>
+  <ImageProcessingParams Deskew="false"/>
+  <RecognitionParams RecognitionQuality="Fast">
+    <TextType>Normal</TextType>
+    <Language>Latin</Language>
+    <Language>German</Language>
+  </RecognitionParams>
+  <ExportParams DocumentSeparationMethod="MergeIntoSingleFile">
+    <ExportFormat WriteCharactersFormatting="false" WriteCharAttributes="false" OutputFlowType="SharedFolder" OutputFileFormat="XML">
+      <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+    </ExportFormat>
+  </ExportParams>
+</XmlTicket>

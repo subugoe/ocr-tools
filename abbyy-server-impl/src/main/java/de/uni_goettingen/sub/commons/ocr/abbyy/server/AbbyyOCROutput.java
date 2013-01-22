@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	protected List<URI> errorImages = new ArrayList<URI>();
 	
 	public AbbyyOCROutput(URI uri) {
-		super(uri, null, null);
+		super(uri, new HashMap<String, String>(), null);
 	}
 
 	//This calls a copy constructor for the base class
