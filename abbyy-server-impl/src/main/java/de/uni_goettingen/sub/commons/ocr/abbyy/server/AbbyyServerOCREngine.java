@@ -44,6 +44,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.AbstractHotfolde
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
+import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
@@ -168,9 +169,20 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		
 		pool = createPool();
 
+		String charCoords = extraOptions.get("output.xml.charcoordinates");
+		boolean includeCharCoords = "true".equals(charCoords);
+		
 		while (!processes.isEmpty()) {
 			AbbyyOCRProcess process = processes.poll();
 			process.setTime(new Date().getTime());
+			if (includeCharCoords) {
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("charCoordinates", "true");
+				OCROutput xmlOutput = process.getOcrOutputs().get(OCRFormat.XML);
+				if (xmlOutput != null) {
+					xmlOutput.setParams(params);
+				}
+			}
 			boolean processSplitting = process.getSplitProcess(); 
 			pool.execute(process, processSplitting);
 		}

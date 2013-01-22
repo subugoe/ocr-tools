@@ -70,6 +70,7 @@ import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 public class AbbyyTicketTest {
 	private final static Logger logger = LoggerFactory.getLogger(AbbyyTicketTest.class);
 	public static File TICKET_FILE;
+	public static File LOCAL_TICKET_FILE;
 	public static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
 
 	private static OCRProcess process = null;
@@ -89,6 +90,7 @@ public class AbbyyTicketTest {
 			}
 		});
 		TICKET_FILE = new File(MISC, "abbyyTicket.xml");
+		LOCAL_TICKET_FILE = new File(LOCAL_INPUT, "abbyyTicket.xml");
 
 		URI resultUri = null;
 		try {
@@ -160,7 +162,7 @@ public class AbbyyTicketTest {
 				AbbyyTicket.NAMESPACE));
 		// Load the Xml
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory.parse(
-				TICKET_FILE, options);
+				LOCAL_TICKET_FILE, options);
 
 		XmlTicket ticket = ticketDoc.getXmlTicket();
 		ExportParams params = ticket.getExportParams();
@@ -178,7 +180,7 @@ public class AbbyyTicketTest {
 		// Compare the files from the abbyyTicket with the mock object
 		Integer numFiles = process.getOcrImages().size();
 		logger.debug("Checking " + numFiles + " files");
-		List<String> ticketFiles = parseFilesFromTicket(TICKET_FILE, 10);
+		List<String> ticketFiles = parseFilesFromTicket(LOCAL_TICKET_FILE, 10);
 		for (int i = 0; i < numFiles; i++) {
 			String mFilename = ((AbbyyOCRImage) process.getOcrImages().get(i))
 					.getRemoteFileName();

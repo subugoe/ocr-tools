@@ -251,16 +251,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		opts.setUseDefaultNamespace();
 
 		FORMAT_FRAGMENTS = new HashMap<OCRFormat, OutputFileFormatSettings>();
-		XMLExportSettings xmlSettings = XMLExportSettings.Factory
-				.newInstance(opts);
-
-		// coordinates for each character in output abbyy xml 
-		xmlSettings.setWriteCharactersFormatting(true);
-		xmlSettings.setWriteCharAttributes(true);
-
-		FORMAT_FRAGMENTS.put(OCRFormat.XML,
-				(OutputFileFormatSettings) xmlSettings
-						.changeType(OutputFileFormatSettings.type));
 
 		PDFExportSettings pdfSettings = PDFExportSettings.Factory
 				.newInstance(opts);
@@ -400,6 +390,29 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		if (getOcrOutputs().size() < 1) {
 			throw new IllegalStateException("no outputs defined!");
 		}
+		
+		
+		XMLExportSettings xmlSettings = XMLExportSettings.Factory
+				.newInstance(opts);
+
+		// coordinates for each character in output abbyy xml
+		// default is false. Might be reset later if the parameter is set
+		xmlSettings.setWriteCharactersFormatting(false);
+		xmlSettings.setWriteCharAttributes(false);
+
+		OCROutput xmlOutput = getOcrOutputs().get(OCRFormat.XML);
+		if (xmlOutput != null) {
+			String charCoords = xmlOutput.getParams().get("charCoordinates");
+			if ("true".equals(charCoords)) {
+				xmlSettings.setWriteCharactersFormatting(true);
+				xmlSettings.setWriteCharAttributes(true);
+			}
+		}
+
+		FORMAT_FRAGMENTS.put(OCRFormat.XML,
+				(OutputFileFormatSettings) xmlSettings
+						.changeType(OutputFileFormatSettings.type));
+
 
 		XmlTicketDocument ticketDoc = XmlTicketDocument.Factory
 				.newInstance(opts);
