@@ -90,6 +90,7 @@ public class ConfigParser {
 	protected Boolean convertToBW;
 	public final static String IMAGES_NUMBER_FORSUBPROCESS = "imagesNumberForSubprocess";
 	protected Integer imagesNumberForSubprocess;
+	protected Boolean waitForResultXml;
 	
 	//The output location on the server, needed to generate tickets
 	public final static String PARAMETER_SERVEROUTPUTLOCATION = "serverOutputLocation";
@@ -226,6 +227,7 @@ public class ConfigParser {
 		ticketTmpStore = config.getString(PARAMETER_TICKETTMPSTORE, DEFAULT_TICKETTMPSTORE);
 		validateTicket = config.getBoolean(PARAMETER_VALIDATETICKET, DEFAULT_VALIDATETICKET);
 		singleFile = config.getBoolean(PARAMETER_SINGLEFILE, DEFAULT_SINGLEFILE);
+		waitForResultXml = config.getBoolean("waitForResultXml", true);
 		convertToBW = config.getBoolean(PARAMETER_CONVERTTOBW, DEFAULT_CONVERTTOBW);
 		reportSuffix = config.getString(PARAMETER_REPORTSUFFIX, DEFAULT_REPORTSUFFIX);
 		if (config.getString(PARAMETER_DEFAULTLANGS, null) != null) {
@@ -407,6 +409,10 @@ public class ConfigParser {
 
 	public void setProcessId(String processId) {
 		this.processId = processId;
+	}
+	
+	public boolean waitForResultXml() {
+		return waitForResultXml;
 	}
 
 }

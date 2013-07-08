@@ -308,6 +308,12 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 
 			try {
 				Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
+				
+				if (!config.waitForResultXml()) {
+					// TODO: this is a hack for fraktur server that does not give us the result xml
+					outputs.remove(OCRFormat.METADATA);
+				}
+
 				logger.debug("Waking up, waiting another "
 						+ (maxWait - minWait) + " milli seconds for results");
 				if (waitForResults(outputs, maxWait)) {
@@ -443,6 +449,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				logger.error("Unable to clean up!", e);
 			}
 		}
+
 	}
 
 	
