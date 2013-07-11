@@ -170,17 +170,17 @@
             <name>Internal Snapshot Repository</name>
             <url>https://repository.bibforge.org/archiva/repository/snapshots</url>
         </snapshotRepository>
+        <!--
         <site>
             <id>site.server</id>
             <url>dav:http://develop.sub.uni-goettingen.de/maven-sites/${project.groupId}/${project.artifactId}-${project.version}</url>
         </site>
-        <!--
+        -->
         <site>
             <id>local-site</id>
             <name>Local deployed site</name>
             <url>file://${user.dir}/target/site-deploy</url>
         </site>
-        -->
     </distributionManagement>
     <pluginRepositories>
         <pluginRepository>
