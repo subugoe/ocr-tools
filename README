@@ -1,1 +1,5 @@
-Test
+This project is a common interface to different OCR engines. It consists of several frontends (commandline, Web Service,
+Servlet) and several adaptors for OCR engines (Abbyy Recognition Server, Tesseract). Any combination of 
+frontend+adaptor is possible. For more information about the project and its modules, install maven version 
+2.2 or later and run 'mvn site-deploy' in the project directory. The site will be created in target/site-deploy
+directory.
