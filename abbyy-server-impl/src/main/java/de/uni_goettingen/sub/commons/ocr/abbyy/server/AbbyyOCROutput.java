@@ -62,9 +62,15 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 		super(uri, new HashMap<String, String>(), null);
 	}
 
-	//This calls a copy constructor for the base class
 	public AbbyyOCROutput(OCROutput ocrOutput) {
 		super(ocrOutput);
+		if(ocrOutput instanceof AbbyyOCROutput) {
+			AbbyyOCROutput abbyyOutput = (AbbyyOCROutput) ocrOutput;
+			URI remote = abbyyOutput.getRemoteUri();
+			if(remote != null) {
+				this.setRemoteUri(remote);
+			}
+		}
 	}
 
 	protected AbbyyOCROutput() {

@@ -774,10 +774,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		AbbyyOCROutput metadata = new AbbyyOCROutput(out);
 
 		try {
+			String resultXmlFolder = config.getResultXmlFolder();
+			String outputFolder = config.getOutput();
 			// The remote file name
 			outputResultUri = new URI(out
 					.getRemoteUri()
 					.toString()
+					.replace(outputFolder, resultXmlFolder)
 					.replaceAll(lastKey.toString().toLowerCase(),
 							"xml" + config.reportSuffix));
 			metadata.setRemoteUri(outputResultUri);
@@ -792,7 +795,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			logger.error("Error while setting up URIs");
 			throw new OCRException(e);
 		}
-
+		
 		addOutput(OCRFormat.METADATA, metadata);
 	}
 
