@@ -55,9 +55,11 @@ public class ConfigParser {
 	public final static String DEFAULT_INPUT = "input";
 	public final static String PARAMETER_OUTPUT = "output";
 	public final static String DEFAULT_OUTPUT = "output";
+	public final static String PARAMETER_RESULTXMLFOLDER = "resultXmlFolder";
+	public final static String DEFAULT_RESULTXMLFOLDER = "output";
 	public final static String PARAMETER_ERROR = "error";
 	public final static String DEFAULT_ERROR = "error";
-	protected String serverURL, input, output, error;
+	protected String serverURL, input, output, resultXmlFolder, error;
 
 	public final static String PARAMETER_HOTFOLDERCLASS = "hotfolderClass";
 
@@ -205,6 +207,7 @@ public class ConfigParser {
 
 		input = config.getString(PARAMETER_INPUT, DEFAULT_INPUT);
 		output = config.getString(PARAMETER_OUTPUT, DEFAULT_OUTPUT);
+		resultXmlFolder = config.getString(PARAMETER_RESULTXMLFOLDER, DEFAULT_RESULTXMLFOLDER);
 		error = config.getString(PARAMETER_ERROR, DEFAULT_ERROR);
 
 		checkServerState = config.getBoolean(PARAMETER_CHECKSERVERSTATE, DEFAULT_CHECKSERVERSTATE);
@@ -374,6 +377,10 @@ public class ConfigParser {
 
 	public String getOutput () {
 		return output;
+	}
+
+	public String getResultXmlFolder() {
+		return resultXmlFolder;
 	}
 
 	/**
