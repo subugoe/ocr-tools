@@ -23,6 +23,7 @@
         <!-- <module>dummy-impl</module> -->
         <module>ocr-webservice</module>
         <module>tesseract-impl</module>
+        <module>ocrsdk-impl</module>
     </modules>
     <developers>
         <developer>
