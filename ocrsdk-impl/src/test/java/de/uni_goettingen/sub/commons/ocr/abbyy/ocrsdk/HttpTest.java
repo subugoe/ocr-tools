@@ -36,8 +36,12 @@ class FakeHandler extends AbstractHandler {
 		response.setContentType("application/xml;charset=utf-8");
 
 		String basicAuth = request.getHeader("Authorization");
-		basicAuth = basicAuth.substring("Basic: ".length());
-		basicAuth = new String(Base64.decodeBase64(basicAuth));
+		if (basicAuth != null) {
+			basicAuth = basicAuth.substring("Basic: ".length());
+			basicAuth = new String(Base64.decodeBase64(basicAuth));
+		} else {
+			basicAuth = "none";
+		}
 		
 		String contentLength = request.getHeader("Content-Length");
 		
@@ -82,7 +86,8 @@ public class HttpTest {
 	@Test
 	public void sendingPost() throws Exception {
 		Http http = new Http("", "");
-		String response = http.submitPost("http://localhost:10200/", new byte[]{});
+		InputStream is = http.submitPost("http://localhost:10200/", new byte[]{});
+		String response = IOUtils.toString(is);
 
 		assertThat(response, containsString("<httpMethod>POST</httpMethod>"));
 	}
@@ -90,7 +95,8 @@ public class HttpTest {
 	@Test
 	public void serverMustReceiveCredentials() throws Exception {
 		Http http = new Http("user", "pw");
-		String response = http.submitPost("http://localhost:10200/", new byte[]{});
+		InputStream is = http.submitPost("http://localhost:10200/", new byte[]{});
+		String response = IOUtils.toString(is);
 
 		assertThat(response, containsString("<basicAuth>user:pw</basicAuth>"));
 	}
@@ -99,7 +105,8 @@ public class HttpTest {
 	public void serverMustReceivePostData() throws Exception {
 		Http http = new Http("", "");
 		byte[] bytesToSend = {4, 2};
-		String response = http.submitPost("http://localhost:10200/", bytesToSend);
+		InputStream is = http.submitPost("http://localhost:10200/", bytesToSend);
+		String response = IOUtils.toString(is);
 
 		assertThat(response, containsString("<contentLength>2</contentLength>"));
 		assertThat(response, containsString("<content>42</content>"));
@@ -108,7 +115,8 @@ public class HttpTest {
 	@Test
 	public void sendingGet() throws Exception {
 		Http http = new Http("", "");
-		String response = http.submitGet("http://localhost:10200/");
+		InputStream is = http.submitGet("http://localhost:10200/");
+		String response = IOUtils.toString(is);
 
 		assertThat(response, containsString("<httpMethod>GET</httpMethod>"));
 	}
@@ -135,6 +143,16 @@ public class HttpTest {
 	public void sendingGetToUnreachable() throws Exception {
 		Http http = new Http("", "");
 		http.submitGet("http://localhost:10000/");
+	}
+
+	@Test
+	public void sendingGetWithoutAuthentication() throws Exception {
+		Http http = new Http("user", "pw");
+		InputStream is = http.submitGetWithoutAuthentication("http://localhost:10200/");
+		String response = IOUtils.toString(is);
+
+		assertThat(response, containsString("<httpMethod>GET</httpMethod>"));
+		assertThat(response, containsString("<basicAuth>none</basicAuth>"));
 	}
 
 
