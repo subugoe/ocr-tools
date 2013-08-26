@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 
 
 public class Http {
@@ -20,8 +19,8 @@ public class Http {
 		this.password = password;
 	}
 	
-	public String submitPost(String url, byte[] postData) {
-		String response = "";
+	public InputStream submitPost(String url, byte[] postData) {
+		InputStream response = null;
 		try {
 			URL u = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) u.openConnection();
@@ -49,12 +48,11 @@ public class Http {
 		connection.addRequestProperty("Authorization", authString);
 	}
 
-	private String getResponseFrom(HttpURLConnection connection) throws IOException {
-		String response = "";
+	private InputStream getResponseFrom(HttpURLConnection connection) throws IOException {
+		InputStream response = null;
 		int responseCode = connection.getResponseCode();
 		if (responseCode == 200) {
-			InputStream inputStream = connection.getInputStream();
-			response = IOUtils.toString(inputStream);
+			response = connection.getInputStream();
 		} else if (responseCode == 401) {
 			throw new IOException("Access denied. Check your username and password");
 		} else {
@@ -63,12 +61,27 @@ public class Http {
 		return response;
 	}
 
-	public String submitGet(String url) {
-		String response = "";
+	public InputStream submitGet(String url) {
+		InputStream response = null;
 		try {
 			URL u = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) u.openConnection();
 			setupAuthorization(connection);
+			
+			response = getResponseFrom(connection);
+
+		} catch (IOException e) {
+			throw new RuntimeException("Error with connection.", e);
+		}
+		return response;
+
+	}
+
+	public InputStream submitGetWithoutAuthentication(String url) {
+		InputStream response = null;
+		try {
+			URL u = new URL(url);
+			HttpURLConnection connection = (HttpURLConnection) u.openConnection();
 			
 			response = getResponseFrom(connection);
 
