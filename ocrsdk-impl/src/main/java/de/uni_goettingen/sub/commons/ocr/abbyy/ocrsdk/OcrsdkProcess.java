@@ -2,6 +2,9 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,6 +17,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 
 public class OcrsdkProcess extends AbstractOCRProcess {
 
@@ -21,45 +25,41 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 
 	private final String sdkServer = "http://cloud.ocrsdk.com/";
 	private Http http;
+	private OcrsdkClient client;
 
 	private Element completedTask;
 	
 	public OcrsdkProcess(String user, String password) {
 		http = new Http(user, password);
-	}
-	
-	public void setHttp(Http http) {
-		this.http = http;
+		client = new OcrsdkClient(http);
 	}
 	
 	public void start() {
-		String taskId = "";
 		for(int i = 0; i < ocrImages.size(); i++) {
 			byte[] imageBytes = ((OcrsdkImage)ocrImages.get(i)).getAsBytes();
-			if (i == 0) {
-				String url = sdkServer + "submitImage";
-				InputStream result = http.submitPost(url, imageBytes);
-				taskId = getTaskId(result);
-			} else {
-				String url = sdkServer + "submitImage?taskId=" + taskId;
-				http.submitPost(url, imageBytes);
-			}
+			client.submitImage(imageBytes);
 		}
-		String url = sdkServer + "processDocument?taskId=" + taskId + "&language=English&exportFormat=xml";
-		http.submitGet(url);
+		client.addLanguage(Locale.ENGLISH);
+		client.addExportFormat(OCRFormat.XML);
+		client.addExportFormat(OCRFormat.TXT);
+		client.processDocument();
 		
-		String resultUrl = waitUntilTaskCompletes(taskId);
+		List<String> resultUrls = waitUntilTaskCompletes(client.taskId);
 
-		InputStream completedResult = http.submitGetWithoutAuthentication(resultUrl);
-		try {
-			System.out.println(IOUtils.toString(completedResult));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		System.err.println(resultUrls.size());
+		for (String resultUrl : resultUrls) {
+			InputStream completedResult = http.submitGetWithoutAuthentication(resultUrl);
+			try {
+				
+				System.out.println(IOUtils.toString(completedResult));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
-	private String waitUntilTaskCompletes(String taskId) {
+	private List<String> waitUntilTaskCompletes(String taskId) {
 		while(true) {
 			System.out.println("waiting");
 			try {
@@ -72,7 +72,7 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 			InputStream resultXml = http.submitGet(url);
 			String status = getTaskStatus(resultXml);
 			if (status.equals("Completed")) {
-				return getResultUrl();
+				return getResultUrls();
 			}
 		}
 	}
@@ -87,8 +87,16 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		return completedTask.getAttribute("status");
 	}
 	
-	private String getResultUrl() {
-		return completedTask.getAttribute("resultUrl");
+	private List<String> getResultUrls() {
+		List<String> resultUrls = new ArrayList<String>();
+		resultUrls.add(completedTask.getAttribute("resultUrl"));
+		String url2 = completedTask.getAttribute("resultUrl2");
+		String url3 = completedTask.getAttribute("resultUrl3");
+		if (!"".equals(url2))
+			resultUrls.add(url2);
+		if (!"".equals(url3))
+			resultUrls.add(url3);
+		return resultUrls;
 	}
 
 	private Element getTaskElement(InputStream xml) {
