@@ -1,8 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,14 +15,13 @@ import org.w3c.dom.NodeList;
 public class OcrsdkClient {
 
 	private final String sdkServer = "http://cloud.ocrsdk.com/";
-	public String taskId;
+	private String taskId;
 	private Http http;
 	
 	private ArrayList<String> languagesToUse = new ArrayList<String>();
 	private ArrayList<String> formatsToUse = new ArrayList<String>();
 	private ArrayList<String> textTypesToUse = new ArrayList<String>();
 	
-	private Element completedTask;
 	private List<String> resultUrls = new ArrayList<String>();
 	
 	public OcrsdkClient(Http http) {
@@ -31,7 +29,7 @@ public class OcrsdkClient {
 	}
 	
 	public void submitImage(byte[] imageBytes) {
-		InputStream returnedXml = http.submitPost(submitImageUrl(), imageBytes);
+		String returnedXml = http.submitPost(submitImageUrl(), imageBytes);
 		if (taskId == null) {
 			Element task = getTaskElement(returnedXml);
 			taskId = task.getAttribute("id");
@@ -41,17 +39,18 @@ public class OcrsdkClient {
 	private String submitImageUrl() {
 		String url = sdkServer + "submitImage";
 		if (taskId != null) {
-			url += "?taskId" + taskId;
+			url += "?taskId=" + taskId;
 		}
 		return url;
 	}
 	
-	private Element getTaskElement(InputStream xml) {
+	private Element getTaskElement(String xml) {
 		Element task = null;
 		try {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance()
 					.newDocumentBuilder();
-			Document doc = builder.parse(xml);
+			InputStream xmlStream = new ByteArrayInputStream(xml.getBytes());
+			Document doc = builder.parse(xmlStream);
 			NodeList taskNodes = doc.getElementsByTagName("task");
 			task = (Element) taskNodes.item(0);
 		} catch (Exception e) {
@@ -91,7 +90,6 @@ public class OcrsdkClient {
 		if (!textTypesToUse.isEmpty()) {
 			url += parameter("textType", textTypesToUse);
 		}
-		System.err.println(url);
 		return url;
 	}
 
@@ -111,24 +109,24 @@ public class OcrsdkClient {
 
 	private void waitUntilTaskCompletes() {
 		while(true) {
+			String url = sdkServer + "getTaskStatus?taskId=" + taskId;
+			String resultXml = http.submitGet(url);
+			String status = getTaskElement(resultXml).getAttribute("status");
+			if (status.equals("Completed")) {
+				populateResultUrls(resultXml);
+				return;
+			}
 			System.out.println("waiting");
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			String url = sdkServer + "getTaskStatus?taskId=" + taskId;
-			InputStream resultXml = http.submitGet(url);
-			completedTask = getTaskElement(resultXml);
-			String status = completedTask.getAttribute("status");
-			if (status.equals("Completed")) {
-				populateResultUrls();
-				return;
-			}
 		}
 	}
 	
-	private void populateResultUrls() {
+	private void populateResultUrls(String xml) {
+		Element completedTask = getTaskElement(xml);
 		resultUrls.add(completedTask.getAttribute("resultUrl"));
 		String url2 = completedTask.getAttribute("resultUrl2");
 		String url3 = completedTask.getAttribute("resultUrl3");
@@ -143,14 +141,8 @@ public class OcrsdkClient {
 		if (listIndex == -1) {
 			throw new IllegalArgumentException("No result for format " + format);
 		}
-		InputStream is = null;
-		try {
-			URL formatUrl = new URL(resultUrls.get(listIndex));
-			is = formatUrl.openStream();
-		} catch (IOException e) {
-			throw new IllegalStateException("Could not read the result for " + format, e);
-		}
-		return is;
+		String resultUrl = resultUrls.get(listIndex);
+		return http.submitGetWithoutAuthentication(resultUrl);
 	}
 
 }

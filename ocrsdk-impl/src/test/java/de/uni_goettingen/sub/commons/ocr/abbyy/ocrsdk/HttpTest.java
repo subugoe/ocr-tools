@@ -86,8 +86,7 @@ public class HttpTest {
 	@Test
 	public void sendingPost() throws Exception {
 		Http http = new Http("", "");
-		InputStream is = http.submitPost("http://localhost:10200/", new byte[]{});
-		String response = IOUtils.toString(is);
+		String response = http.submitPost("http://localhost:10200/", new byte[]{});
 
 		assertThat(response, containsString("<httpMethod>POST</httpMethod>"));
 	}
@@ -95,8 +94,7 @@ public class HttpTest {
 	@Test
 	public void serverMustReceiveCredentials() throws Exception {
 		Http http = new Http("user", "pw");
-		InputStream is = http.submitPost("http://localhost:10200/", new byte[]{});
-		String response = IOUtils.toString(is);
+		String response = http.submitPost("http://localhost:10200/", new byte[]{});
 
 		assertThat(response, containsString("<basicAuth>user:pw</basicAuth>"));
 	}
@@ -105,8 +103,7 @@ public class HttpTest {
 	public void serverMustReceivePostData() throws Exception {
 		Http http = new Http("", "");
 		byte[] bytesToSend = {4, 2};
-		InputStream is = http.submitPost("http://localhost:10200/", bytesToSend);
-		String response = IOUtils.toString(is);
+		String response = http.submitPost("http://localhost:10200/", bytesToSend);
 
 		assertThat(response, containsString("<contentLength>2</contentLength>"));
 		assertThat(response, containsString("<content>42</content>"));
@@ -115,8 +112,7 @@ public class HttpTest {
 	@Test
 	public void sendingGet() throws Exception {
 		Http http = new Http("", "");
-		InputStream is = http.submitGet("http://localhost:10200/");
-		String response = IOUtils.toString(is);
+		String response = http.submitGet("http://localhost:10200/");
 
 		assertThat(response, containsString("<httpMethod>GET</httpMethod>"));
 	}
