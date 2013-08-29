@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 
 
 public class Http {
@@ -19,8 +20,8 @@ public class Http {
 		this.password = password;
 	}
 	
-	public InputStream submitPost(String url, byte[] postData) {
-		InputStream response = null;
+	public String submitPost(String url, byte[] postData) {
+		String response = "";
 		try {
 			URL u = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) u.openConnection();
@@ -32,8 +33,8 @@ public class Http {
 			connection.setRequestProperty("Content-Length", Integer.toString(postData.length));
 			connection.getOutputStream().write(postData);
 			
-			response = getResponseFrom(connection);
-
+			InputStream is = getResponseFrom(connection);
+			response = IOUtils.toString(is);
 		} catch (IOException e) {
 			throw new RuntimeException("Error with connection.", e);
 		}
@@ -61,15 +62,15 @@ public class Http {
 		return response;
 	}
 
-	public InputStream submitGet(String url) {
-		InputStream response = null;
+	public String submitGet(String url) {
+		String response = "";
 		try {
 			URL u = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) u.openConnection();
 			setupAuthorization(connection);
 			
-			response = getResponseFrom(connection);
-
+			InputStream is = getResponseFrom(connection);
+			response = IOUtils.toString(is);
 		} catch (IOException e) {
 			throw new RuntimeException("Error with connection.", e);
 		}
