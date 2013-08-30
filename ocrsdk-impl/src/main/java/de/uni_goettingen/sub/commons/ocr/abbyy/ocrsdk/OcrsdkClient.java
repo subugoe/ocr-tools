@@ -24,7 +24,11 @@ public class OcrsdkClient {
 	
 	private List<String> resultUrls = new ArrayList<String>();
 	
-	public OcrsdkClient(Http http) {
+	public OcrsdkClient(String username, String password) {
+		http = new Http(username, password);
+	}
+	
+	void setHttp(Http http) {
 		this.http = http;
 	}
 	

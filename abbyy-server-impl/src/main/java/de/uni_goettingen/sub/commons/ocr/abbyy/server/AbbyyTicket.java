@@ -443,7 +443,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			ticket.setPriority("Normal");
 		}
 
-		if (texttyp != null) {
+		if (textType != null) {
 			recognitionSettings.setTextTypeArray(new String[] { TEXTTYP_MAP
 					.get(getTextType()) });
 		}

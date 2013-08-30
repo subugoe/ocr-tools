@@ -42,7 +42,8 @@ public class OcrsdkClientTest {
 		ByteArrayInputStream rtfStream = new ByteArrayInputStream(rtfResult.getBytes());
 		when(httpMock.submitGetWithoutAuthentication("http://rtf-result")).thenReturn(rtfStream);
 		
-		client = new OcrsdkClient(httpMock);
+		client = new OcrsdkClient("", "");
+		client.setHttp(httpMock);
 	}
 
 	@Test
