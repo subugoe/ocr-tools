@@ -1,15 +1,14 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
 public class OcrsdkProcess extends AbstractOCRProcess {
 
@@ -18,12 +17,10 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 	private Map<OCRFormat, String> outputFormatMapping = new HashMap<OCRFormat, String>();
 	private Map<OCRTextType, String> textTypeMapping = new HashMap<OCRTextType, String>();
 
-	private Http http;
 	private OcrsdkClient client;
 
 	public OcrsdkProcess(String user, String password) {
-		http = new Http(user, password);
-		client = new OcrsdkClient(http);
+		client = new OcrsdkClient(user, password);
 		languageMapping.put(Locale.ENGLISH, "English");
 		languageMapping.put(Locale.GERMAN, "German");
 		outputFormatMapping.put(OCRFormat.XML, "xml");
@@ -33,26 +30,32 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		textTypeMapping.put(OCRTextType.GOTHIC, "gothic");
 	}
 	
+	void setClient(OcrsdkClient client) {
+		this.client = client;
+	}
+	
 	public void start() {
-		for(int i = 0; i < ocrImages.size(); i++) {
-			byte[] imageBytes = ((OcrsdkImage)ocrImages.get(i)).getAsBytes();
+		for(OCRImage image : ocrImages) {
+			byte[] imageBytes = ((OcrsdkImage)image).getAsBytes();
 			client.submitImage(imageBytes);
 		}
-		client.addLanguage(abbyy(Locale.ENGLISH));
-		client.addExportFormat(abbyy(OCRFormat.XML));
-		client.addExportFormat(abbyy(OCRFormat.TXT));
-		client.addTextType(abbyy(OCRTextType.GOTHIC));
-		client.addTextType(abbyy(OCRTextType.NORMAL));
+		for (Locale language : langs) {
+			client.addLanguage(abbyy(language));
+		}
+		for (OCRFormat format : ocrOutputs.keySet()) {
+			client.addExportFormat(abbyy(format));
+		}
+		client.addTextType(abbyy(textType));
+		
 		client.processDocument();
 		
-		InputStream txtResult = client.getResultForFormat(abbyy(OCRFormat.TXT));
-		
-		try {
-			System.out.println(IOUtils.toString(txtResult));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (Map.Entry<OCRFormat, OCROutput> entry : ocrOutputs.entrySet()) {
+			OCRFormat format = entry.getKey();
+			InputStream result = client.getResultForFormat(abbyy(format));
+			OcrsdkOutput output = (OcrsdkOutput) entry.getValue();
+			output.save(result);
 		}
+		
 	}
 
 	private String abbyy(OCRTextType textType) {

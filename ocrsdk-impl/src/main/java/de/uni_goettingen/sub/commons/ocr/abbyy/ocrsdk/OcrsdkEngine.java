@@ -37,7 +37,7 @@ public class OcrsdkEngine extends AbstractOCREngine {
 
 	@Override
 	public OCRProcess newOcrProcess() {
-		return new OcrsdkProcess("Testtest1234", "2XZnrhCD4x9/+jOFQG1FtI3v");
+		return new OcrsdkProcess("", "");
 	}
 	
 	@Override

@@ -63,7 +63,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 * Typ of recognized text: Normal, Typewriter, Matrix, OCR_A, 
 	 * OCR_B, MICR_E13B, Gothic.
 	 *  */
-	protected OCRTextType texttyp ;
+	protected OCRTextType textType = OCRTextType.NORMAL;
 	
 	/**the priority level of the job. The default priority is Normal.
 	 * priority level : Low, BelowNormal, Normal, AboveNormal, High ;
@@ -74,7 +74,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 * The images that should be converted, are stored in the given format at
 	 * the given location
 	 */
-	transient protected Map<OCRFormat, OCROutput> ocrOutputs;
+	transient protected Map<OCRFormat, OCROutput> ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
 
 	/** The params that should be used adjust the recognition process. */
 	protected Map<String, String> params = new HashMap<String, String>();
@@ -265,7 +265,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getTextTyp()
 	 */
 	public OCRTextType getTextType () {
-		return this.texttyp;
+		return this.textType;
 	}
 	
 
@@ -273,7 +273,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setTextTyp(de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp)
 	 */
 	public void setTextType (OCRTextType t) {
-		this.texttyp = t ;
+		this.textType = t ;
 	}
 	
 	/* (non-Javadoc)
