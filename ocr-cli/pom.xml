@@ -27,6 +27,11 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>de.uni-goettingen.sub</groupId>
+            <artifactId>ocrsdk-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
             <version>1.6</version>
@@ -129,6 +134,16 @@
                 <resources>
                     <resource>
                         <directory>src/main/resources-abbyy-multiuser</directory>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+        <profile>
+            <id>ocrsdk</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources-ocrsdk</directory>
                     </resource>
                 </resources>
             </build>

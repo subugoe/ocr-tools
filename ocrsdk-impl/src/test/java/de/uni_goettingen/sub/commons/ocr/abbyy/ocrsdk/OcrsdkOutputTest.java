@@ -21,7 +21,8 @@ public class OcrsdkOutputTest {
 	@Test
 	public void saveToFile() throws IOException {
 		File outFile = new File("target/testOutput.txt");
-		OcrsdkOutput output = new OcrsdkOutput(outFile.toURI());
+		OcrsdkOutput output = new OcrsdkOutput();
+		output.setUri(outFile.toURI());
 		InputStream toSave = new ByteArrayInputStream("test".getBytes());
 		
 		output.save(toSave);
