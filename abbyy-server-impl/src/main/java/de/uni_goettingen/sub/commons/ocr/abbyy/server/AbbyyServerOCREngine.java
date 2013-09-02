@@ -170,12 +170,12 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		pool = createPool();
 
 		String charCoords = extraOptions.get("output.xml.charcoordinates");
-		boolean includeCharCoords = "true".equals(charCoords);
+		boolean skipCharCoords = "false".equals(charCoords);
 		
 		while (!processes.isEmpty()) {
 			AbbyyOCRProcess process = processes.poll();
 			process.setTime(new Date().getTime());
-			if (includeCharCoords) {
+			if (!skipCharCoords) {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("charCoordinates", "true");
 				OCROutput xmlOutput = process.getOcrOutputs().get(OCRFormat.XML);

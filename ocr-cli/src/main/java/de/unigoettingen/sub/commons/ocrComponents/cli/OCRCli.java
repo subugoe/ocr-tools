@@ -222,8 +222,7 @@ public class OCRCli {
 					if(ocrPriority != null){
 						aop.setPriority(OCRPriority.valueOf(ocrPriority));
 					}else{
-						LOGGER.error("the process ended, ocrPriority is null");
-						System.exit(0);
+						aop.setPriority(OCRPriority.NORMAL);
 					}
 					aop.setTextType(OCRTextType.valueOf(ocrTextTyp));
 					engine.addOcrProcess(aop);
