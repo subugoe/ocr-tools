@@ -10,6 +10,13 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
+/**
+ * Encapsulates one or more OCR processes that can be started.
+ * Also, serves as a factory for images, prorcesses, and outputs.
+ * 
+ * @author dennis
+ *
+ */
 public class OcrsdkEngine extends AbstractOCREngine {
 
 	private static OcrsdkEngine instance;
@@ -23,6 +30,9 @@ public class OcrsdkEngine extends AbstractOCREngine {
 		return instance;
 	}
 
+	/**
+	 * Starts the one process that is passed.
+	 */
 	@Override
 	public Observable recognize(OCRProcess process) {
 		addOcrProcess(process);
@@ -30,6 +40,9 @@ public class OcrsdkEngine extends AbstractOCREngine {
 		return null;
 	}
 
+	/**
+	 * Starts all processes that have been added before.
+	 */
 	@Override
 	public Observable recognize() {
 		for (OCRProcess process : ocrProcess) {
@@ -76,26 +89,22 @@ public class OcrsdkEngine extends AbstractOCREngine {
 	
 	@Override
 	public Boolean stop() {
-		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 	
 	@Override
 	public Boolean init() {
-		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Abbyy ocrsdk";
 	}
 
 	@Override
 	public String getVersion() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 }

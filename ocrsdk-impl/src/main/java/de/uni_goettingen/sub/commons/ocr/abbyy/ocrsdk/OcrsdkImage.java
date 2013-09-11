@@ -7,6 +7,12 @@ import org.apache.commons.io.IOUtils;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 
+/**
+ * Representation of an image that is to be recognized by Abbyy OCRSDK service.
+ * 
+ * @author dennis
+ *
+ */
 public class OcrsdkImage extends AbstractOCRImage {
 
 	public OcrsdkImage(URI imageUri) {
@@ -16,6 +22,11 @@ public class OcrsdkImage extends AbstractOCRImage {
 		}
 	}
 	
+	/**
+	 * Reads the image from the internal URI.
+	 * 
+	 * @return Binary representation of the image
+	 */
 	public byte[] getAsBytes() {
 		byte[] imageBytes = null;
 		try {
