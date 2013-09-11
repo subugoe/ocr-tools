@@ -9,17 +9,34 @@ import java.net.URLConnection;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 
-
+/**
+ * Simple HTTP client for POST and GET requests.
+ * 
+ * @author dennis
+ *
+ */
 public class Http {
 
 	private String user;
 	private String password;
 	
+	/**
+	 * 
+	 * @param user Username for basic authentication
+	 * @param password Password for basic authentication
+	 */
 	public Http(String user, String password) {
 		this.user = user;
 		this.password = password;
 	}
 	
+	/**
+	 * Connects to a given URL and sends data in a POST request.
+	 * 
+	 * @param url URL to connect to
+	 * @param postData Binary data to be sent
+	 * @return Response document, eg XML or HTML
+	 */
 	public String submitPost(String url, byte[] postData) {
 		String response = "";
 		try {
@@ -62,6 +79,12 @@ public class Http {
 		return response;
 	}
 
+	/**
+	 * Gets the response from a given URL.
+	 * 
+	 * @param url URL to connect to
+	 * @return Response document, eg XML or HTML
+	 */
 	public String submitGet(String url) {
 		String response = "";
 		try {
@@ -78,6 +101,12 @@ public class Http {
 
 	}
 
+	/**
+	 * Gets the response from a given URL skipping basic authentication.
+	 * 
+	 * @param url URL to connect to
+	 * @return Response data, may be text or binary
+	 */
 	public InputStream submitGetWithoutAuthentication(String url) {
 		InputStream response = null;
 		try {

@@ -12,6 +12,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+/**
+ * Client for the Abbyy ocrsdk online service.
+ * 
+ * @author dennis
+ *
+ */
 public class OcrsdkClient {
 
 	private final String sdkServer = "http://cloud.ocrsdk.com/";
@@ -28,10 +34,17 @@ public class OcrsdkClient {
 		http = new Http(username, password);
 	}
 	
+	/**
+	 * for unit tests
+	 */
 	void setHttp(Http http) {
 		this.http = http;
 	}
 	
+	/**
+	 * Sends an image to the abbyy ocr service.
+	 * @param imageBytes
+	 */
 	public void submitImage(byte[] imageBytes) {
 		String returnedXml = http.submitPost(submitImageUrl(), imageBytes);
 		if (taskId == null) {
@@ -78,8 +91,13 @@ public class OcrsdkClient {
 		textTypesToUse.add(textType);		
 	}
 
+	/**
+	 * Orders the Abbyy service to process the uploaded images.
+	 */
 	public void processDocument() {
-		http.submitGet(processDocumentUrl());
+		String url = processDocumentUrl();
+		System.out.println("Starting to process the images. URL is: " + url);
+		http.submitGet(url);
 		waitUntilTaskCompletes();
 	}
 
@@ -112,15 +130,15 @@ public class OcrsdkClient {
 	}
 
 	private void waitUntilTaskCompletes() {
+		String url = sdkServer + "getTaskStatus?taskId=" + taskId;
 		while(true) {
-			String url = sdkServer + "getTaskStatus?taskId=" + taskId;
 			String resultXml = http.submitGet(url);
 			String status = getTaskElement(resultXml).getAttribute("status");
 			if (status.equals("Completed")) {
 				populateResultUrls(resultXml);
 				return;
 			}
-			System.out.println("waiting");
+			System.out.println("Waiting");
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
@@ -140,6 +158,12 @@ public class OcrsdkClient {
 			resultUrls.add(url3);
 	}
 
+	/**
+	 * Retrieves the result document for the specified output format.
+	 * 
+	 * @param format
+	 * @return
+	 */
 	public InputStream getResultForFormat(String format) {
 		int listIndex = formatsToUse.indexOf(format);
 		if (listIndex == -1) {

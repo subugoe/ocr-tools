@@ -10,6 +10,14 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
+/**
+ * Implementation of an OCR process for the Abbyy OCRSDK online service.
+ * Combines inputs, outputs, and settings for a set of images belonging 
+ * to one work which will be OCRed into one result document.
+ * 
+ * @author dennis
+ *
+ */
 public class OcrsdkProcess extends AbstractOCRProcess {
 
 	private static final long serialVersionUID = -2328068189131102581L;
@@ -23,6 +31,8 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		client = new OcrsdkClient(user, password);
 		languageMapping.put(Locale.ENGLISH, "English");
 		languageMapping.put(Locale.GERMAN, "German");
+		languageMapping.put(new Locale("ru"), "Russian");
+		languageMapping.put(new Locale("fr"), "French");
 		outputFormatMapping.put(OCRFormat.XML, "xml");
 		outputFormatMapping.put(OCRFormat.TXT, "txt");
 
@@ -30,15 +40,18 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		textTypeMapping.put(OCRTextType.GOTHIC, "gothic");
 	}
 	
+	/**
+	 * for unit tests
+	 */
 	void setClient(OcrsdkClient client) {
 		this.client = client;
 	}
 	
+	/**
+	 * Starts the execution of this process. Input images, output formats, and 
+	 * other settings must be set by now.
+	 */
 	public void start() {
-		for(OCRImage image : ocrImages) {
-			byte[] imageBytes = ((OcrsdkImage)image).getAsBytes();
-			client.submitImage(imageBytes);
-		}
 		for (Locale language : langs) {
 			client.addLanguage(abbyy(language));
 		}
@@ -47,6 +60,10 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		}
 		client.addTextType(abbyy(textType));
 		
+		for(OCRImage image : ocrImages) {
+			byte[] imageBytes = ((OcrsdkImage)image).getAsBytes();
+			client.submitImage(imageBytes);
+		}
 		client.processDocument();
 		
 		for (Map.Entry<OCRFormat, OCROutput> entry : ocrOutputs.entrySet()) {
@@ -59,15 +76,27 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 	}
 
 	private String abbyy(OCRTextType textType) {
-		return textTypeMapping.get(textType);
+		String abbyyType = textTypeMapping.get(textType);
+		if (abbyyType == null) {
+			throw new IllegalArgumentException("No corresponding mapping defined for text type: " + textType);
+		}
+		return abbyyType;
 	}
 
 	private String abbyy(Locale loc) {
-		return languageMapping.get(loc);
+		String abbyyLanguage = languageMapping.get(loc);
+		if (abbyyLanguage == null) {
+			throw new IllegalArgumentException("No corresponding mapping defined for language: " + loc);
+		}
+		return abbyyLanguage;
 	}
 
 	private String abbyy(OCRFormat format) {
-		return outputFormatMapping.get(format);
+		String abbyyOutputFormat = outputFormatMapping.get(format);
+		if (abbyyOutputFormat == null) {
+			throw new IllegalArgumentException("No corresponding mapping defined for output format: " + format);
+		}
+		return abbyyOutputFormat;
 	}
 	
 
