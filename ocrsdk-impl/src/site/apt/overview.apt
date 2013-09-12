@@ -1,0 +1,29 @@
+Overview
+
+  This implementation uses the Abbyy OCRSDK online service (http://ocrsdk.com) to optically 
+  recognize several images and store the result into one file. The result formats include
+  plain text, XML, PDF, and others (for more details, see http://ocrsdk.com).
+  
+Usage
+
+  To use OCRSDK service, you need to be registered on the website. You can either register yourself 
+  for a test account (for a limited count of images that you can OCR for free), or for a normal
+  account, in which case you have to pay for the usage of the service. In either case, you get 
+  an Application ID and a password, both of which you have to pass to this implementation.
+  
+  If you use the implementation as a library, you have to configure the OCR Engine like so:
+  
++--------------+
+  OcrsdkEngine engine = OcrsdkEngine.getInstance();
+  Map<String, String> options = new HashMap<String, String>();
+  options.put("ocrsdk.appid", "my_app_id");
+  options.put("ocrsdk.password", "my_password");
+  engine.setOptions(options);
++--------------+
+
+  The command line interface in this project accepts options that are automatically passed to 
+  the implementation (for details, see the documentation there). You have to pass the credentials like so:
+  
++-------------+
+  java -jar cli.jar -O ocrsdk.appid=my_app_id,ocrsdk.password=my_password ...
++-------------+
