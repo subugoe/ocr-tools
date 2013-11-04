@@ -122,7 +122,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 				getFileSize(abbyyOCRProcess);
 			} catch (IllegalStateException e1) {
 				logger.debug("wait because :", e1);
-				pause();
+				//pause();
 			} catch (IOException e1) {
 				logger.error("Could not execute MultiStatus method", e1);
 			} catch (URISyntaxException e1) {
@@ -169,7 +169,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 				getFileSize(abbyyOCRProcess);
 			} catch (IllegalStateException e1) {
 				logger.debug("wait because :", e1);
-				pause();
+				//pause();
 			} catch (IOException e1) {
 				logger.error("Could not execute MultiStatus method", e1);
 			} catch (URISyntaxException e1) {
