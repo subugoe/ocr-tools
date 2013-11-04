@@ -303,7 +303,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			// Wait for results if needed
 			Long minWait = getOcrImages().size() * config.minMillisPerFile;
 			Long maxWait = getOcrImages().size() * config.maxMillisPerFile;
-			logger.info("Waiting " + minWait + " milli seconds for results");
+			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes)");
 			Thread.sleep(minWait);
 
 			try {
@@ -315,8 +315,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				}
 
 				logger.debug("Waking up, waiting another "
-						+ (maxWait - minWait) + " milli seconds for results");
-				if (waitForResults(outputs, maxWait)) {
+						+ (maxWait - minWait) + " milli seconds for results (" + (maxWait-minWait)/1000/60 + " minutes)");
+				if (waitForResults(outputs, maxWait-minWait)) {
 					//for Serializer
 					List<URI> listOfLocalURI = new ArrayList<URI>();
 					// Everything should be ok, get the files
@@ -592,10 +592,11 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				logger.debug("Waited to long - fail");
 				throw new TimeoutExcetion();
 			}
-			putfalse = false;			
-			logger.debug("Waiting for " + getOcrImages().size() * config.checkInterval
-					+ " milli seconds");
-			Thread.sleep(getOcrImages().size()* config.checkInterval);
+			putfalse = false;
+			long waitInterval = getOcrImages().size() * config.checkInterval;
+			logger.debug("Waiting for " + waitInterval
+					+ " milli seconds (" + waitInterval/1000/60 + " minutes)");
+			Thread.sleep(waitInterval);
 		}
 		return true;
 	}
