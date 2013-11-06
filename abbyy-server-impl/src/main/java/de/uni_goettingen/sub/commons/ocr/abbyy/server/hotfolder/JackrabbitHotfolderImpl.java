@@ -220,7 +220,12 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		try {
 			status = client.executeMethod(head);
 		} catch (IOException e) {
-			throw new IllegalStateException("Error connecting to server. URL is " + uri, e);
+			logger.warn("Problem connecting to server. Retrying one more time...", e);
+			try{
+				status = client.executeMethod(head);
+			} catch (IOException ex) {
+				throw new IllegalStateException("Error connecting to server. URL is " + uri, ex);
+			}
 		} finally {
 			head.releaseConnection();
 		}
@@ -234,14 +239,27 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			responseCode = client.executeMethod(method);
 			logger.trace("Response code in executeMethod: "+ responseCode);
 		} catch (IOException e) {
-			throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), e);
+			logger.warn("Problem connecting to server. Retrying one more time...", e);
+			try{
+				responseCode = client.executeMethod(method);
+			} catch (IOException ex) {
+				throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), ex);
+			}
 		} finally {
 			method.releaseConnection();
 		}
-//		logger.trace("Response code: " + responseCode);
+		logger.trace("Response code: " + responseCode);
 		if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
-			throw new IllegalStateException("Got HTTP Code " + responseCode
+			logger.warn("Got response code " + responseCode + ". Trying one more time...");
+			try{
+				responseCode = client.executeMethod(method);
+			} catch (IOException ex) {
+				throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), ex);
+			}
+			if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
+				throw new IllegalStateException("Got HTTP Code " + responseCode
 					+ " for " + method.getURI());
+			}
 		}
 		return responseCode;
 	}
