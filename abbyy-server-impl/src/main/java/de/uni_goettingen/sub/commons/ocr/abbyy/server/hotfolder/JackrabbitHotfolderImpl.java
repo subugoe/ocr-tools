@@ -217,14 +217,24 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	private Integer head(URI uri) {
 		HeadMethod head = new HeadMethod(uri.toString());
 		Integer status = 0;
+		
+		int timesToTry = 5;
 		try {
-			status = client.executeMethod(head);
-		} catch (IOException e) {
-			logger.warn("Problem connecting to server. Retrying one more time...", e);
-			try{
-				status = client.executeMethod(head);
-			} catch (IOException ex) {
-				throw new IllegalStateException("Error connecting to server. URL is " + uri, ex);
+			for (int i = 1; i <= timesToTry; i++) {
+				try {
+					status = client.executeMethod(head);
+					break;
+				} catch (IOException e) {
+					if (i == timesToTry) {
+						throw new IllegalStateException("Error connecting to server. URL is " + uri, e);
+					}
+					logger.warn("Problem connecting to server. Retry number " + i + "... URL is " + uri, e);
+					try{
+						Thread.sleep(5000);
+					} catch (InterruptedException e1) {
+						logger.error("interrupted while sleeping");
+					}
+				}
 			}
 		} finally {
 			head.releaseConnection();
@@ -232,38 +242,38 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		return status;
 	}
 
-	private static Integer executeMethod(HttpClient client, DavMethod method) 
+	private static void executeMethod(HttpClient client, DavMethod method) 
 	throws URIException {
-		Integer responseCode;
+		Integer responseCode = 0;
+		
+		int timesToTry = 5;
 		try {
-			responseCode = client.executeMethod(method);
-			logger.trace("Response code in executeMethod: "+ responseCode);
-		} catch (IOException e) {
-			logger.warn("Problem connecting to server. Retrying one more time...", e);
-			try{
-				responseCode = client.executeMethod(method);
-			} catch (IOException ex) {
-				throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), ex);
+			for (int i = 1; i <= timesToTry; i++) {
+				try {
+					responseCode = client.executeMethod(method);
+					logger.trace("Response code in executeMethod: "+ responseCode);
+					if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
+						throw new IOException("Got illegal response code " + responseCode);
+					}
+					// method was executed correctly, stop retrying
+					break;
+				} catch (IOException e) {
+					if (i == timesToTry) {
+						throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), e);
+					}
+					logger.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI(), e);
+					try{
+						Thread.sleep(5000);
+					} catch (InterruptedException e1) {
+						logger.error("interrupted while sleeping");
+					}
+				}
 			}
 		} finally {
 			method.releaseConnection();
 		}
-		logger.trace("Response code: " + responseCode);
-		if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
-			logger.warn("Got response code " + responseCode + ". Trying one more time...");
-			try{
-				responseCode = client.executeMethod(method);
-			} catch (IOException ex) {
-				throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), ex);
-			}
-			if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
-				throw new IllegalStateException("Got HTTP Code " + responseCode
-					+ " for " + method.getURI());
-			}
-		}
-		return responseCode;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	private static HttpClient initConnection(String webdavURL,
 			String webdavUsername, String webdavPassword)
