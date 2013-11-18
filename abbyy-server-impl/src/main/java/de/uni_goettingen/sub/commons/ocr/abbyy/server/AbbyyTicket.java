@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -543,11 +544,20 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			exportParams.setExportFormatArray(j, settings.get(j));
 		}
 
-		ticketDoc.save(out, opts);
-		if (config.validateTicket && !ticket.validate()) {
-			logger.error("AbbyyTicket not valid!");
-			throw new OCRException("AbbyyTicket not valid!");
+		ArrayList validationErrors = new ArrayList();
+		XmlOptions validationOptions = new XmlOptions();
+		validationOptions.setErrorListener(validationErrors);
+
+		if (config.validateTicket && !ticketDoc.validate(validationOptions)) {
+			logger.error("AbbyyTicket not valid! " + identifier);
+
+			Iterator iter = validationErrors.iterator();
+		    while (iter.hasNext()) {
+		        logger.error(">>>>> " + iter.next() + "\n");
+		    }
+			throw new OCRException("AbbyyTicket not valid! " + identifier);
 		}
+		ticketDoc.save(out, opts);
 
 	}
 
