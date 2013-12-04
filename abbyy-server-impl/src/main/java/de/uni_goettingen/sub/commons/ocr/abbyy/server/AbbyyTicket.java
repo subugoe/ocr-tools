@@ -410,6 +410,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			}
 		}
 
+		// We have to change the type here, or else the server does not accept
+		// the ticket containing the xsi:type attribute.
+		// In effect, the ticket cannot be validated.
 		FORMAT_FRAGMENTS.put(OCRFormat.XML,
 				(OutputFileFormatSettings) xmlSettings
 						.changeType(OutputFileFormatSettings.type));
@@ -548,6 +551,11 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		XmlOptions validationOptions = new XmlOptions();
 		validationOptions.setErrorListener(validationErrors);
 
+		// goes into the global temp directory
+		ticketDoc.save(out, opts);
+
+		// TODO: Validation cannot be used, because the server does not accept
+		// valid tickets with xsi:type attributes
 		if (config.validateTicket && !ticketDoc.validate(validationOptions)) {
 			logger.error("AbbyyTicket not valid! " + identifier);
 
@@ -557,7 +565,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		    }
 			throw new OCRException("AbbyyTicket not valid! " + identifier);
 		}
-		ticketDoc.save(out, opts);
 
 	}
 
