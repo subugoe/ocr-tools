@@ -214,9 +214,9 @@
     <repositories>
         <repository>
             <id>archiva.internal.http</id>
-            <name>Archiva Managed Internal Repository</name>
+            <name>Nexus Internal Repository</name>
             <url>
-                http://repository.bibforge.org/archiva/repository/internal
+                http://dev.dariah.eu/nexus/content/repositories/bibforge2-internal
             </url>
             <releases>
                 <enabled>true</enabled>
@@ -227,9 +227,9 @@
         </repository>
         <repository>
             <id>archiva.snapshots.http</id>
-            <name>Archiva Managed Snapshot Repository</name>
+            <name>Nexus Snapshot Repository</name>
             <url>
-                http://repository.bibforge.org/archiva/repository/snapshots
+                http://dev.dariah.eu/nexus/content/repositories/bibforge2-snapshots
             </url>
             <releases>
                 <enabled>false</enabled>

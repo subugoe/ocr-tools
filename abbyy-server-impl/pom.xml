@@ -38,8 +38,8 @@
 		<!-- Archive maven -->
 		<repository>
 			<id>archiva.internal.http</id>
-			<name>Archiva Managed Internal Repository</name>
-			<url>http://repository.bibforge.org/archiva/repository/internal</url>
+			<name>Nexus Internal Repository</name>
+			<url>http://dev.dariah.eu/nexus/content/repositories/bibforge2-internal</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -49,8 +49,8 @@
 		</repository>
 		<repository>
 			<id>archiva.snapshots.http</id>
-			<name>Archiva Managed Snapshot Repository</name>
-			<url>http://repository.bibforge.org/archiva/repository/snapshots</url>
+			<name>Nexus Snapshot Repository</name>
+			<url>http://dev.dariah.eu/nexus/content/repositories/bibforge2-snapshots</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -208,12 +208,17 @@
 		<!-- <type>jar</type> -->
 		<!-- <scope>test</scope> -->
 		<!-- </dependency> -->
-		<dependency>
+		<!--dependency>
 			<groupId>com.ettrema</groupId>
 			<artifactId>milton-servlet</artifactId>
 			<version>1.5.3</version>
-		</dependency>
+		</dependency-->
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>2.5.6</version>
+		</dependency>
+        <dependency>
 			<groupId>com.googlecode.sardine</groupId>
 			<artifactId>sardine</artifactId>
 			<version>129</version>
