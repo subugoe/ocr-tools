@@ -218,7 +218,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		HeadMethod head = new HeadMethod(uri.toString());
 		Integer status = 0;
 		
-		int timesToTry = 5;
+		int timesToTry = 10;
 		try {
 			for (int i = 1; i <= timesToTry; i++) {
 				try {
@@ -230,7 +230,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 					}
 					logger.warn("Problem connecting to server. Retry number " + i + "... URL is " + uri, e);
 					try{
-						Thread.sleep(5000);
+						Thread.sleep(10000);
 					} catch (InterruptedException e1) {
 						logger.error("interrupted while sleeping");
 					}
@@ -246,7 +246,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	throws URIException {
 		Integer responseCode = 0;
 		
-		int timesToTry = 5;
+		int timesToTry = 10;
 		try {
 			for (int i = 1; i <= timesToTry; i++) {
 				try {
@@ -263,7 +263,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 					}
 					logger.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI(), e);
 					try{
-						Thread.sleep(5000);
+						Thread.sleep(10000);
 					} catch (InterruptedException e1) {
 						logger.error("interrupted while sleeping");
 					}
@@ -303,7 +303,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 
 		params.setMaxConnectionsPerHost(hostConfig, maxHostConnections);
 		params.setStaleCheckingEnabled(true);
-		params.setSoTimeout(1000);
+		params.setSoTimeout(10000);
 		connectionManager.setParams(params);
 		HttpClient client = new HttpClient(connectionManager);
 		if (webdavUsername != null || webdavPassword != null) {
