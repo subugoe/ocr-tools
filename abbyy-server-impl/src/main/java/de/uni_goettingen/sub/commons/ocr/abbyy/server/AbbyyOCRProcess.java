@@ -405,7 +405,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					InputStream is = new FileInputStream(new File(
 							errorResultUri.toString()));
 					errorDescription = xmlParser.xmlresultErrorparse(is, name);
-					hotfolder.deleteIfExists(errorResultUri);
+					//hotfolder.deleteIfExists(errorResultUri);
 				}
 			}
 		} catch (XMLStreamException e) {
@@ -435,7 +435,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				if (!isResult) {
 					cleanOutputs(getOcrOutputs());
 				}
-				hotfolder.deleteIfExists(errorResultUri);
+				//hotfolder.deleteIfExists(errorResultUri);
 				hotfolder.deleteIfExists(ticketUri);
 				if (outputResultUri != null || !isResult) {
 					hotfolder.deleteIfExists(outputResultUri);
@@ -590,6 +590,10 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				//check = false;
 				isResult = true;
 				logger.debug("Waited to long - fail");
+				throw new TimeoutExcetion();
+			}
+			if (hotfolder.exists(errorResultUri)) {
+				logger.error("Server reported an error in file: " + errorResultUri);
 				throw new TimeoutExcetion();
 			}
 			putfalse = false;
