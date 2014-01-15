@@ -398,8 +398,8 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 		// coordinates for each character in output abbyy xml
 		// default is false. Might be reset later if the parameter is set
-		xmlSettings.setWriteCharactersFormatting(false);
-		xmlSettings.setWriteCharAttributes(false);
+		xmlSettings.setWriteCharactersFormatting(true);
+		xmlSettings.setWriteCharAttributes(true);
 
 		OCROutput xmlOutput = getOcrOutputs().get(OCRFormat.XML);
 		if (xmlOutput != null) {
