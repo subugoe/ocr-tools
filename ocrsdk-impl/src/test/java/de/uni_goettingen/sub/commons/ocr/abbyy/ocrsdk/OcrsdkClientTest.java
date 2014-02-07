@@ -25,6 +25,9 @@ public class OcrsdkClientTest {
 	private String responseCompletedWith3Urls = "<response>"
 			+ "<task status=\"Completed\" resultUrl=\"http://xml-result\" resultUrl2=\"http://txt-result\" resultUrl3=\"http://rtf-result\"/>"
 			+ "</response>";
+	private String responseProcessingFailed = "<response>"
+			+ "<task status=\"ProcessingFailed\" error=\"Internal error\"/>"
+			+ "</response>";
 	private String xmlResult = "<xml-document/>";
 	private String txtResult = "txt-document";
 	private String rtfResult = "rtf-document";
@@ -176,5 +179,15 @@ public class OcrsdkClientTest {
 		InputStream txt = client.getResultForFormat("txt");
 		String txtResult = IOUtils.toString(txt);
 		assertEquals("returned txt", "txt-document", txtResult);
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public void completeOcrWithFailure() throws IOException {
+		when(httpMock.submitGet(sdkServer + "getTaskStatus?taskId=some-id")).thenReturn(responseProcessingFailed);
+		
+		client.addExportFormat("xml");
+		client.submitImage(fakeImage);
+		client.processDocument();
+		
 	}
 }

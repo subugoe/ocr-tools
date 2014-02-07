@@ -134,13 +134,17 @@ public class OcrsdkClient {
 		while(true) {
 			String resultXml = http.submitGet(url);
 			String status = getTaskElement(resultXml).getAttribute("status");
+			if (status.equals("ProcessingFailed")) {
+				String errorMessage = getTaskElement(resultXml).getAttribute("error");
+				throw new IllegalStateException("Could not process the task " + taskId + ". Message from server: " + errorMessage);
+			}
 			if (status.equals("Completed")) {
 				populateResultUrls(resultXml);
 				return;
 			}
 			System.out.println("Waiting");
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
