@@ -7,4 +7,5 @@
   </parent>
   <artifactId>web-frontend</artifactId>
   <name>OCR Web Frontend</name>
+  <packaging>war</packaging>
 </project>
