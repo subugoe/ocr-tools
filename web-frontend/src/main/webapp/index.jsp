@@ -18,9 +18,9 @@
 
 	<h3>Hier haben Sie die Möglichkeit, OCR an einem Band durchzuführen.</h3>
 
-	<form action="ocr-started.jsp" method="get">
+	<form action="OCR" method="post">
 		<div class="inputOptions" style="float:left">
-		Eingabeordner: <input type="text"> oder PPN: <input type="text">
+		Eingabeordner: <input type="text">
 		<br/>
 		Ausgabeordner: <input type="text">
 		</div>
