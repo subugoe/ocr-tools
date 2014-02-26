@@ -6,7 +6,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>OCR</title>
 <script type="text/javascript">
-
+	function setStyle(elementId, style) {
+		document.getElementById(elementId).setAttribute('style', style);
+	}
 </script>
 <style type="text/css">
 .inputOptions{background-color:#A9BCF5; margin: 10px; padding: 10px; float: left;}
@@ -18,61 +20,54 @@
 
 	<h3>Hier haben Sie die Möglichkeit, OCR an einem Band durchzuführen.</h3>
 
-	<form action="OCR" method="post">
-		<div class="inputOptions" style="float:left">
-		Eingabeordner: <input type="text">
+	<form name="startOcr" action="OCR" method="post">
+		<div class="inputOptions">
+		Eingabeordner: <input name="inputFolder" type="text">
 		<br/>
-		Ausgabeordner: <input type="text">
+		Ausgabeordner: <input name="outputFolder" type="text">
 		</div>
 		<br/>
 		<br/>
 		<br/>
 		<br/>
 		<br/>
-		<div class="inputOptions" style="float:left">
+		
+		<div class="inputOptions">
+		Dateiformat:
+		<br/>
+		<select name="imageFormat">
+			<option>tif</option>
+			<option>jpg</option>
+			<option>png</option>
+		</select>
+		</div>
+		
+		<div class="inputOptions">
 		Texttyp:
 		<br/>
-		<input type="radio" name="textType" checked="checked"/>Fraktur <br/>
-		<input type="radio" name="textType"/>Antiqua <br/>
+		<input name="textType" type="radio" checked="checked" value="NORMAL"/>Antiqua <br/>
+		<input name="textType" type="radio" value="GOTHIC"/>Fraktur <br/>
 		</div>
 	
 		
-		<div class="inputOptions" style="float: left">
+		<div class="inputOptions">
 		Sprache(n):	
 		<br/> 
-		<select>
-			<option>Deutsch</option>
-			<option>Englisch</option>
-			<option>Französisch</option>
+		<select name="languages" size="5" multiple="multiple">
+			<option value="de" selected="selected">Deutsch</option>
+			<option value="en">Englisch</option>
+			<option value="fr">Französisch</option>
 		</select>
-		<input type="button" value="Weitere Sprache" onclick="document.getElementById('secondLang').setAttribute('style', 'display: block')">
-		<br/>
-		<span id="secondLang" style="display: none;">
-		<select>
-			<option>Englisch</option>
-			<option>Französisch</option>
-		</select>
-		<input type="button" value="Entfernen" onclick="document.getElementById('secondLang').setAttribute('style', 'display: none')"/>
-		</span>
 		</div>
 
-		<div class="inputOptions" style="float: left">
+		<div class="inputOptions">
 		Ausgabeformat(e):	
 		<br/> 
-		<select>
+		<select name="outputFormats" size="5" multiple="multiple">
+			<option selected="selected">PDF</option>
 			<option>XML</option>
-			<option>PDF</option>
-			<option>Text</option>
+			<option>TXT</option>
 		</select>
-		<input type="button" value="Weiteres Format" onclick="document.getElementById('secondFormat').setAttribute('style', 'display: block')">
-		<br/>
-		<span id="secondFormat" style="display: none;">
-		<select>
-			<option>PDF</option>
-			<option>Text</option>
-		</select>
-		<input type="button" value="Entfernen" onclick="document.getElementById('secondFormat').setAttribute('style', 'display: none')"/>
-		</span>
 		</div>
 		
 		<br/>
@@ -81,7 +76,9 @@
 		<br/>
 		<br/>
 		<br/>
-		<div class="inputOptions" style="float: left">
+		<br/>
+		<br/>
+		<div class="inputOptions">
 		Benachrichtigungsadresse: <input type="text" name="email" value="test@test.de">
 		</div>
 		<br/>
@@ -89,17 +86,17 @@
 		<br/>
 		<br/>
 		<div style="float: left;">
-		<a style="padding: 10px;" href="#" onclick="document.getElementById('moreOptions').setAttribute('style', 'display: block')">Weitere Optionen anzeigen</a>
+		<a style="padding: 10px;" href="#" onclick="setStyle('moreOptions','display: block')">Weitere Optionen anzeigen</a>
 		</div>
 		<div style="float: left;">
-			<input style="position: relative; left: 300px;" type="submit" value="OCR starten">
+			<input style="position: relative; left: 300px;" type="submit" name="submit" value="OCR starten">
 		</div>
 		
 		<br/>
 		<br/>
 		<div class="inputOptions" id="moreOptions" style="display:none">
 		OCR Engine:
-		<select>
+		<select name="ocrEngine">
 			<option>GBV Abbyy Server</option>
 			<option>Abbyy OCRSDK Cloud</option>
 		</select>
