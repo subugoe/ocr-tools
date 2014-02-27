@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ParameterLister extends HttpServlet {
+public class FakeServlet extends HttpServlet {
     /**
 	 * 
 	 */
@@ -18,7 +18,7 @@ public class ParameterLister extends HttpServlet {
 	/**
      * Default constructor. 
      */
-    public ParameterLister() {
+    public FakeServlet() {
         // TODO Auto-generated constructor stub
     }
 
@@ -34,6 +34,9 @@ public class ParameterLister extends HttpServlet {
 		out.println(Arrays.toString(request.getParameterValues("languages")));
 		out.println(Arrays.toString(request.getParameterValues("outputFormats")));
 		out.println(request.getParameter("email"));
+		out.println(request.getParameter("ocrEngine"));
+		out.println(request.getParameter("userName"));
+		out.println(request.getParameter("password"));
 		
 	}
 

@@ -5,12 +5,12 @@
 
 	<servlet>
 		<display-name>OCR</display-name>
-		<servlet-name>ParameterLister</servlet-name>
-		<servlet-class>de.unigoettingen.sub.commons.ocr.web.ParameterLister</servlet-class>
+		<servlet-name>FakeServlet</servlet-name>
+		<servlet-class>de.unigoettingen.sub.commons.ocr.web.FakeServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>ParameterLister</servlet-name>
+		<servlet-name>FakeServlet</servlet-name>
 		<url-pattern>/OCR</url-pattern>
 	</servlet-mapping>
 

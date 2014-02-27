@@ -97,13 +97,14 @@
 		<div class="inputOptions" id="moreOptions" style="display:none">
 		OCR Engine:
 		<select name="ocrEngine">
-			<option>GBV Abbyy Server</option>
-			<option>Abbyy OCRSDK Cloud</option>
+			<option value="gbvAntiqua">GBV Abbyy Server (Antiqua)</option>
+			<option value="gbvGothic">GBV Abbyy Server (Fraktur)</option>
+			<option value="abbyyCloud">Abbyy Cloud ocrsdk.com</option>
 		</select>
 		<br/>
-		Benutzername: <input type="text">
+		Benutzername: <input name="userName" type="text">
 		<br/>
-		Passwort: <input type="text">
+		Passwort: <input name="password" type="text">
 		</div>
 		</form>
 </body>
