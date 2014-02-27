@@ -46,12 +46,12 @@ public class IndexJspTest {
 		TextPage page2 = button.click();
 		
 		System.out.println(page2.getContent());
-		System.out.println("done");
 	}
 	
 	public static void startJetty() throws Exception {
 		jetty = new Server(jettyPort);
 		WebAppContext context = new WebAppContext();
+		context.setContextPath("/");
         context.setWar("src/main/webapp");
         context.setDescriptor("src/test/resources/fake-web.xml");
         jetty.setHandler(context);

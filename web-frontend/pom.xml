@@ -10,8 +10,11 @@
 	<name>OCR Web Frontend</name>
 	<packaging>war</packaging>
 
+	<properties>
+		<jetty.version>8.1.7.v20120910</jetty.version>
+	</properties>
 	<dependencies>
-<!--  		<dependency>
+<!--   		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.4</version>
@@ -26,57 +29,88 @@
 			<scope>test</scope>
 		</dependency>
  -->
+
+		<dependency>
+			<groupId>org.eclipse.jetty.orbit</groupId>
+			<artifactId>javax.servlet</artifactId>
+			<version>3.0.0.v201112011016</version>
+			<scope>provided</scope>
+		</dependency>
+            
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>8.1.7.v20120910</version>
+			<version>${jetty.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
-			<version>8.1.7.v20120910</version>
+			<version>${jetty.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+	        <groupId>org.eclipse.jetty</groupId>
+	        <artifactId>jetty-webapp</artifactId>
+	        <version>${jetty.version}</version>
+	        <scope>test</scope>
+	    </dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-jsp</artifactId>
+			<version>${jetty.version}</version>
+			<scope>test</scope>
+			<!-- workaround for maven, because "mvn test" won't work -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.jetty.orbit</groupId>
+					<artifactId>org.apache.jasper.glassfish</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- workaround for maven, because "mvn test" won't work -->
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jsp-2.1-glassfish</artifactId>
+			<version>2.1.v20100127</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.13</version>
 			<scope>test</scope>
 		</dependency>
 		
-	<dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-webapp</artifactId>
-        <version>8.1.7.v20120910</version>
-			<scope>test</scope>
-    </dependency>
-
+		
     <!-- JSP Support -->
-    <dependency>
+<!--     <dependency>
         <groupId>org.glassfish.web</groupId>
         <artifactId>javax.servlet.jsp</artifactId>
         <version>2.2.3</version>
-			<scope>test</scope>
     </dependency>
     <dependency>
         <groupId>org.glassfish.web</groupId>
         <artifactId>jsp-impl</artifactId>
         <version>2.2</version>
-			<scope>test</scope>
     </dependency>
+ -->
 
     <!-- EL Support -->
-    <dependency>
+<!--     <dependency>
         <groupId>org.glassfish.web</groupId>
         <artifactId>javax.el</artifactId>
         <version>2.2.3</version>
-			<scope>test</scope>
     </dependency>
 
     <dependency>
         <groupId>org.glassfish.web</groupId>
         <artifactId>el-impl</artifactId>
         <version>2.2</version>
-			<scope>test</scope>
     </dependency>
-    
+ -->    
         <!-- JSTL Support -->
-    <dependency>
+ <!--    <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>1.2</version>
@@ -88,12 +122,7 @@
         <version>1.2</version>
  			<scope>test</scope>
     </dependency>
-    <dependency>
-	<groupId>net.sourceforge.htmlunit</groupId>
-	<artifactId>htmlunit</artifactId>
-	<version>2.13</version>
- 			<scope>test</scope>
-</dependency>
+ -->
             
 
 	</dependencies>
