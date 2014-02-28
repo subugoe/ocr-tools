@@ -20,7 +20,7 @@
 
 	<h3>Hier haben Sie die Möglichkeit, OCR an einem Band durchzuführen.</h3>
 
-	<form name="startOcr" action="OCR" method="post">
+	<form name="startOcr" action="ocr" method="post">
 		<div class="inputOptions">
 		Eingabeordner: <input name="inputFolder" type="text">
 		<br/>

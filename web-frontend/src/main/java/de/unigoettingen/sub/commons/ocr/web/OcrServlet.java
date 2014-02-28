@@ -1,9 +1,9 @@
 package de.unigoettingen.sub.commons.ocr.web;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,42 +13,45 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class OCR
  */
-public class OCR extends HttpServlet {
+public class OcrServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     /**
      * Default constructor. 
      */
-    public OCR() {
-        // TODO Auto-generated constructor stub
+    public OcrServlet() {
     }
 
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
-		// TODO Auto-generated method stub
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String inputFolder = request.getParameter("inputFolder");
-		System.out.println("-" + inputFolder + "-");
-		System.out.println(request.getParameter("outputFolder"));
-		System.out.println(request.getParameter("imageFormat"));
-		System.out.println(request.getParameter("textType"));
-		System.out.println(Arrays.toString(request.getParameterValues("languages")));
-		System.out.println(Arrays.toString(request.getParameterValues("outputFormats")));
-		System.out.println(request.getParameter("email"));
+		OcrParameters param = new OcrParameters();
+		param.inputFolder = request.getParameter("inputFolder");
+		param.outputFolder = request.getParameter("outputFolder");
+		param.imageFormat = request.getParameter("imageFormat");
+		param.textType = request.getParameter("textType");
+		param.languages = request.getParameterValues("languages");
+		param.outputFormats = request.getParameterValues("outputFormats");
+		param.email = request.getParameter("email");
 		
-		if (someParametersMissing(request)) {
-			System.out.println("missing");
+		String validationMessage = param.check();
+		if (validationMessage.equals("OK")) {
+			RequestDispatcher view = request.getRequestDispatcher("ocr-started.jsp");
+			view.forward(request, response);
+		} else {
+			request.setAttribute("validationMessage", validationMessage);
+			RequestDispatcher view = request.getRequestDispatcher("invalid-parameters.jsp");
+			view.forward(request, response);
 		}
 		
-		RequestDispatcher view = request.getRequestDispatcher("ocr-started.jsp");
-		view.forward(request, response);
+		
 	}
 
 	private boolean someParametersMissing(HttpServletRequest request) {
