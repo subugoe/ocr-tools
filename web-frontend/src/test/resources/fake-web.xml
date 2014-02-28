@@ -4,14 +4,13 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
 	<servlet>
-		<display-name>OCR</display-name>
 		<servlet-name>FakeServlet</servlet-name>
 		<servlet-class>de.unigoettingen.sub.commons.ocr.web.FakeServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>FakeServlet</servlet-name>
-		<url-pattern>/OCR</url-pattern>
+		<url-pattern>/ocr</url-pattern>
 	</servlet-mapping>
 
 
