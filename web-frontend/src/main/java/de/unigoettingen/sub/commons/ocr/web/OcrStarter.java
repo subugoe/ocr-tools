@@ -8,6 +8,11 @@ public class OcrStarter implements Runnable {
 		ocrParameters = newParameters;
 	}
 
+	public String checkParameters() {
+		
+		return "OK";
+	}
+
 	@Override
 	public void run() {
 		while(true) {

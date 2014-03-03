@@ -10,8 +10,4 @@ class OcrParameters {
 	String[] outputFormats;
 	String email;
 	
-	String check() {
-		return "OK";
-	}
-
 }

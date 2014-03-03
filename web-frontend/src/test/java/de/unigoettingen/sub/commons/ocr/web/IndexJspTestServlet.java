@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class FakeServlet extends HttpServlet {
+public class IndexJspTestServlet extends HttpServlet {
     /**
 	 * 
 	 */
@@ -18,7 +18,7 @@ public class FakeServlet extends HttpServlet {
 	/**
      * Default constructor. 
      */
-    public FakeServlet() {
+    public IndexJspTestServlet() {
         // TODO Auto-generated constructor stub
     }
 

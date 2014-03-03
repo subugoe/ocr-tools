@@ -49,9 +49,10 @@ public class OcrServlet extends HttpServlet {
 		param.outputFormats = request.getParameterValues("outputFormats");
 		param.email = request.getParameter("email");
 		
-		String validationMessage = param.check();
+		ocrStarter.setParameters(param);
+		
+		String validationMessage = ocrStarter.checkParameters();
 		if (validationMessage.equals("OK")) {
-			ocrStarter.setParameters(param);
 			new Thread(ocrStarter).start(); 
 			RequestDispatcher view = request.getRequestDispatcher("ocr-started");
 			view.forward(request, response);
