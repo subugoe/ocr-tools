@@ -3,10 +3,7 @@ package de.unigoettingen.sub.commons.ocr.web;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.gargoylesoftware.htmlunit.TextPage;
@@ -16,17 +13,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 
 
-public class IndexJspTest {
+public class IndexJspTestPart {
 	
-	private static Server jetty;
-	private static int jettyPort = 9001;
+	private static int jettyPort = TestSuiteForJspsAndServlets.jettyPort;
 	private HtmlForm form;
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		startJetty();
-	}
-
 	@Before
 	public void setUp() throws Exception {
 		WebClient webClient = new WebClient();
@@ -78,16 +69,4 @@ public class IndexJspTest {
 		assertThat(textFromFakeServlet, containsString("passwd"));
 	}
 	
-	public static void startJetty() throws Exception {
-		jetty = new Server(jettyPort);
-		WebAppContext context = new WebAppContext();
-		context.setContextPath("/");
-        context.setWar("src/main/webapp");
-        context.setDescriptor("src/test/resources/fake-web.xml");
-        jetty.setHandler(context);
-		
-		jetty.start();
-	}
-
-
 }
