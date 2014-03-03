@@ -21,6 +21,15 @@
 		<url-pattern>/ocr-servlet-test</url-pattern>
 	</servlet-mapping>
 
+ 	<servlet>
+		<servlet-name>ocr-started-test</servlet-name>
+		<jsp-file>/ocr-started.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ocr-started-test</servlet-name>
+		<url-pattern>/ocr-started</url-pattern>
+	</servlet-mapping>
+
 
 </web-app>
   

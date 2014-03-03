@@ -8,7 +8,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ IndexJspTestPart.class })
+@SuiteClasses({ IndexJspTestPart.class, OcrServletTestPart.class })
 public class TestSuiteForJspsAndServlets {
 
 	private static Server jetty;

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -13,7 +14,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -24,7 +27,7 @@ public class OcrServletTestPart {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		startJetty();
+		//startJetty();
 	}
 
 	
@@ -47,7 +50,10 @@ public class OcrServletTestPart {
 	@Test
 	public void test() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
 		WebClient webClient = new WebClient();
-		webClient.getPage("http://localhost:" + jettyPort + "/ocr-servlet-test");
+		WebRequest request = new WebRequest(
+				  new URL("http://localhost:" + jettyPort + "/ocr-servlet-test"), HttpMethod.POST);
+		HtmlPage page = webClient.getPage(request);
+		System.out.println(page.asText());
 	}
 
 }
