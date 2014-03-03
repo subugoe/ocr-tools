@@ -12,7 +12,7 @@
 		<url-pattern>/ocr</url-pattern>
 	</servlet-mapping>
 
-<!-- 	<servlet>
+ 	<servlet>
 		<servlet-name>ocr-started.jsp</servlet-name>
 		<jsp-file>/ocr-started.jsp</jsp-file>
 	</servlet>
@@ -20,7 +20,7 @@
 		<servlet-name>ocr-started.jsp</servlet-name>
 		<url-pattern>/ocr-started</url-pattern>
 	</servlet-mapping>
- -->
+ 
 <!-- 	<servlet>
 		<servlet-name>invalid-parameters.jsp</servlet-name>
 		<jsp-file>/invalid-parameters.jsp</jsp-file>
