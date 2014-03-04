@@ -16,12 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 public class OcrServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private OcrStarter ocrStarter;
-	
-	// For unit tests
-	void setOcrStarter(OcrStarter newStarter) {
-		ocrStarter = newStarter;
-	}
+	protected OcrStarter ocrStarter;
 	
     /**
      * Default constructor. 
@@ -33,6 +28,10 @@ public class OcrServlet extends HttpServlet {
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
+	}
+	
+	// For unit testing
+	protected void initOcrStarter(HttpServletRequest request) {
 		ocrStarter = new OcrStarter();
 	}
 
@@ -40,6 +39,7 @@ public class OcrServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		initOcrStarter(request);
 		OcrParameters param = new OcrParameters();
 		param.inputFolder = request.getParameter("inputFolder");
 		param.outputFolder = request.getParameter("outputFolder");
@@ -48,32 +48,23 @@ public class OcrServlet extends HttpServlet {
 		param.languages = request.getParameterValues("languages");
 		param.outputFormats = request.getParameterValues("outputFormats");
 		param.email = request.getParameter("email");
-		
 		ocrStarter.setParameters(param);
 		
 		String validationMessage = ocrStarter.checkParameters();
 		if (validationMessage.equals("OK")) {
 			new Thread(ocrStarter).start(); 
-			RequestDispatcher view = request.getRequestDispatcher("ocr-started");
-			view.forward(request, response);
+			goToView("ocr-started.jsp", request, response);
 		} else {
 			request.setAttribute("validationMessage", validationMessage);
-			RequestDispatcher view = request.getRequestDispatcher("invalid-parameters");
-			view.forward(request, response);
+			goToView("invalid-parameters.jsp", request, response);
 		}
 		
 		
 	}
 
-	private boolean someParametersMissing(HttpServletRequest request) {
-		boolean parameterMissing = request.getParameter("inputFolder") == null || "".equals(request.getParameter("inputFolder"));
-		parameterMissing |= request.getParameter("outputFolder") == null;
-		parameterMissing |= request.getParameter("imageFormat") == null;
-		parameterMissing |= request.getParameter("textType") == null;
-//		parameterMissing |= request.getParameterValues("languages").length == 0;
-//		parameterMissing |= request.getParameterValues("outputFormats").length == 0;
-		parameterMissing |= request.getParameter("email") == null;
-		return parameterMissing;
+	protected void goToView(String viewName, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		RequestDispatcher view = request.getRequestDispatcher(viewName);
+		view.forward(request, response);
 	}
-
+	
 }
