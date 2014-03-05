@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ taglib prefix="fromfile" uri="OptionsReader" %>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -54,9 +55,7 @@
 		Sprache(n):	
 		<br/> 
 		<select name="languages" size="5" multiple="multiple">
-			<option value="de" selected="selected">Deutsch</option>
-			<option value="en">Englisch</option>
-			<option value="fr">Französisch</option>
+			${fromfile:getLanguages()}
 		</select>
 		</div>
 

@@ -12,5 +12,6 @@
 		<url-pattern>/ocr</url-pattern>
 	</servlet-mapping>
 
+
 </web-app>
   
