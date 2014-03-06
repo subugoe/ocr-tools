@@ -104,12 +104,28 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 *             the configuration exception
 	 */
 	protected AbbyyServerOCREngine() throws ConfigurationException {
-		config = new ConfigParser().parse();
+	}
+
+	private void initConfig() {
+		String configFile = extraOptions.get("abbyy.config");
+		if (configFile != null) {
+			config = new ConfigParser("/" + configFile).parse();
+		} else {
+			config = new ConfigParser().parse();
+		}
+		String user = extraOptions.get("abbyy.user");
+		String password = extraOptions.get("abbyy.password");
+		if (user != null) {
+			config.setUsername(user);
+		}
+		if (password != null) {
+			config.setPassword(password);
+		}
+
 		hotfolder = AbstractHotfolder.getHotfolder(config);
 		maxThreads = config.getMaxThreads();
 		checkServerState = config.getCheckServerState();
 	}
-
 	
 	/* start JMX methods */
 	public String getWaitingProcesses() {
@@ -441,7 +457,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	@Override
 	public void setOptions(Map<String, String> opts) {
 		extraOptions = opts;
-		
+		initConfig();
 	}
 
 	@Override
