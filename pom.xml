@@ -24,6 +24,7 @@
         <module>ocr-webservice</module>
         <module>tesseract-impl</module>
         <module>ocrsdk-impl</module>
+        <module>web-frontend</module>
     </modules>
     <developers>
         <developer>
