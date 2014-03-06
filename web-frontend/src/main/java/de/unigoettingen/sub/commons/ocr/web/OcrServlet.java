@@ -3,41 +3,24 @@ package de.unigoettingen.sub.commons.ocr.web;
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class OCR
- */
 public class OcrServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected OcrStarter ocrStarter;
 	
-    /**
-     * Default constructor. 
-     */
     public OcrServlet() {
     }
-
-	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig config) throws ServletException {
-	}
 	
 	// For unit testing
 	protected void initOcrStarter(HttpServletRequest request) {
 		ocrStarter = new OcrStarter();
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		initOcrStarter(request);
 		OcrParameters param = new OcrParameters();
