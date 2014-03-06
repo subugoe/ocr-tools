@@ -4,10 +4,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
-	<bean id="ocrStartImpl"
-		class="de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRStartImpl"
-		factory-method="getInstance">
-	</bean>
 	<bean id="OCREngineFactory" name="OCREngineFactory"
 		class="de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory"
 		factory-method="getInstance">
