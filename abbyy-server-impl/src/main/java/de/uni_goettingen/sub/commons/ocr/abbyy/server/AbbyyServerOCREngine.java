@@ -104,14 +104,16 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 *             the configuration exception
 	 */
 	protected AbbyyServerOCREngine() throws ConfigurationException {
+		config = new ConfigParser().parse();
+		hotfolder = AbstractHotfolder.getHotfolder(config);
+		maxThreads = config.getMaxThreads();
+		checkServerState = config.getCheckServerState();
 	}
 
 	private void initConfig() {
 		String configFile = extraOptions.get("abbyy.config");
 		if (configFile != null) {
 			config = new ConfigParser("/" + configFile).parse();
-		} else {
-			config = new ConfigParser().parse();
 		}
 		String user = extraOptions.get("abbyy.user");
 		String password = extraOptions.get("abbyy.password");
