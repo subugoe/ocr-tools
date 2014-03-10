@@ -1,6 +1,14 @@
 Installation
 
-* Auswahl einer OCR-Implementierung
+* Kompilieren
+
++---------------
+mvn clean package
++---------------
+  
+  im Hauptordner <<<ocr-tools>>>.
+
+* Auswahl einer OCR-Implementierung (gilt nur noch für Web Service und Goobi Servlet)
 
   Ein bestimmtes Frontend kann mit einer OCR-Implementierung bereits beim Kompilieren verdrahtet werden.
   Dafür dienen die Maven-Profile
@@ -17,7 +25,7 @@ Installation
   
     * <<<tesseract>>>: Wählt die Tesseract-Implementierung aus.
   
-  Das Profil kann entweder auf das ganze Projekt, oder auf ein bestimmtes Frontend-Modul (CLI, Web Service, Goobi Servlet)
+  Das Profil kann entweder auf das ganze Projekt, oder auf ein bestimmtes Frontend-Modul (Web Service, Goobi Servlet)
   angewendet werden. Beispiel:
   
 +----------------------------+
@@ -26,8 +34,6 @@ mvn package -Pabbyy-multiuser
 
   Um im Nachhinein die Zuordnung zu ändern, muss eine XML-Konfigurationsdatei editiert werden.
   
-    * <<<context.xml>>> in der JAR-Datei des CLI-Moduls
-    
     * <<<WEB-INF/classes/context.xml>>> in der WAR-Datei des Goobi-Servlet-Moduls
     
     * <<<WEB-INF/classes/contentWebService.xml>>> in der WAR-Datei des Web Sevice-Moduls
