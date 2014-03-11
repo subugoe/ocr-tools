@@ -115,8 +115,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		if (configFile != null) {
 			config = new ConfigParser("/" + configFile).parse();
 		}
-		String user = extraOptions.get("abbyy.user");
-		String password = extraOptions.get("abbyy.password");
+		String user = extraOptions.get("user");
+		String password = extraOptions.get("password");
 		if (user != null) {
 			config.setUsername(user);
 		}
