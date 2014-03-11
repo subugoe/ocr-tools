@@ -67,6 +67,16 @@ Einfaches Starten auf der Kommandozeile
   
   * -h:
     Hilfe
+    
+  * -E <ocr_engine>:
+  
+    * abbyy (default)
+    
+    * abbyy-multiuser
+    
+    * tesseract
+    
+    * ocrsdk
   
   * -e <extension>:
     Dateierweiterung bzw. -typ. Default ist "tif".
@@ -91,5 +101,10 @@ Einfaches Starten auf der Kommandozeile
     * -Olock.overwrite=true: Die Lock-Datei auf dem WebDAV-Server wird ignoriert und notfalls überschrieben
       (nur für Abbyy Server).
       
-    * -Ooutput.xml.charcoordinates=true: Ausgabe von Koordinaten für jeden Buchstaben (nur für Abbyy XML).
+    * -Ooutput.xml.charcoordinates=false: Keine Ausgabe von Koordinaten für jeden Buchstaben (nur für Abbyy XML).
+    
+    * -Oabbyy.config=<file-in-WEBINF/classes>: Config-Datei, z. B. gbv-antiqua.properties, gbv-fraktur.properties.
+    
+    * -Ouser=<user>,password=<password>: Benutzerdaten für die gewählte OCR Engine. Überschreibt ggf. die Angaben in der Config-Datei.
+    
     

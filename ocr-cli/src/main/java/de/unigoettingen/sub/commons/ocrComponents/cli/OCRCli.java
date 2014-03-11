@@ -101,6 +101,8 @@ public class OCRCli {
 	
 	/** The ocr ocrPriority typ. */
 	private static String ocrPriority = null;
+
+	private static String ocrEngineToUse = "abbyy";
 	
 	/** The splitProcess if splitProcess = yes. */
 	private static boolean splitProcess = false;
@@ -128,6 +130,7 @@ public class OCRCli {
 		opts.addOption("o", true, "Output folder");
 		opts.addOption("p", true, "Priority");
 		opts.addOption("s", false, "Segmentation");
+		opts.addOption("E", true, "OCR Engine, e.g. abbyy, abbyy-multiuser, ocrsdk, tesseract (default is abbyy)");
 		opts.addOption("O", true, "Further options, comma-separated. E.g. -O lock.overwrite=true,opt2=value2");
 	}
 
@@ -146,13 +149,13 @@ public class OCRCli {
 		initOpts();
 		LOGGER.debug("Creating OCREngineFactory instance");
 
-		ApplicationContext ac = new ClassPathXmlApplicationContext("context.xml");
+		List<String> files = defaultOpts(args);
+		ApplicationContext ac = new ClassPathXmlApplicationContext(ocrEngineToUse + "-context.xml");
 		OCREngineFactory ocrEngineFactory = (OCREngineFactory) ac
 					.getBean("OCREngineFactory");
 
 		engine = ocrEngineFactory.newOcrEngine();
 
-		List<String> files = defaultOpts(args);
 		if (extraOptions != null) {
 			engine.setOptions(extraOptions);
 		}
@@ -332,6 +335,12 @@ public class OCRCli {
 		if (cmd.hasOption("e")) {
 			if (cmd.getOptionValue("e") != null) {
 				extension = cmd.getOptionValue("e");
+			}
+		}
+
+		if (cmd.hasOption("E")) {
+			if (cmd.getOptionValue("E") != null) {
+				ocrEngineToUse = cmd.getOptionValue("E");
 			}
 		}
 

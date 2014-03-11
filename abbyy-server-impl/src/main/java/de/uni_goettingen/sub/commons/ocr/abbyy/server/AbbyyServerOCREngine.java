@@ -110,6 +110,24 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		checkServerState = config.getCheckServerState();
 	}
 
+	private void initConfig() {
+		String configFile = extraOptions.get("abbyy.config");
+		if (configFile != null) {
+			config = new ConfigParser("/" + configFile).parse();
+		}
+		String user = extraOptions.get("user");
+		String password = extraOptions.get("password");
+		if (user != null) {
+			config.setUsername(user);
+		}
+		if (password != null) {
+			config.setPassword(password);
+		}
+
+		hotfolder = AbstractHotfolder.getHotfolder(config);
+		maxThreads = config.getMaxThreads();
+		checkServerState = config.getCheckServerState();
+	}
 	
 	/* start JMX methods */
 	public String getWaitingProcesses() {
@@ -441,7 +459,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	@Override
 	public void setOptions(Map<String, String> opts) {
 		extraOptions = opts;
-		
+		initConfig();
 	}
 
 	@Override
