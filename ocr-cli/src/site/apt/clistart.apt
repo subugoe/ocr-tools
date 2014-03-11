@@ -103,7 +103,8 @@ Einfaches Starten auf der Kommandozeile
       
     * -Ooutput.xml.charcoordinates=false: Keine Ausgabe von Koordinaten für jeden Buchstaben (nur für Abbyy XML).
     
-    * -Oabbyy.user=<user>,abbyy.password=<password>: Überschreibt die Angaben in der Config-Datei.
+    * -Oabbyy.config=<file-in-WEBINF/classes>: Config-Datei, z. B. gbv-antiqua.properties, gbv-fraktur.properties.
     
-    * -Oocrsdk.appid=<id>,ocrsdk.password=<password>: Benutzerdaten für die OCRSDK Cloud.
+    * -Ouser=<user>,password=<password>: Benutzerdaten für die gewählte OCR Engine. Überschreibt ggf. die Angaben in der Config-Datei.
+    
     
