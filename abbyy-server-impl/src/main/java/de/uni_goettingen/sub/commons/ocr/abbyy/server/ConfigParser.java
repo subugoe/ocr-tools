@@ -19,7 +19,7 @@ import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 public class ConfigParser {
 	final static Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 	protected Configuration config;
-	public final static String DEFAULT_CONFIG = "/AbbyyServerOCREngine.properties";
+	public final static String DEFAULT_CONFIG = "/gbv-antiqua.properties";
 	public final static String DEBUG_PROPERTY = "ocr.finereader.server.debug.auth";
 	public final static String SERVER_LOCK_FILE_NAME = "server.lock";
 	
@@ -126,7 +126,11 @@ public class ConfigParser {
 	private Boolean parsed = false;
 
 	public ConfigParser() {
-		this.configUrl = getClass().getResource(DEFAULT_CONFIG);
+		this(DEFAULT_CONFIG);
+	}
+	
+	public ConfigParser(String configFile) {
+		this.configUrl = getClass().getResource(configFile);
 	}
 
 	public ConfigParser(URL url) throws ConfigurationException {
@@ -391,12 +395,19 @@ public class ConfigParser {
 		return username;
 	}
 
+	public void setUsername(String newName) {
+		username = newName;
+	}
 	/**
 	 * @return the password used for external file systems, the implementations
 	 *         decide how this is given to the underlaying libraries.
 	 */
 	public String getPassword () {
 		return password;
+	}
+	
+	public void setPassword(String newPassword) {
+		password = newPassword;
 	}
 
 	public Boolean isParsed () {

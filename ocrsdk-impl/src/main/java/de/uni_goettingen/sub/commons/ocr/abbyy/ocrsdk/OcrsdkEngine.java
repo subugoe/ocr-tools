@@ -53,8 +53,8 @@ public class OcrsdkEngine extends AbstractOCREngine {
 
 	@Override
 	public OCRProcess newOcrProcess() {
-		String appId = extraOptions.get("ocrsdk.appid");
-		String password = extraOptions.get("ocrsdk.password");
+		String appId = extraOptions.get("user");
+		String password = extraOptions.get("password");
 		if (appId == null || appId.equals("") || password == null || password.equals("")) {
 			throw new IllegalArgumentException("You have to provide the AppId and the password.");
 		}
