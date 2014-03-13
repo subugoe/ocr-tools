@@ -9,22 +9,23 @@ public class OcrStarter implements Runnable {
 	}
 
 	public String checkParameters() {
-		
+		System.out.println(ocrParameters.email);
 		return "OK";
 	}
 
 	@Override
 	public void run() {
 		while(true) {
+			System.out.println("ocr started");
+			System.out.println(Thread.currentThread().getName());
+			System.out.println(ocrParameters.email);
+			System.out.println();
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("ocr started");
-			System.out.println(Thread.currentThread().getName());
-			System.out.println();
 		}
 		
 	}

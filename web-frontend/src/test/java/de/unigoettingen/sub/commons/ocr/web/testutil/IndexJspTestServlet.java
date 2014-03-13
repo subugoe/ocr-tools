@@ -1,4 +1,4 @@
-package de.unigoettingen.sub.commons.ocr.web;
+package de.unigoettingen.sub.commons.ocr.web.testutil;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -11,10 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 public class OcrServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	// TODO: the servlet should not have a state, because there will be several threads
+	// use ThreadLocal? use PowerMock?
 	protected OcrStarter ocrStarter;
-	
-    public OcrServlet() {
-    }
 	
 	// For unit testing
 	protected void initOcrStarter(HttpServletRequest request) {
@@ -34,8 +33,9 @@ public class OcrServlet extends HttpServlet {
 		ocrStarter.setParameters(param);
 		
 		String validationMessage = ocrStarter.checkParameters();
+		System.out.println(validationMessage);
 		if (validationMessage.equals("OK")) {
-			new Thread(ocrStarter).start(); 
+			new Thread(ocrStarter).start();
 			goToView("ocr-started.jsp", request, response);
 		} else {
 			request.setAttribute("validationMessage", validationMessage);
