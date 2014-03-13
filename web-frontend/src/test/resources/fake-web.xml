@@ -5,7 +5,7 @@
 
 	<servlet>
 		<servlet-name>IndexJspTestServlet</servlet-name>
-		<servlet-class>de.unigoettingen.sub.commons.ocr.web.IndexJspTestServlet</servlet-class>
+		<servlet-class>de.unigoettingen.sub.commons.ocr.web.testutil.IndexJspTestServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>IndexJspTestServlet</servlet-name>
@@ -14,7 +14,7 @@
 
 	<servlet>
 		<servlet-name>OcrServletChild</servlet-name>
-		<servlet-class>de.unigoettingen.sub.commons.ocr.web.OcrServletChild</servlet-class>
+		<servlet-class>de.unigoettingen.sub.commons.ocr.web.testutil.OcrServletChild</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>OcrServletChild</servlet-name>
