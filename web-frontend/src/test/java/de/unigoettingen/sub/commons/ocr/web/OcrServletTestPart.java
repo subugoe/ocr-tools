@@ -42,7 +42,7 @@ public class OcrServletTestPart {
 		assertEquals("Forwarded to view: ocr-started.jsp", page.getContent());
 	}
 
-	//@Test
+	@Test
 	public void servletShouldDenyOcr() throws Exception {
 		params.add(new NameValuePair("fakeValidationMessage", "Error"));
 		request.setRequestParameters(params);
@@ -50,8 +50,19 @@ public class OcrServletTestPart {
 		assertEquals("Forwarded to view: invalid-parameters.jsp", page.getContent());
 	}
 
+	@Test
+	public void twoSubsequentOkRequests() throws Exception {
+		params.add(new NameValuePair("fakeValidationMessage", "OK"));
+		request.setRequestParameters(params);
+		TextPage page = webClient.getPage(request);
+		assertEquals("Forwarded to view: ocr-started.jsp", page.getContent());
+		TextPage page2 = webClient.getPage(request);
+		assertEquals("Forwarded to view: ocr-started.jsp", page2.getContent());
+	}
+
+
 	//@Test //This demonstrates the synch problem in OcrServlet
-	public void twoOkRequests() throws Exception {
+	public void twoParallelOkRequests() throws Exception {
 		new Thread(
 		new Runnable() {
 			private WebClient webClient1;

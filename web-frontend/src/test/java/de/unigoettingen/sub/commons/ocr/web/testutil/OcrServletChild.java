@@ -27,7 +27,7 @@ public class OcrServletChild extends OcrServlet {
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			// demonstrates a synch problem in OcrServlet
 			e.printStackTrace();
 		}
 		System.out.println(ocrStarter);
