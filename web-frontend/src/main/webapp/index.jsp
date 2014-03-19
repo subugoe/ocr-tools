@@ -101,7 +101,7 @@
 			<option value="abbyyCloud">Abbyy Cloud ocrsdk.com</option>
 		</select>
 		<br/>
-		Benutzername: <input name="userName" type="text">
+		Benutzername: <input name="user" type="text">
 		<br/>
 		Passwort: <input name="password" type="text">
 		</div>

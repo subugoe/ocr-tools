@@ -35,7 +35,7 @@ public class IndexJspTestPart {
 		form.getSelectByName("outputFormats");
 		form.getInputByName("email");
 		form.getSelectByName("ocrEngine");
-		form.getInputByName("userName");
+		form.getInputByName("user");
 		form.getInputByName("password");
 		form.getInputByName("submit");
 	}
@@ -50,7 +50,7 @@ public class IndexJspTestPart {
 		form.getSelectByName("outputFormats").setSelectedAttribute("XML", true);
 		form.getInputByName("email").setValueAttribute("mail@test.de");
 		form.getSelectByName("ocrEngine").setSelectedAttribute("gbvGothic", true);
-		form.getInputByName("userName").setValueAttribute("user1");
+		form.getInputByName("user").setValueAttribute("user1");
 		form.getInputByName("password").setValueAttribute("passwd");
 		
 		HtmlSubmitInput button = form.getInputByName("submit");
