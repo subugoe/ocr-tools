@@ -9,5 +9,7 @@ class OcrParameters {
 	String[] languages;
 	String[] outputFormats;
 	String email;
-	
+	String ocrEngine;
+	String user;
+	String password;
 }

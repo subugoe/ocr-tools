@@ -82,6 +82,7 @@ public class OcrServletTestPart {
 			}
 		}).start();
 				
+		Thread.sleep(2);
 		new Thread(
 		new Runnable() {
 			private WebClient webClient2;
