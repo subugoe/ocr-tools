@@ -60,8 +60,8 @@ public class OcrServletTestPart {
 		assertEquals("Forwarded to view: ocr-started.jsp", page2.getContent());
 	}
 
-
-	//@Test //This demonstrates the synch problem in OcrServlet
+	// TODO: refactor the test
+	@Test
 	public void twoParallelOkRequests() throws Exception {
 		new Thread(
 		new Runnable() {
@@ -101,7 +101,8 @@ public class OcrServletTestPart {
 			}
 		}).start();
 		
-		Thread.sleep(500);
+		// TODO: join() ?
+		Thread.sleep(100);
 	}
 
 }

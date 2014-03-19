@@ -29,7 +29,6 @@ public class OcrServlet extends HttpServlet {
 		ocrStarter.setParameters(param);
 		
 		String validationMessage = ocrStarter.checkParameters();
-		System.out.println(validationMessage);
 		if (validationMessage.equals("OK")) {
 			new Thread(ocrStarter).start();
 			goToView("ocr-started.jsp", request, response);

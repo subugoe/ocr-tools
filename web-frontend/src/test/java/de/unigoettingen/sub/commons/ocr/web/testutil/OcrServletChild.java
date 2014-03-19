@@ -21,18 +21,9 @@ public class OcrServletChild extends OcrServlet {
 	@Override
 	protected OcrStarter initOcrStarter(HttpServletRequest request) {
 		OcrStarter ocrStarter = mock(OcrStarter.class);
-		System.out.println(ocrStarter);
 		fakeValidationMessage.set(request.getParameter("fakeValidationMessage"));
-		System.out.println("message: " + fakeValidationMessage.get());
 		when(ocrStarter.checkParameters()).thenReturn(fakeValidationMessage.get());
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			// demonstrates a synch problem in OcrServlet
-			e.printStackTrace();
-		}
 		ocrStarterLocal.set(ocrStarter);
-		System.out.println(ocrStarter);
 		return ocrStarter;
 	}
 	
