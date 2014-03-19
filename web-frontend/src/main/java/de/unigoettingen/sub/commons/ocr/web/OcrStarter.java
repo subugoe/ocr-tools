@@ -4,9 +4,11 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.context.ApplicationContext;
@@ -25,6 +27,12 @@ import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 public class OcrStarter implements Runnable {
 
 	private OcrParameters param;
+	private EngineProvider engineProvider = new EngineProvider();
+
+	// for unit tests
+	void setEngineProvider(EngineProvider newEngineProvider) {
+		engineProvider = newEngineProvider;
+	}
 
 	public void setParameters(OcrParameters newParameters) {
 		param = newParameters;
@@ -37,11 +45,8 @@ public class OcrStarter implements Runnable {
 
 	@Override
 	public void run() {
-		ApplicationContext ac = new ClassPathXmlApplicationContext("abbyy" + "-context.xml");
-		OCREngineFactory ocrEngineFactory = (OCREngineFactory) ac
-					.getBean("OCREngineFactory");
 
-		OCREngine engine = ocrEngineFactory.newOcrEngine();
+		OCREngine engine = engineProvider.getFromContext("abbyy");
 
 		System.out.println(param.inputFolder);
 		File mainFolder = new File(param.inputFolder);
@@ -84,6 +89,9 @@ public class OcrStarter implements Runnable {
 			engine.addOcrProcess(process);
 		}
 		
+		Map<String,String> extraOptions = new HashMap<String,String>();
+		//if (param.)
+		engine.setOptions(null);
 
 		engine.recognize();
 	}
