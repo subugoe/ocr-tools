@@ -15,11 +15,12 @@ import de.unigoettingen.sub.commons.ocr.web.OcrStarter;
 public class OcrServletChild extends OcrServlet {
 
 	private static final long serialVersionUID = 1L;
-	private ThreadLocal<String> fakeValidationMessage = new ThreadLocal<String>();;
+	private ThreadLocal<String> fakeValidationMessage = new ThreadLocal<String>();
+	private ThreadLocal<OcrStarter> ocrStarterLocal = new ThreadLocal<OcrStarter>();
 
 	@Override
-	protected void initOcrStarter(HttpServletRequest request) {
-		ocrStarter = mock(OcrStarter.class);
+	protected OcrStarter initOcrStarter(HttpServletRequest request) {
+		OcrStarter ocrStarter = mock(OcrStarter.class);
 		System.out.println(ocrStarter);
 		fakeValidationMessage.set(request.getParameter("fakeValidationMessage"));
 		System.out.println("message: " + fakeValidationMessage.get());
@@ -30,7 +31,9 @@ public class OcrServletChild extends OcrServlet {
 			// demonstrates a synch problem in OcrServlet
 			e.printStackTrace();
 		}
+		ocrStarterLocal.set(ocrStarter);
 		System.out.println(ocrStarter);
+		return ocrStarter;
 	}
 	
 	@Override
@@ -42,7 +45,7 @@ public class OcrServletChild extends OcrServlet {
 			e.printStackTrace();
 		}
 		if ("OK".equals(fakeValidationMessage.get())) {
-			verify(ocrStarter, times(1)).run();
+			verify(ocrStarterLocal.get(), times(1)).run();
 		}
 		PrintWriter out = response.getWriter();
 		out.print("Forwarded to view: " + viewName);
