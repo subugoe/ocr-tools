@@ -11,17 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 public class OcrServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	// TODO: the servlet should not have a state, because there will be several threads
-	// use ThreadLocal? use PowerMock?
-	protected OcrStarter ocrStarter;
-	
 	// For unit testing
-	protected void initOcrStarter(HttpServletRequest request) {
-		ocrStarter = new OcrStarter();
+	protected OcrStarter initOcrStarter(HttpServletRequest request) {
+		return new OcrStarter();
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		initOcrStarter(request);
+		OcrStarter ocrStarter = initOcrStarter(request);
 		OcrParameters param = new OcrParameters();
 		param.inputFolder = request.getParameter("inputFolder");
 		param.outputFolder = request.getParameter("outputFolder");
