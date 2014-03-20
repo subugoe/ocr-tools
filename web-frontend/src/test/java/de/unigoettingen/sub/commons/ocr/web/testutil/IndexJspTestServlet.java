@@ -1,4 +1,4 @@
-package de.unigoettingen.sub.commons.ocr.web;
+package de.unigoettingen.sub.commons.ocr.web.testutil;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,7 +26,7 @@ public class IndexJspTestServlet extends HttpServlet {
 		out.println(Arrays.toString(request.getParameterValues("outputFormats")));
 		out.println(request.getParameter("email"));
 		out.println(request.getParameter("ocrEngine"));
-		out.println(request.getParameter("userName"));
+		out.println(request.getParameter("user"));
 		out.println(request.getParameter("password"));
 		
 	}
