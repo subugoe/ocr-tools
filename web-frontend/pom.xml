@@ -14,6 +14,57 @@
 		<jetty.version>8.1.7.v20120910</jetty.version>
 	</properties>
 	<dependencies>
+            
+	    <dependency>
+            <groupId>de.uni-goettingen.sub</groupId>
+            <artifactId>abbyy-server-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.uni-goettingen.sub</groupId>
+            <artifactId>ocrsdk-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+	
+	   	<dependency>
+            <groupId>de.uni-goettingen.sub</groupId>
+            <artifactId>ocr-api</artifactId>
+            <version>0.9-SNAPSHOT</version>
+        </dependency>
+	
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+	    <dependency>
+        	<groupId>org.springframework</groupId>
+        	<artifactId>spring-aop</artifactId>
+        	<version>2.5.6</version>
+        </dependency>
+	
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.2</version>
+		</dependency>
+	
+	
 <!--   		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -38,6 +89,12 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.3.1</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>

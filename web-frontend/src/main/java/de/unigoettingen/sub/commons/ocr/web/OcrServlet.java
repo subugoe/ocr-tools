@@ -11,18 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 public class OcrServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected OcrStarter ocrStarter;
-	
-    public OcrServlet() {
-    }
-	
 	// For unit testing
-	protected void initOcrStarter(HttpServletRequest request) {
-		ocrStarter = new OcrStarter();
+	protected OcrStarter initOcrStarter(HttpServletRequest request) {
+		return new OcrStarter();
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		initOcrStarter(request);
+		OcrStarter ocrStarter = initOcrStarter(request);
 		OcrParameters param = new OcrParameters();
 		param.inputFolder = request.getParameter("inputFolder");
 		param.outputFolder = request.getParameter("outputFolder");
@@ -35,7 +30,7 @@ public class OcrServlet extends HttpServlet {
 		
 		String validationMessage = ocrStarter.checkParameters();
 		if (validationMessage.equals("OK")) {
-			new Thread(ocrStarter).start(); 
+			new Thread(ocrStarter).start();
 			goToView("ocr-started.jsp", request, response);
 		} else {
 			request.setAttribute("validationMessage", validationMessage);

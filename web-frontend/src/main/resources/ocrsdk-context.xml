@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+	<bean id="OCREngineFactory" name="OCREngineFactory"
+		class="de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory"
+		factory-method="getInstance">
+		<property name="engine" ref="ocrsdkEngine" />
+	</bean>
+
+	
+
+	<bean id="ocrsdkEngine" name="ocrsdkEngine"
+		class="de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk.OcrsdkEngine"
+		factory-method="getInstance">
+	</bean>
+
+
+
+</beans>
