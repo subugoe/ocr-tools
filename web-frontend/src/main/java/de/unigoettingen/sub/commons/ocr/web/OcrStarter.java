@@ -11,6 +11,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.validator.routines.EmailValidator;
+
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -36,15 +38,40 @@ public class OcrStarter implements Runnable {
 	}
 
 	public String checkParameters() {
-		System.out.println(param.email);
-		return "OK";
+		String validationMessage = "";
+		if (param.inputFolder == null || param.inputFolder.equals("")) {
+			validationMessage += "No input folder. ";
+		} else if (!new File(param.inputFolder).isAbsolute()) {
+			validationMessage += "Input folder must be absolute path. ";
+		}
+		if (param.outputFolder == null || param.outputFolder.equals("")) {
+			validationMessage += "No output folder. ";
+		} else if (!new File(param.outputFolder).isAbsolute()) {
+			validationMessage += "Output folder must be absolute path. ";
+		}
+		EmailValidator validator = EmailValidator.getInstance();
+		if (param.email == null  || param.email.equals("")) {
+			validationMessage += "No email address. ";
+		} else if (!validator.isValid(param.email)) {
+			validationMessage += "Invalid email address. ";
+		}
+		if (param.languages == null || param.languages.length == 0) {
+			validationMessage += "No language. ";
+		}
+		if (param.outputFormats == null || param.outputFormats.length == 0) {
+			validationMessage += "No output format. ";
+		}
+		if (validationMessage.equals("")) {
+			return "OK";
+		} else {
+			return validationMessage;
+		}
 	}
 
 	@Override
 	public void run() {
 		OCREngine engine = createEngine();
 
-		System.out.println(param.inputFolder);
 		File mainFolder = new File(param.inputFolder);
 		File[] subFolders = mainFolder.listFiles();
 		for (File bookFolder : subFolders) {
