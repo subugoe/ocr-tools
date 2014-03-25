@@ -83,6 +83,8 @@ public class OcrStarter implements Runnable {
 			engine.addOcrProcess(process);
 		}
 
+		int estimatedDuration = engine.getEstimatedDurationInSeconds();
+		mailer.sendStarted(param, estimatedDuration);
 		engine.recognize();
 		mailer.sendFinished(param);
 	}

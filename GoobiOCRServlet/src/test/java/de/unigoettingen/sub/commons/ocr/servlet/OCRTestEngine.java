@@ -80,4 +80,9 @@ public class OCRTestEngine extends AbstractOCREngine {
 		return null;
 	}
 
+	@Override
+	public int getEstimatedDurationInSeconds() {
+		return 0;
+	}
+
 }

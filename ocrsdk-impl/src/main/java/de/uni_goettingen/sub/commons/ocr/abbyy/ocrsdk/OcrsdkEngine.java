@@ -107,4 +107,14 @@ public class OcrsdkEngine extends AbstractOCREngine {
 		return "";
 	}
 
+	@Override
+	public int getEstimatedDurationInSeconds() {
+		int duration = 0;
+		for (OCRProcess process : ocrProcess) {
+			int imagesInProcess = process.getOcrImages().size();
+			duration += imagesInProcess * 5;
+		}
+		return duration;
+	}
+
 }
