@@ -27,12 +27,16 @@ public class OcrStarter implements Runnable {
 
 	private OcrParameters param;
 	private EngineProvider engineProvider = new EngineProvider();
+	private Mailer mailer = new Mailer();
 
 	// for unit tests
 	void setEngineProvider(EngineProvider newEngineProvider) {
 		engineProvider = newEngineProvider;
 	}
-
+	void setMailer(Mailer newMailer) {
+		mailer = newMailer;
+	}
+	
 	public void setParameters(OcrParameters newParameters) {
 		param = newParameters;
 	}
@@ -80,6 +84,7 @@ public class OcrStarter implements Runnable {
 		}
 
 		engine.recognize();
+		mailer.sendFinished(param);
 	}
 
 	private OCREngine createEngine() {
