@@ -467,4 +467,15 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		return extraOptions;
 	}
 
+	@Override
+	public int getEstimatedDurationInSeconds() {
+		long durationInMillis = 0;
+		
+		for (OCRProcess process : processes) {
+			long imagesInProcess = process.getOcrImages().size();
+			durationInMillis += imagesInProcess * config.minMillisPerFile;
+		}
+		return (int) (durationInMillis / 1000);
+	}
+
 }

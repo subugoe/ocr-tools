@@ -353,4 +353,9 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 		return null;
 	}
 
+	@Override
+	public int getEstimatedDurationInSeconds() {
+		return 0;
+	}
+
 }
