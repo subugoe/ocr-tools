@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.validator.routines.EmailValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -24,7 +26,9 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
 public class OcrStarter implements Runnable {
-
+	final static Logger LOGGER = LoggerFactory
+			.getLogger(OcrStarter.class);
+	
 	private OcrParameters param;
 	private EngineProvider engineProvider = new EngineProvider();
 	private Mailer mailer = new Mailer();
@@ -148,7 +152,7 @@ public class OcrStarter implements Runnable {
 				process.addOutput(format, output);
 			}
 		} catch(URISyntaxException e){
-			System.out.println("uri: " + e);
+			LOGGER.error("Illegal URI", e);
 		}
 		return process;
 	}

@@ -26,6 +26,7 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	
 	private MultiUserAbbyyOCREngine() throws ConfigurationException {
 		super();
+		System.setProperty("hazelcast.logging.type", "log4j");
 		hazelcast = Hazelcast.newHazelcastInstance(null);
 	}
 	
