@@ -6,7 +6,7 @@
 
 	<bean id="OCREngineFactory" name="OCREngineFactory"
 		class="de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory"
-		factory-method="getInstance">
+		factory-method="getInstance" scope="prototype">
 		<property name="engine" ref="ocrsdkEngine" />
 	</bean>
 
@@ -14,7 +14,7 @@
 
 	<bean id="ocrsdkEngine" name="ocrsdkEngine"
 		class="de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk.OcrsdkEngine"
-		factory-method="getInstance">
+		factory-method="newOCREngine" scope="prototype">
 	</bean>
 
 

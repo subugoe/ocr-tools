@@ -30,6 +30,11 @@ public class OcrsdkEngine extends AbstractOCREngine {
 		return instance;
 	}
 
+	// we need this for our Web Service, because each request needs its own instance
+	public static OcrsdkEngine newOCREngine() {	
+		return new OcrsdkEngine();
+	}
+
 	/**
 	 * Starts the one process that is passed.
 	 */
@@ -105,6 +110,16 @@ public class OcrsdkEngine extends AbstractOCREngine {
 	@Override
 	public String getVersion() {
 		return "";
+	}
+
+	@Override
+	public int getEstimatedDurationInSeconds() {
+		int duration = 0;
+		for (OCRProcess process : ocrProcess) {
+			int imagesInProcess = process.getOcrImages().size();
+			duration += imagesInProcess * 5;
+		}
+		return duration;
 	}
 
 }

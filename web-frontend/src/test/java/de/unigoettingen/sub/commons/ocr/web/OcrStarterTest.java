@@ -33,6 +33,7 @@ public class OcrStarterTest {
 	private OCRProcess processMock;
 	private OCROutput outputMock;
 	private OCRImage imageMock;
+	private Mailer mailerMock;
 	private OcrStarter ocrStarter;
 	
 	@Captor
@@ -45,6 +46,7 @@ public class OcrStarterTest {
 		processMock = mock(OCRProcess.class);
 		outputMock = mock(OCROutput.class);
 		imageMock = mock(OCRImage.class);
+		mailerMock = mock(Mailer.class);
 		when(providerMock.getFromContext(anyString())).thenReturn(engineMock);
 		when(engineMock.newOcrProcess()).thenReturn(processMock);
 		when(engineMock.newOcrOutput()).thenReturn(outputMock);
@@ -52,6 +54,7 @@ public class OcrStarterTest {
 
 		ocrStarter = new OcrStarter();
 		ocrStarter.setEngineProvider(providerMock);
+		ocrStarter.setMailer(mailerMock);
 	}
 
 	@Test
@@ -211,6 +214,15 @@ public class OcrStarterTest {
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
 		assertThat(validation, containsString("No output format"));
+	}
+	
+	@Test
+	public void shouldSendEmail() {
+		OcrParameters param = validParams();
+		ocrStarter.setParameters(param);
+		ocrStarter.run();
+		
+		verify(mailerMock).sendFinished(param);
 	}
 
 	private OcrParameters validParams() {
