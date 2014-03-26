@@ -176,4 +176,6 @@ public interface OCREngine {
 	abstract public void setOptions(Map<String, String> params);
 	
 	abstract public Map<String, String> getOptions();
+	
+	abstract public int getEstimatedDurationInSeconds();
 }

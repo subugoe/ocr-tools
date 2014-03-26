@@ -4,15 +4,19 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>OCR</title>
+<title>Invalid parameters</title>
 </head>
 
 <body>
 <br/>
 <br/>
-<h4>Ihr OCR-Auftrag wird bearbeitet. </h4>
-<h4>In Kürze wird an ${param.email} eine Nachricht gesendet, in der die voraussichtliche Dauer angegeben wird.</h4> 
-<h4>Sobald das OCR-Ergebnis zur Verfügung steht, bekommen Sie eine weitere Nachricht. </h4>
+<h4>Ihre Angaben waren nicht vollständig oder inkorrekt.</h4>
+<h4>Details:</h4> 
+
+<pre>
+${validationMessage}
+</pre>
+
 </body>
 
 </html>
