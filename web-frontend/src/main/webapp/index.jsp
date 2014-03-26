@@ -78,7 +78,7 @@
 		<br/>
 		<br/>
 		<div class="inputOptions">
-		Benachrichtigungsadresse: <input type="text" name="email" value="test@test.de">
+		Benachrichtigungsadresse: <input type="text" name="email">
 		</div>
 		<br/>
 		<br/>
