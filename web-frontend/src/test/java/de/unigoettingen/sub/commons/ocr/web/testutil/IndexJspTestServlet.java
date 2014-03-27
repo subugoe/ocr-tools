@@ -28,6 +28,8 @@ public class IndexJspTestServlet extends HttpServlet {
 		out.println(request.getParameter("ocrEngine"));
 		out.println(request.getParameter("user"));
 		out.println(request.getParameter("password"));
+		out.println(request.getParameter("logFile"));
+		out.println(request.getParameter("logLevel"));
 		
 	}
 

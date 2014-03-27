@@ -1,7 +1,18 @@
 package de.unigoettingen.sub.commons.ocr.web;
 
-import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyMapOf;
+import static org.mockito.Matchers.anySetOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.URI;
@@ -23,8 +34,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 
-import static org.mockito.Mockito.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class OcrStarterTest {
 
@@ -35,6 +44,7 @@ public class OcrStarterTest {
 	private OCRImage imageMock;
 	private Mailer mailerMock;
 	private OcrStarter ocrStarter;
+	private LogSelector logSelectorMock;
 	
 	@Captor
 	private ArgumentCaptor<Map<String,String>> optionsCaptor;
@@ -47,6 +57,7 @@ public class OcrStarterTest {
 		outputMock = mock(OCROutput.class);
 		imageMock = mock(OCRImage.class);
 		mailerMock = mock(Mailer.class);
+		logSelectorMock = mock(LogSelector.class);
 		when(providerMock.getFromContext(anyString())).thenReturn(engineMock);
 		when(engineMock.newOcrProcess()).thenReturn(processMock);
 		when(engineMock.newOcrOutput()).thenReturn(outputMock);
@@ -55,6 +66,7 @@ public class OcrStarterTest {
 		ocrStarter = new OcrStarter();
 		ocrStarter.setEngineProvider(providerMock);
 		ocrStarter.setMailer(mailerMock);
+		ocrStarter.setLogSelector(logSelectorMock);
 	}
 
 	@Test
@@ -217,12 +229,50 @@ public class OcrStarterTest {
 	}
 	
 	@Test
+	public void checkingParamsWithNoLogFile() {
+		OcrParameters param = validParams();
+		param.logFile = "";
+		ocrStarter.setParameters(param);
+		String validation = ocrStarter.checkParameters();
+		assertEquals("OK", validation);
+	}
+
+	@Test
+	public void checkingParamsWithInvalidLogFile() {
+		OcrParameters param = validParams();
+		param.logFile = "notabsolute";
+		ocrStarter.setParameters(param);
+		String validation = ocrStarter.checkParameters();
+		assertThat(validation, containsString("Log file path must be absolute"));
+	}
+
+	@Test
 	public void shouldSendEmail() {
 		OcrParameters param = validParams();
 		ocrStarter.setParameters(param);
 		ocrStarter.run();
 		
 		verify(mailerMock).sendFinished(param);
+	}
+
+	@Test
+	public void shouldLogToFile() {
+		OcrParameters param = validParams();
+		ocrStarter.setParameters(param);
+		ocrStarter.run();
+		
+		verify(logSelectorMock, times(1)).logToFile(anyString(), anyString());
+		verify(logSelectorMock).logToFile(param.logFile, param.logLevel);
+	}
+
+	@Test
+	public void shouldLogToDefaultLocation() {
+		OcrParameters param = validParams();
+		param.logFile = "";
+		ocrStarter.setParameters(param);
+		ocrStarter.run();
+		
+		verify(logSelectorMock).useDefaults();
 	}
 
 	private OcrParameters validParams() {
@@ -235,6 +285,8 @@ public class OcrStarterTest {
 		param.outputFolder = "/tmp";
 		param.imageFormat = "tif";
 		param.email = "test@test.com";
+		param.logFile = "/tmp/out.log";
+		param.logLevel = "INFO";
 		return param;
 	}
 
