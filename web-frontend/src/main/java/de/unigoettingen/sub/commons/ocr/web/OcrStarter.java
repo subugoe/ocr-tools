@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.validator.routines.EmailValidator;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -24,10 +25,13 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
 public class OcrStarter implements Runnable {
-
+	final static Logger LOGGER = LoggerFactory
+			.getLogger(OcrStarter.class);
+	
 	private OcrParameters param;
 	private EngineProvider engineProvider = new EngineProvider();
 	private Mailer mailer = new Mailer();
+	private LogSelector logSelector = new LogSelector();
 
 	// for unit tests
 	void setEngineProvider(EngineProvider newEngineProvider) {
@@ -36,6 +40,9 @@ public class OcrStarter implements Runnable {
 	void setMailer(Mailer newMailer) {
 		mailer = newMailer;
 	}
+	void setLogSelector(LogSelector newSelector) {
+		logSelector = newSelector;
+	}
 	
 	public void setParameters(OcrParameters newParameters) {
 		param = newParameters;
@@ -43,27 +50,30 @@ public class OcrStarter implements Runnable {
 
 	public String checkParameters() {
 		String validationMessage = "";
-		if (param.inputFolder == null || param.inputFolder.equals("")) {
+		if (isEmpty(param.inputFolder)) {
 			validationMessage += "No input folder. ";
-		} else if (!new File(param.inputFolder).isAbsolute()) {
+		} else if (!isAbsolutePath(param.inputFolder)) {
 			validationMessage += "Input folder must be absolute path. ";
 		}
-		if (param.outputFolder == null || param.outputFolder.equals("")) {
+		if (isEmpty(param.outputFolder)) {
 			validationMessage += "No output folder. ";
-		} else if (!new File(param.outputFolder).isAbsolute()) {
+		} else if (!isAbsolutePath(param.outputFolder)) {
 			validationMessage += "Output folder must be absolute path. ";
 		}
 		EmailValidator validator = EmailValidator.getInstance();
-		if (param.email == null  || param.email.equals("")) {
+		if (isEmpty(param.email)) {
 			validationMessage += "No email address. ";
 		} else if (!validator.isValid(param.email)) {
 			validationMessage += "Invalid email address. ";
 		}
-		if (param.languages == null || param.languages.length == 0) {
+		if (isEmpty(param.languages)) {
 			validationMessage += "No language. ";
 		}
-		if (param.outputFormats == null || param.outputFormats.length == 0) {
+		if (isEmpty(param.outputFormats)) {
 			validationMessage += "No output format. ";
+		}
+		if (!isEmpty(param.logFile) && !isAbsolutePath(param.logFile)) {
+			validationMessage += "Log file path must be absolute. ";
 		}
 		if (validationMessage.equals("")) {
 			return "OK";
@@ -71,9 +81,24 @@ public class OcrStarter implements Runnable {
 			return validationMessage;
 		}
 	}
+	
+	private boolean isEmpty(String string) {
+		return string == null || string.isEmpty();
+	}
+	private boolean isEmpty(String[] array) {
+		return array == null || array.length == 0;
+	}
+	private boolean isAbsolutePath(String path) {
+		return new File(path).isAbsolute();
+	}
 
 	@Override
 	public void run() {
+		if (isEmpty(param.logFile)) {
+			logSelector.useDefaults();
+		} else {
+			logSelector.logToFile(param.logFile, param.logLevel);
+		}
 		OCREngine engine = createEngine();
 
 		File mainFolder = new File(param.inputFolder);
@@ -148,7 +173,7 @@ public class OcrStarter implements Runnable {
 				process.addOutput(format, output);
 			}
 		} catch(URISyntaxException e){
-			System.out.println("uri: " + e);
+			LOGGER.error("Illegal URI", e);
 		}
 		return process;
 	}

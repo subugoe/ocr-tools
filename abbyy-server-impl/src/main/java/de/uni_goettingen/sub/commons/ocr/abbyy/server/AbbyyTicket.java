@@ -502,7 +502,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(of);
 			// The server can't handle this
 			if (exportFormat == null) {
-				logger.info("The server can't hand le the format "
+				logger.warn("The server can't handle the format "
 						+ of.toString() + ", ignoring it.");
 				continue;
 			}
@@ -589,7 +589,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		AbbyyOCRImage aoi = new AbbyyOCRImage(ocrImage);
 		String[] urlParts = ocrImage.getUri().toString().split("/");
 		if (getName() == null) {
-			logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
+			logger.warn("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
 			setName(UUID.randomUUID().toString());
 		}
 		aoi.setRemoteFileName(getName() + "-" + urlParts[urlParts.length - 1]);

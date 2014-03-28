@@ -12,4 +12,6 @@ class OcrParameters {
 	String ocrEngine;
 	String user;
 	String password;
+	String logFile;
+	String logLevel;
 }

@@ -269,13 +269,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			// Create ticket, copy files and ticket
 			// Write ticket to temp file
 			synchronized (monitor) {
-				logger.debug("Creating AbbyyTicket for " + name);
+				logger.info("Creating AbbyyTicket for " + name);
 				OutputStream os = hotfolder.createTmpFile(tmpTicket);
 				write(os, name);
 				os.close();
 			}
 
-			logger.debug("Cleaning Server");
+			logger.info("Cleaning Server");
 
 			// Clean the server here to avoid GUIDs as filenames
 			cleanOutputs(getOcrOutputs());
@@ -286,13 +286,13 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 
 
 			// Copy the ticket
-			logger.debug("Copying tickt to server");
+			logger.info("Copying ticket to server");
 			hotfolder.copyTmpFile(tmpTicket, ticketUri);
 			// delete ticket tmp
 			logger.debug("Delete ticket tmp ");
 			hotfolder.deleteTmpFile(tmpTicket);
 			// Copy the files
-			logger.debug("Coping imges to server.");
+			logger.info("Copying images to server.");
 			copyFilesToServer(getOcrImages());
 
 			if (config.copyOnly) {
@@ -314,7 +314,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					outputs.remove(OCRFormat.METADATA);
 				}
 
-				logger.debug("Waking up, waiting another "
+				logger.info("Waking up, waiting another "
 						+ (maxWait - minWait) + " milli seconds for results (" + (maxWait-minWait)/1000/60 + " minutes)");
 				if (waitForResults(outputs, maxWait-minWait)) {
 					//for Serializer
@@ -332,7 +332,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 										+ localUri);
 								hotfolder.copyFile(remoteUri, localUri);
 							} catch (Exception e) {
-								logger.debug("Can NOT Copy from " + remoteUri
+								logger.warn("Can NOT Copy from " + remoteUri
 										+ " to " + localUri);
 							}
 							try {
@@ -343,7 +343,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 									hotfolder.copyFile(remoteUri, localUri);
 								}
 							} catch (Exception e) {
-								logger.debug("Can NOT Copy from " + remoteUri
+								logger.error("Can NOT Copy from " + remoteUri
 										+ " to " + localUri, e);
 								throw new OCRException("Can NOT Copy from "
 										+ remoteUri + " to " + localUri, e);
@@ -361,7 +361,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					endTime = System.currentTimeMillis();
 					processTimeResult = getDuration();
 					ocrProcessMetadata.setDuration(processTimeResult);
-					logger.debug("OCR Output file for " +name + " has been created successfully after "+  getDuration() + " milliseconds");
+					logger.info("OCR Output file for " +name + " has been created successfully after "+  getDuration() + " milliseconds");
 					setOcrProcessMetadata(ocrProcessMetadata);
 					//Serializer
 					if(!getSegmentation()){
@@ -444,7 +444,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					setIsFinished();
 					obs.update(this, this);
 				}		
-				logger.debug("Process " +name + " finished ");
+				logger.info("Process " +name + " finished ");
 			} catch (IOException e) {
 				logger.error("Unable to clean up!", e);
 			}

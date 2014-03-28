@@ -646,7 +646,7 @@ public class FileMerger {
 				++i;
 				page = writer.getImportedPage(reader, i);
 				writer.addPage(page);
-				logger.info("Processed page " + i);
+				logger.debug("Processed pdf page " + i);
 			}
 			writer.freeReader(reader);
 			f++;

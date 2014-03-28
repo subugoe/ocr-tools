@@ -93,7 +93,9 @@
 		
 		<br/>
 		<br/>
-		<div class="inputOptions" id="moreOptions" style="display:none">
+		<div id="moreOptions" style="display:none">
+		
+		<div class="inputOptions"> 
 		OCR Engine:
 		<select name="ocrEngine">
 			<option value="gbvAntiqua">GBV Abbyy Server (Antiqua)</option>
@@ -104,6 +106,23 @@
 		Benutzername: <input name="user" type="text">
 		<br/>
 		Passwort: <input name="password" type="text">
+		</div>
+		
+				<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<div class="inputOptions">
+		Log-Datei: <input name="logFile" type="text">
+		<br/>
+		<input name="logLevel" type="radio" checked="checked" value="INFO"/>normale Ausgabe <br/>
+		<input name="logLevel" type="radio" value="DEBUG"/>Debug-Modus <br/>
+		
+		</div>
+		
 		</div>
 		</form>
 </body>

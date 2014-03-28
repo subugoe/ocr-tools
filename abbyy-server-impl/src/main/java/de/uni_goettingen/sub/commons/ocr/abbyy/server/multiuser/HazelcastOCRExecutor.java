@@ -84,7 +84,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 	// if an item is removed from a Hazelcast set
 	@Override
 	public void itemRemoved(Object arg0) {
-		logger.info("Hazelcast Set item removed: " + arg0);
+		logger.debug("Hazelcast Set item removed: " + arg0);
 		resume();
 
 	}
@@ -108,7 +108,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 
 	@Override
 	public void entryRemoved(EntryEvent arg0) {
-		logger.info("Hazelcast Map entry removed: " + arg0.getKey());
+		logger.debug("Hazelcast Map entry removed: " + arg0.getKey());
 		resume();
 		
 	}
