@@ -64,6 +64,7 @@
 		<br/> 
 		<select name="outputFormats" size="5" multiple="multiple">
 			<option selected="selected">PDF</option>
+			<option>PDFA</option>
 			<option>XML</option>
 			<option>TXT</option>
 		</select>

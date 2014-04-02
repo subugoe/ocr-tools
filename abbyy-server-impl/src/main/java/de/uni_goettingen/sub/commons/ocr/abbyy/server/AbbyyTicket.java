@@ -46,6 +46,7 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.InputFile;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.MSWordExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.PDFExportSettings;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.PDFAExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.TextExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XMLExportSettings;
@@ -265,6 +266,19 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 				(OutputFileFormatSettings) pdfSettings
 						.changeType(OutputFileFormatSettings.type));
 
+		PDFAExportSettings pdfaSettings = PDFAExportSettings.Factory
+				.newInstance(opts);
+
+		
+		pdfaSettings.setPictureResolution(BigInteger.valueOf(300));
+		pdfaSettings.setQuality(BigInteger.valueOf(50));
+		pdfaSettings.setUseImprovedCompression(true);
+		pdfaSettings.setExportMode("ImageOnText");
+
+		FORMAT_FRAGMENTS.put(OCRFormat.PDFA,
+				(OutputFileFormatSettings) pdfaSettings
+						.changeType(OutputFileFormatSettings.type));
+
 		TextExportSettings txtSettings = TextExportSettings.Factory
 				.newInstance(opts);
 
@@ -282,7 +296,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 		FORMAT_FRAGMENTS.put(OCRFormat.HTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
-		FORMAT_FRAGMENTS.put(OCRFormat.PDFA, null);
 
 		// This is one of Thorough, Balanced or Fast
 		QUALITY_MAP = new HashMap<OCRQuality, String>();
@@ -316,6 +329,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		FORMAT_MAPPING.put(OCRFormat.HTML, "HTML");
 		FORMAT_MAPPING.put(OCRFormat.XHTML, "HTML");
 		FORMAT_MAPPING.put(OCRFormat.PDF, "PDF");
+		FORMAT_MAPPING.put(OCRFormat.PDFA, "PDFA");
 		FORMAT_MAPPING.put(OCRFormat.XML, "XML");
 		FORMAT_MAPPING.put(OCRFormat.TXT, "Text");
 	}
