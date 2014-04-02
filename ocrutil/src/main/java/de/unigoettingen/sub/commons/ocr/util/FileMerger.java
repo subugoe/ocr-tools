@@ -99,6 +99,8 @@ public class FileMerger {
 			// This are the methods for handling files
 			fileMergers.put(OCRFormat.PDF,
 					FileMerger.class.getMethod("mergePDF", fileParams));
+			fileMergers.put(OCRFormat.PDFA,
+					FileMerger.class.getMethod("mergePDFA", fileParams));
 			fileMergers.put(OCRFormat.XML,
 					FileMerger.class.getMethod("mergeAbbyyXML", fileParams));
 			fileMergers.put(OCRFormat.TXT,
@@ -113,6 +115,8 @@ public class FileMerger {
 			// This are the methods for handling files
 			streamMergers.put(OCRFormat.PDF,
 					FileMerger.class.getMethod("mergePDF", streamParams));
+			streamMergers.put(OCRFormat.PDFA,
+					FileMerger.class.getMethod("mergePDFA", streamParams));
 			streamMergers.put(OCRFormat.XML,
 					FileMerger.class.getMethod("mergeAbbyyXML", streamParams));
 			streamMergers.put(OCRFormat.TXT,
@@ -680,6 +684,17 @@ public class FileMerger {
 		}
 		mergePDF(iss, os);
 	}
+
+	public static void mergePDFA(List<InputStream> iss, OutputStream os)
+			throws IOException, DocumentException {
+		mergePDF(iss, os);
+	}
+
+	public static void mergePDFA(List<File> files, File outFile)
+			throws IOException, DocumentException {
+		mergePDF(files, outFile);
+	}
+
 
 	/**
 	 * Merge TXT Streams. This operates directly on Streams and should be

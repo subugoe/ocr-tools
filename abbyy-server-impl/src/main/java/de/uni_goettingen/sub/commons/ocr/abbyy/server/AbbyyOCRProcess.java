@@ -364,22 +364,22 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					logger.info("OCR Output file for " +name + " has been created successfully after "+  getDuration() + " milliseconds");
 					setOcrProcessMetadata(ocrProcessMetadata);
 					//Serializer
-					if(!getSegmentation()){
-						for (URI l : listOfLocalURI) {
-							if ((l.toString())
-									.endsWith("xml" + config.reportSuffix)) {
-								InputStream resultStream = new FileInputStream(new File(l));
-								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-										.parseXmlResult(resultStream);
-							}
-							if ((l.toString()).endsWith(name + ".xml")) {
-								InputStream isDoc = new FileInputStream(new File(l));
-								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-										.parseXmlExport(isDoc);
-							}
-						}
-						serializerTextMD(ocrProcessMetadata, name);
-					}
+//					if(!getSegmentation()){
+//						for (URI l : listOfLocalURI) {
+//							if ((l.toString())
+//									.endsWith("xml" + config.reportSuffix)) {
+//								InputStream resultStream = new FileInputStream(new File(l));
+//								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+//										.parseXmlResult(resultStream);
+//							}
+//							if ((l.toString()).endsWith(name + ".xml")) {
+//								InputStream isDoc = new FileInputStream(new File(l));
+//								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
+//										.parseXmlExport(isDoc);
+//							}
+//						}
+//						serializerTextMD(ocrProcessMetadata, name);
+//					}
 						
 					// end of serializer
 				} else {
@@ -957,7 +957,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				for (Map.Entry<OCRFormat, OCROutput> entry : outs.entrySet()) {
 					OCROutput aoo = new AbbyyOCROutput();
 					URI localUri = entry.getValue().getUri();
-//					if(localUri.isAbsolute())
 					localuri = localUri.toString().replace(name, sP.getName());
 					try {
 						localUri = new URI(localuri);	
@@ -966,9 +965,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					}
 					aoo.setUri(localUri);	
 					OCRFormat f = entry.getKey();
-					if(sP.ocrOutputs.size() == 0) {
-						sP.addOutput(f, aoo);
-					}
+					sP.addOutput(f, aoo);
 					formatForSubProcess.add(f);
 				}	
 				sP.setTime(new Date().getTime());
@@ -1063,7 +1060,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			endTime = System.currentTimeMillis();
 			ocrProcessMetadata.setDuration(getDuration() + processTimeResult);
 			if(!uriTextMD.equals("FAILED")){
-				serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
+				//serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
 				removeSubProcessResults(resultfilesForAllSubProcess);
 			}
 				 
