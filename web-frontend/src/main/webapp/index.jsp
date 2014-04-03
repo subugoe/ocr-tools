@@ -10,6 +10,23 @@
 	function setStyle(elementId, style) {
 		document.getElementById(elementId).setAttribute('style', style);
 	}
+	var inputFolderInfo = "Absolute Pfadangabe eines Ordners auf dem Server. Dieser Ordner muss Unterordner (oder Links) haben, "
+	 + "die jeweils einen Band repräsentieren. In jedem dieser Unterordner befinden sich Bilddateien des Bandes.";
+	var outputFolderInfo = "Absolute Angabe eines Ordners auf dem Server.";
+	var imageFormatInfo = "Dateiendung der zu erkennenden Bilder.";
+	var textTypeInfo = "Die Auswahl hier ist unabhängig von der Auswahl der OCR-Engine. Man kann z. B. einen Fraktur-"
+	 + "Text mit einer Antiqua-Engine erkennen lassen.";
+	var languagesInfo = "Sprachen, die in den Bänden vorkommen. Mehrfachauswahl mit Strg+Maus möglich. "
+	 + "Die Liste wird aus der Datei languages.properties gelesen. Die Datei kann beliebig erweitert werden, "
+	 + "wobei die Schlüsselwerte dem ISO-639-1 Standard entsprechen müssen.";
+	var outputFormatsInfo = "Mehrfachauswahl mit Strg+Maus möglich.";
+	var emailInfo = "An diese Mail-Adresse werden Benachrichtigungen über den Verlauf des OCR-Prozesses gesendet";
+	var ocrEngineInfo = "Der GBV Antiqua Server ist z. Z. gebührenfrei. Der Fraktur-Server und die Abbyy-Cloud "
+	 + "sind kostenpflichtig und erfordern Benutzerangaben.";
+	var userInfo = "Im Falle von Abbyy-Cloud ist es die AppID.";
+	var logFileInfo = "Absoluter Pfad zu einer Datei auf dem Server. Wenn die Datei existiert, wird unten angehängt. "
+	 + "Wenn hier nichts angegeben wird, dann wird in die Logdatei des Servers geloggt. Achtung: Auch wenn hier eine "
+	 + "Datei angegeben wird, gehen RuntimeExceptions trotzdem in das Log des Servers."
 </script>
 <style type="text/css">
 .inputOptions{background-color:#A9BCF5; margin: 10px; padding: 10px; float: left;}
@@ -19,13 +36,13 @@
 
 	<h1>GDZ OCR</h1>
 
-	<h3>Hier haben Sie die Möglichkeit, OCR an einem Band durchzuführen.</h3>
+	<h3>Hier haben Sie die Möglichkeit, OCR an einem oder mehreren Bänden durchzuführen.</h3>
 
 	<form name="startOcr" action="ocr" method="post">
 		<div class="inputOptions">
-		Eingabeordner: <input name="inputFolder" type="text">
+		Eingabeordner:<a href="javascript:alert(inputFolderInfo)">?</a> <input name="inputFolder" type="text">
 		<br/>
-		Ausgabeordner: <input name="outputFolder" type="text">
+		Ausgabeordner:<a href="javascript:alert(outputFolderInfo)">?</a> <input name="outputFolder" type="text">
 		</div>
 		<br/>
 		<br/>
@@ -34,7 +51,7 @@
 		<br/>
 		
 		<div class="inputOptions">
-		Dateiformat:
+		Dateiformat:<a href="javascript:alert(imageFormatInfo)">?</a>
 		<br/>
 		<select name="imageFormat">
 			<option>tif</option>
@@ -44,7 +61,7 @@
 		</div>
 		
 		<div class="inputOptions">
-		Texttyp:
+		Texttyp:<a href="javascript:alert(textTypeInfo)">?</a>
 		<br/>
 		<input name="textType" type="radio" checked="checked" value="NORMAL"/>Antiqua <br/>
 		<input name="textType" type="radio" value="GOTHIC"/>Fraktur <br/>
@@ -52,7 +69,7 @@
 	
 		
 		<div class="inputOptions">
-		Sprache(n):	
+		Sprache(n):<a href="javascript:alert(languagesInfo)">?</a>	
 		<br/> 
 		<select name="languages" size="5" multiple="multiple">
 			${fromfile:getLanguages()}
@@ -60,7 +77,7 @@
 		</div>
 
 		<div class="inputOptions">
-		Ausgabeformat(e):	
+		Ausgabeformat(e):<a href="javascript:alert(outputFormatsInfo)">?</a>	
 		<br/> 
 		<select name="outputFormats" size="5" multiple="multiple">
 			<option selected="selected">PDF</option>
@@ -79,7 +96,7 @@
 		<br/>
 		<br/>
 		<div class="inputOptions">
-		Benachrichtigungsadresse: <input type="text" name="email">
+		Benachrichtigungsadresse:<a href="javascript:alert(emailInfo)">?</a> <input type="text" name="email">
 		</div>
 		<br/>
 		<br/>
@@ -97,14 +114,14 @@
 		<div id="moreOptions" style="display:none">
 		
 		<div class="inputOptions"> 
-		OCR Engine:
+		OCR Engine:<a href="javascript:alert(ocrEngineInfo)">?</a>
 		<select name="ocrEngine">
 			<option value="gbvAntiqua">GBV Abbyy Server (Antiqua)</option>
 			<option value="gbvGothic">GBV Abbyy Server (Fraktur)</option>
 			<option value="abbyyCloud">Abbyy Cloud ocrsdk.com</option>
 		</select>
 		<br/>
-		Benutzername: <input name="user" type="text">
+		Benutzername:<a href="javascript:alert(userInfo)">?</a> <input name="user" type="text">
 		<br/>
 		Passwort: <input name="password" type="text">
 		</div>
@@ -117,7 +134,7 @@
 		<br/>
 		<br/>
 		<div class="inputOptions">
-		Log-Datei: <input name="logFile" type="text">
+		Log-Datei:<a href="javascript:alert(logFileInfo)">?</a> <input name="logFile" type="text">
 		<br/>
 		<input name="logLevel" type="radio" checked="checked" value="INFO"/>normale Ausgabe <br/>
 		<input name="logLevel" type="radio" value="DEBUG"/>Debug-Modus <br/>
