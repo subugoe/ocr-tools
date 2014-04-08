@@ -207,7 +207,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 		pool.shutdown();
 		try {
-			pool.awaitTermination(3600, TimeUnit.SECONDS);
+			pool.awaitTermination(100, TimeUnit.DAYS);
 		} catch (InterruptedException e) {
 			logger.error("Got a problem with thread pool: ", e);
 		}
