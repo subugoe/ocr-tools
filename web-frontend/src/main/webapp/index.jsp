@@ -38,7 +38,7 @@
 
 	<h3>Hier haben Sie die Möglichkeit, OCR an einem oder mehreren Bänden durchzuführen.</h3>
 
-	<form name="startOcr" action="ocr" method="post">
+	<form name="startOcr" action="${pageContext.request.contextPath}/ocr" method="post">
 		<div class="inputOptions">
 		Eingabeordner:<a href="javascript:alert(inputFolderInfo)">?</a> <input name="inputFolder" type="text">
 		<br/>
