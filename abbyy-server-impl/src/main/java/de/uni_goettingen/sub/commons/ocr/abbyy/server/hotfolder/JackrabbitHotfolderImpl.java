@@ -46,13 +46,11 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.methods.FileRequestEntity;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.DavException;
@@ -101,8 +99,6 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		try {
 			client = initConnection(config.getServerURL(),
 					config.getUsername(), config.getPassword());
-		} catch (GeneralSecurityException e) {
-			logger.error("Security Exception", e);
 		} catch (IOException e) {
 			logger.error(
 					"Got an IOException while initilizing Jackrabbit Hotfolder implementation",
@@ -274,13 +270,9 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	private static HttpClient initConnection(String webdavURL,
 			String webdavUsername, String webdavPassword)
-			throws GeneralSecurityException, IOException {
-		Protocol easyhttps = new Protocol("https",
-				new EasySSLProtocolSocketFactory(), 443);
-		Protocol.registerProtocol("https", easyhttps);
+			throws IOException {
 		if (webdavURL == null) {
 			throw new IllegalStateException("no host given");
 		}
