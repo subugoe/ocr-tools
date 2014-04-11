@@ -35,6 +35,8 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		languageMapping.put(new Locale("fr"), "French");
 		outputFormatMapping.put(OCRFormat.XML, "xml");
 		outputFormatMapping.put(OCRFormat.TXT, "txt");
+		outputFormatMapping.put(OCRFormat.PDF, "pdfSearchable");
+		outputFormatMapping.put(OCRFormat.PDFA, "pdfa");
 
 		textTypeMapping.put(OCRTextType.NORMAL, "normal");
 		textTypeMapping.put(OCRTextType.GOTHIC, "gothic");
