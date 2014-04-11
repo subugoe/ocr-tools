@@ -130,6 +130,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			// Just copy local files
 			FileUtils.copyDirectory(new File(from), new File(to));
 		} else {
+			logger.error("Copy from WebDAV URI to WebDAV URI isn't implemented!");
 			throw new NotImplementedException(
 					"Copy from WebDAV URI to WebDAV URI isn't implemented!");
 		}
@@ -193,6 +194,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 				break;
 			}
 			if (status == HttpStatus.SC_FORBIDDEN) {
+				logger.error("Got HTTP Code " + status + " for " + uri.toString());
 				throw new IllegalStateException("Got HTTP Code " + status);
 			}
 		}
@@ -200,6 +202,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 
 	private void put(String uri, File file) throws HttpException, IOException {
 		if (!file.exists()) {
+			logger.error("File " + file + " doesn't exist.");
 			throw new IllegalArgumentException("File " + file
 					+ " doesn't exist.");
 		}
@@ -222,9 +225,10 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 					break;
 				} catch (IOException e) {
 					if (i == timesToTry) {
+						logger.error("Error connecting to server. URL is " + uri, e);
 						throw new IllegalStateException("Error connecting to server. URL is " + uri, e);
 					}
-					logger.warn("Problem connecting to server. Retry number " + i + "... URL is " + uri, e);
+					logger.warn("Problem connecting to server. Retry number " + i + "... URL is " + uri);
 					try{
 						Thread.sleep(10000);
 					} catch (InterruptedException e1) {
@@ -255,9 +259,10 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 					break;
 				} catch (IOException e) {
 					if (i == timesToTry) {
+						logger.error("Error connecting to server. URL is " + method.getURI(), e);
 						throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), e);
 					}
-					logger.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI(), e);
+					logger.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI());
 					try{
 						Thread.sleep(10000);
 					} catch (InterruptedException e1) {
@@ -409,7 +414,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			try {
 				uriList.add(new URI(path));
 			} catch (URISyntaxException e) {
-				logger.error("Error while coverting URI.");
+				logger.error("Error while coverting URI " + path);
 				throw new IllegalStateException(e);
 			}
 		}

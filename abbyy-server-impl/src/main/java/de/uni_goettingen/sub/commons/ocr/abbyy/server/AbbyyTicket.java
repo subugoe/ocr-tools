@@ -361,9 +361,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		try {
 			ticketDoc = XmlTicketDocument.Factory.parse(is, options);
 		} catch (XmlException e) {
-			logger.error("Parsing of XML failed", e);
+			logger.error("Parsing of XML failed (" + getName() + ")", e);
 		} catch (IOException e) {
-			logger.error("IO (read of ticket ) failed", e);
+			logger.error("IO (read of ticket ) failed (" + getName() + ")", e);
 		}
 		if (ticketDoc == null) {
 			return;
@@ -399,7 +399,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 		// Sanity checks
 		if (out == null || config == null) {
-			logger.error("OutputStream and / or configuration is not set!");
+			logger.error("OutputStream and / or configuration is not set! (" + getName() + ")");
 			throw new IllegalStateException();
 		}
 		if (getOcrOutputs().size() < 1) {
@@ -517,7 +517,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			// The server can't handle this
 			if (exportFormat == null) {
 				logger.warn("The server can't handle the format "
-						+ of.toString() + ", ignoring it.");
+						+ of.toString() + ", ignoring it. (" + getName() + ")");
 				continue;
 			}
 			exportFormat.setOutputFlowType("SharedFolder");
@@ -548,7 +548,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 						aoo.addResultFragment(new URI(file));
 					} catch (URISyntaxException e) {
 						logger.error(
-								"Error while setting URI in single file mode",
+								"Error while setting URI in single file mode (" + getName() + ")",
 								e);
 						throw new OCRException(e);
 					}

@@ -124,9 +124,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 				logger.debug("wait because :", e1);
 				//pause();
 			} catch (IOException e1) {
-				logger.error("Could not execute MultiStatus method", e1);
+				logger.error("Could not execute MultiStatus method (" + abbyyOCRProcess.getName() + ")", e1);
 			} catch (URISyntaxException e1) {
-				logger.error("Error setting URI for OCR Engine", e1);
+				logger.error("Error setting URI for OCR Engine (" + abbyyOCRProcess.getName() + ")", e1);
 			}
 
 			waitIfPaused(t);
@@ -168,12 +168,12 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			try {
 				getFileSize(abbyyOCRProcess);
 			} catch (IllegalStateException e1) {
-				logger.debug("wait because :", e1);
+				logger.debug("(" + abbyyOCRProcess.getName() + ") wait because :", e1);
 				//pause();
 			} catch (IOException e1) {
-				logger.error("Could not execute MultiStatus method", e1);
+				logger.error("Could not execute MultiStatus method (" + abbyyOCRProcess.getName() + ")", e1);
 			} catch (URISyntaxException e1) {
-				logger.error("Error seting URI for OCR Engine", e1);
+				logger.error("Error seting URI for OCR Engine (" + abbyyOCRProcess.getName() + ")", e1);
 			}
 
 		} else {
