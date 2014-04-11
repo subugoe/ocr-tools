@@ -22,7 +22,8 @@ public class Mailer {
 	}
 	
 	public void sendStarted(OcrParameters param, int estimatedDuration) {
-		send(emailStarted, param.email, "OCR Prozess gestartet", "Voraussichtliche Dauer: " + (estimatedDuration/60) + " Minuten");
+		send(emailStarted, param.email, "OCR Prozess gestartet", "Voraussichtliche Dauer: " + (estimatedDuration/60) + " Minuten"
+				+ " (" + (estimatedDuration/60/60) + " Stunden)");
 	}
 	public void sendFinished(OcrParameters param) {
 		String message = "Ausgabeordner: " + param.outputFolder;
