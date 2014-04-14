@@ -9,6 +9,7 @@ import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -229,24 +230,6 @@ public class OcrStarterTest {
 	}
 	
 	@Test
-	public void checkingParamsWithNoLogFile() {
-		OcrParameters param = validParams();
-		param.logFile = "";
-		ocrStarter.setParameters(param);
-		String validation = ocrStarter.checkParameters();
-		assertEquals("OK", validation);
-	}
-
-	@Test
-	public void checkingParamsWithInvalidLogFile() {
-		OcrParameters param = validParams();
-		param.logFile = "notabsolute";
-		ocrStarter.setParameters(param);
-		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("Log file path must be absolute"));
-	}
-
-	@Test
 	public void shouldSendEmail() {
 		OcrParameters param = validParams();
 		ocrStarter.setParameters(param);
@@ -261,18 +244,7 @@ public class OcrStarterTest {
 		ocrStarter.setParameters(param);
 		ocrStarter.run();
 		
-		verify(logSelectorMock, times(1)).logToFile(anyString(), anyString());
-		verify(logSelectorMock).logToFile(param.logFile, param.logLevel);
-	}
-
-	@Test
-	public void shouldLogToDefaultLocation() {
-		OcrParameters param = validParams();
-		param.logFile = "";
-		ocrStarter.setParameters(param);
-		ocrStarter.run();
-		
-		verify(logSelectorMock).useDefaults();
+		verify(logSelectorMock, times(1)).logToFile(startsWith("/tmp/log-"));
 	}
 
 	private OcrParameters validParams() {
@@ -285,8 +257,6 @@ public class OcrStarterTest {
 		param.outputFolder = "/tmp";
 		param.imageFormat = "tif";
 		param.email = "test@test.com";
-		param.logFile = "/tmp/out.log";
-		param.logLevel = "INFO";
 		return param;
 	}
 

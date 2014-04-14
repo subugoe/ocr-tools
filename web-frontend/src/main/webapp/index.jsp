@@ -114,7 +114,7 @@
 		<div id="moreOptions" style="display:none">
 		
 		<div class="inputOptions"> 
-		OCR Engine:<a href="javascript:alert(ocrEngineInfo)">?</a>
+		OCR-Engine:<a href="javascript:alert(ocrEngineInfo)">?</a>
 		<select name="ocrEngine">
 			<option value="gbvAntiqua">GBV Abbyy Server (Antiqua)</option>
 			<option value="gbvGothic">GBV Abbyy Server (Fraktur)</option>
@@ -127,19 +127,6 @@
 		</div>
 		
 				<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<br/>
-		<div class="inputOptions">
-		Log-Datei:<a href="javascript:alert(logFileInfo)">?</a> <input name="logFile" type="text">
-		<br/>
-		<input name="logLevel" type="radio" checked="checked" value="INFO"/>normale Ausgabe <br/>
-		<input name="logLevel" type="radio" value="DEBUG"/>Debug-Modus <br/>
-		
-		</div>
 		
 		</div>
 		</form>

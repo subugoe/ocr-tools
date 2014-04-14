@@ -1,4 +1,4 @@
-package de.unigoettingen.sub.commons.ocr.web;
+package de.unigoettingen.sub.commons.ocr.web.testutil;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -11,6 +11,8 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+
+import de.unigoettingen.sub.commons.ocr.web.TestSuiteForJspsAndServlets;
 
 
 public class IndexJspTestPart {
@@ -36,8 +38,6 @@ public class IndexJspTestPart {
 		form.getInputByName("email");
 		form.getSelectByName("ocrEngine");
 		form.getInputByName("user");
-		form.getInputByName("logFile");
-		assertThat("No logLevel radio buttons found", form.getRadioButtonsByName("logLevel"), is(not(empty())));
 		form.getInputByName("submit");
 	}
 	
@@ -53,8 +53,6 @@ public class IndexJspTestPart {
 		form.getSelectByName("ocrEngine").setSelectedAttribute("gbvGothic", true);
 		form.getInputByName("user").setValueAttribute("user1");
 		form.getInputByName("password").setValueAttribute("passwd");
-		form.getInputByName("logFile").setValueAttribute("/tmp/out.log");
-		form.getRadioButtonsByName("logLevel").get(1).click();
 		
 		HtmlSubmitInput button = form.getInputByName("submit");
 		TextPage fakeServlet = button.click();
@@ -70,8 +68,6 @@ public class IndexJspTestPart {
 		assertThat(textFromFakeServlet, containsString("gbvGothic"));
 		assertThat(textFromFakeServlet, containsString("user1"));
 		assertThat(textFromFakeServlet, containsString("passwd"));
-		assertThat(textFromFakeServlet, containsString("/tmp/out.log"));
-		assertThat(textFromFakeServlet, containsString("DEBUG"));
 	}
 	
 }

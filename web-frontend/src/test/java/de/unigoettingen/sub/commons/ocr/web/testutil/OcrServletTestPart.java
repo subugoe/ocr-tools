@@ -1,4 +1,4 @@
-package de.unigoettingen.sub.commons.ocr.web;
+package de.unigoettingen.sub.commons.ocr.web.testutil;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,6 +15,8 @@ import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
+
+import de.unigoettingen.sub.commons.ocr.web.TestSuiteForJspsAndServlets;
 
 public class OcrServletTestPart {
 

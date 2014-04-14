@@ -9,9 +9,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 public class LogSelector {
 
-	public void logToFile(String filePath, String logLevel) {
+	public void logToFile(String filePath) {
 		Properties props = readDefaults();
-		props.setProperty("log4j.rootLogger", logLevel + ", file");
+		props.setProperty("log4j.rootLogger", "INFO , file");
 		props.setProperty("log4j.logger.httpclient.wire", "ERROR, file");
 		props.setProperty("log4j.logger.org.apache.commons.httpclient", "WARN, file");
 		props.setProperty("log4j.appender.file", "org.apache.log4j.FileAppender");

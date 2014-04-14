@@ -29,8 +29,6 @@ public class OcrServlet extends HttpServlet {
 		param.ocrEngine = request.getParameter("ocrEngine");
 		param.user = request.getParameter("user");
 		param.password = request.getParameter("password");
-		param.logFile = request.getParameter("logFile");
-		param.logLevel = request.getParameter("logLevel");
 		ocrStarter.setParameters(param);
 		
 		String validationMessage = ocrStarter.checkParameters();

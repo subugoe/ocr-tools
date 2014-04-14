@@ -7,6 +7,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import de.unigoettingen.sub.commons.ocr.web.testutil.IndexJspTestPart;
+import de.unigoettingen.sub.commons.ocr.web.testutil.OcrServletTestPart;
+
 @RunWith(Suite.class)
 @SuiteClasses({ IndexJspTestPart.class, OcrServletTestPart.class })
 public class TestSuiteForJspsAndServlets {

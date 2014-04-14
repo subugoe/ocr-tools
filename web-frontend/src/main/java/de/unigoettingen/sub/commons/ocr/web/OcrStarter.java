@@ -3,7 +3,11 @@ package de.unigoettingen.sub.commons.ocr.web;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,9 +76,6 @@ public class OcrStarter implements Runnable {
 		if (isEmpty(param.outputFormats)) {
 			validationMessage += "No output format. ";
 		}
-		if (!isEmpty(param.logFile) && !isAbsolutePath(param.logFile)) {
-			validationMessage += "Log file path must be absolute. ";
-		}
 		if (validationMessage.equals("")) {
 			return "OK";
 		} else {
@@ -94,11 +95,10 @@ public class OcrStarter implements Runnable {
 
 	@Override
 	public void run() {
-		if (isEmpty(param.logFile)) {
-			logSelector.useDefaults();
-		} else {
-			logSelector.logToFile(param.logFile, param.logLevel);
-		}
+		DateFormat f = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+		String timeStamp = f.format(new Date()).replaceAll(" ", "-");
+		String logFile = new File(new File(param.outputFolder), "log-" + timeStamp + ".txt").getAbsolutePath();
+		logSelector.logToFile(logFile);
 		OCREngine engine = createEngine();
 
 		File mainFolder = new File(param.inputFolder);
