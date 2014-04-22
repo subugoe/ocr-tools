@@ -61,6 +61,13 @@
 	</profiles>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>ca.juliusdavies </groupId>
+			<artifactId>not-yet-commons-ssl </artifactId>
+			<version>0.3.11</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
