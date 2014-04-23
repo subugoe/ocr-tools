@@ -163,7 +163,7 @@ public class OcrStarterTest {
 		param.inputFolder = "";
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("No input folder"));
+		assertThat(validation, containsString("Kein Eingabeordner"));
 	}
 
 	@Test
@@ -172,7 +172,7 @@ public class OcrStarterTest {
 		param.inputFolder = "not/absolute";
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("Input folder must be absolute"));
+		assertThat(validation, containsString("Eingabeordner muss absoluter Pfad sein"));
 	}
 
 	@Test
@@ -181,7 +181,7 @@ public class OcrStarterTest {
 		param.outputFolder = null;
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("No output folder"));
+		assertThat(validation, containsString("Kein Ausgabeordner"));
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class OcrStarterTest {
 		param.outputFolder = "not/absolute";
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("Output folder must be absolute"));
+		assertThat(validation, containsString("Ausgabeordner muss absoluter Pfad sein"));
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public class OcrStarterTest {
 		param.email = null;
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("No email"));
+		assertThat(validation, containsString("Keine Benachrichtigungsadresse"));
 	}
 
 	@Test
@@ -208,7 +208,7 @@ public class OcrStarterTest {
 		param.email = "invalid";
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("Invalid email"));
+		assertThat(validation, containsString("Inkorrekte Benachrichtigungsadresse"));
 	}
 
 	@Test
@@ -217,7 +217,7 @@ public class OcrStarterTest {
 		param.languages = new String[]{};
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("No language"));
+		assertThat(validation, containsString("Keine Sprache"));
 	}
 
 	@Test
@@ -226,7 +226,7 @@ public class OcrStarterTest {
 		param.outputFormats = null;
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("No output format"));
+		assertThat(validation, containsString("Kein Ausgabeformat"));
 	}
 	
 	@Test
