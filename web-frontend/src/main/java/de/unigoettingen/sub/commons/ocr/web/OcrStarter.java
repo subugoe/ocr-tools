@@ -55,26 +55,26 @@ public class OcrStarter implements Runnable {
 	public String checkParameters() {
 		String validationMessage = "";
 		if (isEmpty(param.inputFolder)) {
-			validationMessage += "No input folder. ";
+			validationMessage += "Kein Eingabeordner. ";
 		} else if (!isAbsolutePath(param.inputFolder)) {
-			validationMessage += "Input folder must be absolute path. ";
+			validationMessage += "Eingabeordner muss absoluter Pfad sein. ";
 		}
 		if (isEmpty(param.outputFolder)) {
-			validationMessage += "No output folder. ";
+			validationMessage += "Kein Ausgabeordner. ";
 		} else if (!isAbsolutePath(param.outputFolder)) {
-			validationMessage += "Output folder must be absolute path. ";
+			validationMessage += "Ausgabeordner muss absoluter Pfad sein. ";
 		}
 		EmailValidator validator = EmailValidator.getInstance();
 		if (isEmpty(param.email)) {
-			validationMessage += "No email address. ";
+			validationMessage += "Keine Benachrichtigungsadresse. ";
 		} else if (!validator.isValid(param.email)) {
-			validationMessage += "Invalid email address. ";
+			validationMessage += "Inkorrekte Benachrichtigungsadresse. ";
 		}
 		if (isEmpty(param.languages)) {
-			validationMessage += "No language. ";
+			validationMessage += "Keine Sprache. ";
 		}
 		if (isEmpty(param.outputFormats)) {
-			validationMessage += "No output format. ";
+			validationMessage += "Kein Ausgabeformat. ";
 		}
 		if (validationMessage.equals("")) {
 			return "OK";
