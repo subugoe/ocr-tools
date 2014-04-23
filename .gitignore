@@ -1,5 +1,6 @@
 target
 .*
 *.log
+*.iml
 dependency-reduced-pom.xml
 !.travis.yml
