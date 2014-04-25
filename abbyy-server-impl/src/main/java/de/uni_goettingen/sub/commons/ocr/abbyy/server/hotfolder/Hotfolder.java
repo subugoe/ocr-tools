@@ -26,113 +26,76 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 
-//TODO: Add a method to open an OutputStream
 /**
- * The Interface Hotfolder is used to access any file system like backend. This
+ * The interface is used to access any file system like backend. This
  * can be used to integrate external systems like Grid storage or WebDAV based
  * hotfolders.
  * 
- * @version 0.2
- * @author abergna
- * @author cmahnke
- * @since 0.2
  */
 public interface Hotfolder {
 
 	/**
-	 * Copy a file from one location to another. Implementors should raises an
-	 * IOException if the file already exists.
+	 * Copies a file from one location to another.
 	 * 
-	 * @param from
-	 *            the uri of the file name as used on the remote system, usally
-	 *            a relative file name and thus represented as a String
-	 * @param to
-	 *            an URL representing the local file, it should be resolveable
-	 *            from the local Server.
 	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 *             Implementers should raise an IOException if the file already exists.
 	 */
 	public abstract void copyFile(URI from, URI to) throws IOException;
 
 	/**
-	 * Delete a resource at the specified url.
+	 * Deletes a resource.
 	 * 
-	 * @param uri
-	 *            the uri
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract void delete(URI uri) throws IOException;
 
 	/**
-	 * Delete a resource at the specified URI if it exists.
+	 * Deletes a resource at the specified URI if it exists.
 	 * 
-	 * @param uri
-	 *            the uri
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract void deleteIfExists(URI uri) throws IOException;
 
 	/**
-	 * Create a directory or collection at the specified url.
+	 * Creates a directory or collection at the specified URI.
 	 * 
-	 * @param uri
-	 *            the URI of the directory to be created
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract void mkDir(URI uri) throws IOException;
 
 	/**
-	 * Check if a resource at the specified url exists
+	 * Checks if a resource at the specified URI exists
 	 * 
-	 * @param uri
-	 *            the uri
-	 * @return true, if successful, false otherwise.
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract Boolean exists(URI uri) throws IOException;
 
 	/**
-	 * Creates the temporary file and returns the {@link java.io.OutputStream}
+	 * Creates a temporary file and returns the {@link java.io.OutputStream}
 	 * to write to this file.
 	 * 
 	 * @param name
-	 *            the name of the temp file. Note that this might be just used
-	 *            by implementations of this interface, te file isn't guaranteed
+	 *            The name of the temp file. Note that this might be just used
+	 *            by implementations of this interface, the file isn't guaranteed
 	 *            to be named like specified here.
 	 * @return the output stream to write to
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract OutputStream createTmpFile(String name) throws IOException;
 
 	/**
-	 * Delete the temporary file to remove the file in tmp
+	 * Deletes the previously created temporary file.
 	 * 
 	 * @param name
-	 *            the name of the temp file. Note that this might be just used
-	 *            by implementations of this interface, te file isn't guaranteed
+	 *            The name of the temp file. Note that this might be just used
+	 *            by implementations of this interface, the file isn't guaranteed
 	 *            to be named like specified here.
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract void deleteTmpFile(String name) throws IOException;
 
 	/**
-	 * Copy a temporary file with the given name. Make sure it was created using
+	 * Copies a temporary file with the given name. Make sure it was created using
 	 * {@link #createTmpFile(String)} before.
 	 * 
-	 * @param tmpFile
-	 *            the tmp file
 	 * @param to
 	 *            the URI to copy the file to
 	 * @return true if the file was copied, false if the file wasn't created
-	 *         before hand or it can't be copied
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 *         beforehand or it can't be copied
 	 */
 	public abstract Boolean copyTmpFile(String tmpFile, URI to)
 			throws IOException;
@@ -142,11 +105,6 @@ public interface Hotfolder {
 	 * represents a single file. This method also looks for the size of children
 	 * if they exists.
 	 * 
-	 * @param uri
-	 *            the URI to check
-	 * @return the total size
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract Long getTotalSize(URI uri) throws IOException;
 
