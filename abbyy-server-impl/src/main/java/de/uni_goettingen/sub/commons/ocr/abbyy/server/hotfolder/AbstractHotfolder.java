@@ -25,28 +25,19 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 
 /**
- * The Class AbstractHotfolder is a base class for other implementations of
+ * The class is a base class for other implementations of
  * Hotfolder. It provides some of the methods that can be implemented completely
  * on top of others. Note that this approach might not be the best from a
  * performance point of view, since it's using just another abstraction.
  * 
- * @version 0.2
- * @author cmahnke
- * @since 0.2
  */
 public abstract class AbstractHotfolder implements Hotfolder {
-
-	/** The Constant logger. */
-	final static Logger logger = LoggerFactory
-			.getLogger(AbstractHotfolder.class);
 
 	// Simple Implementation of tempfile based on a local file.
 	protected Map<String, File> tmpfiles = new HashMap<String, File>();
@@ -86,29 +77,6 @@ public abstract class AbstractHotfolder implements Hotfolder {
 			}
 		}
 		return size;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#getTotalCount
-	 * (java.net.URI)
-	 */
-	@Override
-	public Long getTotalCount(URI uri) throws IOException {
-		if (!isDirectory(uri)) {
-			return 1l;
-		}
-		Long count = 0l;
-		for (URI u : listURIs(uri)) {
-			if (isDirectory(uri)) {
-				count += getTotalCount(u);
-			} else {
-				count += 1l;
-			}
-		}
-		return count;
 	}
 
 	protected Boolean isLocal(URI uri) {

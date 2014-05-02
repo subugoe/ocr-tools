@@ -65,23 +65,16 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 
-/**
- * @author cmahnke
- * 
- */
 public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		Hotfolder, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	final static Logger LOGGER = LoggerFactory.getLogger(JackrabbitHotfolderImpl.class);
+	private final static Logger log = LoggerFactory.getLogger(JackrabbitHotfolderImpl.class);
 	private long mkColWait = 300l;
-	transient protected HttpClient client = null;
+	transient protected HttpClient client;
 	private static Hotfolder instance;
 
-	/**
-	 * 
-	 */
 	private JackrabbitHotfolderImpl(ConfigParser config) {
 		setConfig(config);
 	}
@@ -93,9 +86,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			client = initConnection(config.getServerURL(),
 					config.getUsername(), config.getPassword());
 		} catch (IOException e) {
-			LOGGER.error(
-                    "Got an IOException while initilizing Jackrabbit Hotfolder implementation",
-                    e);
+			log.error("Got an IOException while initilizing Jackrabbit Hotfolder implementation", e);
 		}
 	}
 
@@ -123,7 +114,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			// Just copy local files
 			FileUtils.copyDirectory(new File(from), new File(to));
 		} else {
-			LOGGER.error("Copy from WebDAV URI to WebDAV URI isn't implemented!");
+			log.error("Copy from WebDAV URI to WebDAV URI isn't implemented!");
 			throw new NotImplementedException(
 					"Copy from WebDAV URI to WebDAV URI isn't implemented!");
 		}
@@ -140,7 +131,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	public void delete(URI uri) throws IOException {
 		DavMethod delete = new DeleteMethod(uri.toString());
 		executeMethod(client, delete);
-		LOGGER.debug("Deleted " + uri);
+		log.debug("Deleted " + uri);
 	}
 
 	/*
@@ -180,14 +171,14 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			try {
 				Thread.sleep(mkColWait);
 			} catch (InterruptedException e) {
-				LOGGER.error("The current Thread was interupted", e);
+				log.error("The current Thread was interupted", e);
 			}
 			Integer status = head(uri);
 			if (status == HttpStatus.SC_OK) {
 				break;
 			}
 			if (status == HttpStatus.SC_FORBIDDEN) {
-				LOGGER.error("Got HTTP Code " + status + " for " + uri.toString());
+				log.error("Got HTTP Code " + status + " for " + uri.toString());
 				throw new IllegalStateException("Got HTTP Code " + status);
 			}
 		}
@@ -195,7 +186,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 
 	private void put(String uri, File file) throws HttpException, IOException {
 		if (!file.exists()) {
-			LOGGER.error("File " + file + " doesn't exist.");
+			log.error("File " + file + " doesn't exist.");
 			throw new IllegalArgumentException("File " + file
 					+ " doesn't exist.");
 		}
@@ -218,14 +209,14 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 					break;
 				} catch (IOException e) {
 					if (i == timesToTry) {
-						LOGGER.error("Error connecting to server. URL is " + uri, e);
+						log.error("Error connecting to server. URL is " + uri, e);
 						throw new IllegalStateException("Error connecting to server. URL is " + uri, e);
 					}
-					LOGGER.warn("Problem connecting to server. Retry number " + i + "... URL is " + uri);
+					log.warn("Problem connecting to server. Retry number " + i + "... URL is " + uri);
 					try{
 						Thread.sleep(10000);
 					} catch (InterruptedException e1) {
-						LOGGER.error("interrupted while sleeping");
+						log.error("interrupted while sleeping");
 					}
 				}
 			}
@@ -244,7 +235,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			for (int i = 1; i <= timesToTry; i++) {
 				try {
 					responseCode = client.executeMethod(method);
-					LOGGER.trace("Response code in executeMethod: " + responseCode);
+					log.trace("Response code in executeMethod: " + responseCode);
 					if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
 						throw new IOException("Got illegal response code " + responseCode);
 					}
@@ -252,14 +243,14 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 					break;
 				} catch (IOException e) {
 					if (i == timesToTry) {
-						LOGGER.error("Error connecting to server. URL is " + method.getURI(), e);
+						log.error("Error connecting to server. URL is " + method.getURI(), e);
 						throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), e);
 					}
-					LOGGER.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI());
+					log.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI());
 					try{
 						Thread.sleep(10000);
 					} catch (InterruptedException e1) {
-						LOGGER.error("interrupted while sleeping");
+						log.error("interrupted while sleeping");
 					}
 				}
 			}
@@ -317,14 +308,14 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			Integer statusCode = client.executeMethod(method);
 
 			if (statusCode != HttpStatus.SC_OK) {
-				LOGGER.error("Method failed: " + method.getStatusLine());
+				log.error("Method failed: " + method.getStatusLine());
 			}
 			is = method.getResponseBodyAsStream();
 			org.apache.commons.io.FileUtils
 					.copyInputStreamToFile(is, localFile);
 
 		} catch (IOException e) {
-			LOGGER.error("Fatal transport error: ", e);
+			log.error("Fatal transport error: ", e);
 		} finally {
 			// Release the connection.
 			is.close();
@@ -407,7 +398,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 			try {
 				uriList.add(new URI(path));
 			} catch (URISyntaxException e) {
-				LOGGER.error("Error while coverting URI " + path);
+				log.error("Error while coverting URI " + path);
 				throw new IllegalStateException(e);
 			}
 		}
@@ -478,7 +469,7 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		Integer statusCode = client.executeMethod(method);
 
 		if (statusCode != HttpStatus.SC_OK) {
-			LOGGER.error("Method failed: " + method.getStatusLine());
+			log.error("Method failed: " + method.getStatusLine());
 			throw new IOException(method.getStatusLine().toString());
 		}
 		return method.getResponseBodyAsStream();

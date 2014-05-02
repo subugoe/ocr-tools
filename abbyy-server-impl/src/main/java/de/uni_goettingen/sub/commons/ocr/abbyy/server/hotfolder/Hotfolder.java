@@ -109,51 +109,25 @@ public interface Hotfolder {
 	public abstract Long getTotalSize(URI uri) throws IOException;
 
 	/**
-	 * Gets the total count of files under a given URI, returns just 1 if the
-	 * URI represents a single file. This method also looks for the number of
-	 * children if they exists.
-	 * 
-	 * @param uri
-	 *            the URI to check
-	 * @return the total count
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
-	public abstract Long getTotalCount(URI uri) throws IOException;
-
-	/**
 	 * Gets the size of a given URI. If the URI represents a collection or
 	 * directory the size should be returned as 0.
 	 * 
-	 * @param uri
-	 *            the URI
-	 * @return the size
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract Long getSize(URI uri) throws IOException;
 
 	/**
 	 * Checks if the URI represents directory or resource collection.
 	 * 
-	 * @param uri
-	 *            the URI to check
-	 * @return true if this is a directory
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract Boolean isDirectory(URI uri) throws IOException;
 
 	/**
 	 * List the URIs that are children of the given URI. In other terms, this
 	 * can be used to generate a directory listing. This should return a empty
-	 * List (nut null) if the URI doesn't represent a directory.
+	 * List (not null) if the URI doesn't represent a directory.
 	 * 
 	 * @param uri
-	 *            the URI to lists it's contents
-	 * @return a List of URI's
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 *            the URI to list it's contents
 	 */
 	public abstract List<URI> listURIs(URI uri) throws IOException;
 
@@ -161,16 +135,8 @@ public interface Hotfolder {
 	 * Open an {@link java.io.InputStream} for the given URI to read files based
 	 * on stream.
 	 * 
-	 * @param uri
-	 *            the URI
-	 * @return the input stream
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public abstract InputStream openInputStream(URI uri) throws IOException;
 
-	// TODO: add a methot to check if the undelying implementation can read and
-	// write
-	// public abstract Boolean test ();
 
 }
