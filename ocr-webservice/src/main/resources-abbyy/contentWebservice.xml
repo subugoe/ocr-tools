@@ -7,7 +7,7 @@
 	
 	<bean id="OCREngineFactory" name="OCREngineFactory"
 		class="de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory"
-		factory-method="newFactory">
+		factory-method="getInstance">
 		<property name="engine" ref="abbyyServerOCREngine" />
 	</bean>
 

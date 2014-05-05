@@ -151,10 +151,8 @@ public class OCRCli {
 
 		List<String> files = defaultOpts(args);
 		ApplicationContext ac = new ClassPathXmlApplicationContext(ocrEngineToUse + "-context.xml");
-		OCREngineFactory ocrEngineFactory = (OCREngineFactory) ac
-					.getBean("OCREngineFactory");
 
-		engine = ocrEngineFactory.newOcrEngine();
+		engine = (OCREngine)ac.getBean("ocrEngine");
 
 		if (extraOptions != null) {
 			engine.setOptions(extraOptions);

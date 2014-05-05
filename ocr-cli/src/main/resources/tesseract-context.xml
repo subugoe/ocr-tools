@@ -4,19 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
-	<bean id="OCREngineFactory" name="OCREngineFactory"
-		class="de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory"
-		factory-method="getInstance">
-		<property name="engine" ref="tesseractOCREngine" />
-	</bean>
-
-	
-
-	<bean id="tesseractOCREngine" name="tesseractOCREngine"
-		class="de.uni_goettingen.sub.commons.ocr.tesseract.TesseractOCREngine"
-		factory-method="getInstance">
-	</bean>
-
+	<bean id="ocrEngine" class="de.uni_goettingen.sub.commons.ocr.tesseract.TesseractOCREngine"/>
 
 
 </beans>
