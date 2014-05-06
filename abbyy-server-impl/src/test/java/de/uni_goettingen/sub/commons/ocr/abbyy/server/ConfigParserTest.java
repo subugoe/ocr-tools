@@ -55,7 +55,6 @@ public class ConfigParserTest {
 		assertTrue(config.getMaxFiles() > 0);
 		assertTrue(config.getMaxSize() > 0);
 		assertTrue(config.getMaxThreads() > 0);
-		assertNotNull(config.getCheckServerState());
 	}
 
 	@Test

@@ -84,7 +84,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	/** single instance of AbbyyServerOCREngine. */
 	private static AbbyyServerOCREngine instance, newInstance;
 
-	protected Boolean checkServerState = true;
 	protected static Boolean rest = false;
 
 	// OCR Processes
@@ -107,7 +106,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		config = new ConfigParser().parse();
 		hotfolder = AbstractHotfolder.getHotfolder(config);
 		maxThreads = config.getMaxThreads();
-		checkServerState = config.getCheckServerState();
 	}
 
 	private void initConfig() {
@@ -126,7 +124,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 		hotfolder = AbstractHotfolder.getHotfolder(config);
 		maxThreads = config.getMaxThreads();
-		checkServerState = config.getCheckServerState();
 	}
 	
 	/* start JMX methods */

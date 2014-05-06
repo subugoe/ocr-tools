@@ -35,10 +35,6 @@ public class ConfigParser {
 	public final static Integer DEFAULT_MAXTHREADS = 10;
 	public final static String PARAMETER_MAXTHREADS = "maxThreads";
 	protected Integer maxThreads;
-	//Should the server state should be checked?
-	public final static Boolean DEFAULT_CHECKSERVERSTATE = true;
-	public final static String PARAMETER_CHECKSERVERSTATE = "checkServerState";
-	protected Boolean checkServerState;
 	//Should the authentification data be shown in logs?
 	public final static Boolean DEFAULT_DEBUGAUTH = false;
 	public final static String PARAMETER_DEBUGAUTH = "debugAuth";
@@ -214,8 +210,6 @@ public class ConfigParser {
 		resultXmlFolder = config.getString(PARAMETER_RESULTXMLFOLDER, DEFAULT_RESULTXMLFOLDER);
 		error = config.getString(PARAMETER_ERROR, DEFAULT_ERROR);
 
-		checkServerState = config.getBoolean(PARAMETER_CHECKSERVERSTATE, DEFAULT_CHECKSERVERSTATE);
-
 		maxThreads = config.getInteger(PARAMETER_MAXTHREADS, DEFAULT_MAXTHREADS);
 		maxSize = config.getLong(PARAMETER_MAXSIZE, DEFAULT_MAXSIZE);
 		maxFiles = config.getLong(PARAMETER_MAXFILES, DEFAULT_MAXFILES);
@@ -263,8 +257,6 @@ public class ConfigParser {
 		logger.trace("Max size: " + maxSize);
 		logger.trace("Max files: " + maxFiles);
 		logger.trace("Max treads: " + maxThreads);
-
-		logger.debug("Check server state: " + checkServerState);
 
 		parsed = true;
 		return this;
@@ -357,20 +349,6 @@ public class ConfigParser {
 		this.maxThreads = maxThreads;
 	}
 
-	/**
-	 * @return the checkServerState
-	 */
-	public Boolean getCheckServerState () {
-		return checkServerState;
-	}
-
-	/**
-	 * @param checkServerState
-	 *            the checkServerState to set
-	 */
-	public void setCheckServerState (Boolean checkServerState) {
-		this.checkServerState = checkServerState;
-	}
 
 	/**
 	 * @return the config
