@@ -255,7 +255,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * @return an instance of a pool/executor
 	 */
 	protected OCRExecuter createPool() {
-		return new OCRExecuter(maxThreads, hotfolder, config);
+		return new OCRExecuter(maxThreads, hotfolder);
 	}
 	
 	protected void cleanUp() {

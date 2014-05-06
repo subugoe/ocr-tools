@@ -28,7 +28,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 
 	public HazelcastOCRExecutor(Integer maxThreads, Hotfolder hotfolder,
 			ConfigParser config, HazelcastInstance hazelcast) {
-		super(maxThreads, hotfolder, config);
+		super(maxThreads, hotfolder);
 		order = new ItemComparator();
 		q = new PriorityQueue<AbbyyOCRProcess>(100, order);
 

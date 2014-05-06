@@ -60,7 +60,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 * @see java.util.concurrent.locks.ReentrantLock.html#ReentrantLock()
 	 */
 	private ReentrantLock pauseLock = new ReentrantLock();
-	protected ConfigParser config;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -97,11 +96,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 *            before they are executed. This queue will hold only the
 	 *            Runnable tasks submitted by the execute method.
 	 */
-	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder,
-			ConfigParser config) {
+	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
-		this.config = config;
 		this.maxThreads = maxThreads;
 		this.hotfolder = hotfolder;
 	}
