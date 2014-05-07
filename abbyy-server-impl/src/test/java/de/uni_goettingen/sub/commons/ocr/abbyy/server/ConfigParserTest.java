@@ -47,7 +47,6 @@ public class ConfigParserTest {
 	@Test
 	public void testConfiguration () {
 		ConfigParser config = new ConfigParser().parse();
-		assertNotNull(config.getConfig());
 		assertNotNull(config.getServerURL());
 		assertNotNull(config.getInput());
 		assertNotNull(config.getError());

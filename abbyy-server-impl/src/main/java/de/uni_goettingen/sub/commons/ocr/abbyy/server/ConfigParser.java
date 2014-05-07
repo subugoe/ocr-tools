@@ -326,13 +326,6 @@ public class ConfigParser {
 	}
 
 
-	/**
-	 * @return the config
-	 */
-	public Configuration getConfig () {
-		return config;
-	}
-
 	public String getOutput () {
 		return output;
 	}
