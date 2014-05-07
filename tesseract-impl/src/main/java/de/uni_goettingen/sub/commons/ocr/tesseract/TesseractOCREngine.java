@@ -29,22 +29,6 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine#getName()
-	 */
-	@Override
-	public String getName() {
-		return "Tesseract";
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine#getVersion()
-	 */
-	@Override
-	public String getVersion() {
-		return "3";
-	}
-
-	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#addOcrProcess(de.uni_goettingen.sub.commons.ocr.api.OCRProcess)
 	 */
 	@Override

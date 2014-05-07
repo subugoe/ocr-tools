@@ -103,16 +103,6 @@ public class OcrsdkEngine extends AbstractOCREngine {
 	}
 
 	@Override
-	public String getName() {
-		return "Abbyy ocrsdk";
-	}
-
-	@Override
-	public String getVersion() {
-		return "";
-	}
-
-	@Override
 	public int getEstimatedDurationInSeconds() {
 		int duration = 0;
 		for (OCRProcess process : ocrProcess) {

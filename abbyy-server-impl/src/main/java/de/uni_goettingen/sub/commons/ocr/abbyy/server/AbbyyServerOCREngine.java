@@ -59,10 +59,6 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		OCREngine {
-	public static final String version = "0.5";
-	public static final String name = AbbyyServerOCREngine.class
-			.getSimpleName();
-
 	protected Long startTimeForProcess = null;
 	protected AbbyySerializerTextMD abbyySerializerTextMD;
 	
@@ -413,17 +409,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	public Boolean stop() {
 		return false;
 	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
 	
-	@Override
-	public String getVersion() {
-		return version;
-	}
-
 	@Override
 	public void setOptions(Map<String, String> opts) {
 		extraOptions = opts;

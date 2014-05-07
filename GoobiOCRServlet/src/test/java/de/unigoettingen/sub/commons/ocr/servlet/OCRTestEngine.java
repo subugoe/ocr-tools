@@ -71,16 +71,6 @@ public class OCRTestEngine extends AbstractOCREngine {
 	}
 
 	@Override
-	public String getName() {
-		return null;
-	}
-
-	@Override
-	public String getVersion() {
-		return null;
-	}
-
-	@Override
 	public int getEstimatedDurationInSeconds() {
 		return 0;
 	}

@@ -49,24 +49,6 @@ public abstract class AbstractOCREngine implements OCREngine {
 		return ocrProcess;
 	}
 
-	/**
-	 * Gets the name of this engine, if this is just a wrapper around an
-	 * external implementation this should also state the name of the underlying
-	 * engine
-	 * 
-	 * @return the name
-	 */
-	public abstract String getName();
-
-	/**
-	 * Gets the version of the implementation. If the implementation is just a
-	 * wrapper consider to state both versions, maybe separated by a space
-	 * character.
-	 * 
-	 * @return the version
-	 */
-	public abstract String getVersion();
-
 	/*
 	 * (non-Javadoc)
 	 * 

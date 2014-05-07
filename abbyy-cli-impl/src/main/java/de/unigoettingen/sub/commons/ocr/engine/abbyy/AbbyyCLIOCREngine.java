@@ -44,8 +44,6 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OCREngine {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyCLIOCREngine.class);
 
-	private static final String name = "Abbyy Finereader Engine";
-	private static final String version = "8.1";
 	public static final Map<OCRFormat, String> FORMAT_MAPPING;
 	public static final Map<OCRFormat, List<String>> FORMAT_SETTINGS;
 	protected static final List<String> engineSettings;
@@ -126,16 +124,6 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 			instance = new AbbyyCLIOCREngine();
 		}
 		return instance;
-	}
-
-	@Override
-	public String getName () {
-		return name;
-	}
-
-	@Override
-	public String getVersion () {
-		return version;
 	}
 
 	@Override
