@@ -17,6 +17,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 
 public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, EntryListener{
 
+	protected int maxProcesses;
 	protected Comparator<AbbyyOCRProcess> order;
 
 	protected PriorityQueue<AbbyyOCRProcess> q;
@@ -27,6 +28,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 	public HazelcastOCRExecutor(Integer maxThreads, Hotfolder hotfolder,
 			HazelcastInstance hazelcast) {
 		super(maxThreads, hotfolder);
+		maxProcesses = maxThreads;
 		order = new ItemComparator();
 		q = new PriorityQueue<AbbyyOCRProcess>(100, order);
 
@@ -52,7 +54,6 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 				boolean slotsFree = false;
 				synchronized (queuedProcesses) {
 					
-					int maxProcesses = maxThreads;
 					int actualProcesses = runningProcesses.size();
 					slotsFree = actualProcesses < maxProcesses;
 

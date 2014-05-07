@@ -111,7 +111,7 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 
 	@Override
 	protected OCRExecuter createPool() {
-		return new HazelcastOCRExecutor(maxThreads, hotfolder, hazelcast);
+		return new HazelcastOCRExecutor(config.getMaxThreads(), hotfolder, hazelcast);
 	}
 
 	@Override

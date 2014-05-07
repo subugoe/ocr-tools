@@ -18,7 +18,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
@@ -28,7 +27,6 @@ import java.net.URISyntaxException;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
@@ -50,7 +48,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
-import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
 /**
  * The Class AbbyyServerOCREngine. The Engine is also the entry point for
@@ -65,8 +62,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	public static final String version = "0.5";
 	public static final String name = AbbyyServerOCREngine.class
 			.getSimpleName();
-	// max running ocr processes in thread pool
-	protected Integer maxThreads;
 
 	protected Long startTimeForProcess = null;
 	protected AbbyySerializerTextMD abbyySerializerTextMD;
@@ -77,7 +72,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 			.getLogger(AbbyyServerOCREngine.class);
 
 	// The configuration.
-	protected static ConfigParser config;
+	protected ConfigParser config;
 
 	protected Hotfolder hotfolder;
 	protected OCRProcessMetadata ocrProcessMetadata;
@@ -105,7 +100,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	protected AbbyyServerOCREngine() throws ConfigurationException {
 		config = new ConfigParser().parse();
 		hotfolder = AbstractHotfolder.getHotfolder(config);
-		maxThreads = config.getMaxThreads();
 	}
 
 	private void initConfig() {
@@ -123,7 +117,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		}
 
 		hotfolder = AbstractHotfolder.getHotfolder(config);
-		maxThreads = config.getMaxThreads();
 	}
 	
 	/* start JMX methods */
@@ -255,7 +248,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * @return an instance of a pool/executor
 	 */
 	protected OCRExecuter createPool() {
-		return new OCRExecuter(maxThreads, hotfolder);
+		return new OCRExecuter(config.getMaxThreads(), hotfolder);
 	}
 	
 	protected void cleanUp() {
@@ -409,33 +402,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 *            only directories containing files of this type will be processed
 	 * @return the abbyy ocr process
 	 */
-	public static AbbyyOCRProcess createProcessFromDir(File directory,
-			String extension) {
-		AbbyyOCRProcess process = new AbbyyOCRProcess(config);
-		List<File> imageDirs = OCRUtil.getTargetDirectories(directory,
-				extension);
-
-		for (File dir : imageDirs) {
-			if (imageDirs.size() > 1) {
-				logger.error("Directory " + directory.getAbsolutePath()
-						+ " contains more then one image directories");
-				throw new OCRException(
-						"createProcessFromDir can currently create only one AbbyyOCRProcess!");
-			}
-			String jobName = dir.getName();
-			for (File imageFile : OCRUtil.makeFileList(dir, extension)) {
-				process.setName(jobName);
-				// Remote URL isn't set here because we don't know it yet.
-				AbbyyOCRImage image = new AbbyyOCRImage(imageFile.toURI());
-				image.setSize(imageFile.length());
-				process.addImage(image);
-			}
-			process.processTimeout = (long) process.getOcrImages().size()
-					* process.getConfig().maxMillisPerFile;
-		}
-
-		return process;
-	}
 
 	@Override
 	public Boolean init() {

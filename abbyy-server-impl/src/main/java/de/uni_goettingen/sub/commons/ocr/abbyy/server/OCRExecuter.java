@@ -49,7 +49,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	public final static Logger logger = LoggerFactory
 			.getLogger(OCRExecuter.class);
 
-	protected Integer maxThreads;
 
 	/** paused the execution if true */
 	private Boolean isPaused = false;
@@ -99,7 +98,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
-		this.maxThreads = maxThreads;
 		this.hotfolder = hotfolder;
 	}
 
