@@ -70,9 +70,6 @@ public class ConfigParser {
 	public final static Long DEFAULT_MAXOCRTIMEOUT = 1000l * 60l * 60l * 3;
 	public final static String PARAMETER_MAXOCRTIMEOUT = "maxOCRTimeout";
 	protected Long minMillisPerFile, maxMillisPerFile, maxOCRTimeout;
-	//Serializer textMD
-	public final static String SERIALIZER_LOCATION = "textMDLocation";
-	protected String textMDLocation;
 	//AbbyyTicket specific settings
 	public final static String DEFAULT_TICKETTMPSTORE = "tmp://";
 	public final static String PARAMETER_TICKETTMPSTORE = "ticketTmpStore";
@@ -174,27 +171,7 @@ public class ConfigParser {
 		serverURL = serverURL.endsWith("/") ? serverURL : serverURL + "/";
 
 		
-		textMDLocation = config.getString(SERIALIZER_LOCATION);
-
-		try {
-			if (!textMDLocation.contains("./") && textMDLocation.startsWith("file")) {
-				//This is true if we have an absolute local (file) uri;
-				textMDLocation = new URI(textMDLocation).toString();
-			} else if (textMDLocation.startsWith("file") && textMDLocation.contains("./")) {
-				//An relative URI with file prefix, just remove the prefix
-				textMDLocation = textMDLocation.replace("file:", "");
-			}
-			if (!new URI(textMDLocation).isAbsolute()) {
-				//got an relative URI
-				URI context = new File(".").toURI();
-				//Resolve it against the base path of the current process
-				textMDLocation = context.resolve(new URI(textMDLocation)).toString();
-			}
-		} catch (URISyntaxException e) {
-			logger.error("URI is malformed", e);
-		}
 		imagesNumberForSubprocess = config.getInt(IMAGES_NUMBER_FORSUBPROCESS);
-		textMDLocation = textMDLocation.endsWith("/") ? textMDLocation : textMDLocation + "/";
 		
 		if (System.getProperty(DEBUG_PROPERTY) != null) {
 			debugAuth = Boolean.parseBoolean(System.getProperty(DEBUG_PROPERTY));
@@ -252,7 +229,6 @@ public class ConfigParser {
 		logger.trace("Input folder: " + input);
 		logger.trace("Output Folder: " + output);
 		logger.trace("Error Folder: " + error);
-		logger.trace("textMDLocation: " + textMDLocation);
 
 		logger.trace("Max size: " + maxSize);
 		logger.trace("Max files: " + maxFiles);
