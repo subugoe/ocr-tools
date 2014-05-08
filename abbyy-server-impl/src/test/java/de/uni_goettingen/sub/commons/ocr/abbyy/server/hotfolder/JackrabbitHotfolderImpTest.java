@@ -37,7 +37,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.MyServers;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolderImpl;
@@ -52,8 +51,7 @@ public class JackrabbitHotfolderImpTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 		MyServers.startDavServer();
-		ConfigParser config = new ConfigParser().parse();
-		hotfolder = JackrabbitHotfolderImpl.getInstance(config);
+		hotfolder = JackrabbitHotfolderImpl.getInstance("http://localhost:9001/", "", "");
 	}
 
 	@Test

@@ -37,7 +37,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
  * performance point of view, since it's using just another abstraction.
  * 
  */
-public abstract class AbstractHotfolder implements Hotfolder {
+public abstract class ServerHotfolder implements Hotfolder {
 
 	// Simple Implementation of tempfile based on a local file.
 	protected Map<String, File> tmpfiles = new HashMap<String, File>();
@@ -128,14 +128,14 @@ public abstract class AbstractHotfolder implements Hotfolder {
 		return new FileOutputStream(tmpFile);
 	}
 
-	abstract protected void setConfig(ConfigParser config);
+	abstract protected void configureConnection(String serverUrl, String username, String password);
 	
-	public static Hotfolder getHotfolder(ConfigParser config) {
+	public static Hotfolder getHotfolder(String serverUrl, String username, String password) {
 		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
 				"contextAbbyy.xml"));
-		AbstractHotfolder hotfolder = (AbstractHotfolder) factory
+		ServerHotfolder hotfolder = (ServerHotfolder) factory
 				.getBean("HotfolderImpl");
-		hotfolder.setConfig(config);
+		hotfolder.configureConnection(serverUrl, username, password);
 		return hotfolder;
 	}
 

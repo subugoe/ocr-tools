@@ -43,14 +43,15 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
  * The Class ApacheVFSHotfolderImpl is used to control the hotfolders used by
  * the Abbyy Recognition Server.
  */
-public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements Hotfolder, Serializable {
+public final class ApacheVFSHotfolderImpl extends ServerHotfolder implements Hotfolder, Serializable {
 	private static final long serialVersionUID = 2628453844788155875L;
 
 	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(ApacheVFSHotfolderImpl.class);
 
-	transient protected ConfigParser config;
 
+	private final String ticketTmpStore = "tmp://";
+	
 	private static Hotfolder instance;
 
 	// The fsmanager.
@@ -81,9 +82,9 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 		}
 	}
 
-	private ApacheVFSHotfolderImpl(ConfigParser config) {
+	private ApacheVFSHotfolderImpl(String serverUrl, String username, String password) {
 		this();
-		setConfig(config);
+		configureConnection(serverUrl, username, password);
 	}
 
 	/* (non-Javadoc)
@@ -172,7 +173,7 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 	 */
 	@Override
 	public OutputStream createTmpFile (String name) throws FileSystemException {
-		String tmpTicket = config.getTicketTmpStore() + name;
+		String tmpTicket = ticketTmpStore + name;
 		try {
 			return getOutputStream(new URI(tmpTicket));
 		} catch (URISyntaxException e) {
@@ -186,12 +187,12 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 	 */
 	@Override
 	public Boolean copyTmpFile (String tmpFile, URI to) throws IOException {
-		if (!fsManager.resolveFile(config.getTicketTmpStore() + tmpFile).exists()) {
-			logger.error(config.getTicketTmpStore() + tmpFile + "doesn't exist!");
+		if (!fsManager.resolveFile(ticketTmpStore + tmpFile).exists()) {
+			logger.error(ticketTmpStore + tmpFile + "doesn't exist!");
 			return false;
 		}
 		try {
-			copyFile(new URI(config.getTicketTmpStore() + tmpFile), to);
+			copyFile(new URI(ticketTmpStore + tmpFile), to);
 		} catch (URISyntaxException e) {
 			logger.error("Couldn't create URI for temporary file", e);
 			return false;
@@ -208,7 +209,7 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 	 */
 	public static synchronized Hotfolder getInstance (ConfigParser config) {
 		if (instance == null) {
-			instance = new ApacheVFSHotfolderImpl(config);
+			instance = new ApacheVFSHotfolderImpl(config.getServerURL(), config.getUsername(), config.getPassword());
 		}
 		return instance;
 	}
@@ -225,14 +226,12 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 	 * @param config
 	 *            the new config
 	 */
-	protected void setConfig (ConfigParser config) {
-		this.config = config;
+	protected void configureConnection(String newServerUrl, String newUsername, String newPassword) {
 		//Construct the login part.
-		if (config.getUsername() != null && config.getPassword() != null && config.getServerURL().startsWith("https")) {
-			serverUrl = config.getServerURL().replace("https://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
-		} else if (config.getUsername() != null && config.getPassword() != null && config.getServerURL().startsWith("http")) {
-			serverUrl = config.getServerURL().replace("http://", "webdav://" + config.getUsername() + ":" + config.getPassword() + "@");
-			config.setServerURL(serverUrl);
+		if (newUsername != null && newPassword != null && newServerUrl.startsWith("https")) {
+			serverUrl = newServerUrl.replace("https://", "webdav://" + newUsername + ":" + newPassword + "@");
+		} else if (newUsername != null && newPassword != null && newServerUrl.startsWith("http")) {
+			serverUrl = newServerUrl.replace("http://", "webdav://" + newUsername + ":" + newPassword + "@");
 		}
 	}
 
@@ -257,11 +256,4 @@ public final class ApacheVFSHotfolderImpl extends AbstractHotfolder implements H
 		return 0l;
 	}
 	
-	public String rewiteURL (String url) {
-		if (serverUrl != null) {
-		return url.replace(config.getServerURL(), serverUrl);
-		}
-		return url;
-	}
-
 }

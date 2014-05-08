@@ -62,10 +62,9 @@ import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 
-public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
+public class JackrabbitHotfolderImpl extends ServerHotfolder implements
 		Hotfolder, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -75,16 +74,15 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 	transient protected HttpClient client;
 	private static Hotfolder instance;
 
-	private JackrabbitHotfolderImpl(ConfigParser config) {
-		setConfig(config);
+	private JackrabbitHotfolderImpl(String serverUrl, String username, String password) {
+		configureConnection(serverUrl, username, password);
 	}
-	private JackrabbitHotfolderImpl() {
+	public JackrabbitHotfolderImpl() {
 	}
 	
-	protected void setConfig(ConfigParser config) {
+	protected void configureConnection(String serverUrl, String username, String password) {
 		try {
-			client = initConnection(config.getServerURL(),
-					config.getUsername(), config.getPassword());
+			client = initConnection(serverUrl, username, password);
 		} catch (IOException e) {
 			log.error("Got an IOException while initilizing Jackrabbit Hotfolder implementation", e);
 		}
@@ -323,9 +321,9 @@ public class JackrabbitHotfolderImpl extends AbstractHotfolder implements
 		}
 	}
 
-	public static synchronized Hotfolder getInstance(ConfigParser config) {
+	public static synchronized Hotfolder getInstance(String serverUrl, String username, String password) {
 		if (instance == null) {
-			instance = new JackrabbitHotfolderImpl(config);
+			instance = new JackrabbitHotfolderImpl(serverUrl, username, password);
 		}
 		return instance;
 	}

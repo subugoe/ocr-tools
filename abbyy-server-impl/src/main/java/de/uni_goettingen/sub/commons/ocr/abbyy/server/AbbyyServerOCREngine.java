@@ -38,7 +38,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.AbstractHotfolder;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -95,7 +95,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	protected AbbyyServerOCREngine() throws ConfigurationException {
 		config = new ConfigParser().parse();
-		hotfolder = AbstractHotfolder.getHotfolder(config);
+		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 	}
 
 	private void initConfig() {
@@ -112,7 +112,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 			config.setPassword(password);
 		}
 
-		hotfolder = AbstractHotfolder.getHotfolder(config);
+		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 	}
 	
 	/* start JMX methods */

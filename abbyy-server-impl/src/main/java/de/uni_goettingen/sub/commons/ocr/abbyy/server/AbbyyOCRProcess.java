@@ -60,7 +60,7 @@ import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument.Document;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.AbstractHotfolder;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -151,14 +151,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		super();
 		this.config = config;
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
-		hotfolder = AbstractHotfolder.getHotfolder(config);
+		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 		init();
 	}
 	
 	protected AbbyyOCRProcess(OCRProcess process, ConfigParser config) {
 		super(process);
 		this.config = config;
-		hotfolder = AbstractHotfolder.getHotfolder(config);
+		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 		init();
 		throw new NotImplementedException("This constructor isn't finished");
 	}
