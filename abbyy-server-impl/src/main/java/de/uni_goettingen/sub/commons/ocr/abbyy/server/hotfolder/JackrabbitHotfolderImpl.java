@@ -72,9 +72,8 @@ public class JackrabbitHotfolderImpl extends ServerHotfolder implements
 	private final static Logger log = LoggerFactory.getLogger(JackrabbitHotfolderImpl.class);
 	private long mkColWait = 300l;
 	transient protected HttpClient client;
-	private static Hotfolder instance;
 
-	private JackrabbitHotfolderImpl(String serverUrl, String username, String password) {
+	JackrabbitHotfolderImpl(String serverUrl, String username, String password) {
 		configureConnection(serverUrl, username, password);
 	}
 	public JackrabbitHotfolderImpl() {
@@ -319,20 +318,6 @@ public class JackrabbitHotfolderImpl extends ServerHotfolder implements
 			is.close();
 			method.releaseConnection();
 		}
-	}
-
-	public static synchronized Hotfolder getInstance(String serverUrl, String username, String password) {
-		if (instance == null) {
-			instance = new JackrabbitHotfolderImpl(serverUrl, username, password);
-		}
-		return instance;
-	}
-
-	public static synchronized Hotfolder getInstance() {
-		if (instance == null) {
-			instance = new JackrabbitHotfolderImpl();
-		}
-		return instance;
 	}
 
 	@Override

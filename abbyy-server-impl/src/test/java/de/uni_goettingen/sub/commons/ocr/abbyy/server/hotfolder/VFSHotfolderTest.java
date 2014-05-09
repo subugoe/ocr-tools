@@ -55,8 +55,7 @@ public class VFSHotfolderTest {
 		
 		testImageUri = testImageFile.toURI();
 
-		apacheVFSHotfolderImpl = (ApacheVFSHotfolderImpl) ApacheVFSHotfolderImpl
-				.getInstance(new ConfigParser().parse());
+		apacheVFSHotfolderImpl = new ApacheVFSHotfolderImpl("http://localhost:9001/", "", "");
 	}
 
 	@Test

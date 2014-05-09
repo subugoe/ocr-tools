@@ -52,8 +52,6 @@ public final class ApacheVFSHotfolderImpl extends ServerHotfolder implements Hot
 
 	private final String ticketTmpStore = "tmp://";
 	
-	private static Hotfolder instance;
-
 	// The fsmanager.
 	transient protected FileSystemManager fsManager = null;
 
@@ -72,7 +70,7 @@ public final class ApacheVFSHotfolderImpl extends ServerHotfolder implements Hot
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	private ApacheVFSHotfolderImpl() {
+	public ApacheVFSHotfolderImpl() {
 		try {
 			//VFS.setUriStyle(true);
 			fsManager = VFS.getManager();
@@ -82,7 +80,7 @@ public final class ApacheVFSHotfolderImpl extends ServerHotfolder implements Hot
 		}
 	}
 
-	private ApacheVFSHotfolderImpl(String serverUrl, String username, String password) {
+	ApacheVFSHotfolderImpl(String serverUrl, String username, String password) {
 		this();
 		configureConnection(serverUrl, username, password);
 	}
@@ -200,32 +198,7 @@ public final class ApacheVFSHotfolderImpl extends ServerHotfolder implements Hot
 		return true;
 	}
 
-	/**
-	 * New instance.
-	 * 
-	 * @param config
-	 *            the config
-	 * @return the hotfolder
-	 */
-	public static synchronized Hotfolder getInstance (ConfigParser config) {
-		if (instance == null) {
-			instance = new ApacheVFSHotfolderImpl(config.getServerURL(), config.getUsername(), config.getPassword());
-		}
-		return instance;
-	}
-	public static synchronized Hotfolder getInstance () {
-		if (instance == null) {
-			instance = new ApacheVFSHotfolderImpl();
-		}
-		return instance;
-	}
-
-	/**
-	 * Sets the config.
-	 * 
-	 * @param config
-	 *            the new config
-	 */
+	
 	protected void configureConnection(String newServerUrl, String newUsername, String newPassword) {
 		//Construct the login part.
 		if (newUsername != null && newPassword != null && newServerUrl.startsWith("https")) {

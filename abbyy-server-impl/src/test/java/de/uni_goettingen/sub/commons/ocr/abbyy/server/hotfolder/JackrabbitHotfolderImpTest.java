@@ -51,7 +51,7 @@ public class JackrabbitHotfolderImpTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 		MyServers.startDavServer();
-		hotfolder = JackrabbitHotfolderImpl.getInstance("http://localhost:9001/", "", "");
+		hotfolder = new JackrabbitHotfolderImpl("http://localhost:9001/", "", "");
 	}
 
 	@Test
