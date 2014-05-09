@@ -105,7 +105,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 
 	}
 
-	private AbbyyCLIOCREngine() {
+	public AbbyyCLIOCREngine() {
 		super();
 		config = (AbstractConfiguration) loadConfig(this.getClass().getSimpleName() + ".properties");
 		//config.setListDelimiter(' ');

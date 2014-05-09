@@ -93,7 +93,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	protected AbbyyServerOCREngine() throws ConfigurationException {
+	public AbbyyServerOCREngine() throws ConfigurationException {
 		config = new ConfigParser().parse();
 		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 	}
@@ -264,7 +264,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * 
 	 */
 
-	public static synchronized AbbyyServerOCREngine getInstance() {
+	static synchronized AbbyyServerOCREngine getInstance() {
 
 		if (instance == null) {
 			try {

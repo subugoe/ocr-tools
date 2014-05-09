@@ -24,7 +24,6 @@ import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -137,17 +136,6 @@ public class SimpleOCRServlet extends HttpServlet {
 
 		}
 		
-//		for (String file : files) {
-//			try {
-//				logger.debug("Ocring " + file + " to " + file + ".txt");
-//
-//				ocr(file, file + ".txt");
-//			} catch (Exception e) {
-//				logger.error("Error while performing OCR: ", e);
-//				throw new ServletException(e);
-//			}
-//		}
-
 		pw.println(createResponse(path, getJobName(path)));
 
 	}
@@ -298,56 +286,6 @@ public class SimpleOCRServlet extends HttpServlet {
 		return true;
 	}
 
-	/**
-	 * Ocr.
-	 *
-	 * @param in the in
-	 * @param out the out
-	 * @throws OCRException the oCR exception
-	 * @throws URISyntaxException the uRI syntax exception
-	 */
-	@SuppressWarnings("serial")
-	/*
-        private void ocr (String in, String out) throws URISyntaxException {
-		String workDir = cacheDir + path;
-
-		URI infile = new URI(new File(workDir).toURI().toString() + in);
-		URI outfile = new URI(new File(workDir).toURI().toString() + out);
-
-		OCREngineFactory oef = OCREngineFactory.getInstance();
-		OCREngine oe = oef.newOcrEngine();
-		if (oe.init() == true) {
-
-		logger.trace("OCR engine loaded successfuly");
-		}else {
-			throw new RuntimeException("Couldn't initialize engine");
-		}
-
-		//Create output directory
-		new File(out).getParentFile().mkdirs();
-
-		//Setup the engine
-		//Create a image;
-		OCRImage oi = oe.newOcrImage(infile);
-	//	oi.setUri(infile);
-		//create the output
-		final OCROutput oo = oe.newOcrOutput();
-		oo.setUri(outfile);
-		Map<OCRFormat, OCROutput> conf = new HashMap<OCRFormat, OCROutput>(){{
-			put(OCRFormat.TXT, oo);
-		}};
-		//create the process;
-		OCRProcess op = oe.newOcrProcess();
-		
-		op.setName("Goobi OCR Servlet");
-		((AbstractOCRProcess) op).addLanguage(new Locale(lang));
-		op.setOcrOutputs(conf);
-		
-		oe.recognize(op);
-
-	}
-        */
-	
         private String getJobName (String path) {
             File folder = new File(cacheDir + path);
             return folder.getName();
@@ -359,10 +297,8 @@ public class SimpleOCRServlet extends HttpServlet {
 		File folder = new File(cacheDir + path);
 		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
 				"context.xml"));
-		OCREngineFactory ocrEngineFactory = (OCREngineFactory) factory
-				.getBean("OCREngineFactory");
 
-		OCREngine engine = ocrEngineFactory.newOcrEngine();
+		OCREngine engine = (OCREngine) factory.getBean("ocrEngine");
 
 			logger.debug("Creating Process for " + folder.toString());
 			OCRProcess aop = engine.newOcrProcess();
