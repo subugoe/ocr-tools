@@ -28,8 +28,6 @@ import java.util.Map;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
-
 /**
  * The class is a base class for other implementations of
  * Hotfolder. It provides some of the methods that can be implemented completely
@@ -134,7 +132,7 @@ public abstract class ServerHotfolder implements Hotfolder {
 		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
 				"contextAbbyy.xml"));
 		ServerHotfolder hotfolder = (ServerHotfolder) factory
-				.getBean("HotfolderImpl");
+				.getBean("hotfolderImplementation");
 		hotfolder.configureConnection(serverUrl, username, password);
 		return hotfolder;
 	}

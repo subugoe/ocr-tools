@@ -64,19 +64,19 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.file.FileUtils;
 
-public class JackrabbitHotfolderImpl extends ServerHotfolder implements
+public class JackrabbitHotfolder extends ServerHotfolder implements
 		Hotfolder, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static Logger log = LoggerFactory.getLogger(JackrabbitHotfolderImpl.class);
+	private final static Logger log = LoggerFactory.getLogger(JackrabbitHotfolder.class);
 	private long mkColWait = 300l;
 	transient protected HttpClient client;
 
-	JackrabbitHotfolderImpl(String serverUrl, String username, String password) {
+	JackrabbitHotfolder(String serverUrl, String username, String password) {
 		configureConnection(serverUrl, username, password);
 	}
-	public JackrabbitHotfolderImpl() {
+	public JackrabbitHotfolder() {
 	}
 	
 	protected void configureConnection(String serverUrl, String username, String password) {

@@ -37,17 +37,16 @@ import org.apache.commons.vfs2.VFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
 
 /**
  * The Class ApacheVFSHotfolderImpl is used to control the hotfolders used by
  * the Abbyy Recognition Server.
  */
-public final class ApacheVFSHotfolderImpl extends ServerHotfolder implements Hotfolder, Serializable {
+public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Serializable {
 	private static final long serialVersionUID = 2628453844788155875L;
 
 	// The Constant logger.
-	final static Logger logger = LoggerFactory.getLogger(ApacheVFSHotfolderImpl.class);
+	final static Logger logger = LoggerFactory.getLogger(VfsHotfolder.class);
 
 
 	private final String ticketTmpStore = "tmp://";
@@ -70,7 +69,7 @@ public final class ApacheVFSHotfolderImpl extends ServerHotfolder implements Hot
 	 * @throws FileSystemException
 	 *             the file system exception
 	 */
-	public ApacheVFSHotfolderImpl() {
+	public VfsHotfolder() {
 		try {
 			//VFS.setUriStyle(true);
 			fsManager = VFS.getManager();
@@ -80,7 +79,7 @@ public final class ApacheVFSHotfolderImpl extends ServerHotfolder implements Hot
 		}
 	}
 
-	ApacheVFSHotfolderImpl(String serverUrl, String username, String password) {
+	VfsHotfolder(String serverUrl, String username, String password) {
 		this();
 		configureConnection(serverUrl, username, password);
 	}

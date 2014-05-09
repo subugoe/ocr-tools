@@ -39,19 +39,19 @@ import org.junit.Test;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.MyServers;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolderImpl;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolder;
 
 /* * WebDAV Test
  * JackrabbitHotfolderImpTest
  * @author abergna
  */
-public class JackrabbitHotfolderImpTest {
+public class JackrabbitHotfolderTest {
 	private static Hotfolder hotfolder;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
 		MyServers.startDavServer();
-		hotfolder = new JackrabbitHotfolderImpl("http://localhost:9001/", "", "");
+		hotfolder = new JackrabbitHotfolder("http://localhost:9001/", "", "");
 	}
 
 	@Test

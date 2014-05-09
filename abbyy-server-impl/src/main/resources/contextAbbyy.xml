@@ -3,8 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<bean id="HotfolderImpl"
-		class="de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolderImpl">
+	<bean id="hotfolderImplementation"
+		class="de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolder">
 	</bean>
 
 </beans>

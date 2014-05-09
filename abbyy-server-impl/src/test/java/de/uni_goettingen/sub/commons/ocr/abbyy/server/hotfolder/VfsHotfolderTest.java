@@ -36,17 +36,16 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.ConfigParser;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ApacheVFSHotfolderImpl;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.VfsHotfolder;
 
-public class VFSHotfolderTest {
-	private final static Logger logger = LoggerFactory.getLogger(VFSHotfolderTest.class);
+public class VfsHotfolderTest {
+	private final static Logger logger = LoggerFactory.getLogger(VfsHotfolderTest.class);
 	
 	public static Long IMAGE_SIZE = 10069l;
 
 	protected static File testImageFile;
 	protected static URI testImageUri;
-	protected static ApacheVFSHotfolderImpl apacheVFSHotfolderImpl;
+	protected static VfsHotfolder apacheVFSHotfolderImpl;
 
 	@BeforeClass
 	public static void init() throws MalformedURLException {
@@ -55,7 +54,7 @@ public class VFSHotfolderTest {
 		
 		testImageUri = testImageFile.toURI();
 
-		apacheVFSHotfolderImpl = new ApacheVFSHotfolderImpl("http://localhost:9001/", "", "");
+		apacheVFSHotfolderImpl = new VfsHotfolder("http://localhost:9001/", "", "");
 	}
 
 	@Test
