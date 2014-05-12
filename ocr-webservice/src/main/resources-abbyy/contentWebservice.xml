@@ -3,21 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-
-	
-	<bean id="OCREngineFactory" name="OCREngineFactory"
-		class="de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory"
-		factory-method="getInstance">
-		<property name="engine" ref="abbyyServerOCREngine" />
-	</bean>
-
-	
-
-	<bean id="abbyyServerOCREngine" name="abbyyServerOCREngine"
-		class="de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine"
-		factory-method="newOCREngine">
-	</bean>
-
-
+	<bean id="ocrEngine" class="de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine"/>
 
 </beans>

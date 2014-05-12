@@ -49,7 +49,6 @@ import org.springframework.core.io.ClassPathResource;
 
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -133,9 +132,7 @@ public class OcrServiceImpl implements OcrService {
 
 		XmlBeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource(
 				"contentWebservice.xml"));
-		OCREngineFactory ocrEngineFactory = (OCREngineFactory) beanFactory
-				.getBean("OCREngineFactory");
-		OCREngine engine = ocrEngineFactory.newOcrEngine();
+		OCREngine engine = (OCREngine) beanFactory.getBean("ocrEngine");
 		OCRProcess aop = engine.newOcrProcess();
 
 		OCRFormat ocrformat = request.getOutputFormat();

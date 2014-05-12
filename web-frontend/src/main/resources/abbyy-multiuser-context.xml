@@ -3,21 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<bean id="OCREngineFactory" name="OCREngineFactory"
-		class="de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory"
-		factory-method="getInstance"  scope="prototype">
-		<property name="engine" ref="multiAbbyyServerOCREngine" />
-	</bean>
-
-	<bean id="multiAbbyyServerOCREngine" name="multiAbbyyServerOCREngine"
-		class="de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser.MultiUserAbbyyOCREngine"
-		factory-method="newOCREngine"  scope="prototype">
-	</bean>
+	<bean id="ocrEngine" class="de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser.MultiUserAbbyyOCREngine"/>
 
     <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false"  scope="prototype">
         <property name="beans">
             <map>
-                <entry key="Abbyy:name=MultiUserAbbyyOCREngine" value-ref="multiAbbyyServerOCREngine"/>
+                <entry key="Abbyy:name=MultiUserAbbyyOCREngine" value-ref="ocrEngine"/>
             </map>
         </property>
     	<property name="assembler">

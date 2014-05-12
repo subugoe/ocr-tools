@@ -41,17 +41,13 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.configuration.HierarchicalConfiguration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.ClassPathResource;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCREngineFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -147,7 +143,6 @@ public class OCRCli {
 	public static void main(String[] args) throws IOException,
 			URISyntaxException {
 		initOpts();
-		LOGGER.debug("Creating OCREngineFactory instance");
 
 		List<String> files = defaultOpts(args);
 		ApplicationContext ac = new ClassPathXmlApplicationContext(ocrEngineToUse + "-context.xml");
