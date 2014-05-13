@@ -21,7 +21,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 
 import java.io.File;
@@ -32,6 +31,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -80,8 +80,7 @@ public class AbbyyOCRProcessTest {
 	
 	@Test
 	public void newAbbyyProcess() {
-		AbbyyOCRProcess aop = (AbbyyOCRProcess) AbbyyServerOCREngine
-				.getInstance().newOcrProcess();
+		AbbyyOCRProcess aop = (AbbyyOCRProcess) new AbbyyServerOCREngine().newOcrProcess();
 		assertNotNull(aop);
 	}
 
@@ -177,7 +176,7 @@ public class AbbyyOCRProcessTest {
 	@Test
 	public void createProcessViaAPI() throws MalformedURLException,
 			URISyntaxException {
-		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
+		AbbyyServerOCREngine ase = new AbbyyServerOCREngine();
 		assertNotNull(ase);
 		OCRProcess op = ase.newOcrProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
@@ -199,7 +198,7 @@ public class AbbyyOCRProcessTest {
 	public void createUrlBasedProcess() throws MalformedURLException,
 			URISyntaxException {
 		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
-		AbbyyServerOCREngine ase = AbbyyServerOCREngine.getInstance();
+		AbbyyServerOCREngine ase = new AbbyyServerOCREngine();
 		assertNotNull(ase);
 		OCRProcess op = ase.newOcrProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();

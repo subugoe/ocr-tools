@@ -74,34 +74,34 @@ public class AbbyyServerOCREngineTest {
 	
 	@Test
 	public void getInstance() {
-		AbbyyServerOCREngine engine = AbbyyServerOCREngine.newOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
 		assertNotNull(engine);
 	}
 	
 	@Test
 	public void newImage() {
-		AbbyyServerOCREngine engine = AbbyyServerOCREngine.newOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
 		OCRImage image = engine.newOcrImage(null);
 		assertTrue(image instanceof AbbyyOCRImage);
 	}
 	
 	@Test
 	public void newProcess() {
-		AbbyyServerOCREngine engine = AbbyyServerOCREngine.newOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
 		OCRProcess process = engine.newOcrProcess();
 		assertTrue(process instanceof AbbyyOCRProcess);
 	}
 	
 	@Test
 	public void newOutput() {
-		AbbyyServerOCREngine engine = AbbyyServerOCREngine.newOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
 		OCROutput output = engine.newOcrOutput();
 		assertTrue(output instanceof AbbyyOCROutput);
 	}
 	
 	@Test(expected=IllegalStateException.class)
 	public void recognizeNoProcesses() {
-		AbbyyServerOCREngine engine = AbbyyServerOCREngine.newOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
 		engine.recognize();
 	}
 	
@@ -109,7 +109,7 @@ public class AbbyyServerOCREngineTest {
 	public void recognizeNoServer() throws Exception {
 		MyServers.stopDavServer();
 		try {
-			AbbyyServerOCREngine engine = AbbyyServerOCREngine.newOCREngine();
+			AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
 			OCRProcess process = engine.newOcrProcess();
 			engine.recognize(process);
 		} finally {
@@ -119,7 +119,7 @@ public class AbbyyServerOCREngineTest {
 	
 	@Test(expected=IllegalStateException.class)
 	public void recognizeEmptyProcess() {
-			AbbyyServerOCREngine engine = AbbyyServerOCREngine.newOCREngine();
+			AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
 			OCRProcess process = engine.newOcrProcess();
 			engine.recognize(process);
 	}
@@ -130,7 +130,7 @@ public class AbbyyServerOCREngineTest {
 		lock.createNewFile();
 		
 		try {
-			AbbyyServerOCREngine engine = AbbyyServerOCREngine.newOCREngine();
+			AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
 			recognizeOneImage(engine);
 		} finally {
 			lock.delete();
@@ -142,7 +142,7 @@ public class AbbyyServerOCREngineTest {
 		File lock = new File(DAV_FOLDER, ConfigParser.SERVER_LOCK_FILE_NAME);
 		lock.createNewFile();
 		
-		AbbyyServerOCREngine engine = AbbyyServerOCREngine.newOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
 
 		Map<String, String> opts = new HashMap<String, String>();
 		opts.put("lock.overwrite", "true");

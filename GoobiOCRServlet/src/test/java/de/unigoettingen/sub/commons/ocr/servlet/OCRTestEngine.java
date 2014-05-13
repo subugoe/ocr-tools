@@ -14,10 +14,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 public class OCRTestEngine extends AbstractOCREngine {
 
-	public static OCRTestEngine getInstance() {
-		return new OCRTestEngine();
-	}
-
 	@Override
 	public Observable recognize() {
 		Map<OCRFormat, OCROutput> outputs = ocrProcess.get(0).getOcrOutputs();

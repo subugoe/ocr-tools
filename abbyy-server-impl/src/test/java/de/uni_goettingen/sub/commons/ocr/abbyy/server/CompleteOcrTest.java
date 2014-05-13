@@ -23,7 +23,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 public class CompleteOcrTest {
 
-	private OCREngine engine = AbbyyServerOCREngine.getInstance();
+	private OCREngine engine = new AbbyyServerOCREngine();
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

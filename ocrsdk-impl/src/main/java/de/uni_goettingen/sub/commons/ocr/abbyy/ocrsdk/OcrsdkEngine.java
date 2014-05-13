@@ -19,21 +19,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
  */
 public class OcrsdkEngine extends AbstractOCREngine {
 
-	private static OcrsdkEngine instance;
 	private Map<String, String> extraOptions = new HashMap<String, String>();
-
-	public static synchronized OcrsdkEngine getInstance() {
-
-		if (instance == null) {
-			instance = new OcrsdkEngine();
-		}
-		return instance;
-	}
-
-	// we need this for our Web Service, because each request needs its own instance
-	public static OcrsdkEngine newOCREngine() {	
-		return new OcrsdkEngine();
-	}
 
 	/**
 	 * Starts the one process that is passed.

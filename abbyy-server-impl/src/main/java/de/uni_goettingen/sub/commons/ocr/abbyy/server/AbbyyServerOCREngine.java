@@ -47,7 +47,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 /**
  * The Class AbbyyServerOCREngine. The Engine is also the entry point for
@@ -73,7 +72,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	protected Hotfolder hotfolder;
 	protected OCRProcessMetadata ocrProcessMetadata;
 	/** single instance of AbbyyServerOCREngine. */
-	private static AbbyyServerOCREngine instance, newInstance;
 
 	protected static Boolean rest = false;
 
@@ -93,7 +91,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	public AbbyyServerOCREngine() throws ConfigurationException {
+	public AbbyyServerOCREngine() {
 		config = new ConfigParser().parse();
 		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 	}
@@ -264,30 +262,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * 
 	 */
 
-	static synchronized AbbyyServerOCREngine getInstance() {
-
-		if (instance == null) {
-			try {
-				instance = new AbbyyServerOCREngine();
-			} catch (ConfigurationException e) {
-				logger.error("Can't read configuration", e);
-				throw new OCRException(e);
-			}
-		}
-		return instance;
-	}
-
-	// we need this for our Web Service, because each request needs its own instance
-	public static AbbyyServerOCREngine newOCREngine() {	
-			try {
-				newInstance = new AbbyyServerOCREngine();
-			} catch (ConfigurationException e) {
-				logger.error("Can't read configuration", e);
-				throw new OCRException(e);
-			}
-
-		return newInstance;
-	}
 	/*
 	 * (non-Javadoc)
 	 * 

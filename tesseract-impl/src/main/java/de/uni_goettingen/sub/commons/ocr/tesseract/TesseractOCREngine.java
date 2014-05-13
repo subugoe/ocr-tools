@@ -12,21 +12,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
  */
 public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 
-	/** The _instance. */
-	private static TesseractOCREngine instance;
-
-	/**
-	 * Gets the single instance of TesseractOCREngine.
-	 *
-	 * @return single instance of TesseractOCREngine
-	 */
-	public static synchronized TesseractOCREngine getInstance() {
-
-		if (instance == null) {
-			instance = new TesseractOCREngine();
-		}
-		return instance;
-	}
 
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#addOcrProcess(de.uni_goettingen.sub.commons.ocr.api.OCRProcess)
