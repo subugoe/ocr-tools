@@ -57,69 +57,38 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
-/**
- * The Class OCRCli. command line is special for the input parametres which the
- * API abbyy-server-impl needs. these parametres are language, format ,
- * directories, OCRTextTyp and outputlocation
- * 
- * @author Mohamed Abergna
- * @version 1.0
- */
-public class OCRCli {
+public class Main {
 
-	/** The Constant version. */
-	public final static String version = "0.0.4";
+	private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-	/** The logger. */
-	private final static Logger LOGGER = LoggerFactory
-			.getLogger(de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli.class);
-
-	/** The opts. */
 	private final static Options opts = new Options();
 
-	/** The local output dir. */
 	static String localOutputDir = null;
 
-	/** The extension. */
 	private static String extension = "tif";
 
-	/** The language. */
 	static Set<Locale> langs;
 
-	/** The recursive mode. */
-	private static boolean recursiveMode = true;
-
-	/** The foramt. as example TXT, XML or PDF.. */
 	static List<OCRFormat> f = new ArrayList<OCRFormat>();
 
-	/** The ocr text typ. */
 	private static String ocrTextTyp = null;
 	
-	/** The ocr ocrPriority typ. */
 	private static String ocrPriority = null;
 
 	private static String ocrEngineToUse = "abbyy";
 	
-	/** The splitProcess if splitProcess = yes. */
 	private static boolean splitProcess = false;
 	
-	/** The engine. */
 	private static OCREngine engine;
 
 	private static List<File> dirs = new ArrayList<File>();
 
 	private static Map<String, String> extraOptions;
 	
-	/**
-	 * Inits the opts.
-	 */
 	protected static void initOpts() {
-		// Parameters
-		opts.addOption("r", false, "Recursive - scan for subdirectories");
 		opts.addOption("f", true, "Output format");
 		opts.addOption("l", true, "Languages - separated by \",\"");
 		opts.addOption("h", false, "Help");
-		opts.addOption("v", false, "Version");
 		opts.addOption("d", true, "Debuglevel");
 		opts.addOption("e", true, "File extension (default \"tif\")");
 		opts.addOption("t", true, "OCRTextTyp");
@@ -130,16 +99,6 @@ public class OCRCli {
 		opts.addOption("O", true, "Further options, comma-separated. E.g. -O lock.overwrite=true,opt2=value2");
 	}
 
-	/**
-	 * The main method.
-	 * 
-	 * @param args
-	 *            the arguments
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws URISyntaxException
-	 *             the uRI syntax exception
-	 */
 	public static void main(String[] args) throws IOException,
 			URISyntaxException {
 		initOpts();
@@ -162,20 +121,9 @@ public class OCRCli {
 
 	}
 
-	/**
-	 * Start recognize. Starting recognize method
-	 * 
-	 * @param files
-	 *            , the list files from directories where the different images
-	 *            in it.
-	 * @throws URISyntaxException
-	 *             the uRI syntax exception
-	 */
 	public static void startRecognize(List<String> files)
 			throws URISyntaxException {
 		for (String book : files) {
-			// logger.debug("Input Location " +
-			// System.getProperty("user.dir")+book);
 			File directory = new File(book);
 			
 			getDirectories(directory);
@@ -244,13 +192,6 @@ public class OCRCli {
 		}
 	}
 
-	/**
-	 * Configure from args.
-	 * 
-	 * @param args
-	 *            the arguments
-	 * @return the list
-	 */
 	public static List<String> configureFromArgs(String[] args) {
 		// list of the directory
 
@@ -262,18 +203,11 @@ public class OCRCli {
 	/**
 	 * Instantiates a new oCR cli.
 	 */
-	protected OCRCli() {
+	protected Main() {
 		initOpts();
 
 	}
 
-	/**
-	 * Parses the ocr format.
-	 * 
-	 * @param str
-	 *            the str
-	 * @return the list
-	 */
 	protected static List<OCRFormat> parseOCRFormat(String str) {
 		List<OCRFormat> ocrFormats = new ArrayList<OCRFormat>();
 		if (str.contains(",")) {
@@ -288,13 +222,6 @@ public class OCRCli {
 		return ocrFormats;
 	}
 
-	/**
-	 * Default opts.
-	 * 
-	 * @param args
-	 *            the args
-	 * @return the list
-	 */
 	protected static List<String> defaultOpts(String[] args) {
 
 		String cmdName = "OCRRunner [opts] files";
@@ -337,12 +264,6 @@ public class OCRCli {
 			}
 		}
 
-		// Version
-		if (cmd.hasOption("v")) {
-			System.out.println("Version " + version);
-			System.exit(0);
-		}
-
 		if (cmd.hasOption("f")) {
 			f = parseOCRFormat(cmd.getOptionValue("f"));
 
@@ -367,9 +288,6 @@ public class OCRCli {
 
 		LOGGER.trace("Parsing Options");
 
-		if (cmd.hasOption("r")) {
-			recursiveMode = true;
-		}
 		//Segmentation
 		if(cmd.hasOption("s")){
 			splitProcess = true;

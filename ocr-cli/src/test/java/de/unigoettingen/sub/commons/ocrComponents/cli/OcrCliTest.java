@@ -27,15 +27,15 @@ import org.junit.Test;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 
-import de.unigoettingen.sub.commons.ocrComponents.cli.OCRCli;
+import de.unigoettingen.sub.commons.ocrComponents.cli.Main;
 
 public class OcrCliTest {
 	static List<String> files;
-	OCRCli ocrCli;
+	Main ocrCli;
 
 	@Before
 	public void init() {
-		ocrCli = new OCRCli();
+		ocrCli = new Main();
 
 		String[] args = new String[5];
 		args[0] = "-l de,en";
@@ -49,7 +49,7 @@ public class OcrCliTest {
 
 	@Test
 	public void testFormatParser() {
-		List<OCRFormat> formats = OCRCli.parseOCRFormat("PDF,HTML");
+		List<OCRFormat> formats = Main.parseOCRFormat("PDF,HTML");
 		assertTrue(formats.contains(OCRFormat.HTML));
 		assertTrue(formats.contains(OCRFormat.PDF));
 
