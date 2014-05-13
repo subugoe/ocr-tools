@@ -19,14 +19,10 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
  */
 
 import java.io.File;
-
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +37,6 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -54,38 +49,62 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
-
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 
 public class Main {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-	private final static Options opts = new Options();
+	private Options opts = new Options();
 
-	static String localOutputDir = null;
+	String localOutputDir = null;
 
-	private static String extension = "tif";
+	private String extension = "tif";
 
-	static Set<Locale> langs;
+	Set<Locale> langs;
 
-	static List<OCRFormat> f = new ArrayList<OCRFormat>();
+	List<OCRFormat> f = new ArrayList<OCRFormat>();
 
-	private static String ocrTextTyp = null;
+	private String ocrTextTyp = null;
 	
-	private static String ocrPriority = null;
+	private String ocrPriority = null;
 
-	private static String ocrEngineToUse = "abbyy";
+	private String ocrEngineToUse = "abbyy";
 	
-	private static boolean splitProcess = false;
+	private boolean splitProcess = false;
 	
-	private static OCREngine engine;
+	private OCREngine engine;
 
-	private static List<File> dirs = new ArrayList<File>();
+	private List<File> dirs = new ArrayList<File>();
 
-	private static Map<String, String> extraOptions;
+	private Map<String, String> extraOptions;
 	
-	protected static void initOpts() {
+	public static void main(String[] args) throws URISyntaxException {
+		new Main().execute(args);
+	}
+
+	void execute(String[] args) throws URISyntaxException {
+		initOpts();
+
+		List<String> files = defaultOpts(args);
+		ApplicationContext ac = new ClassPathXmlApplicationContext(
+				ocrEngineToUse + "-context.xml");
+
+		engine = (OCREngine) ac.getBean("ocrEngine");
+
+		if (extraOptions != null) {
+			engine.setOptions(extraOptions);
+		}
+		if (files.size() > 1) {
+			LOGGER.error("there are more folders, should be only one folder as Input");
+			System.exit(0);
+		}
+		if (files.size() == 1) {
+			startRecognize(files);
+		}
+	}
+
+	protected void initOpts() {
 		opts.addOption("f", true, "Output format");
 		opts.addOption("l", true, "Languages - separated by \",\"");
 		opts.addOption("h", false, "Help");
@@ -99,29 +118,7 @@ public class Main {
 		opts.addOption("O", true, "Further options, comma-separated. E.g. -O lock.overwrite=true,opt2=value2");
 	}
 
-	public static void main(String[] args) throws IOException,
-			URISyntaxException {
-		initOpts();
-
-		List<String> files = defaultOpts(args);
-		ApplicationContext ac = new ClassPathXmlApplicationContext(ocrEngineToUse + "-context.xml");
-
-		engine = (OCREngine)ac.getBean("ocrEngine");
-
-		if (extraOptions != null) {
-			engine.setOptions(extraOptions);
-		}
-		if (files.size() > 1) {
-			LOGGER.error("there are more folders, should be only one folder as Input");
-			System.exit(0);
-		}
-		if (files.size() == 1) {
-			startRecognize(files);
-		}
-
-	}
-
-	public static void startRecognize(List<String> files)
+	public void startRecognize(List<String> files)
 			throws URISyntaxException {
 		for (String book : files) {
 			File directory = new File(book);
@@ -178,7 +175,7 @@ public class Main {
 		LOGGER.debug("recognize Finished");
 	}
 
-	static void getDirectories(File aFile) {
+	void getDirectories(File aFile) {
 		if (aFile.isDirectory()) {
 			dirs.add(aFile);
 			File[] listOfFiles = aFile.listFiles();
@@ -192,23 +189,7 @@ public class Main {
 		}
 	}
 
-	public static List<String> configureFromArgs(String[] args) {
-		// list of the directory
-
-		return defaultOpts(args);
-
-	}
-
-
-	/**
-	 * Instantiates a new oCR cli.
-	 */
-	protected Main() {
-		initOpts();
-
-	}
-
-	protected static List<OCRFormat> parseOCRFormat(String str) {
+	protected List<OCRFormat> parseOCRFormat(String str) {
 		List<OCRFormat> ocrFormats = new ArrayList<OCRFormat>();
 		if (str.contains(",")) {
 			for (String ocrFormat : Arrays.asList(str.split(","))) {
@@ -222,7 +203,7 @@ public class Main {
 		return ocrFormats;
 	}
 
-	protected static List<String> defaultOpts(String[] args) {
+	protected List<String> defaultOpts(String[] args) {
 
 		String cmdName = "OCRRunner [opts] files";
 		CommandLine cmd = null;
@@ -347,7 +328,7 @@ public class Main {
 		return cmd.getArgList();
 	}
 
-	private static void parseExtraOptions(String extras) {
+	private void parseExtraOptions(String extras) {
 		String[] extrasArray = extras.split(","); // opt1=a,opt2=b
 		for (String extraOpt : extrasArray) {
 			String[] keyAndValue = extraOpt.split("=");

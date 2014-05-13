@@ -20,21 +20,21 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 import static org.junit.Assert.assertTrue;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-
 import de.unigoettingen.sub.commons.ocrComponents.cli.Main;
 
-public class OcrCliTest {
-	static List<String> files;
+public class OcrCliTestOld {
+//	static List<String> files;
 	Main ocrCli;
 
-	@Before
-	public void init() {
+	//@Before
+	public void init() throws URISyntaxException {
 		ocrCli = new Main();
 
 		String[] args = new String[5];
@@ -43,37 +43,38 @@ public class OcrCliTest {
 		args[2] = "-fTXT,PDF";
 		args[3] = "-tNORMAL";
 		args[4] = "/src/test/java/books";
-		files = ocrCli.configureFromArgs(args);
+		ocrCli.execute(args);
+//		files = ocrCli.configureFromArgs(args);
 
 	}
 
-	@Test
+	//@Test
 	public void testFormatParser() {
-		List<OCRFormat> formats = Main.parseOCRFormat("PDF,HTML");
+		List<OCRFormat> formats = new Main().parseOCRFormat("PDF,HTML");
 		assertTrue(formats.contains(OCRFormat.HTML));
 		assertTrue(formats.contains(OCRFormat.PDF));
 
 	}
 
-	@Test
+	//@Test
 	public void testFormat() {
 		assertTrue(ocrCli.f.contains(OCRFormat.TXT));
 		assertTrue(ocrCli.f.contains(OCRFormat.PDF));
 	}
 
-	@Test
+	//@Test
 	public void testLanguage() {
 		assertTrue(ocrCli.langs.toString().contains("en"));
 		assertTrue(ocrCli.langs.toString().contains("de"));
 
 	}
 
-	@Test
-	public void testintput() {
-		assertTrue(files.toString().equals("[/src/test/java/books]"));
-	}
+//	@Test
+//	public void testintput() {
+//		assertTrue(files.toString().equals("[/src/test/java/books]"));
+//	}
 
-	@Test
+	//@Test
 	public void testoutput() {
 		assertTrue(ocrCli.localOutputDir.equals(" /src/test/java/output"));
 	}
