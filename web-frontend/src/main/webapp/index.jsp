@@ -117,7 +117,7 @@
 		OCR-Engine:<a href="javascript:alert(ocrEngineInfo)">?</a>
 		<select name="ocrEngine">
 			<option value="gbvAntiqua">GBV Abbyy Server (Antiqua)</option>
-			<option value="gbvGothic">GBV Abbyy Server (Fraktur)</option>
+			<option value="gbvFraktur">GBV Abbyy Server (Fraktur)</option>
 			<option value="abbyyCloud">Abbyy Cloud ocrsdk.com</option>
 		</select>
 		<br/>
