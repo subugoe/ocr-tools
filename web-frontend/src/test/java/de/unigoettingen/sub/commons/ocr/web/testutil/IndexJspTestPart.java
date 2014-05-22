@@ -50,7 +50,7 @@ public class IndexJspTestPart {
 		form.getSelectByName("languages").setSelectedAttribute("en", true);
 		form.getSelectByName("outputFormats").setSelectedAttribute("XML", true);
 		form.getInputByName("email").setValueAttribute("mail@test.de");
-		form.getSelectByName("ocrEngine").setSelectedAttribute("gbvGothic", true);
+		form.getSelectByName("ocrEngine").setSelectedAttribute("gbvFraktur", true);
 		form.getInputByName("user").setValueAttribute("user1");
 		form.getInputByName("password").setValueAttribute("passwd");
 		
@@ -65,7 +65,7 @@ public class IndexJspTestPart {
 		assertThat(textFromFakeServlet, containsString("en"));
 		assertThat(textFromFakeServlet, containsString("XML"));
 		assertThat(textFromFakeServlet, containsString("mail@test.de"));
-		assertThat(textFromFakeServlet, containsString("gbvGothic"));
+		assertThat(textFromFakeServlet, containsString("gbvFraktur"));
 		assertThat(textFromFakeServlet, containsString("user1"));
 		assertThat(textFromFakeServlet, containsString("passwd"));
 	}
