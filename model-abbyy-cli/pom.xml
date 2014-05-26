@@ -6,7 +6,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>de.uni-goettingen.sub</groupId>
-	<artifactId>abbyy-cli-impl</artifactId>
+	<artifactId>model-abbyy-cli</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Abbyy CLEI Wrapper Engine</name>
 	<dependencies>

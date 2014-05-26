@@ -12,7 +12,7 @@
         <module>model-abbyy-server</module>
         <module>ocr-cli</module>
         <module>ocr-api</module>
-        <module>abbyy-cli-impl</module>
+        <module>model-abbyy-cli</module>
         <module>ocrutil</module>
         <module>GoobiOCRServlet</module>
         <module>ocr-webservice</module>
