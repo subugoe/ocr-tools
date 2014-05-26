@@ -19,6 +19,7 @@
         <module>tesseract-impl</module>
         <module>ocrsdk-impl</module>
         <module>web-frontend</module>
+        <module>controller</module>
     </modules>
     
     <properties>
