@@ -12,7 +12,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
-			<artifactId>abbyy-server-impl</artifactId>
+			<artifactId>model-abbyy-server</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

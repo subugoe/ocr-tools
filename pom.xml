@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>abbyy-schemas</module>
-        <module>abbyy-server-impl</module>
+        <module>model-abbyy-server</module>
         <module>ocr-cli</module>
         <module>ocr-api</module>
         <module>abbyy-cli-impl</module>
