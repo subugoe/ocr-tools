@@ -9,7 +9,7 @@ public class FactoryProvider {
 		if ("abbyy".equals(id)) {
 			return new AbbyyServerFactory();
 		} else {
-			throw new RuntimeException("Unknown parameter: " + id);
+			throw new IllegalArgumentException("Unknown argument: " + id);
 		}
 	}
 }
