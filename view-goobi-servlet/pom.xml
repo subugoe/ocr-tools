@@ -6,7 +6,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.goobi</groupId>
-	<artifactId>GoobiOCRServlet</artifactId>
+	<artifactId>view-goobi-servlet</artifactId>
 	<version>0.3-SNAPSHOT</version>
 	<name>Goobi OCR Servlet</name>
 	<packaging>war</packaging>

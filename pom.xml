@@ -14,7 +14,7 @@
         <module>ocr-api</module>
         <module>model-abbyy-cli</module>
         <module>ocrutil</module>
-        <module>GoobiOCRServlet</module>
+        <module>view-goobi-servlet</module>
         <module>ocr-webservice</module>
         <module>tesseract-impl</module>
         <module>model-ocrsdk</module>
