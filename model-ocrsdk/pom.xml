@@ -6,7 +6,7 @@
 		<artifactId>ocr-tools</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>ocrsdk-impl</artifactId>
+	<artifactId>model-ocrsdk</artifactId>
 	<name>Abbyy OCRSDK implementation</name>
 
 	<dependencies>

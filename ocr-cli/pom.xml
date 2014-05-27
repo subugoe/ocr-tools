@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>de.uni-goettingen.sub</groupId>
-            <artifactId>ocrsdk-impl</artifactId>
+            <artifactId>model-ocrsdk</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

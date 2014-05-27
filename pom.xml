@@ -17,7 +17,7 @@
         <module>GoobiOCRServlet</module>
         <module>ocr-webservice</module>
         <module>tesseract-impl</module>
-        <module>ocrsdk-impl</module>
+        <module>model-ocrsdk</module>
         <module>web-frontend</module>
         <module>controller</module>
     </modules>
