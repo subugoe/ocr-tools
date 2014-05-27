@@ -16,7 +16,7 @@
         <module>ocrutil</module>
         <module>view-goobi-servlet</module>
         <module>ocr-webservice</module>
-        <module>tesseract-impl</module>
+        <module>model-tesseract</module>
         <module>model-ocrsdk</module>
         <module>web-frontend</module>
         <module>controller</module>

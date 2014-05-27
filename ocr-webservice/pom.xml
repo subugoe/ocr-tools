@@ -119,7 +119,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
-			<artifactId>tesseract-impl</artifactId>
+			<artifactId>model-tesseract</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
