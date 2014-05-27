@@ -11,7 +11,7 @@
         <module>abbyy-schemas</module>
         <module>model-abbyy-server</module>
         <module>ocr-cli</module>
-        <module>ocr-api</module>
+        <module>model-api</module>
         <module>model-abbyy-cli</module>
         <module>ocrutil</module>
         <module>view-goobi-servlet</module>

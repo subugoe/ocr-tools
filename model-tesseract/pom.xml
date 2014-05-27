@@ -16,7 +16,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
-			<artifactId>ocr-api</artifactId>
+			<artifactId>model-api</artifactId>
 			<version>0.9-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
