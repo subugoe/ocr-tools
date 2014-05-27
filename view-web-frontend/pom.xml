@@ -6,7 +6,7 @@
 		<artifactId>ocr-tools</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>web-frontend</artifactId>
+	<artifactId>view-web-frontend</artifactId>
 	<name>OCR Web Frontend</name>
 	<packaging>war</packaging>
 

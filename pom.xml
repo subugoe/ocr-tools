@@ -18,7 +18,7 @@
         <module>view-webservice</module>
         <module>model-tesseract</module>
         <module>model-ocrsdk</module>
-        <module>web-frontend</module>
+        <module>view-web-frontend</module>
         <module>controller</module>
     </modules>
     
