@@ -10,7 +10,7 @@
     <modules>
         <module>abbyy-schemas</module>
         <module>model-abbyy-server</module>
-        <module>ocr-cli</module>
+        <module>view-cli</module>
         <module>model-api</module>
         <module>model-abbyy-cli</module>
         <module>ocrutil</module>
