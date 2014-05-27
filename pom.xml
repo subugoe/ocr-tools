@@ -15,7 +15,7 @@
         <module>model-abbyy-cli</module>
         <module>ocrutil</module>
         <module>view-goobi-servlet</module>
-        <module>ocr-webservice</module>
+        <module>view-webservice</module>
         <module>model-tesseract</module>
         <module>model-ocrsdk</module>
         <module>web-frontend</module>
