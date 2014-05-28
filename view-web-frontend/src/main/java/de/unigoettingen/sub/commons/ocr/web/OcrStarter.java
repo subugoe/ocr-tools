@@ -96,7 +96,7 @@ public class OcrStarter implements Runnable {
 	@Override
 	public void run() {
 		DateFormat f = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-		String timeStamp = f.format(new Date()).replaceAll(" ", "-");
+		String timeStamp = f.format(new Date()).replaceAll(" ", "-").replaceAll(":", ".");
 		String logFile = new File(new File(param.outputFolder), "log-" + timeStamp + ".txt").getAbsolutePath();
 		logSelector.logToFile(logFile);
 		OCREngine engine = createEngine();
@@ -158,7 +158,11 @@ public class OcrStarter implements Runnable {
 			langs.add(new Locale(lang));
 		}
 		process.setLanguages(langs);
-		process.setTextType(OCRTextType.valueOf(param.textType));
+		if ("gbvAntiqua".equals(param.ocrEngine)) {
+			process.setTextType(OCRTextType.NORMAL);
+		} else {
+			process.setTextType(OCRTextType.valueOf(param.textType));
+		}
 		process.setSplitProcess(true);
 		
 		try {
