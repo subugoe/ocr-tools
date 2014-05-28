@@ -19,6 +19,7 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
  */
 
 import java.io.File;
+import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 public class Main {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
+	private static PrintStream out = System.out;
 
 	private Options opts = new Options();
 
@@ -78,7 +80,12 @@ public class Main {
 	private List<File> dirs = new ArrayList<File>();
 
 	private Map<String, String> extraOptions;
-	
+
+	// for unit tests
+	static void redirectSystemOutputTo(PrintStream stream) {
+		out = stream;
+	}
+
 	public static void main(String[] args) throws URISyntaxException {
 		new Main().execute(args);
 	}
