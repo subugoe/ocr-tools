@@ -19,7 +19,10 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
  */
 
 import java.io.File;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -51,11 +54,20 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
+import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
+import de.unigoettingen.sub.ocr.controller.Validator;
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 public class Main {
 
+	private PrintStream out = System.out;
+	private Options options = new Options();
+	private CommandLine parsedOptions;
+	private boolean terminated = false;
+	private Validator paramValidator = new Validator();
+	private OcrEngineStarter engineStarter = new OcrEngineStarter();
+	
 	private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
-	private static PrintStream out = System.out;
 
 	private Options opts = new Options();
 
@@ -82,15 +94,84 @@ public class Main {
 	private Map<String, String> extraOptions;
 
 	// for unit tests
-	static void redirectSystemOutputTo(PrintStream stream) {
+	void redirectSystemOutputTo(PrintStream stream) {
 		out = stream;
 	}
-
-	public static void main(String[] args) throws URISyntaxException {
-		new Main().execute(args);
+	// for unit tests
+	void setValidator(Validator newValidator) {
+		paramValidator = newValidator;
+	}
+	// for unit tests
+	void setOcrEngineStarter(OcrEngineStarter newStarter) {
+		engineStarter = newStarter;
 	}
 
-	void execute(String[] args) throws URISyntaxException {
+	public static void main(String[] args) throws URISyntaxException, UnsupportedEncodingException {
+		new Main().executeOld(args);
+	}
+
+	void execute(String[] args) throws UnsupportedEncodingException {
+		initOptions(args);
+		if (terminated) {
+			return;
+		}
+		OcrParameters params = transformOptions();
+		if (terminated) {
+			return;
+		}
+		String validationMessage = paramValidator.validateParameters(params);
+		if ("OK".equals(validationMessage)) {
+			engineStarter.startOcrWithParams(params);
+		} else {
+			out.println("Illegal parameters: " + validationMessage);
+		}
+		
+	}
+	
+	private void initOptions(String[] args) throws UnsupportedEncodingException {
+		options.addOption("outformats", true, "Output formats");
+		options.addOption("langs", true, "Languages - separated by \",\"");
+		options.addOption("help", false, "Help");
+		options.addOption("informats", true, "File extensions (default all images)");
+		options.addOption("texttype", true, "E.g. normal or gothic");
+		options.addOption("indir", true, "Input directory");
+		options.addOption("outdir", true, "Output directory");
+		options.addOption("prio", true, "Priority");
+		options.addOption("s", false, "Segmentation");
+		options.addOption("engine", true, "OCR Engine, e.g. abbyy, abbyy-multiuser, ocrsdk, tesseract (default is abbyy)");
+		options.addOption("options", true, "Further options, comma-separated. E.g. -options lock.overwrite=true,user=hans");
+		CommandLineParser parser = new GnuParser();
+
+		try {
+			parsedOptions = parser.parse(options, args);
+		} catch (ParseException e) {
+			out.println("Illegal arguments.");
+			printHelp();
+			terminated = true;
+		}
+
+	}
+	
+	private void printHelp() throws UnsupportedEncodingException {
+		OutputStreamWriter osw = new OutputStreamWriter(out, "UTF8");
+		PrintWriter pw = new PrintWriter(osw);
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp(pw, HelpFormatter.DEFAULT_WIDTH, "java -jar ocr.jar <options>", "", options,
+				HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "");
+		pw.close();
+	}
+
+	private OcrParameters transformOptions() throws UnsupportedEncodingException {
+		OcrParameters params = new OcrParameters();
+		if (parsedOptions.hasOption("help")) {
+			terminated = true;
+			printHelp();
+			return params;
+		}
+		return params;
+	}
+	
+	void executeOld(String[] args) throws URISyntaxException {
 		initOpts();
 
 		List<String> files = defaultOpts(args);

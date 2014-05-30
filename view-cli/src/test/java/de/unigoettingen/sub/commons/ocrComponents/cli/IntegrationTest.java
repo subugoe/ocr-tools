@@ -20,7 +20,7 @@ public class IntegrationTest {
 		when(hotfolderMock.exists(any(URI.class))).thenReturn(true);
 		FakeHotfolder.instance = hotfolderMock;
 		// -f PDF -l de -t NORMAL -o /home/dennis/digi/cli_output /home/dennis/digi/cli_input
-		main.execute(new String[] {"-f", "PDF", "-l", "de", "-t", "NORMAL", "-o", "/home/dennis/digi/cli_output", "/home/dennis/digi/cli_input"});
+		main.executeOld(new String[] {"-f", "PDF", "-l", "de", "-t", "NORMAL", "-o", "/home/dennis/digi/cli_output", "/home/dennis/digi/cli_input"});
 	}
 
 }

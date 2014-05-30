@@ -284,6 +284,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			// exist yet.
 			cleanImages(convertList(getOcrImages()));
 
+			//TODO: remove
+			URI ticketLogPath = new File("/home/dennis/temp/tickets/" + tmpTicket).toURI();
+			hotfolder.copyTmpFile(tmpTicket, ticketLogPath);
 
 			// Copy the ticket
 			logger.info("Copying ticket to server (" + getName() + ")");
