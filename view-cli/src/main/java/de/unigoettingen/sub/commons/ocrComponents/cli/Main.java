@@ -123,30 +123,28 @@ public class Main {
 		if ("OK".equals(validationMessage)) {
 			engineStarter.startOcrWithParams(params);
 		} else {
-			out.println("Illegal parameters: " + validationMessage);
+			out.println("Illegal options: " + validationMessage);
 		}
 		
 	}
 	
 	private void initOptions(String[] args) throws UnsupportedEncodingException {
-		options.addOption("outformats", true, "Output formats");
-		options.addOption("langs", true, "Languages - separated by \",\"");
-		options.addOption("help", false, "Help");
-		options.addOption("informats", true, "File extensions (default all images)");
-		options.addOption("texttype", true, "E.g. normal or gothic");
-		options.addOption("indir", true, "Input directory");
-		options.addOption("outdir", true, "Output directory");
-		options.addOption("prio", true, "Priority");
-		options.addOption("s", false, "Segmentation");
-		options.addOption("engine", true, "OCR Engine, e.g. abbyy, abbyy-multiuser, ocrsdk, tesseract (default is abbyy)");
-		options.addOption("options", true, "Further options, comma-separated. E.g. -options lock.overwrite=true,user=hans");
+		options.addOption("help", false, "Print help");
+		options.addOption("indir", true, "Input directory - required");
+		options.addOption("informats", true, "File extensions, e.g. tif,jpg (default: all images)");
+		options.addOption("texttype", true, "E.g. normal or gothic - required");
+		options.addOption("langs", true, "Languages, e.g. de,en,fr - required");
+		options.addOption("outdir", true, "Output directory - required");
+		options.addOption("outformats", true, "Output formats, e.g. pdf,xml - required");
+		options.addOption("prio", true, "Priority: -2, -1, 0, 1, or 2. default is 0");
+		options.addOption("engine", true, "OCR engine, e.g. abbyy, abbyy-multiuser, ocrsdk, tesseract (default is abbyy)");
+		options.addOption("options", true, "Further options, comma-separated. E.g. -options lock.overwrite=true,user=hans,filesegments=true");
 		CommandLineParser parser = new GnuParser();
 
 		try {
 			parsedOptions = parser.parse(options, args);
 		} catch (ParseException e) {
-			out.println("Illegal arguments.");
-			printHelp();
+			out.println("Illegal arguments. Use -help.");
 			terminated = true;
 		}
 
@@ -168,9 +166,69 @@ public class Main {
 			printHelp();
 			return params;
 		}
+		
+		if (requiredOptionsArePresent()) {
+			params.inputFolder = parsedOptions.getOptionValue("indir");
+			params.inputTextType = parsedOptions.getOptionValue("texttype");
+			params.inputLanguages = parsedOptions.getOptionValue("langs").split(",");
+			params.outputFolder = parsedOptions.getOptionValue("outdir");
+			params.outputFormats = parsedOptions.getOptionValue("outformats").split(",");
+		} else {
+			out.println("Required options are missing. Use -help.");
+			terminated = true;
+			return params;
+		}
+		
+		initDefaultParams(params);
+		
+		if (parsedOptions.hasOption("informats")) {
+			params.inputFormats = parsedOptions.getOptionValue("informats").split(",");
+		}
+		
+		if (parsedOptions.hasOption("prio")) {
+			params.priority = parsedOptions.getOptionValue("prio");
+		}
+		
+		if (parsedOptions.hasOption("engine")) {
+			params.ocrEngine = parsedOptions.getOptionValue("engine");
+		}
+		
+		if (parsedOptions.hasOption("options")) {
+			params.options = convertExtraOptions(parsedOptions.getOptionValue("options"));
+		}
+		
 		return params;
 	}
 	
+	private boolean requiredOptionsArePresent() {
+		boolean allPresent = true;
+		allPresent &= parsedOptions.hasOption("indir");
+		allPresent &= parsedOptions.hasOption("texttype");
+		allPresent &= parsedOptions.hasOption("langs");
+		allPresent &= parsedOptions.hasOption("outdir");
+		allPresent &= parsedOptions.hasOption("outformats");
+		return allPresent;
+	}
+
+	private void initDefaultParams(OcrParameters params) {
+		params.inputFormats = new String[]{"tif", "jpg", "gif", "tiff", "png", "jpeg"};
+		params.priority = "0";
+		params.ocrEngine = "abbyy";
+		params.options = new HashMap<String, String>();
+	}
+
+	private Map<String, String> convertExtraOptions(String extras) {
+		Map<String, String> extraOptions = new HashMap<String, String>();
+		String[] extrasArray = extras.split(","); // opt1=a,opt2=b
+		for (String extraOpt : extrasArray) {
+			String[] keyAndValue = extraOpt.split("=");
+			String key = keyAndValue[0];
+			String value = keyAndValue[1];
+			extraOptions.put(key, value);
+		}
+		return extraOptions;
+	}
+
 	void executeOld(String[] args) throws URISyntaxException {
 		initOpts();
 

@@ -10,6 +10,7 @@ public class OcrParameters {
 	public String[] inputLanguages;
 	public String outputFolder;
 	public String[] outputFormats;
+	public String priority;
 	public String ocrEngine;
 	public Map<String, String> options;
 }

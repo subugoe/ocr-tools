@@ -20,7 +20,7 @@ package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import de.unigoettingen.sub.commons.ocrComponents.cli.Main;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
@@ -54,22 +55,79 @@ public class MainTest {
 		main.setOcrEngineStarter(engineStarterMock);
 	}
 	
-	//@Test
+	@Test
 	public void shouldPrintHelp() throws UnsupportedEncodingException {
-		//when(validatorMock.validateParameters(any(OcrParameters.class))).thenReturn("OK");
 		main.execute(new String[]{"-help"});
 		String outString = new String(baos.toByteArray());
 		assertThat(outString, containsString("usage: java -jar"));
 		assertThat(outString, containsString("-help"));
 	}
 
-	//@Test
+	@Test
 	public void shouldDenyWrongArgument() throws UnsupportedEncodingException {
-		//when(validatorMock.validateParameters(any(OcrParameters.class))).thenReturn("OK");
 		main.execute(new String[]{"-wrongargument"});
 		String outString = new String(baos.toByteArray());
-		assertThat(outString, containsString("Illegal arguments."));
-		assertThat(outString, containsString("usage: java -jar"));
+		assertThat(outString, containsString("Illegal arguments. Use -help."));
+	}
+
+	@Test
+	public void shouldPassAllParams() throws UnsupportedEncodingException {
+		ArgumentCaptor<OcrParameters> captor = ArgumentCaptor.forClass(OcrParameters.class);
+		when(validatorMock.validateParameters(any(OcrParameters.class))).thenReturn("OK");
+		main.execute(validOptions());
+		verify(validatorMock).validateParameters(captor.capture());
+		OcrParameters param = captor.getValue();
+		assertEquals("/tmp/in", param.inputFolder);
+		assertEquals("tif", param.inputFormats[0]);
+		assertEquals("jpg", param.inputFormats[1]);
+		assertEquals("normal", param.inputTextType);
+		assertEquals("de", param.inputLanguages[0]);
+		assertEquals("en", param.inputLanguages[1]);
+		assertEquals("/tmp/out", param.outputFolder);
+		assertEquals("pdf", param.outputFormats[0]);
+		assertEquals("xml", param.outputFormats[1]);
+		assertEquals("2", param.priority);
+		assertEquals("abbyy", param.ocrEngine);
+		assertEquals("me", param.options.get("user"));
+		assertEquals("pass", param.options.get("password"));
+		
+	}
+
+	@Test
+	public void shouldComplainAboutMissingOptions() throws UnsupportedEncodingException {
+		main.execute(new String[]{"-indir", "/tmp"});
+		String outString = new String(baos.toByteArray());
+		assertThat(outString, containsString("Required options are missing. Use -help."));
+	}
+	
+	@Test
+	public void shouldStartEngine() throws UnsupportedEncodingException {
+		when(validatorMock.validateParameters(any(OcrParameters.class))).thenReturn("OK");
+		main.execute(validOptions());
+		verify(engineStarterMock).startOcrWithParams(any(OcrParameters.class));
+	}
+	
+	@Test
+	public void shouldNotStartEngine() throws UnsupportedEncodingException {
+		when(validatorMock.validateParameters(any(OcrParameters.class))).thenReturn("Input folder does not exist");
+		main.execute(validOptions());
+		verify(engineStarterMock, times(0)).startOcrWithParams(any(OcrParameters.class));
+		
+		String outString = new String(baos.toByteArray());
+		assertThat(outString, containsString("Illegal options: Input folder does not exist"));
+
+	}
+	
+	private String[] validOptions() {
+		return new String[]{"-indir", "/tmp/in", 
+				"-informats", "tif,jpg",
+				"-texttype", "normal",
+				"-langs", "de,en",
+				"-outdir", "/tmp/out",
+				"-outformats", "pdf,xml",
+				"-prio", "2",
+				"-engine", "abbyy",
+				"-options", "user=me,password=pass"};
 	}
 
 }
