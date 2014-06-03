@@ -90,7 +90,6 @@ public class MainTest {
 		assertEquals("abbyy", param.ocrEngine);
 		assertEquals("me", param.options.get("user"));
 		assertEquals("pass", param.options.get("password"));
-		
 	}
 
 	@Test
@@ -118,6 +117,21 @@ public class MainTest {
 
 	}
 	
+	@Test
+	public void shouldSetDefaultValues() throws UnsupportedEncodingException {
+		ArgumentCaptor<OcrParameters> captor = ArgumentCaptor.forClass(OcrParameters.class);
+		main.execute(onlyRequiredOptions());
+		verify(validatorMock).validateParameters(captor.capture());
+		OcrParameters param = captor.getValue();
+		
+		assertEquals("tif", param.inputFormats[0]);
+		assertEquals("jpg", param.inputFormats[1]);
+		assertEquals("gif", param.inputFormats[2]);
+		assertEquals("0", param.priority);
+		assertEquals("abbyy", param.ocrEngine);
+		assertNotNull(param.options);
+	}
+	
 	private String[] validOptions() {
 		return new String[]{"-indir", "/tmp/in", 
 				"-informats", "tif,jpg",
@@ -128,6 +142,14 @@ public class MainTest {
 				"-prio", "2",
 				"-engine", "abbyy",
 				"-options", "user=me,password=pass"};
+	}
+
+	private String[] onlyRequiredOptions() {
+		return new String[]{"-indir", "/tmp/in", 
+				"-texttype", "normal",
+				"-langs", "de,en",
+				"-outdir", "/tmp/out",
+				"-outformats", "pdf,xml"};
 	}
 
 }
