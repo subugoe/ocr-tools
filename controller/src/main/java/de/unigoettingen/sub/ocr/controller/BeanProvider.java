@@ -7,7 +7,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class BeanProvider {
 
 	public FileManager getFileManager() {
-		ApplicationContext ctx = new ClassPathXmlApplicationContext("context.xml");
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("controller-context.xml");
 		return ctx.getBean("fileManager", FileManager.class);
 
 	}

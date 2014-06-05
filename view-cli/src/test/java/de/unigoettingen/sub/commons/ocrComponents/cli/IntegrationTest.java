@@ -1,26 +1,56 @@
 package de.unigoettingen.sub.commons.ocrComponents.cli;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ConcurrentModificationException;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import de.unigoettingen.sub.commons.ocrComponents.cli.testutil.FileManagerMockProvider;
+import de.unigoettingen.sub.ocr.controller.FileManager;
 
 public class IntegrationTest {
 
-	@Test(expected=ConcurrentModificationException.class)
-	public void test() throws URISyntaxException, IOException {
-		Main main = new Main();
-		FakeHotfolder hotfolderMock = mock(FakeHotfolder.class);
-		when(hotfolderMock.exists(any(URI.class))).thenReturn(true);
-		FakeHotfolder.instance = hotfolderMock;
-		// -f PDF -l de -t NORMAL -o /home/dennis/digi/cli_output /home/dennis/digi/cli_input
-		main.executeOld(new String[] {"-f", "PDF", "-l", "de", "-t", "NORMAL", "-o", "/home/dennis/digi/cli_output", "/home/dennis/digi/cli_input"});
+	private ByteArrayOutputStream baos;
+	private Main main;
+	private FileManager fileManagerMock;
+	
+	@Before
+	public void beforeEachTest() {
+		main = new Main();
+		baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		main.redirectSystemOutputTo(out);
+
+		fileManagerMock = mock(FileManager.class);
+		FileManagerMockProvider.mock = fileManagerMock;
+	}
+
+	@Test
+	public void shouldComplainAboutInput() throws UnsupportedEncodingException {
+		when(fileManagerMock.isReadableFolder("/tmp/in")).thenReturn(false);
+		when(fileManagerMock.isWritableFolder("/tmp/out")).thenReturn(true);
+		main.execute(validOptions());
+
+		String outString = new String(baos.toByteArray());
+		assertThat(outString, containsString("Illegal options: Input folder not found."));
+	}
+
+	private String[] validOptions() {
+		return new String[]{"-indir", "/tmp/in", 
+				"-informats", "tif,jpg",
+				"-texttype", "normal",
+				"-langs", "de,en",
+				"-outdir", "/tmp/out",
+				"-outformats", "pdf,xml",
+				"-prio", "2",
+				"-engine", "abbyy",
+				"-options", "user=me,password=pass"};
 	}
 
 }
