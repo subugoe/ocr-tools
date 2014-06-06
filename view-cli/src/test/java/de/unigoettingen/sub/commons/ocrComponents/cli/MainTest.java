@@ -88,8 +88,8 @@ public class MainTest {
 		assertEquals("xml", param.outputFormats[1]);
 		assertEquals("2", param.priority);
 		assertEquals("abbyy", param.ocrEngine);
-		assertEquals("me", param.options.get("user"));
-		assertEquals("pass", param.options.get("password"));
+		assertEquals("me", param.props.get("user"));
+		assertEquals("pass", param.props.get("password"));
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class MainTest {
 		assertEquals("gif", param.inputFormats[2]);
 		assertEquals("0", param.priority);
 		assertEquals("abbyy", param.ocrEngine);
-		assertNotNull(param.options);
+		assertNotNull(param.props);
 	}
 	
 	private String[] validOptions() {
@@ -141,7 +141,7 @@ public class MainTest {
 				"-outformats", "pdf,xml",
 				"-prio", "2",
 				"-engine", "abbyy",
-				"-options", "user=me,password=pass"};
+				"-props", "user=me,password=pass"};
 	}
 
 	private String[] onlyRequiredOptions() {

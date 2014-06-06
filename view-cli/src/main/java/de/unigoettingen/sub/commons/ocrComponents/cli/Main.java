@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
@@ -138,7 +139,7 @@ public class Main {
 		options.addOption("outformats", true, "Output formats, e.g. pdf,xml - required");
 		options.addOption("prio", true, "Priority: -2, -1, 0, 1, or 2. default is 0");
 		options.addOption("engine", true, "OCR engine, e.g. abbyy, abbyy-multiuser, ocrsdk, tesseract (default is abbyy)");
-		options.addOption("options", true, "Further options, comma-separated. E.g. -options lock.overwrite=true,user=hans,filesegments=true");
+		options.addOption("props", true, "Further properties, comma-separated. E.g. -props lock.overwrite=true,user=hans,filesegments=true");
 		CommandLineParser parser = new GnuParser();
 
 		try {
@@ -193,8 +194,8 @@ public class Main {
 			params.ocrEngine = parsedOptions.getOptionValue("engine");
 		}
 		
-		if (parsedOptions.hasOption("options")) {
-			params.options = convertExtraOptions(parsedOptions.getOptionValue("options"));
+		if (parsedOptions.hasOption("props")) {
+			params.props = convertExtraProperties(parsedOptions.getOptionValue("props"));
 		}
 		
 		return params;
@@ -214,19 +215,19 @@ public class Main {
 		params.inputFormats = new String[]{"tif", "jpg", "gif", "tiff", "png", "jpeg"};
 		params.priority = "0";
 		params.ocrEngine = "abbyy";
-		params.options = new HashMap<String, String>();
+		params.props = new Properties();
 	}
 
-	private Map<String, String> convertExtraOptions(String extras) {
-		Map<String, String> extraOptions = new HashMap<String, String>();
+	private Properties convertExtraProperties(String extras) {
+		Properties extraProperties = new Properties();
 		String[] extrasArray = extras.split(","); // opt1=a,opt2=b
-		for (String extraOpt : extrasArray) {
-			String[] keyAndValue = extraOpt.split("=");
+		for (String extraProp : extrasArray) {
+			String[] keyAndValue = extraProp.split("=");
 			String key = keyAndValue[0];
 			String value = keyAndValue[1];
-			extraOptions.put(key, value);
+			extraProperties.setProperty(key, value);
 		}
-		return extraOptions;
+		return extraProperties;
 	}
 
 	void executeOld(String[] args) throws URISyntaxException {

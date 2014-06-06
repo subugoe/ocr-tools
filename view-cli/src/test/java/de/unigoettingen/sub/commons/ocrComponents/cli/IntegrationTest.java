@@ -50,7 +50,7 @@ public class IntegrationTest {
 				"-outformats", "pdf,xml",
 				"-prio", "2",
 				"-engine", "abbyy",
-				"-options", "user=me,password=pass"};
+				"-props", "user=me,password=pass"};
 	}
 
 }

@@ -37,8 +37,8 @@ public class Validator {
 		if (isEmpty(params.ocrEngine)) {
 			validationMessage += noOcrEngine();
 		}
-		if (params.options == null) {
-			validationMessage += nullOptions();
+		if (params.props == null) {
+			validationMessage += nullProperties();
 		}
 		
 		if (validationMessage.isEmpty()) {
@@ -96,8 +96,8 @@ public class Validator {
 		return "No OCR engine. ";
 	}
 
-	protected String nullOptions() {
-		return "Options may not be null. ";
+	protected String nullProperties() {
+		return "Properties may not be null. ";
 	}
 
 

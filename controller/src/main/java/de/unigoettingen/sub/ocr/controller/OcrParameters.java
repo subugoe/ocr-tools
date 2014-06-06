@@ -1,6 +1,6 @@
 package de.unigoettingen.sub.ocr.controller;
 
-import java.util.Map;
+import java.util.Properties;
 
 
 public class OcrParameters {
@@ -12,5 +12,5 @@ public class OcrParameters {
 	public String[] outputFormats;
 	public String priority;
 	public String ocrEngine;
-	public Map<String, String> options;
+	public Properties props;
 }

@@ -3,9 +3,8 @@ package de.unigoettingen.sub.ocr.controller;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
+import java.util.Properties;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -121,10 +120,10 @@ public class ValidatorTest {
 	public void shouldDetectNullOptions() {
 		whenAskedThenFindFolders();
 		OcrParameters params = validParams();
-		params.options = null;
+		params.props = null;
 		String validation = validatorSut.validateParameters(params);
 		
-		assertEquals("Options may not be null. ", validation);
+		assertEquals("Properties may not be null. ", validation);
 	}
 	
 	private void whenAskedThenFindFolders() {
@@ -142,7 +141,7 @@ public class ValidatorTest {
 		params.outputFormats = new String[]{"pdf", "xml"};
 		params.priority = "0";
 		params.ocrEngine = "abbyy";
-		params.options = new HashMap<String, String>();
+		params.props = new Properties();
 		return params;
 	}
 	
