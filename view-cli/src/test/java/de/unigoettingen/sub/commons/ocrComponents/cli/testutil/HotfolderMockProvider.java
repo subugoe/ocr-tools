@@ -1,4 +1,4 @@
-package de.unigoettingen.sub.commons.ocrComponents.cli;
+package de.unigoettingen.sub.commons.ocrComponents.cli.testutil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,12 +7,12 @@ import java.util.List;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
 
-public class FakeHotfolder extends ServerHotfolder {
+public class HotfolderMockProvider extends ServerHotfolder {
 
-	public static FakeHotfolder instance;
+	public static ServerHotfolder mock;
 	
-	public static FakeHotfolder getInstance() {
-		return instance;
+	public static ServerHotfolder getMock() {
+		return mock;
 	}
 	
 	@Override

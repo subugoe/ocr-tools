@@ -342,7 +342,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 								if (!new File(localUri).exists()) {
 									logger.debug("another try Copy from "
 											+ remoteUri + " to " + localUri);
-									Thread.sleep(2000);
+									Thread.sleep(100);
 									hotfolder.copyFile(remoteUri, localUri);
 								}
 							} catch (Exception e) {

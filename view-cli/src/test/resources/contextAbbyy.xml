@@ -3,7 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<bean id="hotfolderImplementation" class="de.unigoettingen.sub.commons.ocrComponents.cli.FakeHotfolder" factory-method="getInstance">
+	<bean id="hotfolderImplementation"
+		class="de.unigoettingen.sub.commons.ocrComponents.cli.testutil.HotfolderMockProvider" factory-method="getMock">
 	</bean>
 
 </beans>

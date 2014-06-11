@@ -25,7 +25,10 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 /**
@@ -129,10 +132,10 @@ public abstract class ServerHotfolder implements Hotfolder {
 	abstract protected void configureConnection(String serverUrl, String username, String password);
 	
 	public static Hotfolder getHotfolder(String serverUrl, String username, String password) {
-		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
-				"contextAbbyy.xml"));
-		ServerHotfolder hotfolder = (ServerHotfolder) factory
-				.getBean("hotfolderImplementation");
+		ApplicationContext ctx = new ClassPathXmlApplicationContext(
+				"contextAbbyy.xml");
+		ServerHotfolder hotfolder = ctx
+				.getBean("hotfolderImplementation", ServerHotfolder.class);
 		hotfolder.configureConnection(serverUrl, username, password);
 		return hotfolder;
 	}
