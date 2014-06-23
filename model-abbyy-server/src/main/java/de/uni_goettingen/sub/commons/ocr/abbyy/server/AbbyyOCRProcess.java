@@ -147,7 +147,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 
 	private boolean alreadyBeenHere = false;
 	
-	protected AbbyyOCRProcess(ConfigParser config) {
+	public AbbyyOCRProcess(ConfigParser config) {
 		super();
 		this.config = config;
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();

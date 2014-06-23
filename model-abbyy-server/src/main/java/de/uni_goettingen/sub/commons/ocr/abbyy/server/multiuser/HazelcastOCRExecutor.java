@@ -46,6 +46,9 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
 
 			queuedProcesses.put(abbyyOCRProcess.getProcessId(), abbyyOCRProcess);
+			System.out.println("----------------  " + abbyyOCRProcess.getProcessId());
+			System.out.println("----------------  " + queuedProcesses.keySet());
+			System.out.println("----------------  " + queuedProcesses.get(abbyyOCRProcess.getProcessId()));
 
 			// TODO: deadlock danger? Maybe use hazelcast's distributed lock
 			while (true) {
@@ -58,6 +61,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 					slotsFree = actualProcesses < maxProcesses;
 
 					q.clear();
+					System.out.println("----------------  " + queuedProcesses);
 					q.addAll(queuedProcesses.values());
 					AbbyyOCRProcess head = q.poll();
 

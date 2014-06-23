@@ -100,13 +100,9 @@ public class HazelcastTest {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				try {
 					HazelcastInstance h1 = Hazelcast.newHazelcastInstance(null);
 					OCREngine engine = new MultiUserAbbyyOCREngine(h1);
 					recognize(engine, inputDir1, outputFile1);
-				} catch (ConfigurationException e) {
-					e.printStackTrace();
-				}
 			}
 		};
 		t.start();

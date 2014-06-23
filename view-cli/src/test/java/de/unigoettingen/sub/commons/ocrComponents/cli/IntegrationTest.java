@@ -41,7 +41,7 @@ public class IntegrationTest {
 		fileManagerMock = mock(FileManager.class);
 		FileManagerMockProvider.mock = fileManagerMock;
 		
-		hotfolderMock = mock(ServerHotfolder.class);
+		hotfolderMock = mock(ServerHotfolder.class, withSettings().serializable());
 		HotfolderMockProvider.mock = hotfolderMock;
 	}
 
@@ -77,13 +77,7 @@ public class IntegrationTest {
 
 	@Test
 	public void shouldCompleteSuccessfully() throws IOException, URISyntaxException {
-		when(fileManagerMock.isReadableFolder("/tmp/in")).thenReturn(true);
-		when(fileManagerMock.isWritableFolder("/tmp/out")).thenReturn(true);
-		when(fileManagerMock.getAllFolders(anyString(), any(String[].class))).thenReturn(new File[]{new File("/tmp/in")});
-		when(fileManagerMock.getAllImagesFromFolder(any(File.class), any(String[].class))).thenReturn(new File[]{new File("/tmp/in/01.tif")});
-		when(hotfolderMock.createTmpFile(anyString())).thenReturn(mock(OutputStream.class));
-		when(hotfolderMock.exists(new URI("http://localhost:9001/output/in.xml.result.xml"))).thenReturn(true);
-		when(hotfolderMock.exists(new URI("http://localhost:9001/output/in.xml"))).thenReturn(true);
+		prepareMocksForSuccess();
 		
 		main.execute(validOptions());
 		
@@ -91,7 +85,31 @@ public class IntegrationTest {
 		assertThat(outString, isEmptyString());
 		verify(hotfolderMock, atLeastOnce()).copyFile(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
 	}
+	
+	// TODO: works in production, but not in test
+	//@Test
+	public void shouldCompleteSuccessfullyWithMultiuser() throws IOException, URISyntaxException {
+		prepareMocksForSuccess();
+		
+		String[] opts = validOptions();
+		opts[15] = "abbyy-multiuser";
+		main.execute(opts);
+		
+		String outString = new String(baos.toByteArray());
+		assertThat(outString, isEmptyString());
+		verify(hotfolderMock, atLeastOnce()).copyFile(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
+	}
 
+	private void prepareMocksForSuccess() throws IOException, URISyntaxException {
+		when(fileManagerMock.isReadableFolder("/tmp/in")).thenReturn(true);
+		when(fileManagerMock.isWritableFolder("/tmp/out")).thenReturn(true);
+		when(fileManagerMock.getAllFolders(anyString(), any(String[].class))).thenReturn(new File[]{new File("/tmp/in")});
+		when(fileManagerMock.getAllImagesFromFolder(any(File.class), any(String[].class))).thenReturn(new File[]{new File("/tmp/in/01.tif")});
+		when(hotfolderMock.createTmpFile(anyString())).thenReturn(mock(OutputStream.class, withSettings().serializable()));
+		when(hotfolderMock.exists(new URI("http://localhost:9001/output/in.xml.result.xml"))).thenReturn(true);
+		when(hotfolderMock.exists(new URI("http://localhost:9001/output/in.xml"))).thenReturn(true);
+	}
+	
 	private String[] validOptions() {
 		return new String[]{"-indir", "/tmp/in", 
 				"-informats", "tif,jpg",

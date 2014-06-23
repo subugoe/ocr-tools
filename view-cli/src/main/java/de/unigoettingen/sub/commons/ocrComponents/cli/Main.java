@@ -108,7 +108,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws URISyntaxException, UnsupportedEncodingException {
-		new Main().executeOld(args);
+		new Main().execute(args);
 	}
 
 	void execute(String[] args) throws UnsupportedEncodingException {

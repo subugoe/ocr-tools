@@ -24,14 +24,14 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	
 	private HazelcastInstance hazelcast;
 	
-	private MultiUserAbbyyOCREngine() throws ConfigurationException {
+	public MultiUserAbbyyOCREngine() {
 		super();
 		System.setProperty("hazelcast.logging.type", "log4j");
 		hazelcast = Hazelcast.newHazelcastInstance(null);
 	}
 	
 	// for unit tests
-	protected MultiUserAbbyyOCREngine(HazelcastInstance haz) throws ConfigurationException {
+	protected MultiUserAbbyyOCREngine(HazelcastInstance haz) {
 		super();
 		hazelcast = haz;
 	}
@@ -39,24 +39,14 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	public static synchronized MultiUserAbbyyOCREngine getInstance() {
 
 		if (instance == null) {
-			try {
-				instance = new MultiUserAbbyyOCREngine();
-			} catch (ConfigurationException e) {
-				logger.error("Can't read configuration", e);
-				throw new OCRException(e);
-			}
+			instance = new MultiUserAbbyyOCREngine();
 		}
 		return instance;
 	}
 	// we need this for our Web Service, because each request needs its own instance
 	public static MultiUserAbbyyOCREngine newOCREngine() {
 		MultiUserAbbyyOCREngine engine = null;
-		try {
-			engine = new MultiUserAbbyyOCREngine();
-		} catch (ConfigurationException e) {
-			logger.error("Can't read configuration", e);
-			throw new OCRException(e);
-		}
+		engine = new MultiUserAbbyyOCREngine();
 		return engine;
 	}
 
