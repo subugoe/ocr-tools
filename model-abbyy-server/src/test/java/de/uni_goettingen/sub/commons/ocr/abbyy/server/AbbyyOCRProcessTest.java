@@ -30,6 +30,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.After;
@@ -80,7 +81,7 @@ public class AbbyyOCRProcessTest {
 	
 	@Test
 	public void newAbbyyProcess() {
-		AbbyyOCRProcess aop = (AbbyyOCRProcess) new AbbyyServerOCREngine().newOcrProcess();
+		AbbyyOCRProcess aop = (AbbyyOCRProcess) new AbbyyServerOCREngine(new Properties()).newOcrProcess();
 		assertNotNull(aop);
 	}
 
@@ -176,7 +177,7 @@ public class AbbyyOCRProcessTest {
 	@Test
 	public void createProcessViaAPI() throws MalformedURLException,
 			URISyntaxException {
-		AbbyyServerOCREngine ase = new AbbyyServerOCREngine();
+		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
 		assertNotNull(ase);
 		OCRProcess op = ase.newOcrProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();
@@ -198,7 +199,7 @@ public class AbbyyOCRProcessTest {
 	public void createUrlBasedProcess() throws MalformedURLException,
 			URISyntaxException {
 		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
-		AbbyyServerOCREngine ase = new AbbyyServerOCREngine();
+		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
 		assertNotNull(ase);
 		OCRProcess op = ase.newOcrProcess();
 		List<OCRImage> imgList = new ArrayList<OCRImage>();

@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -85,14 +86,30 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	private static Object monitor = new Object();
 	
 	private OCRExecuter pool;
+	
+	protected Properties userProperties;
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
 	 * @throws ConfigurationException
 	 *             the configuration exception
 	 */
-	public AbbyyServerOCREngine() {
-		config = new ConfigParser().parse();
+	public AbbyyServerOCREngine(Properties initProperties) {
+		userProperties = initProperties;
+		String configFile = userProperties.getProperty("abbyy.config");
+		if (configFile != null) {
+			config = new ConfigParser("/" + configFile).parse();
+		} else {
+			config = new ConfigParser().parse();
+		}
+		String user = userProperties.getProperty("user");
+		String password = userProperties.getProperty("password");
+		if (user != null) {
+			config.setUsername(user);
+		}
+		if (password != null) {
+			config.setPassword(password);
+		}
 		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 	}
 

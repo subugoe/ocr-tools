@@ -2,6 +2,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
 
 import java.io.IOException;
 import java.util.ConcurrentModificationException;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
@@ -24,29 +25,29 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	
 	private HazelcastInstance hazelcast;
 	
-	public MultiUserAbbyyOCREngine() {
-		super();
+	public MultiUserAbbyyOCREngine(Properties userProps) {
+		super(userProps);
 		System.setProperty("hazelcast.logging.type", "log4j");
 		hazelcast = Hazelcast.newHazelcastInstance(null);
 	}
 	
 	// for unit tests
 	protected MultiUserAbbyyOCREngine(HazelcastInstance haz) {
-		super();
+		super(new Properties());
 		hazelcast = haz;
 	}
 
 	public static synchronized MultiUserAbbyyOCREngine getInstance() {
 
 		if (instance == null) {
-			instance = new MultiUserAbbyyOCREngine();
+			instance = new MultiUserAbbyyOCREngine(new Properties());
 		}
 		return instance;
 	}
 	// we need this for our Web Service, because each request needs its own instance
 	public static MultiUserAbbyyOCREngine newOCREngine() {
 		MultiUserAbbyyOCREngine engine = null;
-		engine = new MultiUserAbbyyOCREngine();
+		engine = new MultiUserAbbyyOCREngine(new Properties());
 		return engine;
 	}
 

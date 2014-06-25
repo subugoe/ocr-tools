@@ -32,7 +32,7 @@ public class OcrEngineStarter {
 	}
 	
 	public void startOcrWithParams(OcrParameters params) {
-		OcrFactory factory = factoryProvider.createFactory(params.ocrEngine);
+		OcrFactory factory = factoryProvider.createFactory(params.ocrEngine, params.props);
 		OCREngine engine = factory.createEngine();
 		
 		FileManager manager = beanProvider.getFileManager();

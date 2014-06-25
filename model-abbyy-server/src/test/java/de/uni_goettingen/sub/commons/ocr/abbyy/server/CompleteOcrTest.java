@@ -6,6 +6,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 
@@ -23,7 +24,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 
 public class CompleteOcrTest {
 
-	private OCREngine engine = new AbbyyServerOCREngine();
+	private OCREngine engine = new AbbyyServerOCREngine(new Properties());
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

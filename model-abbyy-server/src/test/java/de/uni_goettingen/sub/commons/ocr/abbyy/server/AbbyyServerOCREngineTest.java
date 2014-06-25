@@ -19,7 +19,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import static org.junit.Assert.*;
-
 import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 
 import java.io.File;
@@ -30,6 +29,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -74,34 +74,34 @@ public class AbbyyServerOCREngineTest {
 	
 	@Test
 	public void getInstance() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
 		assertNotNull(engine);
 	}
 	
 	@Test
 	public void newImage() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
 		OCRImage image = engine.newOcrImage(null);
 		assertTrue(image instanceof AbbyyOCRImage);
 	}
 	
 	@Test
 	public void newProcess() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
 		OCRProcess process = engine.newOcrProcess();
 		assertTrue(process instanceof AbbyyOCRProcess);
 	}
 	
 	@Test
 	public void newOutput() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
 		OCROutput output = engine.newOcrOutput();
 		assertTrue(output instanceof AbbyyOCROutput);
 	}
 	
 	@Test(expected=IllegalStateException.class)
 	public void recognizeNoProcesses() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
 		engine.recognize();
 	}
 	
@@ -109,7 +109,7 @@ public class AbbyyServerOCREngineTest {
 	public void recognizeNoServer() throws Exception {
 		MyServers.stopDavServer();
 		try {
-			AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
+			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
 			OCRProcess process = engine.newOcrProcess();
 			engine.recognize(process);
 		} finally {
@@ -119,7 +119,7 @@ public class AbbyyServerOCREngineTest {
 	
 	@Test(expected=IllegalStateException.class)
 	public void recognizeEmptyProcess() {
-			AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
+			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
 			OCRProcess process = engine.newOcrProcess();
 			engine.recognize(process);
 	}
@@ -130,7 +130,7 @@ public class AbbyyServerOCREngineTest {
 		lock.createNewFile();
 		
 		try {
-			AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
+			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
 			recognizeOneImage(engine);
 		} finally {
 			lock.delete();
@@ -142,7 +142,7 @@ public class AbbyyServerOCREngineTest {
 		File lock = new File(DAV_FOLDER, ConfigParser.SERVER_LOCK_FILE_NAME);
 		lock.createNewFile();
 		
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine();
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
 
 		Map<String, String> opts = new HashMap<String, String>();
 		opts.put("lock.overwrite", "true");
