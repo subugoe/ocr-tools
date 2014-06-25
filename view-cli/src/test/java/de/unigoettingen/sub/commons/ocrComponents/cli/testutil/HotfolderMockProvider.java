@@ -64,7 +64,7 @@ public class HotfolderMockProvider extends ServerHotfolder {
 	}
 
 	@Override
-	protected void configureConnection(String serverUrl, String username,
+	public void configureConnection(String serverUrl, String username,
 			String password) {
 		// TODO Auto-generated method stub
 		

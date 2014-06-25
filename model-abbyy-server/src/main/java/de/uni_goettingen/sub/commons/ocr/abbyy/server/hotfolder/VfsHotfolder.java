@@ -198,7 +198,7 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 	}
 
 	
-	protected void configureConnection(String newServerUrl, String newUsername, String newPassword) {
+	public void configureConnection(String newServerUrl, String newUsername, String newPassword) {
 		//Construct the login part.
 		if (newUsername != null && newPassword != null && newServerUrl.startsWith("https")) {
 			serverUrl = newServerUrl.replace("https://", "webdav://" + newUsername + ":" + newPassword + "@");

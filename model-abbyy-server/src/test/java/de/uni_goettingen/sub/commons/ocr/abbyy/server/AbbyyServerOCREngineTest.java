@@ -142,11 +142,10 @@ public class AbbyyServerOCREngineTest {
 		File lock = new File(DAV_FOLDER, ConfigParser.SERVER_LOCK_FILE_NAME);
 		lock.createNewFile();
 		
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+		Properties props = new Properties();
+		props.setProperty("lock.overwrite", "true");
+		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(props);
 
-		Map<String, String> opts = new HashMap<String, String>();
-		opts.put("lock.overwrite", "true");
-		engine.setOptions(opts);
 		recognizeOneImage(engine);
 		assertFalse(lock.exists());
 	}

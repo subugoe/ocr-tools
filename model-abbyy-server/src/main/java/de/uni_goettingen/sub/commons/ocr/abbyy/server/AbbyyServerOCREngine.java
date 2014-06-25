@@ -165,7 +165,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		started = true;
 		
 		try {
-			String overwrite = extraOptions.get("lock.overwrite");
+			String overwrite = userProperties.getProperty("lock.overwrite");
 			boolean overwriteLock = (overwrite != null && overwrite.equals("true"));
 
 			String serverLockFile = ConfigParser.SERVER_LOCK_FILE_NAME;

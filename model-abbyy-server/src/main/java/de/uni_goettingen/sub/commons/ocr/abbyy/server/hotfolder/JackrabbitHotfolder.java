@@ -79,7 +79,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	public JackrabbitHotfolder() {
 	}
 	
-	protected void configureConnection(String serverUrl, String username, String password) {
+	public void configureConnection(String serverUrl, String username, String password) {
 		try {
 			client = initConnection(serverUrl, username, password);
 		} catch (IOException e) {

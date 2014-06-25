@@ -129,7 +129,7 @@ public abstract class ServerHotfolder implements Hotfolder {
 		return new FileOutputStream(tmpFile);
 	}
 
-	abstract protected void configureConnection(String serverUrl, String username, String password);
+	abstract public void configureConnection(String serverUrl, String username, String password);
 	
 	public static Hotfolder getHotfolder(String serverUrl, String username, String password) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext(

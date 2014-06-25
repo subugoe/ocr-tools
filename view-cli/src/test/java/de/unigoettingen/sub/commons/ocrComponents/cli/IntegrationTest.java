@@ -67,17 +67,37 @@ public class IntegrationTest {
 	
 	@Test(expected=ConcurrentModificationException.class)
 	public void shouldComplainAboutExistingLockFile() throws URISyntaxException, IOException {
-		when(fileManagerMock.isReadableFolder("/tmp/in")).thenReturn(true);
-		when(fileManagerMock.isWritableFolder("/tmp/out")).thenReturn(true);
-		when(fileManagerMock.getAllFolders(anyString(), any(String[].class))).thenReturn(new File[]{new File("/tmp/in")});
-		when(fileManagerMock.getAllImagesFromFolder(any(File.class), any(String[].class))).thenReturn(new File[]{new File("/tmp/in/01.tif")});
+		prepareFileManagerMockForSuccess();
 		when(hotfolderMock.exists(new URI("http://localhost:9001/server.lock"))).thenReturn(true);
 		main.execute(validOptions());
 	}
 
 	@Test
+	public void shouldDeleteLockFile() throws URISyntaxException, IOException {
+		prepareFileManagerMockForSuccess();
+		prepareHotfolderMockForSuccess();
+		
+		String[] opts = validOptions();
+		opts[17] = "lock.overwrite=true";
+		main.execute(opts);
+		
+		verify(hotfolderMock).deleteIfExists(new URI("http://localhost:9001/server.lock"));
+	}
+
+	@Test
+	public void shouldPassUserCredentials() throws URISyntaxException, IOException {
+		prepareFileManagerMockForSuccess();
+		prepareHotfolderMockForSuccess();
+		
+		main.execute(validOptions());
+		
+		verify(hotfolderMock).configureConnection("http://localhost:9001/", "me", "pass");;
+	}
+
+	@Test
 	public void shouldCompleteSuccessfully() throws IOException, URISyntaxException {
-		prepareMocksForSuccess();
+		prepareFileManagerMockForSuccess();
+		prepareHotfolderMockForSuccess();
 		
 		main.execute(validOptions());
 		
@@ -89,7 +109,8 @@ public class IntegrationTest {
 	// TODO: works in production, but not in test
 	//@Test
 	public void shouldCompleteSuccessfullyWithMultiuser() throws IOException, URISyntaxException {
-		prepareMocksForSuccess();
+		prepareFileManagerMockForSuccess();
+		prepareHotfolderMockForSuccess();
 		
 		String[] opts = validOptions();
 		opts[15] = "abbyy-multiuser";
@@ -100,11 +121,14 @@ public class IntegrationTest {
 		verify(hotfolderMock, atLeastOnce()).copyFile(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
 	}
 
-	private void prepareMocksForSuccess() throws IOException, URISyntaxException {
+	private void prepareFileManagerMockForSuccess() {
 		when(fileManagerMock.isReadableFolder("/tmp/in")).thenReturn(true);
 		when(fileManagerMock.isWritableFolder("/tmp/out")).thenReturn(true);
 		when(fileManagerMock.getAllFolders(anyString(), any(String[].class))).thenReturn(new File[]{new File("/tmp/in")});
 		when(fileManagerMock.getAllImagesFromFolder(any(File.class), any(String[].class))).thenReturn(new File[]{new File("/tmp/in/01.tif")});
+	}
+
+	private void prepareHotfolderMockForSuccess() throws IOException, URISyntaxException {
 		when(hotfolderMock.createTmpFile(anyString())).thenReturn(mock(OutputStream.class, withSettings().serializable()));
 		when(hotfolderMock.exists(new URI("http://localhost:9001/output/in.xml.result.xml"))).thenReturn(true);
 		when(hotfolderMock.exists(new URI("http://localhost:9001/output/in.xml"))).thenReturn(true);
