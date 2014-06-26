@@ -1,5 +1,6 @@
 package de.unigoettingen.sub.ocr.controller;
 
+import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileManager;
 
 public class Validator {

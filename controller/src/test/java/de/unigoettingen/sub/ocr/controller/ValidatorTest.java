@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileManager;
 
 public class ValidatorTest {

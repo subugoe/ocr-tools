@@ -53,11 +53,6 @@
             <artifactId>ocrutil</artifactId>
             <version>0.9-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>3.1.4.RELEASE</version>
-        </dependency>
 
         <!--
              			<dependency> <groupId>org.apache.jackrabbit</groupId>
@@ -95,11 +90,6 @@
             <artifactId>model-tesseract</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.springframework</groupId>
-        	<artifactId>spring-aop</artifactId>
-        	<version>3.1.4.RELEASE</version>
         </dependency>
     </dependencies>
     <build>
