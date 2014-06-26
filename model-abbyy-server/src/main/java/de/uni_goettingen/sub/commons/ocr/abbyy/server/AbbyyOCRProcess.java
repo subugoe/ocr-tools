@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -35,11 +34,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -50,9 +47,9 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.NotImplementedException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument;
@@ -60,6 +57,7 @@ import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument.Document;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -67,7 +65,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
-
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
@@ -82,7 +79,7 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,Serializable,Cloneable,
 		Runnable {
 
-	
+	transient private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	private static final long serialVersionUID = -402196937662439454L;
 	// The Constant logger.
 	private final static Logger logger = LoggerFactory
@@ -147,18 +144,23 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 
 	private boolean alreadyBeenHere = false;
 	
+	// for unit tests
+	void setHotfolderProvider(HotfolderProvider newProvider) {
+		hotfolderProvider = newProvider;
+	}
+	
 	public AbbyyOCRProcess(ConfigParser config) {
 		super();
 		this.config = config;
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
-		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
+		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 		init();
 	}
 	
 	protected AbbyyOCRProcess(OCRProcess process, ConfigParser config) {
 		super(process);
 		this.config = config;
-		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
+		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 		init();
 		throw new NotImplementedException("This constructor isn't finished");
 	}

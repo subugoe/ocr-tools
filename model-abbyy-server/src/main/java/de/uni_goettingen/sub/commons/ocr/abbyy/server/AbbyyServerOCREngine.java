@@ -39,6 +39,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
@@ -88,6 +89,13 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	private OCRExecuter pool;
 	
 	protected Properties userProperties;
+	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
+
+	// for unit tests
+	void setHotfolderProvider(HotfolderProvider newProvider) {
+		hotfolderProvider = newProvider;
+	}
+
 	/**
 	 * Instantiates a new abbyy server engine.
 	 * 
@@ -110,7 +118,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		if (password != null) {
 			config.setPassword(password);
 		}
-		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
+		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 	}
 
 	private void initConfig() {
@@ -127,7 +135,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 			config.setPassword(password);
 		}
 
-		hotfolder = ServerHotfolder.getHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
+		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 	}
 	
 	/* start JMX methods */

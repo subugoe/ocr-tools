@@ -131,13 +131,4 @@ public abstract class ServerHotfolder implements Hotfolder {
 
 	abstract public void configureConnection(String serverUrl, String username, String password);
 	
-	public static Hotfolder getHotfolder(String serverUrl, String username, String password) {
-		ApplicationContext ctx = new ClassPathXmlApplicationContext(
-				"contextAbbyy.xml");
-		ServerHotfolder hotfolder = ctx
-				.getBean("hotfolderImplementation", ServerHotfolder.class);
-		hotfolder.configureConnection(serverUrl, username, password);
-		return hotfolder;
-	}
-
 }
