@@ -1,4 +1,4 @@
-package de.unigoettingen.sub.ocr.controller;
+package de.unigoettingen.sub.commons.ocr.util;
 
 import java.io.File;
 import java.util.ArrayList;

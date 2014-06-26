@@ -20,9 +20,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
+import de.unigoettingen.sub.commons.ocr.util.FileManager;
 import de.unigoettingen.sub.commons.ocrComponents.cli.testutil.FileManagerMockProvider;
 import de.unigoettingen.sub.commons.ocrComponents.cli.testutil.HotfolderMockProvider;
-import de.unigoettingen.sub.ocr.controller.FileManager;
 
 public class IntegrationTest {
 

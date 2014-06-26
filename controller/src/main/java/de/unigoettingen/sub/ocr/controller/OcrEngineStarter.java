@@ -16,6 +16,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
+import de.unigoettingen.sub.commons.ocr.util.FileManager;
 
 public class OcrEngineStarter {
 
