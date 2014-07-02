@@ -149,22 +149,14 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		hotfolderProvider = newProvider;
 	}
 	
-	public AbbyyOCRProcess(ConfigParser config) {
+	public AbbyyOCRProcess(String propertiesFile) {
 		super();
-		this.config = config;
+		this.config = new ConfigParser("/" + propertiesFile).parse();
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
 		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 		init();
 	}
 	
-	protected AbbyyOCRProcess(OCRProcess process, ConfigParser config) {
-		super(process);
-		this.config = config;
-		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
-		init();
-		throw new NotImplementedException("This constructor isn't finished");
-	}
-
 	private void init() {
 		if (!config.isParsed()) {
 			throw new IllegalStateException();

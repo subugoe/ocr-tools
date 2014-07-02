@@ -21,7 +21,8 @@ public class AbbyyServerFactory extends OcrFactoryWithProperties {
 
 	@Override
 	public OCRProcess createProcess() {
-		return new AbbyyOCRProcess(new ConfigParser().parse());
+		// TODO: config from the correct file
+		return new AbbyyOCRProcess(userProperties.getProperty("abbyy.config", "gbv-antiqua.properties"));
 	}
 
 	@Override

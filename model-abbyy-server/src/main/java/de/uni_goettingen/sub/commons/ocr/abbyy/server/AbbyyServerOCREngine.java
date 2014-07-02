@@ -96,14 +96,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		hotfolderProvider = newProvider;
 	}
 
-	/**
-	 * Instantiates a new abbyy server engine.
-	 * 
-	 * @throws ConfigurationException
-	 *             the configuration exception
-	 */
-	public AbbyyServerOCREngine(Properties initProperties) {
-		userProperties = initProperties;
+	public AbbyyServerOCREngine(Properties initUserProperties) {
+		userProperties = initUserProperties;
 		String configFile = userProperties.getProperty("abbyy.config");
 		if (configFile != null) {
 			config = new ConfigParser("/" + configFile).parse();
@@ -307,7 +301,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 */
 	@Override
 	public OCRProcess newOcrProcess() {
-		return new AbbyyOCRProcess(config);
+		return new AbbyyOCRProcess(userProperties.getProperty("abbyy.config", "gbv-antiqua.properties"));
 	}
 
 	/*
@@ -369,7 +363,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 			if (process instanceof AbbyyOCRProcess) {
 	     		processes.add((AbbyyOCRProcess) process);
 			} else {
-				processes.add(new AbbyyOCRProcess(process, config));
+				throw new RuntimeException("wrong class");
 			}
 		}
 		return null;

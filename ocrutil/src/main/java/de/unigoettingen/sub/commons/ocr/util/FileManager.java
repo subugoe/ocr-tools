@@ -1,8 +1,13 @@
 package de.unigoettingen.sub.commons.ocr.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class FileManager {
 
@@ -54,6 +59,29 @@ public class FileManager {
 	public File[] getAllImagesFromFolder(File folder, String[] imageTypes) {
 		List<File> images = getImagesFromFolder(folder, imageTypes);
 		return images.toArray(new File[]{});
+	}
+
+	public Properties getFileProperties(String file) {
+		Properties props = new Properties();
+		try {
+			File f = new File(getClass().getResource("/" + file).getFile());
+			props.load(inputStreamFromFile(f));
+		} catch (IOException e) {
+			// TODO: logger
+			System.err.println("Could not load file:" + file);
+		}
+		return props;
+	}
+	
+	InputStream inputStreamFromFile(File file) {
+		InputStream is = null;
+		try {
+			is = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			// TODO: logger
+			System.err.println("Could not load file:" + file);
+		}
+		return is;
 	}
 
 }
