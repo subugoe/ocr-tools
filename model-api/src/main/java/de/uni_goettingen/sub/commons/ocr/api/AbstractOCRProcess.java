@@ -133,16 +133,6 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 		langs.add(locale);
 	}
 
-	/**
-	 * remove language from the list.
-	 * 
-	 * @param locale
-	 *            the {@link Locale} representing the language to be removed
-	 */
-	public void removeLanguage (Locale locale) {
-		langs.remove(locale);
-	}
-
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getLanguages()
 	 */
