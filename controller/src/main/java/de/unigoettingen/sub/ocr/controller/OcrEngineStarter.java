@@ -62,11 +62,9 @@ public class OcrEngineStarter {
 				process.addOutput(ocrFormat, output);
 			}
 			
-			Set<Locale> languages = new HashSet<Locale>();
 			for (String lang : params.inputLanguages) {
-				languages.add(new Locale(lang));
+				process.addLanguage(new Locale(lang));
 			}
-			process.setLanguages(languages);
 			process.setPriority(OCRPriority.NORMAL);
 			process.setTextType(OCRTextType.valueOf(params.inputTextType));
 			engine.addOcrProcess(process);

@@ -305,7 +305,9 @@ public class Main {
 						aop.addOutput(ocrformat, aoo);
 					}
 					// add language
-					aop.setLanguages(langs);
+					for (Locale lang : langs) {
+						aop.addLanguage(lang);
+					}
 					aop.setSplitProcess(splitProcess);
 					if(ocrPriority != null){
 						aop.setPriority(OCRPriority.valueOf(ocrPriority));

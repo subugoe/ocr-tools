@@ -199,13 +199,11 @@ public class OcrServiceImpl implements OcrService {
 			  }
 			  
 			
-			Set<Locale> langs = new HashSet<Locale>();
 			
 			for (RecognitionLanguage r : request.getOcrlanguages()
 					.getRecognitionLanguage()) {
-				langs.add(new Locale(r.toString()));
+				aop.addLanguage(new Locale(r.toString()));
 			}
-			aop.setLanguages(langs);
 			aop.setPriority(OCRPriority.fromValue(request.getOcrPriorityType()
 					.value()));
 			aop.setTextType(OCRTextType.fromValue(request.getTextType().value()));
@@ -247,7 +245,7 @@ public class OcrServiceImpl implements OcrService {
 												"Wrote file " + file.toString()+  newLine +
 												"OUTFORMAT substitution variable value: "+ocrformat.toString()+ newLine +
 												"OUTFILE substitution variable value: " + f.getAbsolutePath()+ newLine +
-												"LANGUAGES substitution variable value: "+ langs.toString() + newLine +
+												"LANGUAGES substitution variable value: "+ aop.getLanguages().toString() + newLine +
 												"INFILE substitution variable value: "+ file.toString()+  newLine +
 												"INTEXTTYPE substitution variable value: "+ request.getTextType().value()+ newLine +
 												"Process finished successfully with code 0."+ "\n" +

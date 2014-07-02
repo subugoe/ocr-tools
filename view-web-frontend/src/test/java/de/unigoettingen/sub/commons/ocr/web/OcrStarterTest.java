@@ -83,7 +83,7 @@ public class OcrStarterTest {
 		verify(processMock).setName("book1");
 		verify(processMock).setOcrImages(anyListOf(OCRImage.class));
 		verify(processMock).setPriority(OCRPriority.NORMAL);
-		verify(processMock).setLanguages(anySetOf(Locale.class));
+		verify(processMock).addLanguage(any(Locale.class));
 		verify(processMock).setTextType(OCRTextType.NORMAL);
 		verify(processMock).setSplitProcess(true);
 		verify(processMock).addOutput(eq(OCRFormat.PDF), any(OCROutput.class));

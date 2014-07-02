@@ -151,13 +151,6 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	}
 
 	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setLanguages(java.util.Set)
-	 */
-	public void setLanguages (Set<Locale> langs) {
-		this.langs = langs;
-	}
-
-	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrImages()
 	 */
 	public List<OCRImage> getOcrImages () {

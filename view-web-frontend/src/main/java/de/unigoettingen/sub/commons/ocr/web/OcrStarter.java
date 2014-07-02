@@ -153,11 +153,9 @@ public class OcrStarter implements Runnable {
 		process.setOcrImages(bookImages);
 		process.setPriority(OCRPriority.NORMAL);
 		
-		Set<Locale> langs = new HashSet<Locale>();
 		for (String lang : param.languages) {
-			langs.add(new Locale(lang));
+			process.addLanguage(new Locale(lang));
 		}
-		process.setLanguages(langs);
 		if ("gbvAntiqua".equals(param.ocrEngine)) {
 			process.setTextType(OCRTextType.NORMAL);
 		} else {

@@ -55,17 +55,8 @@ public interface OCRProcess {
 	 */
 	abstract public Set<Locale> getLanguages();
 
-	/**
-	 * Sets the languages set for this process as List. These languages will be
-	 * used for recognition. Not all engines are able to recognize each
-	 * language. They will just ignore this setting.
-	 * 
-	 * @param langs
-	 *            the Set of languages
-	 * @see java.util.Locale
-	 */
-	abstract public void setLanguages(Set<Locale> langs);
-
+	abstract public void addLanguage(Locale lang);
+	
 	/**
 	 * Gets a List of {@link OCRImage}. These are the images that will be
 	 * recognized.

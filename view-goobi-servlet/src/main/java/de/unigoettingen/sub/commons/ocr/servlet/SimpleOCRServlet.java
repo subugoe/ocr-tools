@@ -325,7 +325,8 @@ public class SimpleOCRServlet extends HttpServlet {
 				aoo.setlocalOutput(new File(workDir).getAbsolutePath());
 				aop.addOutput(OCRFormat.TXT, aoo);
 			// add language
-			aop.setLanguages(new HashSet<Locale>(){{add(new Locale(lang));}});
+			
+			aop.addLanguage(new Locale(lang));
 			aop.setTextType(OCRTextType.valueOf("NORMAL"));
 			aop.setPriority(OCRPriority.ABOVENORMAL);
 			engine.addOcrProcess(aop);
