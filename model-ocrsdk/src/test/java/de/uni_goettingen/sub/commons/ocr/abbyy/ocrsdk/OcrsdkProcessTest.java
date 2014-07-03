@@ -39,7 +39,7 @@ public class OcrsdkProcessTest {
 		InputStream txtOutput = new ByteArrayInputStream(resultTxt.getBytes());
 		when(clientMock.getResultForFormat("txt")).thenReturn(txtOutput);
 		
-		process = new OcrsdkProcess("", "");
+		process = new OcrsdkProcess("user", "pass");
 		
 		
 		process.setClient(clientMock);
