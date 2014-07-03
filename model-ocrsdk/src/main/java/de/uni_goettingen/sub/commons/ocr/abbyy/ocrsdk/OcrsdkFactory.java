@@ -1,34 +1,37 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk;
 
+import java.util.Properties;
+
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFactoryWithProperties;
 
-public class OcrsdkFactory implements OcrFactory {
+public class OcrsdkFactory extends OcrFactoryWithProperties {
+
+	public OcrsdkFactory(Properties userProperties) {
+		super(userProperties);
+	}
 
 	@Override
 	public OCREngine createEngine() {
-		return null;
+		return new OcrsdkEngine();
 	}
 
 	@Override
 	public OCRProcess createProcess() {
-		// TODO Auto-generated method stub
-		return null;
+		return new OcrsdkProcess(userProperties);
 	}
 
 	@Override
 	public OCRImage createImage() {
-		// TODO Auto-generated method stub
-		return null;
+		return new OcrsdkImage();
 	}
 
 	@Override
 	public OCROutput createOutput() {
-		// TODO Auto-generated method stub
-		return null;
+		return new OcrsdkOutput();
 	}
 
 }

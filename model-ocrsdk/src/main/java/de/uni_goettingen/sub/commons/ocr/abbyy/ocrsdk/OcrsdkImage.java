@@ -15,6 +15,10 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
  */
 public class OcrsdkImage extends AbstractOCRImage {
 
+	public OcrsdkImage() {
+		
+	}
+	
 	public OcrsdkImage(URI imageUri) {
 		super(imageUri);
 		if (!"file".equals(imageUri.getScheme())) {

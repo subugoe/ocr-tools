@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -28,6 +29,9 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 	private OcrsdkClient client;
 
 	public OcrsdkProcess(String user, String password) {
+		if (user == null || user.equals("") || password == null || password.equals("")) {
+			throw new IllegalArgumentException("You have to provide the AppId and the password.");
+		}
 		client = new OcrsdkClient(user, password);
 		languageMapping.put(Locale.ENGLISH, "English");
 		languageMapping.put(Locale.GERMAN, "German");
@@ -42,6 +46,10 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		textTypeMapping.put(OCRTextType.GOTHIC, "gothic");
 	}
 	
+	public OcrsdkProcess(Properties userProperties) {
+		this(userProperties.getProperty("user"), userProperties.getProperty("password"));
+	}
+
 	/**
 	 * for unit tests
 	 */

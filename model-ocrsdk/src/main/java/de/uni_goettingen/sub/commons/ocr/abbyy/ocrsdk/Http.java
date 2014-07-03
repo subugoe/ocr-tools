@@ -71,6 +71,8 @@ public class Http {
 		int responseCode = connection.getResponseCode();
 		if (responseCode == 200) {
 			response = connection.getInputStream();
+		} else if (responseCode == 450) {
+			throw new IOException("Access denied. Not enough credits");
 		} else if (responseCode == 401) {
 			throw new IOException("Access denied. Check your username and password");
 		} else {
