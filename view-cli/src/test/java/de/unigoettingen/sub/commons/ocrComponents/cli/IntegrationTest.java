@@ -102,7 +102,7 @@ public class IntegrationTest {
 		main.execute(validOptions());
 		
 		String outString = new String(baos.toByteArray());
-		assertThat(outString, isEmptyString());
+		assertThat(outString, containsString("Finished OCR."));
 		verify(hotfolderMock, atLeastOnce()).copyFile(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
 	}
 	
