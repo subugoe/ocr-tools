@@ -21,7 +21,7 @@
   <init-param>
    <description>Directory prefix for matching given paths</description>
    <param-name>dirPrefix</param-name>
-   <param-value>/home/dennis/digi/images/</param-value>
+   <param-value>/home/dennis/digi/cli_input/</param-value>
    <!-- EXample for a UNC name (Windows)
    <param-value>\\\\gdz-wrk1\\goobi-ocr$\\</param-value>
    -->

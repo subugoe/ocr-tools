@@ -19,7 +19,7 @@ import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
-public class ServletTest {
+public class ServletTestOld {
 
 	private static ServletRunner runner;
 	
@@ -40,7 +40,8 @@ public class ServletTest {
 				"http://localhost:8080/SimpleOCR/");
 	}
 
-	@Test
+	// TODO: these exercise the real implementation
+	//@Test
 	public void oneImage() throws SAXException, IOException {
 		request.setParameter("path", "images");
 		request.setParameter("imgrange", "1");
@@ -52,7 +53,7 @@ public class ServletTest {
 		assertTrue(htmlString.contains("<h1>Ergebnis:</h1>"));	
 	}
 	
-	@Test
+	//@Test
 	public void threeImages() throws SAXException, IOException {
 		request.setParameter("path", "images");
 		request.setParameter("imgrange", "1-3");

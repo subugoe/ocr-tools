@@ -34,13 +34,11 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -88,7 +86,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	
 	private OCRExecuter pool;
 	
-	protected Properties userProperties;
+	protected Properties userProperties = new Properties();
 	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 
 	// for unit tests
@@ -96,6 +94,12 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		hotfolderProvider = newProvider;
 	}
 
+	// TODO: delete
+	public AbbyyServerOCREngine() {
+		config = new ConfigParser().parse();
+		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
+	}
+	
 	public AbbyyServerOCREngine(Properties initUserProperties) {
 		userProperties = initUserProperties;
 		String configFile = userProperties.getProperty("abbyy.config");

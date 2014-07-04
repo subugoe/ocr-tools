@@ -8,9 +8,9 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -20,17 +20,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.util.file.FileUtils;
+import de.unigoettingen.sub.ocr.controller.FactoryProvider;
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
+
 import java.io.BufferedReader;
 
 /**
@@ -140,9 +142,6 @@ public class SimpleOCRServlet extends HttpServlet {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.servlet.GenericServlet#init()
-	 */
 	@Override
 	public void init () throws ServletException {
 		defaultLang = getServletConfig().getInitParameter(LANG_PARAMETER).toString();
@@ -292,16 +291,22 @@ public class SimpleOCRServlet extends HttpServlet {
         }
         
 	private void ocr(List<File> images, final String lang, String path) throws URISyntaxException {
+		
+		
+		OcrParameters params = new OcrParameters();
+		params.inputFolder = "";
+		FactoryProvider factoryProvider = new FactoryProvider();
+		OcrFactory factory = factoryProvider.createFactory("abbyy-multiuser", new Properties());
+
+		
                 //String jobName
 		String workDir = cacheDir + path;
 		File folder = new File(cacheDir + path);
-		XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource(
-				"context.xml"));
 
-		OCREngine engine = (OCREngine) factory.getBean("ocrEngine");
+		OCREngine engine = factory.createEngine();
 
 			logger.debug("Creating Process for " + folder.toString());
-			OCRProcess aop = engine.newOcrProcess();
+			OCRProcess aop = factory.createProcess();
 			String jobName = getJobName(path);
 			aop.setName(jobName);
 			if (jobName.equals("")) {
@@ -310,13 +315,14 @@ public class SimpleOCRServlet extends HttpServlet {
 			}
 			List<OCRImage> imgs = new ArrayList<OCRImage>();
 			for (File imageFile : images) {
-				OCRImage aoi = engine.newOcrImage(imageFile.toURI());
+				OCRImage aoi = factory.createImage();
+				aoi.setUri(imageFile.toURI());
 				aoi.setSize(imageFile.length());
 				imgs.add(aoi);
 			}
 			aop.setOcrImages(imgs);
 
-				OCROutput aoo = engine.newOcrOutput();						
+				OCROutput aoo = factory.createOutput();						
 				URI uri = new URI(new File(workDir).toURI()
 						+ jobName
 						+ suffix);
@@ -331,6 +337,8 @@ public class SimpleOCRServlet extends HttpServlet {
 			aop.setPriority(OCRPriority.ABOVENORMAL);
 			engine.addOcrProcess(aop);
 
+			
+			
 			logger.info("Starting recognize method");
 			engine.recognize();
 			logger.debug("recognize Finished");
