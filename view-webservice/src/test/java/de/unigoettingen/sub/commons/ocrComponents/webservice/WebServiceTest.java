@@ -20,8 +20,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,11 +50,14 @@ import com.eviware.soapui.impl.wsdl.WsdlSubmit;
 import com.eviware.soapui.impl.wsdl.WsdlSubmitContext;
 import com.eviware.soapui.model.iface.Response;
 
+import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
+
 
 public class WebServiceTest
 {
 	private final static Logger logger = LoggerFactory.getLogger(WebServiceTest.class);
-	private  static Endpoint endpoint;;
+	private  static Endpoint endpoint;
 
 	private final static File TARGET = new File(
 			System.getProperty("user.dir") + "/target");
@@ -61,7 +66,32 @@ public class WebServiceTest
 	private static Server webServer;
 	private static final String SERVICE_URL = "http://localhost:9004/testService";
 	
-	@BeforeClass
+	
+	//@Test
+	public void testWithoutServer() {
+		FileManager fileManagerMock = mock(FileManager.class);
+		OcrEngineStarter engineStarterMock = mock(OcrEngineStarter.class);
+		
+		Properties props = new Properties();
+		props.setProperty("webserverpath", "/test/server");
+		props.setProperty("localpath", "/test/local");
+		props.setProperty("hostname", "http://localhost/");
+		when(fileManagerMock.getFileProperties(anyString())).thenReturn(props);
+		
+		OcrServiceImpl service = new OcrServiceImpl();
+		ByUrlRequestType request = new ByUrlRequestType();
+		request.setInputUrl("http://localhost/test");
+		
+		OcrServiceImpl serviceSpy = spy(service);
+		doReturn(fileManagerMock).when(serviceSpy).getFileManager();
+		doReturn(engineStarterMock).when(serviceSpy).getEngineStarter();
+		serviceSpy.ocrImageFileByUrl(request);
+	}
+	
+	
+	
+	
+	//@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		WEB_SERVICE_OUTPUT.mkdirs();
 		// In the real environment, Tomcat will set this property to its root dir
@@ -75,13 +105,14 @@ public class WebServiceTest
 		endpoint = Endpoint.publish(SERVICE_URL, service);
 	}
 	
-	@AfterClass
+	//@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		webServer.stop();
 		endpoint.stop();
 	}
 
-	@Test 
+	// TODO
+	//@Test 
 	public void usingDefaultsFromWsdl() throws Exception {
 		WsdlProject project = new WsdlProject();
 		WsdlInterface iface = WsdlInterfaceFactory.importWsdl(project,

@@ -18,21 +18,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.File;
-
 import java.io.IOException;
-import java.io.InputStream;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Set;
-
 
 import javax.annotation.Resource;
 import javax.jws.WebService;
@@ -40,11 +34,15 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.io.FileUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
+
+
+
+
+
 
 
 
@@ -56,6 +54,11 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
+import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.ocr.controller.FactoryProvider;
+import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 /**
  * IMPACT Abbyy Fine Reader 8.0 Service. This service provides the basic
@@ -71,68 +74,58 @@ public class OcrServiceImpl implements OcrService {
 	@Resource
 	private WebServiceContext wsContext;
 	
+	static String ocrEngineId = "abbyy";
+	
 	private final String appName = "ocr-webservice";
 	
 	/** The logger. */
 	private final static Logger LOGGER = LoggerFactory
 			.getLogger(OcrServiceImpl.class);
 		
+	FileManager getFileManager() {
+		return new FileManager();
+	}
 	
-	private URL getUrl(ByUrlRequestType request) throws IOException {
-		
-		String inputUrlString = request.getInputUrl();
-		URL inputUrl = new URL(inputUrlString);
-//		URLConnection uconn = inputUrl.openConnection();
-//		String type = uconn.getContentType();
-//
-//		if (!type.equals("image/tiff"))
-//			throw new IOException("Not a Tiff image! Was " + type);
-		
-		return inputUrl;
+	FactoryProvider getFactoryProvider() {
+		return new FactoryProvider();
+	}
+	
+	OcrEngineStarter getEngineStarter() {
+		return new OcrEngineStarter();
 	}
 	
 	@Override
 	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType request) {
 		ByUrlResponseType response = new ByUrlResponseType();
 
-		Properties properties = new Properties();
-		InputStream stream;
-		try {
-			stream = getClass().getResource("/webservice-config.properties")
-					.openStream();
-			properties.load(stream);
-			stream.close();
-		} catch (IOException e) {
-			LOGGER.error("Error reading configuration", e);
-		}
+		FileManager fileManager = getFileManager();
 		
-		String localPath = properties.getProperty("localpath");
+		Properties props = fileManager.getFileProperties("webservice-config.properties");
+
+		String localPath = props.getProperty("localpath");
 		if(localPath == null || localPath.equals("")){
 			localPath = System.getProperty("java.io.tmpdir");
 		}
 		if(!localPath.endsWith("/")){
-			localPath = localPath + "/";
+			localPath += "/";
 		}
 		
-		String webserverPath = properties.getProperty("webserverpath");
+		String webserverPath = props.getProperty("webserverpath");
 		
 		if(webserverPath == null || webserverPath.equals("")){
 			webserverPath = System.getProperty("ocrWebservice.root");
 		}
 
-
-		URL inputUrl = null;
-		try {
-			inputUrl = getUrl(request);
-		} catch (IOException e) {
-			String error = "URL Error: " + e.getMessage();
-			LOGGER.error(error);
-			return byURLresponse(webserverPath, error, response);
-		}
-
-		XmlBeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource(
-				"contentWebservice.xml"));
-		OCREngine engine = (OCREngine) beanFactory.getBean("ocrEngine");
+		OcrParameters params = new OcrParameters();
+		params.ocrEngine = ocrEngineId;
+		params.outputFormats = new String[]{request.getOutputFormat().toString()};
+		
+		getEngineStarter().startOcrWithParams(params);
+		
+		OcrFactory factory = getFactoryProvider().createFactory(ocrEngineId, new Properties());
+		
+		OCREngine engine = factory.createEngine();
+		
 		OCRProcess aop = engine.newOcrProcess();
 
 		OCRFormat ocrformat = request.getOutputFormat();
@@ -146,6 +139,7 @@ public class OcrServiceImpl implements OcrService {
 					+ "/" + randomNumber + ".tif");
 
 			try {
+				URL inputUrl = new URL(request.getInputUrl());
 				FileUtils.copyURLToFile(inputUrl, file);
 			} catch (IOException e) {
 				LOGGER.error("ERROR CAN NOT COPY URL To File");
@@ -189,13 +183,13 @@ public class OcrServiceImpl implements OcrService {
 			aop.addOutput(ocrformat, aoo);
 
 			String webserverHostname = "";
-			if(properties.getProperty("hostname") == null || properties.getProperty("hostname").equals("no")){
+			if(props.getProperty("hostname") == null || props.getProperty("hostname").equals("no")){
 				  MessageContext mc = wsContext.getMessageContext();
 				  URI url = (URI)mc.get("javax.xml.ws.wsdl.description");
 				  String hostname = url.getHost();
 				  webserverHostname = "http://"+hostname+"/"+appName+"/"; 
 			  }else {
-				  webserverHostname = properties.getProperty("hostname");
+				  webserverHostname = props.getProperty("hostname");
 			  }
 			  
 			
@@ -232,7 +226,7 @@ public class OcrServiceImpl implements OcrService {
 			
 			if( !f.exists()){
 				LOGGER.error("ERROR. CANNOT Find File: "+ f.toString());
-				String error = "File could not be processed: " + inputUrl;
+				String error = "File could not be processed: " + request.getInputUrl();
 				return byURLresponse(webserverPath, error, response);
 			}
 			String newLine = ".\n";
