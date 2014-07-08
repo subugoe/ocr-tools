@@ -23,6 +23,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +52,8 @@ import com.eviware.soapui.impl.wsdl.WsdlSubmit;
 import com.eviware.soapui.impl.wsdl.WsdlSubmitContext;
 import com.eviware.soapui.model.iface.Response;
 
+import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.ocr.util.FileManager;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 
@@ -81,6 +85,11 @@ public class WebServiceTest
 		OcrServiceImpl service = new OcrServiceImpl();
 		ByUrlRequestType request = new ByUrlRequestType();
 		request.setInputUrl("http://localhost/test");
+		request.setOutputFormat(OCRFormat.TXT);
+		RecognitionLanguages langs = new RecognitionLanguages();
+		langs.getRecognitionLanguage().add(RecognitionLanguage.de);
+		request.setOcrlanguages(langs);
+		request.setTextType(OCRTextType.GOTHIC);
 		
 		OcrServiceImpl serviceSpy = spy(service);
 		doReturn(fileManagerMock).when(serviceSpy).getFileManager();

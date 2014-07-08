@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -38,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
+
 
 
 
@@ -76,7 +78,7 @@ public class OcrServiceImpl implements OcrService {
 	
 	static String ocrEngineId = "abbyy";
 	
-	private final String appName = "ocr-webservice";
+	private final String appName = "ws";
 	
 	/** The logger. */
 	private final static Logger LOGGER = LoggerFactory
@@ -115,102 +117,124 @@ public class OcrServiceImpl implements OcrService {
 		if(webserverPath == null || webserverPath.equals("")){
 			webserverPath = System.getProperty("ocrWebservice.root");
 		}
+		if(!webserverPath.endsWith("/")){
+			webserverPath += "/";
+		}
 
+		int randomNumber = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
+		
+		String jobName = "OcrServiceImplService_outputUrl"+ "_" + randomNumber;
+
+		RecognitionLanguages langs = request.getOcrlanguages();
+		List<String> langStringsList = new ArrayList<String>();
+		for (RecognitionLanguage lang : langs.getRecognitionLanguage()) {
+			langStringsList.add(lang.toString());
+		}
+
+		File file = new File(localPath  + jobName
+				+ "/input.tif");
+
+		try {
+			URL inputUrl = new URL(request.getInputUrl());
+			FileUtils.copyURLToFile(inputUrl, file);
+		} catch (IOException e) {
+			LOGGER.error("ERROR CAN NOT COPY URL To File");
+			String error = "ERROR CAN NOT COPY URL: " + request.getInputUrl()
+					+ " To Local File";
+			return byURLresponse(webserverPath, error, response);
+		}
+
+		String webserverHostname = "";
+		if(props.getProperty("hostname") == null || props.getProperty("hostname").equals("no")){
+			  MessageContext mc = wsContext.getMessageContext();
+			  URI url = (URI)mc.get("javax.xml.ws.wsdl.description");
+			  String hostname = url.getHost();
+			  webserverHostname = "http://"+hostname+"/"+appName+"/"; 
+		  }else {
+			  webserverHostname = props.getProperty("hostname");
+		  }
+		  
+
+		
 		OcrParameters params = new OcrParameters();
 		params.ocrEngine = ocrEngineId;
 		params.outputFormats = new String[]{request.getOutputFormat().toString()};
+		params.inputFolder = localPath + jobName;
+		params.inputFormats = new String[]{"tif"};
+		params.inputLanguages = langStringsList.toArray(new String[]{});
+		params.inputTextType = request.getTextType().toString();
+		params.priority = "3";
+		params.outputFolder = webserverPath + "temp";
+		params.props = new Properties();
 		
 		getEngineStarter().startOcrWithParams(params);
 		
-		OcrFactory factory = getFactoryProvider().createFactory(ocrEngineId, new Properties());
+//		OcrFactory factory = getFactoryProvider().createFactory(ocrEngineId, new Properties());
+//		
+//		OCREngine engine = factory.createEngine();
+//		
+//		OCRProcess aop = engine.newOcrProcess();
+//
+//		OCRFormat ocrformat = request.getOutputFormat();
+//		
+//			List<OCRImage> imgs = new ArrayList<OCRImage>();
+//
+//			aop.setName(jobName);
+//			OCRImage aoi = engine.newOcrImage(file.toURI());
+//			aoi.setSize(file.length());
+//			imgs.add(aoi);
+//			aop.setOcrImages(imgs);
+//
+//			// add format
+//			HashMap<OCRFormat, OCROutput> outputDefinitions = new HashMap<OCRFormat, OCROutput>();
+//
+//			OCROutput aoo = engine.newOcrOutput();
+//			URI uri = null;
+//			String temp = "temp";
+//			try {
+//				uri = new URI(new File(webserverPath).toURI()+ "/" + temp
+//						+ "/" + jobName + "."
+//						+ ocrformat.toString().toLowerCase());
+//			} catch (URISyntaxException e) {
+//				LOGGER.error("URL is Malformed: " + webserverPath 
+//						+ temp + "/" + jobName + "."
+//						+ ocrformat.toString().toLowerCase());
+//				String error = "URL is Malformed: " + webserverPath 
+//				+ temp + "/" + jobName + "."
+//				+ ocrformat.toString().toLowerCase();
+//				boolean wasDeleted = file.delete();
+//				if (!wasDeleted) {
+//					LOGGER.error("Could not delete file " + file.getAbsolutePath());
+//				}
+//				return byURLresponse(webserverPath, error, response);
+//			}
+//			
+//			aoo.setUri(uri);
+//			outputDefinitions.put(ocrformat, aoo);
+//			aop.addOutput(ocrformat, aoo);
+//
+//			
+//			
+//			for (RecognitionLanguage r : request.getOcrlanguages()
+//					.getRecognitionLanguage()) {
+//				aop.addLanguage(new Locale(r.toString()));
+//			}
+//			aop.setPriority(OCRPriority.fromValue(request.getOcrPriorityType()
+//					.value()));
+//			aop.setTextType(OCRTextType.fromValue(request.getTextType().value()));
+//			engine.addOcrProcess(aop);
+//
+//			LOGGER.info("Starting recognize method");
+//			engine.recognize();
+//			
+//			OCRProcessMetadata meta = aop.getOcrProcessMetadata();
+//			Long duration = 0L;
+//			if(meta != null && meta.getDuration() != 0L){
+//				duration = aop.getOcrProcessMetadata().getDuration();
+//			}
 		
-		OCREngine engine = factory.createEngine();
-		
-		OCRProcess aop = engine.newOcrProcess();
-
-		OCRFormat ocrformat = request.getOutputFormat();
-		
-			List<OCRImage> imgs = new ArrayList<OCRImage>();
-
-			int randomNumber = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
-			
-			String jobName = "OcrServiceImplService_outputUrl"+ "_" + randomNumber;
-			File file = new File(localPath + randomNumber + "/" + jobName
-					+ "/" + randomNumber + ".tif");
-
-			try {
-				URL inputUrl = new URL(request.getInputUrl());
-				FileUtils.copyURLToFile(inputUrl, file);
-			} catch (IOException e) {
-				LOGGER.error("ERROR CAN NOT COPY URL To File");
-				String error = "ERROR CAN NOT COPY URL: " + request.getInputUrl()
-						+ " To Local File";
-				return byURLresponse(webserverPath, error, response);
-			}
-
-			aop.setName(jobName);
-			OCRImage aoi = engine.newOcrImage(file.toURI());
-			aoi.setSize(file.length());
-			imgs.add(aoi);
-			aop.setOcrImages(imgs);
-
-			// add format
-			HashMap<OCRFormat, OCROutput> outputDefinitions = new HashMap<OCRFormat, OCROutput>();
-
-			OCROutput aoo = engine.newOcrOutput();
-			URI uri = null;
-			String temp = "temp";
-			try {
-				uri = new URI(new File(webserverPath).toURI()+ "/" + temp
-						+ "/" + jobName + "."
-						+ ocrformat.toString().toLowerCase());
-			} catch (URISyntaxException e) {
-				LOGGER.error("URL is Malformed: " + webserverPath 
-						+ temp + "/" + jobName + "."
-						+ ocrformat.toString().toLowerCase());
-				String error = "URL is Malformed: " + webserverPath 
-				+ temp + "/" + jobName + "."
-				+ ocrformat.toString().toLowerCase();
-				boolean wasDeleted = file.delete();
-				if (!wasDeleted) {
-					LOGGER.error("Could not delete file " + file.getAbsolutePath());
-				}
-				return byURLresponse(webserverPath, error, response);
-			}
-			
-			aoo.setUri(uri);
-			outputDefinitions.put(ocrformat, aoo);
-			aop.addOutput(ocrformat, aoo);
-
-			String webserverHostname = "";
-			if(props.getProperty("hostname") == null || props.getProperty("hostname").equals("no")){
-				  MessageContext mc = wsContext.getMessageContext();
-				  URI url = (URI)mc.get("javax.xml.ws.wsdl.description");
-				  String hostname = url.getHost();
-				  webserverHostname = "http://"+hostname+"/"+appName+"/"; 
-			  }else {
-				  webserverHostname = props.getProperty("hostname");
-			  }
-			  
-			
-			
-			for (RecognitionLanguage r : request.getOcrlanguages()
-					.getRecognitionLanguage()) {
-				aop.addLanguage(new Locale(r.toString()));
-			}
-			aop.setPriority(OCRPriority.fromValue(request.getOcrPriorityType()
-					.value()));
-			aop.setTextType(OCRTextType.fromValue(request.getTextType().value()));
-			engine.addOcrProcess(aop);
-
-			LOGGER.info("Starting recognize method");
-			engine.recognize();
-			
-			OCRProcessMetadata meta = aop.getOcrProcessMetadata();
-			Long duration = 0L;
-			if(meta != null && meta.getDuration() != 0L){
-				duration = aop.getOcrProcessMetadata().getDuration();
-			}
+		String temp = "temp";
+		Long duration = 5L;
 			file.delete();
 			LOGGER.debug("Delete File: "+ file.toString());
 			
@@ -221,8 +245,8 @@ public class OcrServiceImpl implements OcrService {
 				LOGGER.error("ERROR CAN NOT delete Directory");
 			}
 
-			File f = new File(webserverPath + "/" + temp + "/" + jobName
-					+ "." + ocrformat.toString().toLowerCase());
+			File f = new File(webserverPath + temp + "/" + jobName
+					+ "." + params.outputFormats[0].toLowerCase());
 			
 			if( !f.exists()){
 				LOGGER.error("ERROR. CANNOT Find File: "+ f.toString());
@@ -231,20 +255,20 @@ public class OcrServiceImpl implements OcrService {
 			}
 			String newLine = ".\n";
 			response.setMessage("Process finished successfully after " + duration + " milliseconds.");
-			response.setOutputUrl(webserverHostname + temp + "/"+ jobName	+ "." + ocrformat.toString().toLowerCase());
+			response.setOutputUrl(webserverHostname + temp + "/"+ jobName	+ "." + params.outputFormats[0].toLowerCase());
 			response.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
 												"Using service: OcrServiceImplService. "+ "\n" +
 												"Parameter processingUnit: "+ webserverHostname + newLine +
 												"URL of input image: "+ request.getInputUrl()+ newLine +
 												"Wrote file " + file.toString()+  newLine +
-												"OUTFORMAT substitution variable value: "+ocrformat.toString()+ newLine +
+												"OUTFORMAT substitution variable value: "+params.outputFormats[0].toLowerCase()+ newLine +
 												"OUTFILE substitution variable value: " + f.getAbsolutePath()+ newLine +
-												"LANGUAGES substitution variable value: "+ aop.getLanguages().toString() + newLine +
+												"LANGUAGES substitution variable value: "+ params.inputLanguages + newLine +
 												"INFILE substitution variable value: "+ file.toString()+  newLine +
 												"INTEXTTYPE substitution variable value: "+ request.getTextType().value()+ newLine +
 												"Process finished successfully with code 0."+ "\n" +
 												"Output file has been created successfully.."+ "\n" +
-												"Output Url: " + webserverHostname + temp + "/" + jobName	+ "." + ocrformat.toString().toLowerCase()+ newLine +
+												"Output Url: " + webserverHostname + temp + "/" + jobName	+ "." + params.outputFormats[0].toLowerCase()+ newLine +
 												"Output Url-Abbyy-Result : " + webserverHostname + temp + "/" + jobName	+ ".xml.result.xml" + newLine +
 												"Output Url-Summary-File : " + webserverHostname + temp + "/" + jobName	+ "-textMD.xml" + newLine + 
 												"Process finished successfully after " + duration + " milliseconds.."
