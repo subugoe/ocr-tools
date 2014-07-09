@@ -5,9 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
 
 public class FileManager {
 
@@ -82,6 +86,11 @@ public class FileManager {
 			System.err.println("Could not load file:" + file);
 		}
 		return is;
+	}
+
+	public void copyUrlToFile(String urlString, File file) throws IOException {
+		URL inputUrl = new URL(urlString);
+		FileUtils.copyURLToFile(inputUrl, file);
 	}
 
 }

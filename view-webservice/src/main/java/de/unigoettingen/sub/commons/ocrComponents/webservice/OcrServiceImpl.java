@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
+
 
 
 
@@ -98,6 +100,8 @@ public class OcrServiceImpl implements OcrService {
 	
 	@Override
 	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType request) {
+		Date stampStart = new Date();
+		
 		ByUrlResponseType response = new ByUrlResponseType();
 
 		FileManager fileManager = getFileManager();
@@ -131,28 +135,25 @@ public class OcrServiceImpl implements OcrService {
 			langStringsList.add(lang.toString());
 		}
 
-		File file = new File(localPath  + jobName
-				+ "/input.tif");
-
+		File imageTempFile = new File(localPath  + jobName + "/input.tif");
 		try {
-			URL inputUrl = new URL(request.getInputUrl());
-			FileUtils.copyURLToFile(inputUrl, file);
+			fileManager.copyUrlToFile(request.getInputUrl(), imageTempFile);
 		} catch (IOException e) {
-			LOGGER.error("ERROR CAN NOT COPY URL To File");
 			String error = "ERROR CAN NOT COPY URL: " + request.getInputUrl()
 					+ " To Local File";
+			LOGGER.error(error);
 			return byURLresponse(webserverPath, error, response);
 		}
 
 		String webserverHostname = "";
 		if(props.getProperty("hostname") == null || props.getProperty("hostname").equals("no")){
-			  MessageContext mc = wsContext.getMessageContext();
-			  URI url = (URI)mc.get("javax.xml.ws.wsdl.description");
-			  String hostname = url.getHost();
-			  webserverHostname = "http://"+hostname+"/"+appName+"/"; 
-		  }else {
-			  webserverHostname = props.getProperty("hostname");
-		  }
+			MessageContext mc = wsContext.getMessageContext();
+			URI url = (URI) mc.get("javax.xml.ws.wsdl.description");
+			String hostname = url.getHost();
+			webserverHostname = "http://" + hostname + "/" + appName + "/";
+		}else {
+			webserverHostname = props.getProperty("hostname");
+		}
 		  
 
 		
@@ -234,51 +235,54 @@ public class OcrServiceImpl implements OcrService {
 //			}
 		
 		String temp = "temp";
-		Long duration = 5L;
-			file.delete();
-			LOGGER.debug("Delete File: "+ file.toString());
-			
-			try {
-				FileUtils.deleteDirectory(file.getParentFile());
-				FileUtils.deleteDirectory(new File(localPath + randomNumber));
-			} catch (IOException e) {
-				LOGGER.error("ERROR CAN NOT delete Directory");
-			}
-
-			File f = new File(webserverPath + temp + "/" + jobName
-					+ "." + params.outputFormats[0].toLowerCase());
-			
-			if( !f.exists()){
-				LOGGER.error("ERROR. CANNOT Find File: "+ f.toString());
-				String error = "File could not be processed: " + request.getInputUrl();
-				return byURLresponse(webserverPath, error, response);
-			}
-			String newLine = ".\n";
-			response.setMessage("Process finished successfully after " + duration + " milliseconds.");
-			response.setOutputUrl(webserverHostname + temp + "/"+ jobName	+ "." + params.outputFormats[0].toLowerCase());
-			response.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
-												"Using service: OcrServiceImplService. "+ "\n" +
-												"Parameter processingUnit: "+ webserverHostname + newLine +
-												"URL of input image: "+ request.getInputUrl()+ newLine +
-												"Wrote file " + file.toString()+  newLine +
-												"OUTFORMAT substitution variable value: "+params.outputFormats[0].toLowerCase()+ newLine +
-												"OUTFILE substitution variable value: " + f.getAbsolutePath()+ newLine +
-												"LANGUAGES substitution variable value: "+ params.inputLanguages + newLine +
-												"INFILE substitution variable value: "+ file.toString()+  newLine +
-												"INTEXTTYPE substitution variable value: "+ request.getTextType().value()+ newLine +
-												"Process finished successfully with code 0."+ "\n" +
-												"Output file has been created successfully.."+ "\n" +
-												"Output Url: " + webserverHostname + temp + "/" + jobName	+ "." + params.outputFormats[0].toLowerCase()+ newLine +
-												"Output Url-Abbyy-Result : " + webserverHostname + temp + "/" + jobName	+ ".xml.result.xml" + newLine +
-												"Output Url-Summary-File : " + webserverHostname + temp + "/" + jobName	+ "-textMD.xml" + newLine + 
-												"Process finished successfully after " + duration + " milliseconds.."
-												);
-			
-			response.setProcessingUnit(webserverHostname);
-			response.setReturncode(0);
-			response.setSuccess(true);
-			response.setToolProcessingTime(duration);									
+		imageTempFile.delete();
+		LOGGER.debug("Delete File: "+ imageTempFile.toString());
 		
+		try {
+			FileUtils.deleteDirectory(imageTempFile.getParentFile());
+			FileUtils.deleteDirectory(new File(localPath + randomNumber));
+		} catch (IOException e) {
+			LOGGER.error("ERROR CAN NOT delete Directory");
+		}
+
+		File f = new File(webserverPath + temp + "/" + jobName
+				+ "." + params.outputFormats[0].toLowerCase());
+		
+		if( !f.exists()){
+			LOGGER.error("ERROR. CANNOT Find File: "+ f.toString());
+			String error = "File could not be processed: " + request.getInputUrl();
+			return byURLresponse(webserverPath, error, response);
+		}
+		
+		Date stampFinish = new Date();
+		long duration = stampFinish.getTime() - stampStart.getTime();
+		
+		String newLine = ".\n";
+		response.setMessage("Process finished successfully after " + duration + " milliseconds.");
+		response.setOutputUrl(webserverHostname + temp + "/"+ jobName	+ "." + params.outputFormats[0].toLowerCase());
+		response.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
+											"Using service: OcrServiceImplService. "+ "\n" +
+											"Parameter processingUnit: "+ webserverHostname + newLine +
+											"URL of input image: "+ request.getInputUrl()+ newLine +
+											"Wrote file " + imageTempFile.toString()+  newLine +
+											"OUTFORMAT substitution variable value: "+params.outputFormats[0].toLowerCase()+ newLine +
+											"OUTFILE substitution variable value: " + f.getAbsolutePath()+ newLine +
+											"LANGUAGES substitution variable value: "+ params.inputLanguages + newLine +
+											"INFILE substitution variable value: "+ imageTempFile.toString()+  newLine +
+											"INTEXTTYPE substitution variable value: "+ request.getTextType().value()+ newLine +
+											"Process finished successfully with code 0."+ "\n" +
+											"Output file has been created successfully.."+ "\n" +
+											"Output Url: " + webserverHostname + temp + "/" + jobName	+ "." + params.outputFormats[0].toLowerCase()+ newLine +
+											"Output Url-Abbyy-Result : " + webserverHostname + temp + "/" + jobName	+ ".xml.result.xml" + newLine +
+											"Output Url-Summary-File : " + webserverHostname + temp + "/" + jobName	+ "-textMD.xml" + newLine + 
+											"Process finished successfully after " + duration + " milliseconds.."
+											);
+		
+		response.setProcessingUnit(webserverHostname);
+		response.setReturncode(0);
+		response.setSuccess(true);
+		response.setToolProcessingTime(duration);									
+	
 
 		return response;
 		
