@@ -65,7 +65,7 @@ public class FileManager {
 		return images.toArray(new File[]{});
 	}
 
-	public Properties getFileProperties(String file) {
+	public Properties getPropertiesFromFile(String file) {
 		Properties props = new Properties();
 		try {
 			File f = new File(getClass().getResource("/" + file).getFile());
@@ -91,6 +91,21 @@ public class FileManager {
 	public void copyUrlToFile(String urlString, File file) throws IOException {
 		URL inputUrl = new URL(urlString);
 		FileUtils.copyURLToFile(inputUrl, file);
+	}
+
+	public void deleteFile(File file) throws IOException {
+		boolean success = file.delete();
+		if (!success) {
+			throw new IOException("Could not delete file: " + file.getAbsolutePath());
+		}
+	}
+
+	public void deleteDir(File dir) throws IOException {
+		FileUtils.deleteDirectory(dir);
+	}
+
+	public boolean fileExists(File file) {
+		return file.exists();
 	}
 
 }

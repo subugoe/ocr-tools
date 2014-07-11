@@ -18,7 +18,7 @@ public class FileTest {
 	@Test
 	public void test() {
 		FileManager manager = new FileManager();
-		Properties props = manager.getFileProperties("gbv-fraktur.properties");
+		Properties props = manager.getPropertiesFromFile("gbv-fraktur.properties");
 		
 		assertEquals("input", props.getProperty("input"));
 	}

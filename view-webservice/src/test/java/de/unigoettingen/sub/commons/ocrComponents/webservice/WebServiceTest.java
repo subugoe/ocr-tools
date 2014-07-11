@@ -19,163 +19,84 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.ws.Endpoint;
 
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.eviware.soapui.impl.WsdlInterfaceFactory;
-import com.eviware.soapui.impl.wsdl.WsdlInterface;
-import com.eviware.soapui.impl.wsdl.WsdlOperation;
-import com.eviware.soapui.impl.wsdl.WsdlProject;
-import com.eviware.soapui.impl.wsdl.WsdlRequest;
-import com.eviware.soapui.impl.wsdl.WsdlSubmit;
-import com.eviware.soapui.impl.wsdl.WsdlSubmitContext;
-import com.eviware.soapui.model.iface.Response;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.ocr.util.FileManager;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 
-public class WebServiceTest
-{
-	private final static Logger logger = LoggerFactory.getLogger(WebServiceTest.class);
-	private  static Endpoint endpoint;
-
-	private final static File TARGET = new File(
-			System.getProperty("user.dir") + "/target");
-	private final static File WEB_SERVICE_OUTPUT = new File(TARGET, "wsOutput");
-
-	private static Server webServer;
-	private static final String SERVICE_URL = "http://localhost:9004/testService";
+public class WebServiceTest {
 	
+	private FileManager fileManagerMock;
+	private OcrEngineStarter engineStarterMock;
+	private OcrServiceImpl serviceSut;
+	private OcrServiceImpl serviceSpySut;
 	
-	//@Test
-	public void testWithoutServer() {
-		FileManager fileManagerMock = mock(FileManager.class);
-		OcrEngineStarter engineStarterMock = mock(OcrEngineStarter.class);
-		
+	@Before
+	public void beforeEachTest() {
+		fileManagerMock = mock(FileManager.class);
 		Properties props = new Properties();
 		props.setProperty("webserverpath", "/test/server");
 		props.setProperty("localpath", "/test/local");
 		props.setProperty("hostname", "http://localhost/");
-		when(fileManagerMock.getFileProperties(anyString())).thenReturn(props);
+		when(fileManagerMock.getPropertiesFromFile(anyString())).thenReturn(props);
+		when(fileManagerMock.fileExists(any(File.class))).thenReturn(true);
 		
+		engineStarterMock = mock(OcrEngineStarter.class);
+		
+		serviceSut = new OcrServiceImpl();
+		serviceSpySut = spy(serviceSut);
+		doReturn(fileManagerMock).when(serviceSpySut).getFileManager();
+		doReturn(engineStarterMock).when(serviceSpySut).getEngineStarter();
+		doReturn("testJob").when(serviceSpySut).getJobName();
+	}
+
+	@Test
+	public void canBePublished() {
 		OcrServiceImpl service = new OcrServiceImpl();
+		Endpoint endpoint = Endpoint.publish("http://localhost:9001/test", service);
+		endpoint.stop();
+	}
+
+	@Test
+	public void shouldFinishSuccessfully() throws IOException {
+		ByUrlRequestType request = getValidRequest();
+		
+		ByUrlResponseType response = serviceSpySut.ocrImageFileByUrl(request);
+		
+		verify(engineStarterMock).startOcrWithParams(any(OcrParameters.class));
+		assertThat(response.getProcessingLog(), containsString("Process finished successfully"));
+	}
+
+	private ByUrlRequestType getValidRequest() {
 		ByUrlRequestType request = new ByUrlRequestType();
-		request.setInputUrl("http://localhost/test");
+		request.setInputUrl("http://localhost/test.tif");
 		request.setOutputFormat(OCRFormat.TXT);
 		RecognitionLanguages langs = new RecognitionLanguages();
 		langs.getRecognitionLanguage().add(RecognitionLanguage.de);
 		request.setOcrlanguages(langs);
 		request.setTextType(OCRTextType.GOTHIC);
-		
-		OcrServiceImpl serviceSpy = spy(service);
-		doReturn(fileManagerMock).when(serviceSpy).getFileManager();
-		doReturn(engineStarterMock).when(serviceSpy).getEngineStarter();
-		serviceSpy.ocrImageFileByUrl(request);
+		return request;
 	}
 	
-	
-	
-	
-	//@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		WEB_SERVICE_OUTPUT.mkdirs();
-		// In the real environment, Tomcat will set this property to its root dir
-		System.setProperty("ocrWebservice.root", WEB_SERVICE_OUTPUT.getAbsolutePath());
-		
-		// http server with the input images
-		startWebServer(9003);
-
-		System.out.println("Starting Web Service Container on " + SERVICE_URL);
-		OcrServiceImpl service = new OcrServiceImpl();
-		endpoint = Endpoint.publish(SERVICE_URL, service);
-	}
-	
-	//@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		webServer.stop();
-		endpoint.stop();
-	}
-
-	// TODO
-	//@Test 
-	public void usingDefaultsFromWsdl() throws Exception {
-		WsdlProject project = new WsdlProject();
-		WsdlInterface iface = WsdlInterfaceFactory.importWsdl(project,
-				SERVICE_URL + "?wsdl", true)[0];
-		WsdlOperation operation = (WsdlOperation) iface
-				.getOperationByName("ocrImageFileByUrl");
-		
-		// create a new empty request for that operation
-		WsdlRequest request = operation.addNewRequest("My request");
-		// generate the request content from the schema
-		String message = operation.createRequest(true);
-		request.setRequestContent(message);
-		// submit the request
-		WsdlSubmit submit = (WsdlSubmit) request.submit(new WsdlSubmitContext(
-				request), false);
-
-		// wait for the response
-		Response response = submit.getResponse();
-
-		// print the response
-		String content = response.getContentAsString();
-		//System.out.println(content);
-		
-		assertTrue(content.contains("<success>true</success>"));
-		
-		Pattern p = Pattern.compile("<outputUrl>.+/temp/(.+)</outputUrl>");
-		Matcher m = p.matcher(content);
-		m.find();
-		String result = m.group(1);
-		File resultFile = new File(WEB_SERVICE_OUTPUT + "/temp/" + result);
-		assertTrue(resultFile.exists());
-		
-	}
-	
-	public static void startWebServer(int port) throws Exception {
-		webServer = new Server();
-		SelectChannelConnector connector = new SelectChannelConnector();
-		connector.setPort(port);
-		webServer.addConnector(connector);
-
-		ResourceHandler resource_handler = new ResourceHandler();
-		resource_handler.setDirectoriesListed(true);
-		//resource_handler.setWelcomeFiles(new String[] { "index.html" });
-
-		String serverRoot = WebServiceTest.class.getResource("/input/").getFile();
-
-		resource_handler.setResourceBase(serverRoot);
-
-		HandlerList handlers = new HandlerList();
-		handlers.setHandlers(new Handler[] { resource_handler,
-				new DefaultHandler() });
-		webServer.setHandler(handlers);
-
-		webServer.start();
-	}
-
 }

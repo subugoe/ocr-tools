@@ -20,14 +20,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -35,32 +30,10 @@ import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
 
-
-
-
-
-
-
-
-
-
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
-import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
 import de.unigoettingen.sub.commons.ocr.util.FileManager;
-import de.unigoettingen.sub.ocr.controller.FactoryProvider;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
@@ -78,26 +51,26 @@ public class OcrServiceImpl implements OcrService {
 	@Resource
 	private WebServiceContext wsContext;
 	
-	static String ocrEngineId = "abbyy";
+	static String ocrEngineId = "abbyy-multiuser";
 	
 	private final String appName = "ws";
 	
-	/** The logger. */
 	private final static Logger LOGGER = LoggerFactory
 			.getLogger(OcrServiceImpl.class);
 		
 	FileManager getFileManager() {
 		return new FileManager();
 	}
-	
-	FactoryProvider getFactoryProvider() {
-		return new FactoryProvider();
-	}
-	
+		
 	OcrEngineStarter getEngineStarter() {
 		return new OcrEngineStarter();
 	}
 	
+	String getJobName() {
+		int randomNumber = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
+		return "OcrServiceImplService_outputUrl"+ "_" + randomNumber;
+	}
+
 	@Override
 	public ByUrlResponseType ocrImageFileByUrl(ByUrlRequestType request) {
 		Date stampStart = new Date();
@@ -106,14 +79,14 @@ public class OcrServiceImpl implements OcrService {
 
 		FileManager fileManager = getFileManager();
 		
-		Properties props = fileManager.getFileProperties("webservice-config.properties");
+		Properties props = fileManager.getPropertiesFromFile("webservice-config.properties");
 
-		String localPath = props.getProperty("localpath");
-		if(localPath == null || localPath.equals("")){
-			localPath = System.getProperty("java.io.tmpdir");
+		String inputTempDir = props.getProperty("localpath");
+		if(inputTempDir == null || inputTempDir.equals("")){
+			inputTempDir = System.getProperty("java.io.tmpdir");
 		}
-		if(!localPath.endsWith("/")){
-			localPath += "/";
+		if(!inputTempDir.endsWith("/")){
+			inputTempDir += "/";
 		}
 		
 		String webserverPath = props.getProperty("webserverpath");
@@ -125,9 +98,7 @@ public class OcrServiceImpl implements OcrService {
 			webserverPath += "/";
 		}
 
-		int randomNumber = Math.abs((int) ((Math.random()*((int) System.currentTimeMillis()))+1));
-		
-		String jobName = "OcrServiceImplService_outputUrl"+ "_" + randomNumber;
+		String jobName = getJobName();
 
 		RecognitionLanguages langs = request.getOcrlanguages();
 		List<String> langStringsList = new ArrayList<String>();
@@ -135,15 +106,49 @@ public class OcrServiceImpl implements OcrService {
 			langStringsList.add(lang.toString());
 		}
 
-		File imageTempFile = new File(localPath  + jobName + "/input.tif");
+		File imageTempFile = new File(inputTempDir  + jobName + "/input.tif");
 		try {
 			fileManager.copyUrlToFile(request.getInputUrl(), imageTempFile);
 		} catch (IOException e) {
-			String error = "ERROR CAN NOT COPY URL: " + request.getInputUrl()
+			String error = "ERROR CANNOT COPY URL: " + request.getInputUrl()
 					+ " To Local File";
 			LOGGER.error(error);
-			return byURLresponse(webserverPath, error, response);
+			return getErrorResponse(webserverPath, error, response);
 		}
+		
+		OcrParameters params = new OcrParameters();
+		params.ocrEngine = ocrEngineId;
+		params.outputFormats = new String[]{request.getOutputFormat().toString()};
+		params.inputFolder = inputTempDir + jobName;
+		params.inputFormats = new String[]{"tif"};
+		params.inputLanguages = langStringsList.toArray(new String[]{});
+		params.inputTextType = request.getTextType().toString();
+		params.priority = "3";
+		params.outputFolder = webserverPath + "ocrresults";
+		params.props = new Properties();
+		
+		getEngineStarter().startOcrWithParams(params);
+				
+		String resultsDir = "ocrresults";
+		
+		try {
+			fileManager.deleteFile(imageTempFile);
+			fileManager.deleteDir(imageTempFile.getParentFile());
+		} catch (IOException e) {
+			LOGGER.error("Error while cleaning temp data.", e);
+		}
+
+		File resultFile = new File(webserverPath + resultsDir + "/" + jobName
+				+ "." + params.outputFormats[0].toLowerCase());
+		
+		if( !fileManager.fileExists(resultFile)){
+			LOGGER.error("ERROR. CANNOT Find File: "+ resultFile.toString());
+			String error = "File could not be processed: " + request.getInputUrl();
+			return getErrorResponse(webserverPath, error, response);
+		}
+		
+		Date stampFinish = new Date();
+		long duration = stampFinish.getTime() - stampStart.getTime();
 
 		String webserverHostname = "";
 		if(props.getProperty("hostname") == null || props.getProperty("hostname").equals("no")){
@@ -154,127 +159,25 @@ public class OcrServiceImpl implements OcrService {
 		}else {
 			webserverHostname = props.getProperty("hostname");
 		}
-		  
 
-		
-		OcrParameters params = new OcrParameters();
-		params.ocrEngine = ocrEngineId;
-		params.outputFormats = new String[]{request.getOutputFormat().toString()};
-		params.inputFolder = localPath + jobName;
-		params.inputFormats = new String[]{"tif"};
-		params.inputLanguages = langStringsList.toArray(new String[]{});
-		params.inputTextType = request.getTextType().toString();
-		params.priority = "3";
-		params.outputFolder = webserverPath + "temp";
-		params.props = new Properties();
-		
-		getEngineStarter().startOcrWithParams(params);
-		
-//		OcrFactory factory = getFactoryProvider().createFactory(ocrEngineId, new Properties());
-//		
-//		OCREngine engine = factory.createEngine();
-//		
-//		OCRProcess aop = engine.newOcrProcess();
-//
-//		OCRFormat ocrformat = request.getOutputFormat();
-//		
-//			List<OCRImage> imgs = new ArrayList<OCRImage>();
-//
-//			aop.setName(jobName);
-//			OCRImage aoi = engine.newOcrImage(file.toURI());
-//			aoi.setSize(file.length());
-//			imgs.add(aoi);
-//			aop.setOcrImages(imgs);
-//
-//			// add format
-//			HashMap<OCRFormat, OCROutput> outputDefinitions = new HashMap<OCRFormat, OCROutput>();
-//
-//			OCROutput aoo = engine.newOcrOutput();
-//			URI uri = null;
-//			String temp = "temp";
-//			try {
-//				uri = new URI(new File(webserverPath).toURI()+ "/" + temp
-//						+ "/" + jobName + "."
-//						+ ocrformat.toString().toLowerCase());
-//			} catch (URISyntaxException e) {
-//				LOGGER.error("URL is Malformed: " + webserverPath 
-//						+ temp + "/" + jobName + "."
-//						+ ocrformat.toString().toLowerCase());
-//				String error = "URL is Malformed: " + webserverPath 
-//				+ temp + "/" + jobName + "."
-//				+ ocrformat.toString().toLowerCase();
-//				boolean wasDeleted = file.delete();
-//				if (!wasDeleted) {
-//					LOGGER.error("Could not delete file " + file.getAbsolutePath());
-//				}
-//				return byURLresponse(webserverPath, error, response);
-//			}
-//			
-//			aoo.setUri(uri);
-//			outputDefinitions.put(ocrformat, aoo);
-//			aop.addOutput(ocrformat, aoo);
-//
-//			
-//			
-//			for (RecognitionLanguage r : request.getOcrlanguages()
-//					.getRecognitionLanguage()) {
-//				aop.addLanguage(new Locale(r.toString()));
-//			}
-//			aop.setPriority(OCRPriority.fromValue(request.getOcrPriorityType()
-//					.value()));
-//			aop.setTextType(OCRTextType.fromValue(request.getTextType().value()));
-//			engine.addOcrProcess(aop);
-//
-//			LOGGER.info("Starting recognize method");
-//			engine.recognize();
-//			
-//			OCRProcessMetadata meta = aop.getOcrProcessMetadata();
-//			Long duration = 0L;
-//			if(meta != null && meta.getDuration() != 0L){
-//				duration = aop.getOcrProcessMetadata().getDuration();
-//			}
-		
-		String temp = "temp";
-		imageTempFile.delete();
-		LOGGER.debug("Delete File: "+ imageTempFile.toString());
-		
-		try {
-			FileUtils.deleteDirectory(imageTempFile.getParentFile());
-			FileUtils.deleteDirectory(new File(localPath + randomNumber));
-		} catch (IOException e) {
-			LOGGER.error("ERROR CAN NOT delete Directory");
-		}
-
-		File f = new File(webserverPath + temp + "/" + jobName
-				+ "." + params.outputFormats[0].toLowerCase());
-		
-		if( !f.exists()){
-			LOGGER.error("ERROR. CANNOT Find File: "+ f.toString());
-			String error = "File could not be processed: " + request.getInputUrl();
-			return byURLresponse(webserverPath, error, response);
-		}
-		
-		Date stampFinish = new Date();
-		long duration = stampFinish.getTime() - stampStart.getTime();
-		
 		String newLine = ".\n";
 		response.setMessage("Process finished successfully after " + duration + " milliseconds.");
-		response.setOutputUrl(webserverHostname + temp + "/"+ jobName	+ "." + params.outputFormats[0].toLowerCase());
+		response.setOutputUrl(webserverHostname + resultsDir + "/"+ jobName	+ "." + params.outputFormats[0].toLowerCase());
 		response.setProcessingLog("========= PROCESSING REQUEST (by URL) =========. "+ "\n" +
 											"Using service: OcrServiceImplService. "+ "\n" +
 											"Parameter processingUnit: "+ webserverHostname + newLine +
 											"URL of input image: "+ request.getInputUrl()+ newLine +
 											"Wrote file " + imageTempFile.toString()+  newLine +
 											"OUTFORMAT substitution variable value: "+params.outputFormats[0].toLowerCase()+ newLine +
-											"OUTFILE substitution variable value: " + f.getAbsolutePath()+ newLine +
+											"OUTFILE substitution variable value: " + resultFile.getAbsolutePath()+ newLine +
 											"LANGUAGES substitution variable value: "+ params.inputLanguages + newLine +
 											"INFILE substitution variable value: "+ imageTempFile.toString()+  newLine +
 											"INTEXTTYPE substitution variable value: "+ request.getTextType().value()+ newLine +
 											"Process finished successfully with code 0."+ "\n" +
 											"Output file has been created successfully.."+ "\n" +
-											"Output Url: " + webserverHostname + temp + "/" + jobName	+ "." + params.outputFormats[0].toLowerCase()+ newLine +
-											"Output Url-Abbyy-Result : " + webserverHostname + temp + "/" + jobName	+ ".xml.result.xml" + newLine +
-											"Output Url-Summary-File : " + webserverHostname + temp + "/" + jobName	+ "-textMD.xml" + newLine + 
+											"Output Url: " + webserverHostname + resultsDir + "/" + jobName	+ "." + params.outputFormats[0].toLowerCase()+ newLine +
+											"Output Url-Abbyy-Result : " + webserverHostname + resultsDir + "/" + jobName	+ ".xml.result.xml" + newLine +
+											"Output Url-Summary-File : " + webserverHostname + resultsDir + "/" + jobName	+ "-textMD.xml" + newLine + 
 											"Process finished successfully after " + duration + " milliseconds.."
 											);
 		
@@ -287,9 +190,8 @@ public class OcrServiceImpl implements OcrService {
 		return response;
 		
 	}
-
 	
-	ByUrlResponseType byURLresponse(String webserverPath, String error, ByUrlResponseType byUrlResponseType) {
+	private ByUrlResponseType getErrorResponse(String webserverPath, String error, ByUrlResponseType byUrlResponseType) {
 		byUrlResponseType.setMessage("Process finished unsuccessfully ");
 		byUrlResponseType.setOutputUrl("");
 		byUrlResponseType.setProcessingLog(error);
