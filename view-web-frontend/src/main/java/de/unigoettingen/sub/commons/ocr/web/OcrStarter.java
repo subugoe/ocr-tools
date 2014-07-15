@@ -4,16 +4,12 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
@@ -27,6 +23,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 public class OcrStarter implements Runnable {
 	final static Logger LOGGER = LoggerFactory
@@ -65,12 +62,13 @@ public class OcrStarter implements Runnable {
 			validationMessage += "Ausgabeordner muss absoluter Pfad sein. ";
 		}
 		EmailValidator validator = EmailValidator.getInstance();
-		if (isEmpty(param.email)) {
+		String email = param.props.getProperty("email");
+		if (isEmpty(email)) {
 			validationMessage += "Keine Benachrichtigungsadresse. ";
-		} else if (!validator.isValid(param.email)) {
+		} else if (!validator.isValid(email)) {
 			validationMessage += "Inkorrekte Benachrichtigungsadresse. ";
 		}
-		if (isEmpty(param.languages)) {
+		if (isEmpty(param.inputLanguages)) {
 			validationMessage += "Keine Sprache. ";
 		}
 		if (isEmpty(param.outputFormats)) {
@@ -129,11 +127,13 @@ public class OcrStarter implements Runnable {
 			throw new IllegalArgumentException("Unknown engine: " + param.ocrEngine);
 		}
 		
-		if (param.user != null && !param.user.isEmpty()) {
-			extraOptions.put("user", param.user);
+		String user = param.props.getProperty("user");
+		String password = param.props.getProperty("password");
+		if (user != null && !user.isEmpty()) {
+			extraOptions.put("user", user);
 		}
-		if (param.password != null && !param.password.isEmpty()) {
-			extraOptions.put("password", param.password);
+		if (password != null && !password.isEmpty()) {
+			extraOptions.put("password", password);
 		}
 		engine.setOptions(extraOptions);
 		
@@ -145,7 +145,7 @@ public class OcrStarter implements Runnable {
 		process.setName(bookFolder.getName());
 		
 		List<OCRImage> bookImages = new ArrayList<OCRImage>();
-		for (File imageFile : OCRUtil.makeFileList(bookFolder, param.imageFormat)) {
+		for (File imageFile : OCRUtil.makeFileList(bookFolder, param.inputFormats[0])) {
 			OCRImage image = engine.newOcrImage(imageFile.toURI());
 			image.setSize(imageFile.length());
 			bookImages.add(image);
@@ -153,13 +153,13 @@ public class OcrStarter implements Runnable {
 		process.setOcrImages(bookImages);
 		process.setPriority(OCRPriority.NORMAL);
 		
-		for (String lang : param.languages) {
+		for (String lang : param.inputLanguages) {
 			process.addLanguage(new Locale(lang));
 		}
 		if ("gbvAntiqua".equals(param.ocrEngine)) {
 			process.setTextType(OCRTextType.NORMAL);
 		} else {
-			process.setTextType(OCRTextType.valueOf(param.textType));
+			process.setTextType(OCRTextType.valueOf(param.inputTextType));
 		}
 		process.setSplitProcess(true);
 		

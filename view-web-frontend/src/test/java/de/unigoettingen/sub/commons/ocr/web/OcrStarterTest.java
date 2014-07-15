@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyMapOf;
-import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.startsWith;
@@ -34,6 +33,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OcrStarterTest {
@@ -126,7 +126,7 @@ public class OcrStarterTest {
 	@Test
 	public void withAnotherUser() {
 		OcrParameters param = validParams();
-		param.user = "newUser";
+		param.props.setProperty("user", "newUser");
 		ocrStarter.setParameters(param);
 		
 		ocrStarter.run();
@@ -139,7 +139,7 @@ public class OcrStarterTest {
 	@Test
 	public void withAnotherPassword() {
 		OcrParameters param = validParams();
-		param.password = "newPassword";
+		param.props.setProperty("password", "newPassword");
 		ocrStarter.setParameters(param);
 		
 		ocrStarter.run();
@@ -196,7 +196,7 @@ public class OcrStarterTest {
 	@Test
 	public void checkingParamsWithoutEmail() {
 		OcrParameters param = validParams();
-		param.email = null;
+		param.props.setProperty("email", "");
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
 		assertThat(validation, containsString("Keine Benachrichtigungsadresse"));
@@ -205,7 +205,7 @@ public class OcrStarterTest {
 	@Test
 	public void checkingParamsInvalidEmail() {
 		OcrParameters param = validParams();
-		param.email = "invalid";
+		param.props.setProperty("email", "invalid");
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
 		assertThat(validation, containsString("Inkorrekte Benachrichtigungsadresse"));
@@ -214,7 +214,7 @@ public class OcrStarterTest {
 	@Test
 	public void checkingParamsWithoutLanguage() {
 		OcrParameters param = validParams();
-		param.languages = new String[]{};
+		param.inputLanguages = new String[]{};
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
 		assertThat(validation, containsString("Keine Sprache"));
@@ -251,12 +251,12 @@ public class OcrStarterTest {
 		OcrParameters param = new OcrParameters();
 		param.inputFolder = new File("src/test/resources/testInputs").getAbsolutePath();
 		param.ocrEngine = "gbvAntiqua";
-		param.languages = new String[]{"de"};
-		param.textType = "NORMAL";
+		param.inputLanguages = new String[]{"de"};
+		param.inputTextType = "NORMAL";
 		param.outputFormats = new String[]{"PDF"};
 		param.outputFolder = "/tmp";
-		param.imageFormat = "tif";
-		param.email = "test@test.com";
+		param.inputFormats = new String[]{"tif"};
+		param.props.setProperty("email", "test@test.com");
 		return param;
 	}
 

@@ -25,6 +25,11 @@
             <artifactId>model-ocrsdk</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>de.uni-goettingen.sub</groupId>
+            <artifactId>controller</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 	
 	   	<dependency>
             <groupId>de.uni-goettingen.sub</groupId>

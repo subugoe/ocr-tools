@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
+
 public class OcrServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -21,14 +23,14 @@ public class OcrServlet extends HttpServlet {
 		OcrParameters param = new OcrParameters();
 		param.inputFolder = request.getParameter("inputFolder");
 		param.outputFolder = request.getParameter("outputFolder");
-		param.imageFormat = request.getParameter("imageFormat");
-		param.textType = request.getParameter("textType");
-		param.languages = request.getParameterValues("languages");
+		param.inputFormats = new String[]{request.getParameter("imageFormat")};
+		param.inputTextType = request.getParameter("textType");
+		param.inputLanguages = request.getParameterValues("languages");
 		param.outputFormats = request.getParameterValues("outputFormats");
-		param.email = request.getParameter("email");
+		setProperty(request, param, "email");
+		setProperty(request, param, "user");
+		setProperty(request, param, "password");
 		param.ocrEngine = request.getParameter("ocrEngine");
-		param.user = request.getParameter("user");
-		param.password = request.getParameter("password");
 		ocrStarter.setParameters(param);
 		
 		String validationMessage = ocrStarter.checkParameters();
@@ -40,9 +42,15 @@ public class OcrServlet extends HttpServlet {
 			goToView("invalid-parameters.jsp", request, response);
 		}
 		
-		
 	}
 
+	private void setProperty(HttpServletRequest request, OcrParameters param, String key) {
+		String requestValue = request.getParameter(key);
+		if (requestValue != null) {
+			param.props.setProperty(key, requestValue);
+		}
+	}
+	
 	protected void goToView(String viewName, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher view = request.getRequestDispatcher(viewName);
 		view.forward(request, response);

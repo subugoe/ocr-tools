@@ -12,5 +12,5 @@ public class OcrParameters {
 	public String[] outputFormats;
 	public String priority;
 	public String ocrEngine;
-	public Properties props;
+	public Properties props = new Properties();
 }

@@ -1,10 +1,12 @@
 package de.unigoettingen.sub.commons.ocr.web;
 
+
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
 import static org.mockito.Mockito.*;
 
 public class MailerTest {
@@ -20,14 +22,14 @@ public class MailerTest {
 		mailer.setEmailStarted(emailMock);
 		mailer.setEmailFinished(emailMock);
 		param = new OcrParameters();
-		param.email = "test@test.com";
+		param.props.setProperty("email", "test@test.com");
 	}
 	
 	@Test
 	public void ocrStarted() throws EmailException {
 		mailer.sendStarted(param, 1);
 		
-		verify(emailMock).addTo(param.email);
+		verify(emailMock).addTo(param.props.getProperty("email"));
 		verify(emailMock).send();
 	}
 	
@@ -35,7 +37,7 @@ public class MailerTest {
 	public void ocrFinished() throws EmailException {
 		mailer.sendFinished(param);
 		
-		verify(emailMock).addTo(param.email);
+		verify(emailMock).addTo(param.props.getProperty("email"));
 		verify(emailMock).send();
 	}
 	
@@ -44,7 +46,7 @@ public class MailerTest {
 		mailer.sendStarted(param, 1);
 		mailer.sendFinished(param);
 		
-		verify(emailMock, times(2)).addTo(param.email);
+		verify(emailMock, times(2)).addTo(param.props.getProperty("email"));
 		verify(emailMock, times(2)).send();
 	}
 }
