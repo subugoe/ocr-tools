@@ -163,7 +163,7 @@ public class OcrStarterTest {
 		param.inputFolder = "";
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("Kein Eingabeordner"));
+		assertThat(validation, containsString("Eingabeordner nicht gefunden oder nicht lesbar"));
 	}
 
 	@Test
@@ -172,7 +172,7 @@ public class OcrStarterTest {
 		param.inputFolder = "not/absolute";
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("Eingabeordner muss absoluter Pfad sein"));
+		assertThat(validation, containsString("Eingabeordner nicht gefunden oder nicht lesbar"));
 	}
 
 	@Test
@@ -181,7 +181,7 @@ public class OcrStarterTest {
 		param.outputFolder = null;
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("Kein Ausgabeordner"));
+		assertThat(validation, containsString("Ausgabeordner nicht gefunden oder nicht schreibbar"));
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class OcrStarterTest {
 		param.outputFolder = "not/absolute";
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("Ausgabeordner muss absoluter Pfad sein"));
+		assertThat(validation, containsString("Ausgabeordner nicht gefunden oder nicht schreibbar"));
 	}
 
 	@Test
@@ -226,7 +226,7 @@ public class OcrStarterTest {
 		param.outputFormats = null;
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
-		assertThat(validation, containsString("Kein Ausgabeformat"));
+		assertThat(validation, containsString("Keine Ausgabeformate"));
 	}
 	
 	@Test

@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +15,25 @@ import org.apache.commons.io.FileUtils;
 public class FileManager {
 
 	public boolean isReadableFolder(String inputFolder) {
+		if (isEmpty(inputFolder)) {
+			return false;
+		}
 		File folder = new File(inputFolder);
 		return folder.exists() && folder.isDirectory() && folder.canRead();
 	}
 
 	public boolean isWritableFolder(String outputFolder) {
+		if (isEmpty(outputFolder)) {
+			return false;
+		}
 		File folder = new File(outputFolder);
 		return folder.exists() && folder.isDirectory() && folder.canWrite();
 	}
 
+	private boolean isEmpty(String s) {
+		return s == null || s.isEmpty();
+	}
+	
 	public File[] getAllFolders(String parentFolder, String[] imageTypes) {
 		File parent = new File(parentFolder);
 		List<File> imagesFromFolder = getImagesFromFolder(parent, imageTypes);

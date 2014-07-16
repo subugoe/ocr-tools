@@ -24,6 +24,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
 import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;
+import de.unigoettingen.sub.ocr.controller.Validator;
+import de.unigoettingen.sub.ocr.controller.ValidatorGerman;
 
 public class OcrStarter implements Runnable {
 	final static Logger LOGGER = LoggerFactory
@@ -33,6 +35,7 @@ public class OcrStarter implements Runnable {
 	private EngineProvider engineProvider = new EngineProvider();
 	private Mailer mailer = new Mailer();
 	private LogSelector logSelector = new LogSelector();
+	private Validator paramsValidator = new ValidatorGerman();
 
 	// for unit tests
 	void setEngineProvider(EngineProvider newEngineProvider) {
@@ -44,22 +47,18 @@ public class OcrStarter implements Runnable {
 	void setLogSelector(LogSelector newSelector) {
 		logSelector = newSelector;
 	}
-	
-	public void setParameters(OcrParameters newParameters) {
-		param = newParameters;
+	void setValidator(Validator newValidator) {
+		paramsValidator = newValidator;
 	}
-
+	
+	public void setParameters(OcrParameters initParameters) {
+		param = initParameters;
+	}
+	
 	public String checkParameters() {
-		String validationMessage = "";
-		if (isEmpty(param.inputFolder)) {
-			validationMessage += "Kein Eingabeordner. ";
-		} else if (!isAbsolutePath(param.inputFolder)) {
-			validationMessage += "Eingabeordner muss absoluter Pfad sein. ";
-		}
-		if (isEmpty(param.outputFolder)) {
-			validationMessage += "Kein Ausgabeordner. ";
-		} else if (!isAbsolutePath(param.outputFolder)) {
-			validationMessage += "Ausgabeordner muss absoluter Pfad sein. ";
+		String validationMessage = paramsValidator.validateParameters(param);
+		if ("OK".equals(validationMessage)) {
+			validationMessage = "";
 		}
 		EmailValidator validator = EmailValidator.getInstance();
 		String email = param.props.getProperty("email");
@@ -67,12 +66,6 @@ public class OcrStarter implements Runnable {
 			validationMessage += "Keine Benachrichtigungsadresse. ";
 		} else if (!validator.isValid(email)) {
 			validationMessage += "Inkorrekte Benachrichtigungsadresse. ";
-		}
-		if (isEmpty(param.inputLanguages)) {
-			validationMessage += "Keine Sprache. ";
-		}
-		if (isEmpty(param.outputFormats)) {
-			validationMessage += "Kein Ausgabeformat. ";
 		}
 		if (validationMessage.equals("")) {
 			return "OK";
@@ -84,12 +77,6 @@ public class OcrStarter implements Runnable {
 	private boolean isEmpty(String string) {
 		return string == null || string.isEmpty();
 	}
-	private boolean isEmpty(String[] array) {
-		return array == null || array.length == 0;
-	}
-	private boolean isAbsolutePath(String path) {
-		return new File(path).isAbsolute();
-	}
 
 	@Override
 	public void run() {
@@ -97,6 +84,7 @@ public class OcrStarter implements Runnable {
 		String timeStamp = f.format(new Date()).replaceAll(" ", "-").replaceAll(":", ".");
 		String logFile = new File(new File(param.outputFolder), "log-" + timeStamp + ".txt").getAbsolutePath();
 		logSelector.logToFile(logFile);
+		
 		OCREngine engine = createEngine();
 
 		File mainFolder = new File(param.inputFolder);

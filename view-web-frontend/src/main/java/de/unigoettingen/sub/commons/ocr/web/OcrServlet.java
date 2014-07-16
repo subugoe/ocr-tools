@@ -30,7 +30,7 @@ public class OcrServlet extends HttpServlet {
 		setProperty(request, param, "email");
 		setProperty(request, param, "user");
 		setProperty(request, param, "password");
-		param.ocrEngine = request.getParameter("ocrEngine");
+		setEngineParameters(request, param);
 		ocrStarter.setParameters(param);
 		
 		String validationMessage = ocrStarter.checkParameters();
@@ -51,6 +51,19 @@ public class OcrServlet extends HttpServlet {
 		}
 	}
 	
+	private void setEngineParameters(HttpServletRequest request, OcrParameters param) {
+		String ocrService = request.getParameter("ocrEngine");
+		if ("gbvAntiqua".equals(ocrService)) {
+			param.ocrEngine = "abbyy-multiuser";
+			param.props.setProperty("abbyy.config", "gbv-antiqua.properties");
+		} else if ("gbvFraktur".equals(ocrService)) {
+			param.ocrEngine = "abbyy-multiuser";
+			param.props.setProperty("abbyy.config", "gbv-fraktur.properties");
+		} else if ("abbyyCloud".equals(ocrService)) {
+			param.ocrEngine = "ocrsdk";
+		}
+	}
+
 	protected void goToView(String viewName, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher view = request.getRequestDispatcher(viewName);
 		view.forward(request, response);

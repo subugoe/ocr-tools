@@ -17,13 +17,7 @@ public class Validator {
 		manager = beanProvider.getFileManager();
 		String validationMessage = "";
 		if (!isReadable(params.inputFolder)) {
-			validationMessage += inputFolderNotFound();
-		}
-		if (!isWritable(params.outputFolder)) {
-			validationMessage += outputFolderNotFound();
-		}
-		if (isEmpty(params.inputFormats)) {
-			validationMessage += noInputFormats();
+			validationMessage += inputFolderError();
 		}
 		if (isEmpty(params.inputTextType)) {
 			validationMessage += noInputTextType();
@@ -31,8 +25,14 @@ public class Validator {
 		if (isEmpty(params.inputLanguages)) {
 			validationMessage += noInputLanguages();
 		}
+		if (!isWritable(params.outputFolder)) {
+			validationMessage += outputFolderError();
+		}
 		if (isEmpty(params.outputFormats)) {
 			validationMessage += noOutputFormats();
+		}
+		if (isEmpty(params.inputFormats)) {
+			validationMessage += noInputFormats();
 		}
 		if (isEmpty(params.priority)) {
 			validationMessage += noPriority();
@@ -67,12 +67,12 @@ public class Validator {
 		return string == null || string.trim().isEmpty();
 	}
 
-	protected String inputFolderNotFound() {
-		return "Input folder not found. ";
+	protected String inputFolderError() {
+		return "Input folder not found or it is not readable. ";
 	}
 
-	protected String outputFolderNotFound() {
-		return "Output folder not found or it is protected. ";
+	protected String outputFolderError() {
+		return "Output folder not found or it is not writable. ";
 	}
 
 	protected String noInputFormats() {

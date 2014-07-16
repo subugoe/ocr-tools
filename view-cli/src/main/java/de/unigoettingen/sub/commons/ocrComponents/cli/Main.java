@@ -133,8 +133,6 @@ public class Main {
 			return params;
 		}
 		
-		initDefaultParams(params);
-		
 		if (parsedOptions.hasOption("informats")) {
 			params.inputFormats = parsedOptions.getOptionValue("informats").split(",");
 		}
@@ -162,13 +160,6 @@ public class Main {
 		allPresent &= parsedOptions.hasOption("outdir");
 		allPresent &= parsedOptions.hasOption("outformats");
 		return allPresent;
-	}
-
-	private void initDefaultParams(OcrParameters params) {
-		params.inputFormats = new String[]{"tif", "jpg", "gif", "tiff", "png", "jpeg"};
-		params.priority = "0";
-		params.ocrEngine = "abbyy";
-		params.props = new Properties();
 	}
 
 	private Properties convertExtraProperties(String extras) {
