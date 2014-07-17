@@ -57,16 +57,6 @@ public class OCRTestEngine extends AbstractOCREngine {
 	}
 
 	@Override
-	public void setOptions(Map<String, String> params) {
-		
-	}
-
-	@Override
-	public Map<String, String> getOptions() {
-		return null;
-	}
-
-	@Override
 	public int getEstimatedDurationInSeconds() {
 		return 0;
 	}

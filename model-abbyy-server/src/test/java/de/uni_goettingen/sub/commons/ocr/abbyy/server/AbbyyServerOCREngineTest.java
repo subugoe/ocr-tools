@@ -78,26 +78,26 @@ public class AbbyyServerOCREngineTest {
 		assertNotNull(engine);
 	}
 	
-	@Test
-	public void newImage() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-		OCRImage image = engine.newOcrImage(null);
-		assertTrue(image instanceof AbbyyOCRImage);
-	}
+//	@Test
+//	public void newImage() {
+//		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//		OCRImage image = engine.newOcrImage(null);
+//		assertTrue(image instanceof AbbyyOCRImage);
+//	}
 	
-	@Test
-	public void newProcess() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-		OCRProcess process = engine.newOcrProcess();
-		assertTrue(process instanceof AbbyyOCRProcess);
-	}
-	
-	@Test
-	public void newOutput() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-		OCROutput output = engine.newOcrOutput();
-		assertTrue(output instanceof AbbyyOCROutput);
-	}
+//	@Test
+//	public void newProcess() {
+//		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//		OCRProcess process = engine.newOcrProcess();
+//		assertTrue(process instanceof AbbyyOCRProcess);
+//	}
+//	
+//	@Test
+//	public void newOutput() {
+//		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//		OCROutput output = engine.newOcrOutput();
+//		assertTrue(output instanceof AbbyyOCROutput);
+//	}
 	
 	@Test(expected=IllegalStateException.class)
 	public void recognizeNoProcesses() {
@@ -105,73 +105,73 @@ public class AbbyyServerOCREngineTest {
 		engine.recognize();
 	}
 	
-	@Test(expected=IllegalStateException.class)
-	public void recognizeNoServer() throws Exception {
-		MyServers.stopDavServer();
-		try {
-			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-			OCRProcess process = engine.newOcrProcess();
-			engine.recognize(process);
-		} finally {
-			MyServers.startDavServer();
-		}
-	}
+//	@Test(expected=IllegalStateException.class)
+//	public void recognizeNoServer() throws Exception {
+//		MyServers.stopDavServer();
+//		try {
+//			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//			OCRProcess process = engine.newOcrProcess();
+//			engine.recognize(process);
+//		} finally {
+//			MyServers.startDavServer();
+//		}
+//	}
+//	
+//	@Test(expected=IllegalStateException.class)
+//	public void recognizeEmptyProcess() {
+//			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//			OCRProcess process = engine.newOcrProcess();
+//			engine.recognize(process);
+//	}
 	
-	@Test(expected=IllegalStateException.class)
-	public void recognizeEmptyProcess() {
-			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-			OCRProcess process = engine.newOcrProcess();
-			engine.recognize(process);
-	}
-	
-	@Test(expected=ConcurrentModificationException.class)
-	public void lockExists() throws IOException {
-		File lock = new File(DAV_FOLDER, ConfigParser.SERVER_LOCK_FILE_NAME);
-		lock.createNewFile();
-		
-		try {
-			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-			recognizeOneImage(engine);
-		} finally {
-			lock.delete();
-		}
-	}
-	
-	@Test
-	public void overwriteLock() throws IOException {
-		File lock = new File(DAV_FOLDER, ConfigParser.SERVER_LOCK_FILE_NAME);
-		lock.createNewFile();
-		
-		Properties props = new Properties();
-		props.setProperty("lock.overwrite", "true");
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(props);
-
-		recognizeOneImage(engine);
-		assertFalse(lock.exists());
-	}
-	
-	private void recognizeOneImage(OCREngine engine) {		
-		OCRProcess process = engine.newOcrProcess();
-		File inputBook = new File(LOCAL_INPUT, "oneImageBook");
-		String jobName = inputBook.getName();
-		process.setName(jobName);
-		
-		URI imageUri = new File(inputBook, "00000001.tif").toURI();
-		OCRImage image = engine.newOcrImage(imageUri);
-		List<OCRImage> images = new ArrayList<OCRImage>();
-		images.add(image);
-		process.setOcrImages(images);
-
-		OCRFormat format = OCRFormat.TXT;
-		OCROutput output = engine.newOcrOutput();
-		File outputFile = new File(LOCAL_OUTPUT, "oneImageBook.txt");
-		URI outputUri = outputFile.toURI();
-		output.setUri(outputUri);
-		process.addOutput(format, output);
-
-		engine.addOcrProcess(process);
-		engine.recognize();
-	}
+//	@Test(expected=ConcurrentModificationException.class)
+//	public void lockExists() throws IOException {
+//		File lock = new File(DAV_FOLDER, ConfigParser.SERVER_LOCK_FILE_NAME);
+//		lock.createNewFile();
+//		
+//		try {
+//			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//			recognizeOneImage(engine);
+//		} finally {
+//			lock.delete();
+//		}
+//	}
+//	
+//	@Test
+//	public void overwriteLock() throws IOException {
+//		File lock = new File(DAV_FOLDER, ConfigParser.SERVER_LOCK_FILE_NAME);
+//		lock.createNewFile();
+//		
+//		Properties props = new Properties();
+//		props.setProperty("lock.overwrite", "true");
+//		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(props);
+//
+//		recognizeOneImage(engine);
+//		assertFalse(lock.exists());
+//	}
+//	
+//	private void recognizeOneImage(OCREngine engine) {		
+//		OCRProcess process = engine.newOcrProcess();
+//		File inputBook = new File(LOCAL_INPUT, "oneImageBook");
+//		String jobName = inputBook.getName();
+//		process.setName(jobName);
+//		
+//		URI imageUri = new File(inputBook, "00000001.tif").toURI();
+//		OCRImage image = engine.newOcrImage(imageUri);
+//		List<OCRImage> images = new ArrayList<OCRImage>();
+//		images.add(image);
+//		process.setOcrImages(images);
+//
+//		OCRFormat format = OCRFormat.TXT;
+//		OCROutput output = engine.newOcrOutput();
+//		File outputFile = new File(LOCAL_OUTPUT, "oneImageBook.txt");
+//		URI outputUri = outputFile.toURI();
+//		output.setUri(outputUri);
+//		process.addOutput(format, output);
+//
+//		engine.addOcrProcess(process);
+//		engine.recognize();
+//	}
 	
 
 }

@@ -79,11 +79,11 @@ public class AbbyyOCRProcessTest {
 		MyServers.stopAbbyySimulator();
 	}
 	
-	@Test
-	public void newAbbyyProcess() {
-		AbbyyOCRProcess aop = (AbbyyOCRProcess) new AbbyyServerOCREngine(new Properties()).newOcrProcess();
-		assertNotNull(aop);
-	}
+//	@Test
+//	public void newAbbyyProcess() {
+//		AbbyyOCRProcess aop = (AbbyyOCRProcess) new AbbyyServerOCREngine(new Properties()).newOcrProcess();
+//		assertNotNull(aop);
+//	}
 
 	@Test
 	public void executeWithOneImage() throws InterruptedException, IOException {
@@ -174,42 +174,42 @@ public class AbbyyOCRProcessTest {
 		}
 	}
 
-	@Test
-	public void createProcessViaAPI() throws MalformedURLException,
-			URISyntaxException {
-		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
-		assertNotNull(ase);
-		OCRProcess op = ase.newOcrProcess();
-		List<OCRImage> imgList = new ArrayList<OCRImage>();
-		for (int i = 0; i < 10; i++) {
-			OCRImage ocri = mock(AbstractOCRImage.class);
-			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
-			when(ocri.getUri()).thenReturn(new URI(imageUrl));
-			logger.debug("Added url to list: " + imageUrl);
-			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
-			assertTrue(imageUrl.equals(aoi.getUri().toString()));
-			aoi.setRemoteFileName("remoteName" + i);
-			imgList.add(aoi);
-		}
-		op.setOcrImages(imgList);
+//	@Test
+//	public void createProcessViaAPI() throws MalformedURLException,
+//			URISyntaxException {
+//		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
+//		assertNotNull(ase);
+//		OCRProcess op = ase.newOcrProcess();
+//		List<OCRImage> imgList = new ArrayList<OCRImage>();
+//		for (int i = 0; i < 10; i++) {
+//			OCRImage ocri = mock(AbstractOCRImage.class);
+//			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
+//			when(ocri.getUri()).thenReturn(new URI(imageUrl));
+//			logger.debug("Added url to list: " + imageUrl);
+//			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
+//			assertTrue(imageUrl.equals(aoi.getUri().toString()));
+//			aoi.setRemoteFileName("remoteName" + i);
+//			imgList.add(aoi);
+//		}
+//		op.setOcrImages(imgList);
+//
+//	}
 
-	}
-
-	@Test
-	public void createUrlBasedProcess() throws MalformedURLException,
-			URISyntaxException {
-		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
-		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
-		assertNotNull(ase);
-		OCRProcess op = ase.newOcrProcess();
-		List<OCRImage> imgList = new ArrayList<OCRImage>();
-		for (int i = 0; i < 10; i++) {
-			OCRImage ocri = mock(OCRImage.class);
-			String imageUrl = "http://127.0.0.1:8080/image-" + i;
-			when(ocri.getUri()).thenReturn(new URI(imageUrl));
-			logger.debug("Added url to list: " + imageUrl);
-			imgList.add(ocri);
-		}
-		op.setOcrImages(imgList);
-	}
+//	@Test
+//	public void createUrlBasedProcess() throws MalformedURLException,
+//			URISyntaxException {
+//		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
+//		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
+//		assertNotNull(ase);
+//		OCRProcess op = ase.newOcrProcess();
+//		List<OCRImage> imgList = new ArrayList<OCRImage>();
+//		for (int i = 0; i < 10; i++) {
+//			OCRImage ocri = mock(OCRImage.class);
+//			String imageUrl = "http://127.0.0.1:8080/image-" + i;
+//			when(ocri.getUri()).thenReturn(new URI(imageUrl));
+//			logger.debug("Added url to list: " + imageUrl);
+//			imgList.add(ocri);
+//		}
+//		op.setOcrImages(imgList);
+//	}
 }

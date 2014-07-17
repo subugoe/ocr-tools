@@ -247,13 +247,6 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 		return null;
 	}
 
-
-	@Override
-	public OCRProcess newOcrProcess () {
-		return new AbbyyCLIOCRProcess(cmd);
-	}
-
-
 	protected class SegmentedFinereaderCLIOCRProcess implements Runnable {
 		protected List<AbbyyCLIOCRProcess> processes = null;
 
@@ -327,18 +320,6 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 		if (!exceptions.isEmpty()) {
 			throw new OCRException("Error while merging files.");
 		}
-	}
-
-	@Override
-	public void setOptions(Map<String, String> params) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Map<String, String> getOptions() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

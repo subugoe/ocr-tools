@@ -47,31 +47,31 @@ public class CompleteOcrTest {
 	}
 
 	// The simplest use case: ocr one image to a text file
-	@Test
-	public void oneImage() {
-		
-		OCRProcess process = engine.newOcrProcess();
-		File inputBook = new File(LOCAL_INPUT, "oneImageBook");
-		String jobName = inputBook.getName();
-		process.setName(jobName);
-		
-		URI imageUri = new File(inputBook, "00000001.tif").toURI();
-		OCRImage image = engine.newOcrImage(imageUri);
-		
-		List<OCRImage> images = new ArrayList<OCRImage>();
-		images.add(image);
-		process.setOcrImages(images);
-		
-		OCRFormat format = OCRFormat.TXT;
-		OCROutput output = engine.newOcrOutput();
-		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
-		output.setUri(outputFile.toURI());
-		process.addOutput(format, output);
-		
-		engine.addOcrProcess(process);
-		engine.recognize();
-		
-		assertTrue(outputFile.exists());
-	}
+//	@Test
+//	public void oneImage() {
+//		
+//		OCRProcess process = engine.newOcrProcess();
+//		File inputBook = new File(LOCAL_INPUT, "oneImageBook");
+//		String jobName = inputBook.getName();
+//		process.setName(jobName);
+//		
+//		URI imageUri = new File(inputBook, "00000001.tif").toURI();
+//		OCRImage image = engine.newOcrImage(imageUri);
+//		
+//		List<OCRImage> images = new ArrayList<OCRImage>();
+//		images.add(image);
+//		process.setOcrImages(images);
+//		
+//		OCRFormat format = OCRFormat.TXT;
+//		OCROutput output = engine.newOcrOutput();
+//		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
+//		output.setUri(outputFile.toURI());
+//		process.addOutput(format, output);
+//		
+//		engine.addOcrProcess(process);
+//		engine.recognize();
+//		
+//		assertTrue(outputFile.exists());
+//	}
 
 }

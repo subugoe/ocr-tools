@@ -18,7 +18,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
  */
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,37 +48,5 @@ public abstract class AbstractOCREngine implements OCREngine {
 		return ocrProcess;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#newOcrImage()
-	 */
-	public OCRImage newOcrImage(URI imageUri) {
-		return new AbstractOCRImage(imageUri) {
-		};
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#newOcrOutput()
-	 */
-	public OCROutput newOcrOutput() {
-		return new AbstractOCROutput() {
-		};
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#newOcrProcess()
-	 */
-	public OCRProcess newOcrProcess() {
-		return new AbstractOCRProcess() {
-			private static final long serialVersionUID = 5339229036182449822L;
-		};
-	}
-
-	// TODO: check if we can add the getInstance stuff here
 
 }

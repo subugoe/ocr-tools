@@ -20,9 +20,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
-import java.net.URI;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 
 /**
@@ -89,77 +87,6 @@ public interface OCREngine {
 	 */
 	abstract public List<OCRProcess> getOcrProcess();
 
-	/**
-	 * New OCRImage. This method should return an engine specific implementation
-	 * of {@link OCRImage}. Lazy implementers can choose to return an anonymous
-	 * class that extends {@link AbstractOCRImage}, if it fits their needs:
-	 * 
-	 * <pre>
-	 * {@code 
-	 * return new AbstractOCRImage() {
-	 * 	public void setUri (URI uri) {
-	 * 		super.setUri(uri);
-	 * 	}
-	 * };
-	 * }
-	 * </pre>
-	 * 
-	 * @return the new created OCR image
-	 * @see OCRImage
-	 */
-	abstract public OCRImage newOcrImage(URI imageUri);
-
-	/**
-	 * New OCRProcess. This method should return an engine specific
-	 * implementation of {@link OCRProcess}. Lazy implementers can choose to
-	 * return an anonymous class that extends {@link AbstractOCRProcess}, if it
-	 * fits their needs:
-	 * 
-	 * <pre>
-	 * {@code 
-	 * return new AbstractOCRProcess() {
-	 * 	@Override
-	 * 	public void setName (String name) {
-	 * 		super.setName(name);
-	 * 	}
-	 * 	public void addLanguage (Locale lang) {
-	 * 		super.addLanguage(lang);
-	 * 	}
-	 * 	public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutput) {
-	 * 		super.setOcrOutputs(ocrOutput);
-	 * 	}
-	 * 	public void setOcrImages (List<OCRImage> ocrImages) {
-	 * 		super.setOcrImages(ocrImages);
-	 * 	}
-	 * };
-	 * }
-	 * </pre>
-	 * 
-	 * @return the new created OCR process
-	 * @see OCRProcess
-	 */
-	abstract public OCRProcess newOcrProcess();
-
-	/**
-	 * New OCROutput. This method should return an engine specific
-	 * implementation of {@link OCROutput}. Lazy implementers can choose to
-	 * return an anonymous class that extends {@link AbstractOCROutput}, if it
-	 * fits their needs.
-	 * 
-	 * <pre>
-	 * {@code 
-	 * return new AbstractOCROutput() {
-	 * 	public void setUri (URI uri) {
-	 * 		super.setUri(uri);
-	 * 	}
-	 * };
-	 * }
-	 * </pre>
-	 * 
-	 * @return the new created OCR output
-	 * @see OCROutput
-	 */
-	abstract public OCROutput newOcrOutput();
 
 	/**
 	 * Inits the OCREngine. This an be used to check if the engine is
@@ -173,9 +100,5 @@ public interface OCREngine {
 	 */
 	abstract public Boolean init();
 
-	abstract public void setOptions(Map<String, String> params);
-	
-	abstract public Map<String, String> getOptions();
-	
 	abstract public int getEstimatedDurationInSeconds();
 }

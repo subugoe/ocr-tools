@@ -43,7 +43,6 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
@@ -71,15 +70,12 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 	protected Hotfolder hotfolder;
 	protected OCRProcessMetadata ocrProcessMetadata;
-	/** single instance of AbbyyServerOCREngine. */
 
 	protected static Boolean rest = false;
 
 	// OCR Processes
 	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
 
-	protected Map<String, String> extraOptions = new HashMap<String, String>();
-	
 	protected URI lockURI;
 	
 	private static Object monitor = new Object();
@@ -119,23 +115,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 	}
 
-	private void initConfig() {
-		String configFile = extraOptions.get("abbyy.config");
-		if (configFile != null) {
-			config = new ConfigParser("/" + configFile).parse();
-		}
-		String user = extraOptions.get("user");
-		String password = extraOptions.get("password");
-		if (user != null) {
-			config.setUsername(user);
-		}
-		if (password != null) {
-			config.setPassword(password);
-		}
-
-		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
-	}
-	
 	/* start JMX methods */
 	public String getWaitingProcesses() {
 		String names = "";
@@ -194,8 +173,10 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		
 		pool = createPool();
 
-		String charCoords = extraOptions.get("output.xml.charcoordinates");
-		boolean skipCharCoords = "false".equals(charCoords);
+		// TODO: need this?
+//		String charCoords = extraOptions.get("output.xml.charcoordinates");
+//		boolean skipCharCoords = "false".equals(charCoords);
+		boolean skipCharCoords = false;
 		
 		while (!processes.isEmpty()) {
 			AbbyyOCRProcess process = processes.poll();
@@ -289,40 +270,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine#newOcrImage(java
-	 * .net.URI)
-	 */
-	@Override
-	public OCRImage newOcrImage(URI imageUri) {
-		return new AbbyyOCRImage(imageUri);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine#newOcrProcess()
-	 */
-	@Override
-	public OCRProcess newOcrProcess() {
-		return new AbbyyOCRProcess(userProperties.getProperty("abbyy.config", "gbv-antiqua.properties"));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine#newOcrOutput()
-	 */
-	@Override
-	public OCROutput newOcrOutput() {
-		return new AbbyyOCROutput();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
 	 * de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize(de.uni_goettingen
 	 * .sub.commons.ocr.api.OCRProcess)
 	 */
@@ -407,17 +354,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		return false;
 	}
 	
-	@Override
-	public void setOptions(Map<String, String> opts) {
-		extraOptions = opts;
-		initConfig();
-	}
-
-	@Override
-	public Map<String, String> getOptions() {
-		return extraOptions;
-	}
-
 	@Override
 	public int getEstimatedDurationInSeconds() {
 		long durationInMillis = 0;
