@@ -3,10 +3,8 @@ package de.unigoettingen.sub.ocr.controller;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -23,6 +21,7 @@ public class OcrEngineStarter {
 
 	private FactoryProvider factoryProvider = new FactoryProvider();
 	private BeanProvider beanProvider = new BeanProvider();
+	private OCREngine engine;
 	
 	// for unit tests
 	void setFactoryProvider(FactoryProvider newProvider) {
@@ -35,8 +34,8 @@ public class OcrEngineStarter {
 	
 	public void startOcrWithParams(OcrParameters params) {
 		OcrFactory factory = factoryProvider.createFactory(params.ocrEngine, params.props);
-		OCREngine engine = factory.createEngine();
-		
+		engine = factory.createEngine();
+
 		FileManager manager = beanProvider.getFileManager();
 		File[] allBookFolders = manager.getAllFolders(params.inputFolder, params.inputFormats);
 		for (File bookFolder : allBookFolders) {
@@ -70,5 +69,12 @@ public class OcrEngineStarter {
 			engine.addOcrProcess(process);
 		}
 		engine.recognize();
+	}
+	
+	public int getEstimatedDurationInSeconds() {
+		if (engine == null) {
+			return 0;
+		}
+		return engine.getEstimatedDurationInSeconds();
 	}
 }

@@ -1,28 +1,14 @@
 package de.unigoettingen.sub.commons.ocr.web;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
-import de.unigoettingen.sub.commons.ocr.util.OCRUtil;
+import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.Validator;
 import de.unigoettingen.sub.ocr.controller.ValidatorGerman;
@@ -32,15 +18,12 @@ public class OcrStarter implements Runnable {
 			.getLogger(OcrStarter.class);
 	
 	private OcrParameters param;
-	private EngineProvider engineProvider = new EngineProvider();
 	private Mailer mailer = new Mailer();
 	private LogSelector logSelector = new LogSelector();
 	private Validator paramsValidator = new ValidatorGerman();
+	private OcrEngineStarter engineStarter = new OcrEngineStarter();
 
 	// for unit tests
-	void setEngineProvider(EngineProvider newEngineProvider) {
-		engineProvider = newEngineProvider;
-	}
 	void setMailer(Mailer newMailer) {
 		mailer = newMailer;
 	}
@@ -49,6 +32,9 @@ public class OcrStarter implements Runnable {
 	}
 	void setValidator(Validator newValidator) {
 		paramsValidator = newValidator;
+	}
+	void setOcrEngineStarter(OcrEngineStarter newStarter) {
+		engineStarter = newStarter;
 	}
 	
 	public void setParameters(OcrParameters initParameters) {
@@ -85,87 +71,12 @@ public class OcrStarter implements Runnable {
 		String logFile = new File(new File(param.outputFolder), "log-" + timeStamp + ".txt").getAbsolutePath();
 		logSelector.logToFile(logFile);
 		
-		OCREngine engine = createEngine();
-
-		File mainFolder = new File(param.inputFolder);
-		File[] subFolders = mainFolder.listFiles();
-		for (File bookFolder : subFolders) {
-			OCRProcess process = createProcess(engine, bookFolder);
-			engine.addOcrProcess(process);
-		}
-
-		int estimatedDuration = engine.getEstimatedDurationInSeconds();
+		int estimatedDuration = engineStarter.getEstimatedDurationInSeconds();
 		mailer.sendStarted(param, estimatedDuration);
-		engine.recognize();
+		
+		engineStarter.startOcrWithParams(param);
+		
 		mailer.sendFinished(param);
-	}
-
-	private OCREngine createEngine() {
-		OCREngine engine = null;
-		Map<String,String> extraOptions = new HashMap<String,String>();
-		if ("gbvAntiqua".equals(param.ocrEngine)) {
-			engine = engineProvider.getFromContext("abbyy-multiuser");
-			extraOptions.put("abbyy.config", "gbv-antiqua.properties");
-		} else if ("gbvFraktur".equals(param.ocrEngine)) {
-			engine = engineProvider.getFromContext("abbyy-multiuser");
-			extraOptions.put("abbyy.config", "gbv-fraktur.properties");
-		} else if ("abbyyCloud".equals(param.ocrEngine)) {
-			engine = engineProvider.getFromContext("ocrsdk");
-		} else {
-			throw new IllegalArgumentException("Unknown engine: " + param.ocrEngine);
-		}
-		
-		String user = param.props.getProperty("user");
-		String password = param.props.getProperty("password");
-		if (user != null && !user.isEmpty()) {
-			extraOptions.put("user", user);
-		}
-		if (password != null && !password.isEmpty()) {
-			extraOptions.put("password", password);
-		}
-		engine.setOptions(extraOptions);
-		
-		return engine;
-	}
-
-	private OCRProcess createProcess(OCREngine engine, File bookFolder) {
-		OCRProcess process = engine.newOcrProcess();
-		process.setName(bookFolder.getName());
-		
-		List<OCRImage> bookImages = new ArrayList<OCRImage>();
-		for (File imageFile : OCRUtil.makeFileList(bookFolder, param.inputFormats[0])) {
-			OCRImage image = engine.newOcrImage(imageFile.toURI());
-			image.setSize(imageFile.length());
-			bookImages.add(image);
-		}
-		process.setOcrImages(bookImages);
-		process.setPriority(OCRPriority.NORMAL);
-		
-		for (String lang : param.inputLanguages) {
-			process.addLanguage(new Locale(lang));
-		}
-		if ("gbvAntiqua".equals(param.ocrEngine)) {
-			process.setTextType(OCRTextType.NORMAL);
-		} else {
-			process.setTextType(OCRTextType.valueOf(param.inputTextType));
-		}
-		process.setSplitProcess(true);
-		
-		try {
-			for (String formatString : param.outputFormats) {
-				OCRFormat format = OCRFormat.parseOCRFormat(formatString);
-				OCROutput output = engine.newOcrOutput();
-				URI uri = new URI(new File(param.outputFolder).toURI()
-						+ bookFolder.getName()
-						+ "." + format.toString().toLowerCase());
-				output.setUri(uri);
-				output.setlocalOutput(new File(param.outputFolder).getAbsolutePath());
-				process.addOutput(format, output);
-			}
-		} catch(URISyntaxException e){
-			LOGGER.error("Illegal URI", e);
-		}
-		return process;
 	}
 
 }

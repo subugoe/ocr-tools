@@ -52,7 +52,7 @@ public class IntegrationTest {
 		main.execute(validOptions());
 
 		String outString = new String(baos.toByteArray());
-		assertThat(outString, containsString("Illegal options: Input folder not found."));
+		assertThat(outString, containsString("Illegal options: Input folder not found or it is not readable"));
 	}
 	
 	@Test
@@ -62,7 +62,7 @@ public class IntegrationTest {
 		main.execute(validOptions());
 
 		String outString = new String(baos.toByteArray());
-		assertThat(outString, containsString("Illegal options: Output folder not found or it is protected."));
+		assertThat(outString, containsString("Illegal options: Output folder not found or it is not writable"));
 	}
 	
 	@Test(expected=ConcurrentModificationException.class)

@@ -2,6 +2,7 @@ package de.unigoettingen.sub.ocr.controller;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.containsString;
 
 import java.util.Properties;
 
@@ -45,7 +46,7 @@ public class ValidatorTest {
 
 		String validation = validatorSut.validateParameters(params);
 
-		assertEquals("Input folder not found. ", validation);
+		assertThat(validation, containsString("Input folder not found"));
 	}
 	
 	@Test
@@ -56,7 +57,7 @@ public class ValidatorTest {
 
 		String validation = validatorSut.validateParameters(params);
 
-		assertEquals("Output folder not found or it is protected. ", validation);
+		assertThat(validation, containsString("Output folder not found or it is not writable"));
 	}
 	
 	@Test

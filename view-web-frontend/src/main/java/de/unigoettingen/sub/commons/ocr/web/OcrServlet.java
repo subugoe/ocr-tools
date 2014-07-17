@@ -31,6 +31,7 @@ public class OcrServlet extends HttpServlet {
 		setProperty(request, param, "user");
 		setProperty(request, param, "password");
 		setEngineParameters(request, param);
+		param.props.setProperty("splitJobs", "500");
 		ocrStarter.setParameters(param);
 		
 		String validationMessage = ocrStarter.checkParameters();
@@ -46,7 +47,7 @@ public class OcrServlet extends HttpServlet {
 
 	private void setProperty(HttpServletRequest request, OcrParameters param, String key) {
 		String requestValue = request.getParameter(key);
-		if (requestValue != null) {
+		if (requestValue != null && !requestValue.isEmpty()) {
 			param.props.setProperty(key, requestValue);
 		}
 	}
@@ -56,6 +57,8 @@ public class OcrServlet extends HttpServlet {
 		if ("gbvAntiqua".equals(ocrService)) {
 			param.ocrEngine = "abbyy-multiuser";
 			param.props.setProperty("abbyy.config", "gbv-antiqua.properties");
+			// TODO: kleine Buchstaben
+			param.inputTextType = "NORMAL";
 		} else if ("gbvFraktur".equals(ocrService)) {
 			param.ocrEngine = "abbyy-multiuser";
 			param.props.setProperty("abbyy.config", "gbv-fraktur.properties");
