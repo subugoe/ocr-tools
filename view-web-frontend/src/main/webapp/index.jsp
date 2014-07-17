@@ -51,16 +51,6 @@
 		<br/>
 		
 		<div class="inputOptions">
-		Dateiformat:<a href="javascript:alert(imageFormatInfo)">?</a>
-		<br/>
-		<select name="imageFormat">
-			<option>tif</option>
-			<option>jpg</option>
-			<option>png</option>
-		</select>
-		</div>
-		
-		<div class="inputOptions">
 		Texttyp:<a href="javascript:alert(textTypeInfo)">?</a>
 		<br/>
 		<input name="textType" type="radio" checked="checked" value="NORMAL"/>Antiqua <br/>

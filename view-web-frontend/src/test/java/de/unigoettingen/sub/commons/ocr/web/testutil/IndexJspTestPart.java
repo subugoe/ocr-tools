@@ -31,7 +31,6 @@ public class IndexJspTestPart {
 	public void shouldContainAllInputFields() {
 		form.getInputByName("inputFolder");
 		form.getInputByName("outputFolder");
-		form.getSelectByName("imageFormat");
 		assertThat("No textType radio buttons found", form.getRadioButtonsByName("textType"), is(not(empty())));
 		form.getSelectByName("languages");
 		form.getSelectByName("outputFormats");
@@ -45,7 +44,6 @@ public class IndexJspTestPart {
 	public void submittingTheFormShouldPostAllParameters() throws Exception {
 		form.getInputByName("inputFolder").setValueAttribute("/home/test/in");
 		form.getInputByName("outputFolder").setValueAttribute("/home/test/out");
-		form.getSelectByName("imageFormat").setSelectedAttribute("jpg", true);
 		form.getRadioButtonsByName("textType").get(1).click();
 		form.getSelectByName("languages").setSelectedAttribute("en", true);
 		form.getSelectByName("outputFormats").setSelectedAttribute("XML", true);
@@ -60,7 +58,6 @@ public class IndexJspTestPart {
 		
 		assertThat(textFromFakeServlet, containsString("/home/test/in"));
 		assertThat(textFromFakeServlet, containsString("/home/test/out"));
-		assertThat(textFromFakeServlet, containsString("jpg"));
 		assertThat(textFromFakeServlet, containsString("GOTHIC"));
 		assertThat(textFromFakeServlet, containsString("en"));
 		assertThat(textFromFakeServlet, containsString("XML"));

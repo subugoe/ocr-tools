@@ -9,8 +9,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 public class Mailer {
-	final static Logger LOGGER = LoggerFactory
-			.getLogger(Mailer.class);
+	final static Logger log = LoggerFactory.getLogger(Mailer.class);
 	
 	private Email emailStarted = new SimpleEmail();
 	private Email emailFinished = new SimpleEmail();
@@ -24,7 +23,8 @@ public class Mailer {
 	}
 	
 	public void sendStarted(OcrParameters param, int estimatedDuration) {
-		send(emailStarted, param.props.getProperty("email"), "OCR Prozess gestartet", "Voraussichtliche Dauer: " + (estimatedDuration/60) + " Minuten"
+		send(emailStarted, param.props.getProperty("email"), "OCR Prozess gestartet", 
+				"Voraussichtliche Dauer: " + (estimatedDuration/60) + " Minuten"
 				+ " (" + (estimatedDuration/60/60) + " Stunden)");
 	}
 	public void sendFinished(OcrParameters param) {
@@ -41,7 +41,7 @@ public class Mailer {
 			email.addTo(toAddress);
 			email.send();
 		} catch (EmailException e) {
-			LOGGER.error("Could not send mail to " + toAddress, e);
+			log.error("Could not send mail to " + toAddress, e);
 		}
 
 	}

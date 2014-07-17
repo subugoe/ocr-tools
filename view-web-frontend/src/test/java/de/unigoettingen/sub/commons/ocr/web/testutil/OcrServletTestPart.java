@@ -62,7 +62,7 @@ public class OcrServletTestPart {
 		assertEquals("Forwarded to view: ocr-started.jsp", page2.getContent());
 	}
 
-	// TODO: refactor the test
+	// TODO: probably an unnecessary test
 	@Test
 	public void twoParallelOkRequests() throws Exception {
 		new Thread(
@@ -72,12 +72,12 @@ public class OcrServletTestPart {
 			private List<NameValuePair> params1;
 			public void run() {
 				try {
-				webClient1 = new WebClient();
-				request1 = new WebRequest(new URL("http://localhost:" + jettyPort + "/ocr-servlet-child"), HttpMethod.POST);
-				params1 = new ArrayList<NameValuePair>();
-				params1.add(new NameValuePair("fakeValidationMessage", "OK"));
-				request1.setRequestParameters(params1);
-				webClient1.getPage(request1);
+					webClient1 = new WebClient();
+					request1 = new WebRequest(new URL("http://localhost:" + jettyPort + "/ocr-servlet-child"), HttpMethod.POST);
+					params1 = new ArrayList<NameValuePair>();
+					params1.add(new NameValuePair("fakeValidationMessage", "OK"));
+					request1.setRequestParameters(params1);
+					webClient1.getPage(request1);
 				} catch (Exception e) {
 					System.out.println("my exxxxxxxxxx: " + e);
 				}
@@ -92,12 +92,12 @@ public class OcrServletTestPart {
 			private List<NameValuePair> params2;
 			public void run() {
 				try {
-				webClient2 = new WebClient();
-				request2 = new WebRequest(new URL("http://localhost:" + jettyPort + "/ocr-servlet-child"), HttpMethod.POST);
-				params2 = new ArrayList<NameValuePair>();
-				params2.add(new NameValuePair("fakeValidationMessage", "OK"));
-				request2.setRequestParameters(params2);
-				webClient2.getPage(request2);
+					webClient2 = new WebClient();
+					request2 = new WebRequest(new URL("http://localhost:" + jettyPort + "/ocr-servlet-child"), HttpMethod.POST);
+					params2 = new ArrayList<NameValuePair>();
+					params2.add(new NameValuePair("fakeValidationMessage", "OK"));
+					request2.setRequestParameters(params2);
+					webClient2.getPage(request2);
 				} catch (Exception e) {
 					System.out.println(e);
 				}

@@ -23,7 +23,6 @@ public class OcrServlet extends HttpServlet {
 		OcrParameters param = new OcrParameters();
 		param.inputFolder = request.getParameter("inputFolder");
 		param.outputFolder = request.getParameter("outputFolder");
-		param.inputFormats = new String[]{request.getParameter("imageFormat")};
 		param.inputTextType = request.getParameter("textType");
 		param.inputLanguages = request.getParameterValues("languages");
 		param.outputFormats = request.getParameterValues("outputFormats");

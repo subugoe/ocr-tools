@@ -5,8 +5,6 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import org.apache.commons.validator.routines.EmailValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;
@@ -14,10 +12,8 @@ import de.unigoettingen.sub.ocr.controller.Validator;
 import de.unigoettingen.sub.ocr.controller.ValidatorGerman;
 
 public class OcrStarter implements Runnable {
-	final static Logger LOGGER = LoggerFactory
-			.getLogger(OcrStarter.class);
 	
-	private OcrParameters param;
+	private OcrParameters params;
 	private Mailer mailer = new Mailer();
 	private LogSelector logSelector = new LogSelector();
 	private Validator paramsValidator = new ValidatorGerman();
@@ -38,16 +34,16 @@ public class OcrStarter implements Runnable {
 	}
 	
 	public void setParameters(OcrParameters initParameters) {
-		param = initParameters;
+		params = initParameters;
 	}
 	
 	public String checkParameters() {
-		String validationMessage = paramsValidator.validateParameters(param);
+		String validationMessage = paramsValidator.validateParameters(params);
 		if ("OK".equals(validationMessage)) {
 			validationMessage = "";
 		}
 		EmailValidator validator = EmailValidator.getInstance();
-		String email = param.props.getProperty("email");
+		String email = params.props.getProperty("email");
 		if (isEmpty(email)) {
 			validationMessage += "Keine Benachrichtigungsadresse. ";
 		} else if (!validator.isValid(email)) {
@@ -68,15 +64,15 @@ public class OcrStarter implements Runnable {
 	public void run() {
 		DateFormat f = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 		String timeStamp = f.format(new Date()).replaceAll(" ", "-").replaceAll(":", ".");
-		String logFile = new File(new File(param.outputFolder), "log-" + timeStamp + ".txt").getAbsolutePath();
+		String logFile = new File(new File(params.outputFolder), "log-" + timeStamp + ".txt").getAbsolutePath();
 		logSelector.logToFile(logFile);
 		
 		int estimatedDuration = engineStarter.getEstimatedDurationInSeconds();
-		mailer.sendStarted(param, estimatedDuration);
+		mailer.sendStarted(params, estimatedDuration);
 		
-		engineStarter.startOcrWithParams(param);
+		engineStarter.startOcrWithParams(params);
 		
-		mailer.sendFinished(param);
+		mailer.sendFinished(params);
 	}
 
 }
