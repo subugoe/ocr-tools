@@ -35,94 +35,56 @@ import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 import java.io.BufferedReader;
 
-/**
- * The Class SimpleOCRServlet.
- */
 public class SimpleOCRServlet extends HttpServlet {
 	
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -6874162548956424669L;
 	
-	/** The Constant title. */
-	static final String TITLE = "GDZ Simple-OCR 0.0.3 - Java";
-		
-	/** The Constant LANG_PARAMETER. */
-	static final String LANG_PARAMETER = "defaultLang";
+	private static final String TITLE = "GDZ Simple-OCR 0.0.3 - Java";	
 	
-	/** The Constant CACHEDIR_PARAMETER. */
-	static final String CACHEDIR_PARAMETER = "cacheDir";
-	
-	/** The Constant DIRPREFIX_PARAMETER. */
-	static final String DIRPREFIX_PARAMETER = "dirPrefix";
-	
-	/** The Constant OCRSCRIPT_PARAMETER. */
-	static final String OCRSCRIPT_PARAMETER = "ocrScript";
-	
-	/** The Constant SUFFIX_PARAMETER. */
-	static final String SUFFIX_PARAMETER = "suffix";
-	
-	/** The Constant logger. */
-	static final Logger logger = LoggerFactory.getLogger(SimpleOCRServlet.class);
+	private static final Logger logger = LoggerFactory.getLogger(SimpleOCRServlet.class);
 
-	/** The Constant DOWNLOAD_PATH. */
-	static final String DOWNLOAD_PATH = "url-download";
+	private String defaultLanguage;
+	private String cacheDir;
+	private String dirPrefix;
+	private String fileExtension;
 
-	//String lang = "German";
-	/** The default language */
-	private String defaultLang = null;
-	
-	//String cacheDir = new String("c:\\tmp\\");
-	/** The cache dir. */
-	private String cacheDir = null;
-	//String dirPrefix = new String("\\\\gdz-wrk1\\goobi-ocr$\\");
-	/** The dir prefix. */
-	private String dirPrefix = null;
-	//String ocrScript = "c:\\Programme\\Abbyy FineReader Engine 8.1\\Samples\\Visual C++ (Raw)\\CLEI2\\Release\\clei.exe";
-	/** The ocr script. */
-	private String ocrScript = null;
-	//String suffix = ".txt";
-	/** The suffix. */
-	private String suffix = null;
-
-	//String jobName;
-	
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
 	@Override
-	public void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		//TODO: URL Einbauen
-		/*
-                URL url = null;
-		if (request.getParameter("url") != null) {
-			try {
-				url = new URL(request.getParameter("url"));
-			} catch (MalformedURLException e) {
-				logger.error("Malformed URL: " + request.getParameter("url"));
-			}
-			//String urlPath = download(url);
+	public void init() throws ServletException {
+		defaultLanguage = getInitParam("defaultLang");
+		cacheDir = getInitParam("cacheDir");
+		dirPrefix = getInitParam("dirPrefix");
+		fileExtension = getInitParam("fileExtension");		
+	}
+
+	private String getInitParam(String paramName) throws ServletException {
+		String initParam = getServletConfig().getInitParameter(paramName).toString();
+		if (initParam == null) {
+			throw new ServletException("Kein Init-Parameter in der web.xml: " + paramName);
 		}
-                */
+		return initParam;
+	}
+	
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		response.setContentType("text/html");
 		PrintWriter pw = response.getWriter();
 		pw.println("<html><head>");
 		pw.println("<title>" + TITLE + "</title></head><body>");
 		pw.println("<h1>Ergebnis:</h1><hr>");
-                String lang, path;
-		if (request.getParameter("lang") != null) {
-			lang = request.getParameter("lang");
-		} else {
-                    lang = defaultLang;
-                }
-		if (request.getParameter("path") != null) {
-			path = normalizePath(request.getParameter("path"));
-		} else {
-			throw new ServletException("<h1>fehlende Eingabedaten</h1>");
+        String lang = request.getParameter("lang");
+		if (lang == null) {
+			lang = defaultLanguage;
+        }
+		String path = request.getParameter("path");
+		if (path == null) {
+			throw new ServletException("Fehlende Eingabedaten, z. B. ?path=myimages/ocr");
 		}
-		if (request.getParameter("imgrange") == null) {
-			throw new ServletException("<h1>fehlende Eingabedaten</h1>");
+		path = normalizePath(path);
+		String imagesRange = request.getParameter("imgrange");
+		if (imagesRange == null) {
+			throw new ServletException("Fehlende Eingabedaten, z. B. ?imgrange=1-10");
 		}
-		List<String> files = createFileList(request.getParameter("imgrange"));
+		List<String> files = createFileList(imagesRange);
 		copyFiles(files, path);
 
 		String workDir = cacheDir + path;
@@ -135,139 +97,48 @@ public class SimpleOCRServlet extends HttpServlet {
 			ocr(images, lang, path);
 		} catch (URISyntaxException e) {
 			logger.warn("Malformed URL;", e);
-
 		}
 		
 		pw.println(createResponse(path, getJobName(path)));
 
 	}
 
-	@Override
-	public void init () throws ServletException {
-		defaultLang = getServletConfig().getInitParameter(LANG_PARAMETER).toString();
-		if (defaultLang == null) {
-			throw new ServletException("Keine Defaultsprache angegeben");
-		}
-
-		cacheDir = getServletConfig().getInitParameter(CACHEDIR_PARAMETER).toString();
-		if (cacheDir == null) {
-			throw new ServletException("Keine Zwischenspeicherort angegeben");
-		}
-
-		dirPrefix = getServletConfig().getInitParameter(DIRPREFIX_PARAMETER).toString();
-		if (dirPrefix == null) {
-			throw new ServletException("Kein Startpunkt für das auflösen der Pfade gefunden.");
-		}
-
-		suffix = getServletConfig().getInitParameter(SUFFIX_PARAMETER).toString();
-		if (suffix == null) {
-			throw new ServletException("Kein Suffix für die Ergebnisse angegeben");
-		}
-		
+	private String normalizePath(String path) throws ServletException {
+		String r = null;
+		r = path.replaceAll("^\\/(.*)[\\/]?", "$1") + "/";
+		r = r.replaceAll("[/\\\\]+", "\\" + File.separator);
+		return r;
 	}
 
-	/**
-	 * Creates the response.
-	 *
-	 * @param filelist the filelist
-	 * @return the string
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 */
-	private String createResponse (String path, String jobName) throws IOException {
-		String workDir = cacheDir + path;
-
-		StringBuilder response = new StringBuilder();
-		String line;
-			response.append("<pre>");
-			String txtfile = workDir + jobName + suffix;
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(txtfile), "UTF-8"));
-			if (!in.ready()) {
-				throw new IOException();
-			}
-			while ((line = in.readLine()) != null) {
-				response.append(line.replaceAll("(\\s+)", " ")).append("<br/>\n");
-			}
-			in.close();
-			response.append("</pre><hr/>");
-
-		return response.toString();
-	}
-
-	/**
-	 * Creates the file list.
-	 *
-	 * @param range the range
-	 * @return the list
-	 * @throws ServletException the servlet exception
-	 */
-	private List<String> createFileList (String range) throws ServletException {
+	private List<String> createFileList(String range) throws ServletException {
 		ArrayList<String> files = new ArrayList<String>();
 		if (range.contains("-")) {
 			String[] r = range.split("-");
-			Integer from;
-			Integer to;
-			from = Integer.decode(r[0]);
-			to = Integer.decode(r[1]);
+			Integer from = Integer.decode(r[0]);
+			Integer to = Integer.decode(r[1]);
 			if (from > to) {
 				throw new ServletException("Startwert größer als Endwert");
 			}
 			for (int i = from; i <= to; i++) {
 				files.add(genFilename(i));
 			}
-
 		} else {
 			files.add(genFilename(range));
-
 		}
 		return files;
 	}
 
-	/**
-	 * Gen filename.
-	 *
-	 * @param n the n
-	 * @return the string
-	 */
-	private String genFilename (Integer n) {
+	private String genFilename(Integer n) {
 		return genFilename(n.toString());
 	}
 
-	/**
-	 * Gen filename.
-	 *
-	 * @param n the n
-	 * @return the string
-	 */
-	private String genFilename (String n) {
+	private String genFilename(String n) {
 		String pattern = "00000000.tif";
 		String regex = "\\d{" + n.length() + "}\\.";
 		return pattern.replaceAll(regex, n + ".");
 	}
 
-	/**
-	 * Normalize path.
-	 *
-	 * @param path the path
-	 * @return the string
-	 * @throws ServletException the servlet exception
-	 */
-	private String normalizePath (String path) throws ServletException {
-		String r = null;
-		r = path.replaceAll("^\\/(.*)[\\/]?", "$1") + "/";
-		//r = r.replaceAll("\\/", File.separator);
-		r = r.replaceAll("[/\\\\]+", "\\" + File.separator);
-		return r;
-	}
-
-	/**
-	 * Copy files.
-	 *
-	 * @param files the files
-	 * @return true, if successful
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 * @throws ServletException the servlet exception
-	 */
-	private boolean copyFiles (List<String> files, String path) throws IOException, ServletException {
+	private boolean copyFiles(List<String> files, String path) throws IOException, ServletException {
 		String toDir = cacheDir + path + File.separator;
 		String fromDir = dirPrefix + path + File.separator;
 
@@ -285,63 +156,78 @@ public class SimpleOCRServlet extends HttpServlet {
 		return true;
 	}
 
-        private String getJobName (String path) {
-            File folder = new File(cacheDir + path);
-            return folder.getName();
-        }
-        
 	private void ocr(List<File> images, final String lang, String path) throws URISyntaxException {
-		
-		
-		OcrParameters params = new OcrParameters();
-		params.inputFolder = "";
 		FactoryProvider factoryProvider = new FactoryProvider();
 		OcrFactory factory = factoryProvider.createFactory("abbyy-multiuser", new Properties());
-
 		
-                //String jobName
 		String workDir = cacheDir + path;
 		File folder = new File(cacheDir + path);
 
 		OCREngine engine = factory.createEngine();
 
-			logger.debug("Creating Process for " + folder.toString());
-			OCRProcess aop = factory.createProcess();
-			String jobName = getJobName(path);
-			aop.setName(jobName);
-			if (jobName.equals("")) {
-				logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
-				aop.setName(UUID.randomUUID().toString());
-			}
-			List<OCRImage> imgs = new ArrayList<OCRImage>();
-			for (File imageFile : images) {
-				OCRImage aoi = factory.createImage();
-				aoi.setUri(imageFile.toURI());
-				aoi.setSize(imageFile.length());
-				imgs.add(aoi);
-			}
-			aop.setOcrImages(imgs);
+		logger.debug("Creating Process for " + folder.toString());
+		OCRProcess aop = factory.createProcess();
+		String jobName = getJobName(path);
+		aop.setName(jobName);
+		if (jobName.equals("")) {
+			logger.error("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
+			aop.setName(UUID.randomUUID().toString());
+		}
+		List<OCRImage> imgs = new ArrayList<OCRImage>();
+		for (File imageFile : images) {
+			OCRImage aoi = factory.createImage();
+			aoi.setUri(imageFile.toURI());
+			aoi.setSize(imageFile.length());
+			imgs.add(aoi);
+		}
+		aop.setOcrImages(imgs);
 
-				OCROutput aoo = factory.createOutput();						
-				URI uri = new URI(new File(workDir).toURI()
-						+ jobName
-						+ suffix);
-				logger.debug("output Location " + uri.toString());
-				aoo.setUri(uri);
-				aoo.setlocalOutput(new File(workDir).getAbsolutePath());
-				aop.addOutput(OCRFormat.TXT, aoo);
-			// add language
-			
-			aop.addLanguage(new Locale(lang));
-			aop.setTextType(OCRTextType.valueOf("NORMAL"));
-			aop.setPriority(OCRPriority.ABOVENORMAL);
-			engine.addOcrProcess(aop);
+		OCROutput aoo = factory.createOutput();						
+		URI uri = new URI(new File(workDir).toURI()
+				+ jobName
+				+ fileExtension);
+		logger.debug("output Location " + uri.toString());
+		aoo.setUri(uri);
+		aoo.setlocalOutput(new File(workDir).getAbsolutePath());
+		aop.addOutput(OCRFormat.TXT, aoo);
+		
+		aop.addLanguage(new Locale(lang));
+		aop.setTextType(OCRTextType.valueOf("NORMAL"));
+		aop.setPriority(OCRPriority.ABOVENORMAL);
+		engine.addOcrProcess(aop);
 
-			
-			
-			logger.info("Starting recognize method");
-			engine.recognize();
-			logger.debug("recognize Finished");
+		
+		
+		logger.info("Starting recognize method");
+		engine.recognize();
+		logger.debug("recognize Finished");
 
 	}
+	
+	
+	
+    private String getJobName(String path) {
+        File folder = new File(cacheDir + path);
+        return folder.getName();
+    }
+        
+
+	private String createResponse(String path, String jobName) throws IOException {
+		String workDir = cacheDir + path;
+
+		StringBuilder response = new StringBuilder();
+		String line;
+		response.append("<pre>");
+		String txtfile = workDir + jobName + fileExtension;
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(txtfile), "UTF-8"));
+		while ((line = in.readLine()) != null) {
+			response.append(line.replaceAll("(\\s+)", " ")).append("<br/>\n");
+		}
+		in.close();
+		response.append("</pre><hr/>");
+
+		return response.toString();
+	}
+
+
 }

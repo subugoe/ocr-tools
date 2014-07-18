@@ -28,7 +28,7 @@
   </init-param>
   <init-param>
    <description>Suffix for results.</description>
-   <param-name>suffix</param-name>
+   <param-name>fileExtension</param-name>
    <param-value>.txt</param-value>
   </init-param>
  </servlet>
