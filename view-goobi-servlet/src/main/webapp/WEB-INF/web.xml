@@ -7,12 +7,12 @@
   <servlet-class>de.unigoettingen.sub.commons.ocr.servlet.SimpleOCRServlet</servlet-class>
   <init-param>
    <description>Default language</description>
-   <param-name>defaultLang</param-name>
+   <param-name>defaultLanguage</param-name>
    <param-value>de</param-value>
   </init-param>
   <init-param>
-   <description>Cache location</description>
-   <param-name>cacheDir</param-name>
+   <description>Temp location</description>
+   <param-name>tempRootDir</param-name>
    <param-value>/tmp/</param-value>
    <!-- Example for a Windows System
    <param-value>e:\\tmp\\</param-value>
@@ -20,7 +20,7 @@
   </init-param>
   <init-param>
    <description>Directory prefix for matching given paths</description>
-   <param-name>dirPrefix</param-name>
+   <param-name>sourceRootDir</param-name>
    <param-value>/home/dennis/digi/cli_input/</param-value>
    <!-- EXample for a UNC name (Windows)
    <param-value>\\\\gdz-wrk1\\goobi-ocr$\\</param-value>
