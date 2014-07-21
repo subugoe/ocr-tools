@@ -4,7 +4,7 @@
  <servlet>
   <display-name>SimpleOCR</display-name>
   <servlet-name>SimpleOCR</servlet-name>
-  <servlet-class>de.unigoettingen.sub.commons.ocr.servlet.SimpleOCRServlet</servlet-class>
+  <servlet-class>de.unigoettingen.sub.commons.ocr.servlet.SimpleOcrServlet</servlet-class>
   <init-param>
    <description>Default language</description>
    <param-name>defaultLanguage</param-name>

@@ -1,12 +1,10 @@
 package de.unigoettingen.sub.commons.ocr.servlet;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,7 +17,7 @@ import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
-public class ServletTestOld {
+public class ServletTest {
 
 	private static ServletRunner runner;
 	
@@ -29,19 +27,17 @@ public class ServletTestOld {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		File webXml = new File("./src/test/resources/web.xml");
-		InputStream changedWebXml = replacePaths(webXml);
-		runner = new ServletRunner(changedWebXml, "/SimpleOCR");
+		runner = new ServletRunner(webXml, "/SimpleOCR");
 	}
 
 	@Before
 	public void setUp() throws Exception {
 		client = runner.newClient();
 		request = new GetMethodWebRequest(
-				"http://localhost:8080/SimpleOCR/");
+				"http://localhost/SimpleOCR/");
 	}
 
-	// TODO: these exercise the real implementation
-	//@Test
+	@Test
 	public void oneImage() throws SAXException, IOException {
 		request.setParameter("path", "images");
 		request.setParameter("imgrange", "1");
@@ -50,10 +46,10 @@ public class ServletTestOld {
 		assertEquals(200, response.getResponseCode());
 		
 		String htmlString = IOUtils.toString(response.getInputStream());
-		assertTrue(htmlString.contains("<h1>Ergebnis:</h1>"));	
+		assertThat(htmlString, containsString("<h1>Ergebnis:</h1>"));	
 	}
 	
-	//@Test
+	@Test
 	public void threeImages() throws SAXException, IOException {
 		request.setParameter("path", "images");
 		request.setParameter("imgrange", "1-3");
@@ -62,25 +58,26 @@ public class ServletTestOld {
 		assertEquals(200, response.getResponseCode());
 		
 		String htmlString = IOUtils.toString(response.getInputStream());
-		assertTrue(htmlString.contains("<h1>Ergebnis:</h1>"));	
+		assertThat(htmlString, containsString("<h1>Ergebnis:</h1>"));	
 	}
 	
-	
-	
-	private static InputStream replacePaths(File webXml) throws IOException {
-		StringBuilder sb = new StringBuilder(FileUtils.readFileToString(webXml));
-		
-		String dirPrefix = new File("./src/test/resources/input").getCanonicalPath() + "/";
-		int from = sb.indexOf("#DIR_PREFIX_TO_REPLACE#");
-		int to = from + "#DIR_PREFIX_TO_REPLACE#".length();
-		sb.replace(from, to, dirPrefix);
-		
-		String cacheDir = new File("./target").getCanonicalPath() + "/";
-		from = sb.indexOf("#CACHE_DIR_TO_REPLACE#");
-		to = from + "#CACHE_DIR_TO_REPLACE#".length();
-		sb.replace(from, to, cacheDir);
-		
-		return IOUtils.toInputStream(sb.toString());
+	@Test(expected=Exception.class)
+	public void shouldComplainAboutImagesRange() throws SAXException, IOException {
+		request.setParameter("path", "images");
+		client.getResponse(request);
 	}
-
+	
+	@Test(expected=Exception.class)
+	public void shouldComplainAboutPath() throws SAXException, IOException {
+		request.setParameter("imgrange", "1-3");
+		client.getResponse(request);
+	}
+	
+	@Test(expected=Exception.class)
+	public void shouldComplainAboutIncorrectRange() throws SAXException, IOException {
+		request.setParameter("path", "images");
+		request.setParameter("imgrange", "2-1");
+		client.getResponse(request);
+	}
+	
 }

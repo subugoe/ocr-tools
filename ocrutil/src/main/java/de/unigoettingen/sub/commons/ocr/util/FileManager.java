@@ -117,4 +117,12 @@ public class FileManager {
 		return file.exists();
 	}
 
+	public void copyFile(File source, File target) throws IOException {
+		FileUtils.copyFile(source, target);
+	}
+
+	public String readFileToString(File file) throws IOException {
+		return FileUtils.readFileToString(file);
+	}
+
 }
