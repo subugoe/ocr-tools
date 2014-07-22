@@ -755,7 +755,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		ocrOutputs.put(format, aoo);
 	}
 
-	@Override
+	// TODO: relevant?
+	//@Override
 	public void setOcrOutputs(Map<OCRFormat, OCROutput> outputs) {
 		StringBuffer sb = new StringBuffer();
 		for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
@@ -946,7 +947,9 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					logger.error("Clone Not Supported Exception:  (" + getName() + ")", e1);
 					return null;
 				}
-				sP.setOcrImages(imgs);
+				for (OCRImage image : imgs) {
+					sP.addImage(image);
+				}
 				sP.setName(name + "_" + listNumber + "oF" + splitNumberForSubProcess);			
 				subProcessNames.add(name + "_" + listNumber + "oF" + splitNumberForSubProcess);
 				String localuri = null;

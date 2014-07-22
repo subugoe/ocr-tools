@@ -39,7 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 import de.unigoettingen.sub.commons.ocr.util.FileManager;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;

@@ -66,25 +66,8 @@ public interface OCRProcess {
 	 */
 	abstract public List<OCRImage> getOcrImages();
 
-	/**
-	 * Sets a List of {@link OCRImage}. These are the images that will be
-	 * recognized.
-	 * 
-	 * @param ocrImages
-	 *            the new ocr images
-	 * @see OCRImage
-	 */
-	abstract public void setOcrImages(List<OCRImage> ocrImages);
+	abstract public void addOcrImage(OCRImage image);
 
-	/**
-	 * Sets the ocr output. This Map contains settings for the creation of a
-	 * output format.
-	 * 
-	 * @param ocrOutputs
-	 *            the ocr output
-	 * @see OCROutput
-	 */
-	abstract public void setOcrOutputs(Map<OCRFormat, OCROutput> ocrOutputs);
 
 	/**
 	 * Gets the ocr output as a Map. The keys of this map represent the
@@ -95,6 +78,17 @@ public interface OCRProcess {
 	 */
 	abstract public Map<OCRFormat, OCROutput> getOcrOutputs();
 
+	/**
+	 * Adds the output for the given format
+	 * 
+	 * @param format
+	 *            the format to add
+	 * @param output
+	 *            the output, the output settings for the given format
+	 * 
+	 */
+	public void addOutput(OCRFormat format, OCROutput output);
+	
 	/**
 	 * Sets the name of this {@link OCRProcess}. The nmae can be used by
 	 * implementations to guess the name of the result file (if none is given)
@@ -247,66 +241,6 @@ public interface OCRProcess {
 	 * Typ of recognized text: Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B, Gothic.
 	 * enumeration constants are used to describe the type of recognized text
 	 */
-	@XmlType(name = "inputTextType")
-	@XmlEnum
-	public enum OCRTextType{
-		
-		/** The Normal type, This value corresponds to common typographic text. */
-		NORMAL("Normal"),
-		
-		/** The Typewriter type,This value tells Open API to presume that the text 
-		 * on the image was typed on a typewriter. 
-		 * */
-		TYPEWRITER("Typewriter"), 
-		
-		/** The Matrix type, This value tells Open API to presume that the text on 
-		 * the image was printed by means of a dot-matrix printer. 
-		 * */
-		 MATRIX("Matrix"),
-		
-		/** The OCR_A type, This value corresponds to a monospaced font designed 
-		 * specifically for Optical Character Recognition. Largely used by banks, 
-		 * credit card companies and similar businesses. 
-		 * */
-		 OCR_A("OCR_A"),
-		
-		/** The OCR_B type,This value corresponds to a font designed specifically 
-		 * for Optical Character Recognition. 
-		 * */
-		 OCR_B("OCR_B"),
-		
-		/** The MICR_E13B type, This value corresponds to a special set of numeric 
-		 * characters printed with special magnetic inks. MICR (Magnetic Ink Character 
-		 * Recognition) characters are found in a variety of places, including personal 
-		 * checks. 
-		 * */
-		MICR_E13B("MICR_E13B"), 
-		
-		/** The Gothic type, This value tells Open API to presume that the text on the 
-		 * image was printed in Gothic type. 
-		 * */
-		GOTHIC("Gothic");
-		
-		 private final String value;
-
-		 OCRTextType(String v) {
-		        value = v;
-		    }
-
-		    public String value() {
-		        return value;
-		    }
-
-		    public static OCRTextType fromValue(String v) {
-		        for (OCRTextType c: OCRTextType.values()) {
-		            if (c.value.equals(v)) {
-		                return c;
-		            }
-		        }
-		        throw new IllegalArgumentException(v);
-		    }
-		
-	}
 
 	/**
 	 * Gets the priority. to describe the level of the job.
@@ -365,17 +299,6 @@ public interface OCRProcess {
 			throw new IllegalArgumentException(v);
 		}
 	}
-	/**
-	 * Adds the output for the given format
-	 * 
-	 * @param format
-	 *            the format to add
-	 * @param output
-	 *            the output, the output settings for the given format
-	 * 
-	 */
-	public void addOutput(OCRFormat format, OCROutput output);
-	
 	/**
 	 * Gets the segmentation. 
 	 *

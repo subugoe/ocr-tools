@@ -2,8 +2,6 @@ package de.unigoettingen.sub.ocr.controller;
 
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -12,7 +10,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileManager;
@@ -42,14 +40,12 @@ public class OcrEngineStarter {
 			OCRProcess process = factory.createProcess();
 			process.setName(bookFolder.getName());
 			File[] allPages = manager.getAllImagesFromFolder(bookFolder, params.inputFormats);
-			List<OCRImage> images = new ArrayList<OCRImage>();
 			for (File page : allPages) {
 				OCRImage image = factory.createImage();
 				image.setUri(page.toURI());
 				image.setSize(page.length());
-				images.add(image);
+				process.addOcrImage(image);
 			}
-			process.setOcrImages(images);
 			
 			for (String outFormat : params.outputFormats) {
 				OCRFormat ocrFormat = OCRFormat.valueOf(outFormat);

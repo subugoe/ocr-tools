@@ -63,7 +63,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 

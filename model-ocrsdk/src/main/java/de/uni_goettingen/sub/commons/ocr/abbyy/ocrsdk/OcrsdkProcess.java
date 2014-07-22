@@ -10,6 +10,7 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
+import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 
 /**
  * Implementation of an OCR process for the Abbyy OCRSDK online service.

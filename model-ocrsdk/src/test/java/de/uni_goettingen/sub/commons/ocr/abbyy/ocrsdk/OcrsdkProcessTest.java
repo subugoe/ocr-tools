@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 
 public class OcrsdkProcessTest {
 

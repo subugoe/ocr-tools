@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ByUrlRequestType", propOrder = { "ocrPriorityType",

@@ -58,7 +58,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-
+import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 //TODO: one Locale might represent multiple langueages: <Language>GermanNewSpelling</Language>
@@ -377,7 +377,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 			aoi.setRemoteFileName(i.getName());
 			super.addImage(aoi);
 		}
-		Map<OCRFormat, OCROutput> outputs = new HashMap<OCRFormat, OCROutput>();
+		getOcrOutputs().clear();
 		for (OutputFileFormatSettings offs : params.getExportFormatList()) {
 			if (offs.isSetOutputFileFormat()) {
 				String fileFormat = offs.getOutputFileFormat();
@@ -388,10 +388,9 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 				String location = offs.getOutputLocation();
 				AbbyyOCROutput aoo = new AbbyyOCROutput();
 				aoo.setRemoteLocation(location);
-				outputs.put(format, aoo);
+				addOutput(format, aoo);
 			}
 		}
-		setOcrOutputs(outputs);
 	}
 
 	public synchronized void write(final OutputStream out,

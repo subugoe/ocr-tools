@@ -147,13 +147,11 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 		return ocrImages;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setOcrImages(java.util.List)
-	 */
-	public void setOcrImages (List<OCRImage> ocrImages) {
-		this.ocrImages = ocrImages;
+	@Override
+	public void addOcrImage(OCRImage image) {
+		ocrImages.add(image);
 	}
-
+	
 	/**
 	 * Adds a {@link OCRImage} to the internal List
 	 * 
@@ -176,13 +174,6 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	public void setName (String name) {
 		this.name = name;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setOcrOutput(java.util.Map)
-	 */
-	public void setOcrOutputs (Map<OCRFormat, OCROutput> ocrOutputs) {
-		this.ocrOutputs = ocrOutputs;
 	}
 
 	/* (non-Javadoc)
