@@ -89,12 +89,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 	void setHotfolderProvider(HotfolderProvider newProvider) {
 		hotfolderProvider = newProvider;
 	}
-
-	// TODO: delete
-	public AbbyyServerOCREngine() {
-		config = new ConfigParser().parse();
-		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
-	}
 	
 	public AbbyyServerOCREngine(Properties initUserProperties) {
 		userProperties = initUserProperties;

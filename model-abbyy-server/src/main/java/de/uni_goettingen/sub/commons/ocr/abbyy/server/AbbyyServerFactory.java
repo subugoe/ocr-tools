@@ -22,7 +22,7 @@ public class AbbyyServerFactory extends OcrFactoryWithProperties {
 
 	@Override
 	public OCRProcess createProcess() {
-		return new AbbyyOCRProcess(userProperties.getProperty("abbyy.config", "gbv-antiqua.properties"));
+		return new AbbyyOCRProcess(userProperties);
 	}
 
 	@Override

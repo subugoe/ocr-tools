@@ -91,7 +91,8 @@ public class IntegrationTest {
 		
 		main.execute(validOptions());
 		
-		verify(hotfolderMock).configureConnection("http://localhost:9001/", "me", "pass");;
+		// TODO: 1 time
+		verify(hotfolderMock, times(2)).configureConnection("http://localhost:9001/", "me", "pass");;
 	}
 
 	@Test

@@ -42,6 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
@@ -49,6 +50,8 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 
 
 
@@ -149,9 +152,18 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		hotfolderProvider = newProvider;
 	}
 	
-	public AbbyyOCRProcess(String propertiesFile) {
+	public AbbyyOCRProcess(Properties userProperties) {
 		super();
+		String propertiesFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
 		this.config = new ConfigParser("/" + propertiesFile).parse();
+		String user = userProperties.getProperty("user");
+		String password = userProperties.getProperty("password");
+		if (user != null) {
+			config.setUsername(user);
+		}
+		if (password != null) {
+			config.setPassword(password);
+		}
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
 		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 		init();
