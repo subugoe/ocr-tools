@@ -266,49 +266,7 @@ public interface OCRProcess {
 	 *            the new priority
 	 */
 	abstract void setPriority(OCRPriority p);
-	/**
-	 * the priority level of the job. The default priority is Normal.
-	 * 
-	 */
 
-	@XmlType(name = "ocrPriority")
-	@XmlEnum
-	public enum OCRPriority {
-		/**High job priority*/
-		HIGH("High"),
-		
-		/** Above normal job priority */
-		ABOVENORMAL("AboveNormal"),
-		
-		/** Normal job priority */
-		NORMAL("Normal"),
-
-		/** Below normal job priority */
-		BELOWNORMAL("BelowNormal"),
-		
-		/** Low job priority */
-		LOW("Low");
-
-		
-		private final String value;
-
-		OCRPriority(String v) {
-			value = v;
-		}
-
-		public String value() {
-			return value;
-		}
-
-		public static OCRPriority fromValue(String v) {
-			for (OCRPriority c : OCRPriority.values()) {
-				if (c.value.equals(v)) {
-					return c;
-				}
-			}
-			throw new IllegalArgumentException(v);
-		}
-	}
 	/**
 	 * Gets the segmentation. 
 	 *

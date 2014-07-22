@@ -152,6 +152,13 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 		ocrImages.add(image);
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setOcrImages(java.util.List)
+	 */
+	public void setOcrImages (List<OCRImage> ocrImages) {
+		this.ocrImages = ocrImages;
+	}
+
 	/**
 	 * Adds a {@link OCRImage} to the internal List
 	 * 

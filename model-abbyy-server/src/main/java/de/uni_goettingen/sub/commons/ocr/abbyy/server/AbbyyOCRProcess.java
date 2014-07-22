@@ -947,9 +947,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 					logger.error("Clone Not Supported Exception:  (" + getName() + ")", e1);
 					return null;
 				}
-				for (OCRImage image : imgs) {
-					sP.addImage(image);
-				}
+				sP.setOcrImages(imgs);
 				sP.setName(name + "_" + listNumber + "oF" + splitNumberForSubProcess);			
 				subProcessNames.add(name + "_" + listNumber + "oF" + splitNumberForSubProcess);
 				String localuri = null;

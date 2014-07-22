@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority;
+import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 
