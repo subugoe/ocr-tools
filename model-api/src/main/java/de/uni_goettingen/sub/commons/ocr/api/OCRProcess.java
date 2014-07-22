@@ -68,6 +68,16 @@ public interface OCRProcess {
 
 	abstract public void addOcrImage(OCRImage image);
 
+	/**
+	 * Sets a List of {@link OCRImage}. These are the images that will be
+	 * recognized.
+	 * 
+	 * @param ocrImages
+	 *            the new ocr images
+	 * @see OCRImage
+	 */
+	abstract public void setOcrImages(List<OCRImage> ocrImages);
+
 
 	/**
 	 * Gets the ocr output as a Map. The keys of this map represent the
