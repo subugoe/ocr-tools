@@ -33,7 +33,7 @@ import javax.xml.ws.handler.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
@@ -58,8 +58,8 @@ public class OcrServiceImpl implements OcrService {
 	private final static Logger LOGGER = LoggerFactory
 			.getLogger(OcrServiceImpl.class);
 		
-	FileManager getFileManager() {
-		return new FileManager();
+	FileAccess getFileAccess() {
+		return new FileAccess();
 	}
 		
 	OcrEngineStarter getEngineStarter() {
@@ -77,9 +77,9 @@ public class OcrServiceImpl implements OcrService {
 		
 		ByUrlResponseType response = new ByUrlResponseType();
 
-		FileManager fileManager = getFileManager();
+		FileAccess fileAccess = getFileAccess();
 		
-		Properties props = fileManager.getPropertiesFromFile("webservice-config.properties");
+		Properties props = fileAccess.getPropertiesFromFile("webservice-config.properties");
 
 		String inputTempDir = props.getProperty("localpath");
 		if(inputTempDir == null || inputTempDir.equals("")){
@@ -108,7 +108,7 @@ public class OcrServiceImpl implements OcrService {
 
 		File imageTempFile = new File(inputTempDir  + jobName + "/input.tif");
 		try {
-			fileManager.copyUrlToFile(request.getInputUrl(), imageTempFile);
+			fileAccess.copyUrlToFile(request.getInputUrl(), imageTempFile);
 		} catch (IOException e) {
 			String error = "ERROR CANNOT COPY URL: " + request.getInputUrl()
 					+ " To Local File";
@@ -132,8 +132,8 @@ public class OcrServiceImpl implements OcrService {
 		String resultsDir = "ocrresults";
 		
 		try {
-			fileManager.deleteFile(imageTempFile);
-			fileManager.deleteDir(imageTempFile.getParentFile());
+			fileAccess.deleteFile(imageTempFile);
+			fileAccess.deleteDir(imageTempFile.getParentFile());
 		} catch (IOException e) {
 			LOGGER.error("Error while cleaning temp data.", e);
 		}
@@ -141,7 +141,7 @@ public class OcrServiceImpl implements OcrService {
 		File resultFile = new File(webserverPath + resultsDir + "/" + jobName
 				+ "." + params.outputFormats[0].toLowerCase());
 		
-		if( !fileManager.fileExists(resultFile)){
+		if( !fileAccess.fileExists(resultFile)){
 			LOGGER.error("ERROR. CANNOT Find File: "+ resultFile.toString());
 			String error = "File could not be processed: " + request.getInputUrl();
 			return getErrorResponse(webserverPath, error, response);

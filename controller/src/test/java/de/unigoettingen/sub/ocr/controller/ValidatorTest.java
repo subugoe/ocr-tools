@@ -10,19 +10,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
-import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 public class ValidatorTest {
 
 	private BeanProvider beanProviderMock;
-	private FileManager fileManagerMock;
+	private FileAccess fileAccessMock;
 	private Validator validatorSut;
 	
 	@Before
 	public void beforeEachTest() {
 		beanProviderMock = mock(BeanProvider.class);
-		fileManagerMock = mock(FileManager.class);
-		when(beanProviderMock.getFileManager()).thenReturn(fileManagerMock);
+		fileAccessMock = mock(FileAccess.class);
+		when(beanProviderMock.getFileAccess()).thenReturn(fileAccessMock);
 		validatorSut = new Validator();
 		validatorSut.setBeanProvider(beanProviderMock);
 	}
@@ -34,14 +34,14 @@ public class ValidatorTest {
 		
 		String validation = validatorSut.validateParameters(params);
 		
-		verify(fileManagerMock).isReadableFolder("/tmp/input");
+		verify(fileAccessMock).isReadableFolder("/tmp/input");
 		assertEquals("OK", validation);
 	}
 
 	@Test
 	public void shouldNotFindInputFolder() {
-		when(fileManagerMock.isReadableFolder("/tmp/input")).thenReturn(false);
-		when(fileManagerMock.isWritableFolder("/tmp/output")).thenReturn(true);
+		when(fileAccessMock.isReadableFolder("/tmp/input")).thenReturn(false);
+		when(fileAccessMock.isWritableFolder("/tmp/output")).thenReturn(true);
 		OcrParameters params = validParams();
 
 		String validation = validatorSut.validateParameters(params);
@@ -51,8 +51,8 @@ public class ValidatorTest {
 	
 	@Test
 	public void shouldNotFindOutputFolder() {
-		when(fileManagerMock.isReadableFolder("/tmp/input")).thenReturn(true);
-		when(fileManagerMock.isWritableFolder("/tmp/output")).thenReturn(false);
+		when(fileAccessMock.isReadableFolder("/tmp/input")).thenReturn(true);
+		when(fileAccessMock.isWritableFolder("/tmp/output")).thenReturn(false);
 		OcrParameters params = validParams();
 
 		String validation = validatorSut.validateParameters(params);
@@ -131,8 +131,8 @@ public class ValidatorTest {
 	}
 	
 	private void whenAskedThenFindFolders() {
-		when(fileManagerMock.isReadableFolder("/tmp/input")).thenReturn(true);
-		when(fileManagerMock.isWritableFolder("/tmp/output")).thenReturn(true);
+		when(fileAccessMock.isReadableFolder("/tmp/input")).thenReturn(true);
+		when(fileAccessMock.isWritableFolder("/tmp/output")).thenReturn(true);
 	}
 
 	private OcrParameters validParams() {

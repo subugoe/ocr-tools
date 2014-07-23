@@ -6,9 +6,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class BeanProvider {
 
-	public FileManager getFileManager() {
+	public FileAccess getFileAccess() {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("util-context.xml");
-		return ctx.getBean("fileManager", FileManager.class);
+		return ctx.getBean("fileAccess", FileAccess.class);
 
 	}
 

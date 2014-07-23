@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.io.IOException;
 
-import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 
 public class SimpleOcrServletChild extends SimpleOcrServlet {
@@ -19,8 +19,8 @@ public class SimpleOcrServletChild extends SimpleOcrServlet {
 	}
 
 	@Override
-	protected FileManager getFileManager() {
-		FileManager managerMock = mock(FileManager.class);
+	protected FileAccess getFileAccess() {
+		FileAccess managerMock = mock(FileAccess.class);
 		try {
 			when(managerMock.readFileToString(any(File.class))).thenReturn("test content");
 		} catch (IOException e) {

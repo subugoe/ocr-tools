@@ -7,7 +7,7 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 public class FileTest {
 
@@ -17,7 +17,7 @@ public class FileTest {
 
 	@Test
 	public void test() {
-		FileManager manager = new FileManager();
+		FileAccess manager = new FileAccess();
 		Properties props = manager.getPropertiesFromFile("gbv-fraktur.properties");
 		
 		assertEquals("input", props.getProperty("input"));

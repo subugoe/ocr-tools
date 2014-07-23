@@ -40,33 +40,33 @@ import org.junit.Test;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
-import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 
 public class WebServiceTest {
 	
-	private FileManager fileManagerMock;
+	private FileAccess fileAccessMock;
 	private OcrEngineStarter engineStarterMock;
 	private OcrServiceImpl serviceSut;
 	private OcrServiceImpl serviceSpySut;
 	
 	@Before
 	public void beforeEachTest() {
-		fileManagerMock = mock(FileManager.class);
+		fileAccessMock = mock(FileAccess.class);
 		Properties props = new Properties();
 		props.setProperty("webserverpath", "/test/server");
 		props.setProperty("localpath", "/test/local");
 		props.setProperty("hostname", "http://localhost/");
-		when(fileManagerMock.getPropertiesFromFile(anyString())).thenReturn(props);
-		when(fileManagerMock.fileExists(any(File.class))).thenReturn(true);
+		when(fileAccessMock.getPropertiesFromFile(anyString())).thenReturn(props);
+		when(fileAccessMock.fileExists(any(File.class))).thenReturn(true);
 		
 		engineStarterMock = mock(OcrEngineStarter.class);
 		
 		serviceSut = new OcrServiceImpl();
 		serviceSpySut = spy(serviceSut);
-		doReturn(fileManagerMock).when(serviceSpySut).getFileManager();
+		doReturn(fileAccessMock).when(serviceSpySut).getFileAccess();
 		doReturn(engineStarterMock).when(serviceSpySut).getEngineStarter();
 		doReturn("testJob").when(serviceSpySut).getJobName();
 	}

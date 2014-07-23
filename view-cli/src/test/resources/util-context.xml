@@ -3,6 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-	<bean id="fileManager" class="de.unigoettingen.sub.commons.ocrComponents.cli.testutil.FileManagerMockProvider" factory-method="getMock"/>
+	<bean id="fileAccess" class="de.unigoettingen.sub.commons.ocrComponents.cli.testutil.FileAccessMockProvider" factory-method="getMock"/>
 	
 </beans>

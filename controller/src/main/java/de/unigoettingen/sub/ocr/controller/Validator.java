@@ -1,12 +1,12 @@
 package de.unigoettingen.sub.ocr.controller;
 
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
-import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 public class Validator {
 
 	private BeanProvider beanProvider = new BeanProvider();
-	private FileManager manager;
+	private FileAccess fileAccess;
 
 	// for unit tests
 	void setBeanProvider(BeanProvider newProvider) {
@@ -14,7 +14,7 @@ public class Validator {
 	}
 
 	public String validateParameters(OcrParameters params) {
-		manager = beanProvider.getFileManager();
+		fileAccess = beanProvider.getFileAccess();
 		String validationMessage = "";
 		if (!isReadable(params.inputFolder)) {
 			validationMessage += inputFolderError();
@@ -52,11 +52,11 @@ public class Validator {
 	}
 
 	private boolean isReadable(String inputFolder) {
-		return manager.isReadableFolder(inputFolder);
+		return fileAccess.isReadableFolder(inputFolder);
 	}
 
 	private boolean isWritable(String outputFolder) {
-		return manager.isWritableFolder(outputFolder);
+		return fileAccess.isWritableFolder(outputFolder);
 	}
 
 	private boolean isEmpty(String[] array) {

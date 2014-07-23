@@ -12,7 +12,7 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 
-public class FileManager {
+public class FileAccess {
 
 	public boolean isReadableFolder(String inputFolder) {
 		if (isEmpty(inputFolder)) {

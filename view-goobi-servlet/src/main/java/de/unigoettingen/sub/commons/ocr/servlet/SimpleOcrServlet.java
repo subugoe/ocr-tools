@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
@@ -30,8 +30,8 @@ public class SimpleOcrServlet extends HttpServlet {
 	protected OcrEngineStarter getEngineStarter() {
 		return new OcrEngineStarter();
 	}
-	protected FileManager getFileManager() {
-		return new FileManager();
+	protected FileAccess getFileAccess() {
+		return new FileAccess();
 	}
 
 	@Override
@@ -70,9 +70,9 @@ public class SimpleOcrServlet extends HttpServlet {
 			throw new ServletException("Fehlende Eingabedaten, z. B. ?imgrange=1-10");
 		}
 		List<String> imageNames = createFileList(imagesRange);
-		FileManager fileManager = getFileManager();
+		FileAccess fileAccess = getFileAccess();
 		for (String imageName : imageNames) {
-			fileManager.copyFile(new File(sourceImagesDir + imageName), new File(tempImagesDir + imageName));
+			fileAccess.copyFile(new File(sourceImagesDir + imageName), new File(tempImagesDir + imageName));
 		}
 
 		OcrParameters params = new OcrParameters();
@@ -90,7 +90,7 @@ public class SimpleOcrServlet extends HttpServlet {
 		File ocrTextResult = new File(tempResultsDir + getJobName(sourceImagesDir) + fileExtension);
 		fillResponse(response, ocrTextResult);
 		
-		fileManager.deleteDir(new File(tempImagesDir));
+		fileAccess.deleteDir(new File(tempImagesDir));
 	}
 
 	private String normalizePath(String path) {
@@ -141,8 +141,8 @@ public class SimpleOcrServlet extends HttpServlet {
 		out.println("<h1>Ergebnis:</h1><hr>");
 		out.println("<pre>");
 		
-		FileManager fileManager = getFileManager();
-		String fileContents = fileManager.readFileToString(ocrTextResult);
+		FileAccess fileAccess = getFileAccess();
+		String fileContents = fileAccess.readFileToString(ocrTextResult);
 		out.println(fileContents);
 		out.println("</pre><hr/></body></html>");
 	}

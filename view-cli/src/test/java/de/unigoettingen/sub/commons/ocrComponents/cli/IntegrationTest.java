@@ -20,15 +20,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
-import de.unigoettingen.sub.commons.ocr.util.FileManager;
-import de.unigoettingen.sub.commons.ocrComponents.cli.testutil.FileManagerMockProvider;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
+import de.unigoettingen.sub.commons.ocrComponents.cli.testutil.FileAccessMockProvider;
 import de.unigoettingen.sub.commons.ocrComponents.cli.testutil.HotfolderMockProvider;
 
 public class IntegrationTest {
 
 	private ByteArrayOutputStream baos;
 	private Main main;
-	private FileManager fileManagerMock;
+	private FileAccess fileAccessMock;
 	private ServerHotfolder hotfolderMock;
 	
 	@Before
@@ -38,8 +38,8 @@ public class IntegrationTest {
 		PrintStream out = new PrintStream(baos);
 		main.redirectSystemOutputTo(out);
 
-		fileManagerMock = mock(FileManager.class);
-		FileManagerMockProvider.mock = fileManagerMock;
+		fileAccessMock = mock(FileAccess.class);
+		FileAccessMockProvider.mock = fileAccessMock;
 		
 		hotfolderMock = mock(ServerHotfolder.class, withSettings().serializable());
 		HotfolderMockProvider.mock = hotfolderMock;
@@ -47,8 +47,8 @@ public class IntegrationTest {
 
 	@Test
 	public void shouldComplainAboutInput() throws UnsupportedEncodingException {
-		when(fileManagerMock.isReadableFolder("/tmp/in")).thenReturn(false);
-		when(fileManagerMock.isWritableFolder("/tmp/out")).thenReturn(true);
+		when(fileAccessMock.isReadableFolder("/tmp/in")).thenReturn(false);
+		when(fileAccessMock.isWritableFolder("/tmp/out")).thenReturn(true);
 		main.execute(validOptions());
 
 		String outString = new String(baos.toByteArray());
@@ -57,8 +57,8 @@ public class IntegrationTest {
 	
 	@Test
 	public void shouldComplainAboutOutput() throws UnsupportedEncodingException {
-		when(fileManagerMock.isReadableFolder("/tmp/in")).thenReturn(true);
-		when(fileManagerMock.isWritableFolder("/tmp/out")).thenReturn(false);
+		when(fileAccessMock.isReadableFolder("/tmp/in")).thenReturn(true);
+		when(fileAccessMock.isWritableFolder("/tmp/out")).thenReturn(false);
 		main.execute(validOptions());
 
 		String outString = new String(baos.toByteArray());
@@ -67,14 +67,14 @@ public class IntegrationTest {
 	
 	@Test(expected=ConcurrentModificationException.class)
 	public void shouldComplainAboutExistingLockFile() throws URISyntaxException, IOException {
-		prepareFileManagerMockForSuccess();
+		prepareFileAccessMockForSuccess();
 		when(hotfolderMock.exists(new URI("http://localhost:9001/server.lock"))).thenReturn(true);
 		main.execute(validOptions());
 	}
 
 	@Test
 	public void shouldDeleteLockFile() throws URISyntaxException, IOException {
-		prepareFileManagerMockForSuccess();
+		prepareFileAccessMockForSuccess();
 		prepareHotfolderMockForSuccess();
 		
 		String[] opts = validOptions();
@@ -86,7 +86,7 @@ public class IntegrationTest {
 
 	@Test
 	public void shouldPassUserCredentials() throws URISyntaxException, IOException {
-		prepareFileManagerMockForSuccess();
+		prepareFileAccessMockForSuccess();
 		prepareHotfolderMockForSuccess();
 		
 		main.execute(validOptions());
@@ -97,7 +97,7 @@ public class IntegrationTest {
 
 	@Test
 	public void shouldCompleteSuccessfully() throws IOException, URISyntaxException {
-		prepareFileManagerMockForSuccess();
+		prepareFileAccessMockForSuccess();
 		prepareHotfolderMockForSuccess();
 		
 		main.execute(validOptions());
@@ -110,7 +110,7 @@ public class IntegrationTest {
 	// TODO: works in production, but not in test
 	//@Test
 	public void shouldCompleteSuccessfullyWithMultiuser() throws IOException, URISyntaxException {
-		prepareFileManagerMockForSuccess();
+		prepareFileAccessMockForSuccess();
 		prepareHotfolderMockForSuccess();
 		
 		String[] opts = validOptions();
@@ -122,11 +122,11 @@ public class IntegrationTest {
 		verify(hotfolderMock, atLeastOnce()).copyFile(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
 	}
 
-	private void prepareFileManagerMockForSuccess() {
-		when(fileManagerMock.isReadableFolder("/tmp/in")).thenReturn(true);
-		when(fileManagerMock.isWritableFolder("/tmp/out")).thenReturn(true);
-		when(fileManagerMock.getAllFolders(anyString(), any(String[].class))).thenReturn(new File[]{new File("/tmp/in")});
-		when(fileManagerMock.getAllImagesFromFolder(any(File.class), any(String[].class))).thenReturn(new File[]{new File("/tmp/in/01.tif")});
+	private void prepareFileAccessMockForSuccess() {
+		when(fileAccessMock.isReadableFolder("/tmp/in")).thenReturn(true);
+		when(fileAccessMock.isWritableFolder("/tmp/out")).thenReturn(true);
+		when(fileAccessMock.getAllFolders(anyString(), any(String[].class))).thenReturn(new File[]{new File("/tmp/in")});
+		when(fileAccessMock.getAllImagesFromFolder(any(File.class), any(String[].class))).thenReturn(new File[]{new File("/tmp/in/01.tif")});
 	}
 
 	private void prepareHotfolderMockForSuccess() throws IOException, URISyntaxException {

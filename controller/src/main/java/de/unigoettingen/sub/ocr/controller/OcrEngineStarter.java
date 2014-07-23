@@ -13,7 +13,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
-import de.unigoettingen.sub.commons.ocr.util.FileManager;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 public class OcrEngineStarter {
 
@@ -34,12 +34,12 @@ public class OcrEngineStarter {
 		OcrFactory factory = factoryProvider.createFactory(params.ocrEngine, params.props);
 		engine = factory.createEngine();
 
-		FileManager manager = beanProvider.getFileManager();
-		File[] allBookFolders = manager.getAllFolders(params.inputFolder, params.inputFormats);
+		FileAccess fileAccess = beanProvider.getFileAccess();
+		File[] allBookFolders = fileAccess.getAllFolders(params.inputFolder, params.inputFormats);
 		for (File bookFolder : allBookFolders) {
 			OCRProcess process = factory.createProcess();
 			process.setName(bookFolder.getName());
-			File[] allPages = manager.getAllImagesFromFolder(bookFolder, params.inputFormats);
+			File[] allPages = fileAccess.getAllImagesFromFolder(bookFolder, params.inputFormats);
 			for (File page : allPages) {
 				OCRImage image = factory.createImage();
 				image.setUri(page.toURI());
