@@ -47,25 +47,15 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 
-/**
- * The Class AbbyyServerOCREngine. The Engine is also the entry point for
- * different Hotfolder implementations, You can change the implementation
- * indirectly by changing the given configuration. Just construct an empty
- * configuration or create one from a configuration file and call the method
- * {@link ConfigParser.setHotfolderClass()}.
- */
 
-public class AbbyyServerOCREngine extends AbstractOCREngine implements
-		OCREngine {
+public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
 	protected Long startTimeForProcess = null;
 	protected AbbyySerializerTextMD abbyySerializerTextMD;
 	
 	protected Long endTimeForProcess = null;
 	
-	final static Logger logger = LoggerFactory
-			.getLogger(AbbyyServerOCREngine.class);
+	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngine.class);
 
-	// The configuration.
 	protected ConfigParser config;
 
 	protected Hotfolder hotfolder;
@@ -73,7 +63,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 
 	protected static Boolean rest = false;
 
-	// OCR Processes
 	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
 
 	protected URI lockURI;
@@ -109,37 +98,41 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 	}
 
-	/* start JMX methods */
-	public String getWaitingProcesses() {
-		String names = "";
-		for (Runnable r : pool.getQueue()) {
-			OCRProcess p = (OCRProcess) r;
-			names += p.getName() + " ";
+	@Override
+	public void addOcrProcess(OCRProcess process) {
+		boolean processIsOk = checkProcessState(process);
+
+		if (processIsOk) {
+	     	processes.add((AbbyyOCRProcess) process);
 		}
-		return names;
+	}
+
+	private boolean checkProcessState(OCRProcess process) {
+		if (process.getOcrOutputs() == null || process.getOcrOutputs().isEmpty()) {
+			logger.warn("The OCR process has no outputs: " + process.getName());
+			return false;
+		}
+
+		if (process.getOcrImages() == null || process.getOcrImages().isEmpty()) {
+			logger.warn("The OCR process has no input images: " + process.getName());
+			return false;
+		}
+		return true;
 	}
 	
-	public int getWaitingProcessesCount() {
-		return pool.getQueue().size();
+	@Override
+	public void recognize() {
+		try {
+			if (!started && !processes.isEmpty()) {
+				start();
+			} else if (processes.isEmpty()) {
+				throw new IllegalStateException("Queue is empty!");
+			}
+		} finally {
+			started = false;
+		}
 	}
-	
-	public int getRunningProcessesCount() {
-		return pool.getActiveCount();
-	}
-	
-	public void removeWaitingProcesses() {
-		pool.getQueue().clear();
-	}
-	
-	public void removeAllProcesses() {
-		pool.shutdownNow();
-	}
-	/* end JMX methods */
-	
-	/**
-	 * Start the threadPooling
-	 * 
-	 */
+
 	protected void start() {
 		started = true;
 		
@@ -201,6 +194,34 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		started = false;
 	}
 	
+
+	/* start JMX methods */
+	public String getWaitingProcesses() {
+		String names = "";
+		for (Runnable r : pool.getQueue()) {
+			OCRProcess p = (OCRProcess) r;
+			names += p.getName() + " ";
+		}
+		return names;
+	}
+	
+	public int getWaitingProcessesCount() {
+		return pool.getQueue().size();
+	}
+	
+	public int getRunningProcessesCount() {
+		return pool.getActiveCount();
+	}
+	
+	public void removeWaitingProcesses() {
+		pool.getQueue().clear();
+	}
+	
+	public void removeAllProcesses() {
+		pool.shutdownNow();
+	}
+	/* end JMX methods */
+	
 	/**
 	 * Controls the program flow depending on the state of the server lock.
 	 * Can be overwritten by subclasses to implement a different state management.
@@ -253,89 +274,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements
 		}
 	}
 	
-	/**
-	 * Gets the single instance of AbbyyServerOCREngine.
-	 * 
-	 * @return single instance of AbbyyServerOCREngine
-	 * 
-	 */
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize(de.uni_goettingen
-	 * .sub.commons.ocr.api.OCRProcess)
-	 */
-	@Override
-	public Observable recognize(OCRProcess process) {
-		Observable o = addOcrProcess(process);
-		// TODO: Get an Observer from somewhere, probably use a Future
-		recognize();
-		return o;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize()
-	 */
-	@Override
-	public Observable recognize() {
-		try {
-			if (!started && !processes.isEmpty()) {
-				start();
-			} else if (processes.isEmpty()) {
-				throw new IllegalStateException("Queue is empty!");
-			}
-		} finally {
-			started = false;
-		}
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#addOcrProcess(de.
-	 * uni_goettingen.sub.commons.ocr.api.OCRProcess)
-	 */
-	@Override
-	public Observable addOcrProcess(OCRProcess process) {
-		boolean processIsOk = checkProcessState(process);
-
-		if (processIsOk) {
-			if (process instanceof AbbyyOCRProcess) {
-	     		processes.add((AbbyyOCRProcess) process);
-			} else {
-				throw new RuntimeException("wrong class");
-			}
-		}
-		return null;
-	}
-
-	private boolean checkProcessState(OCRProcess process) {
-		if (process.getOcrOutputs() == null || process.getOcrOutputs().isEmpty()) {
-			logger.warn("The OCR process has no outputs: " + process.getName());
-			return false;
-		}
-
-		if (process.getOcrImages() == null || process.getOcrImages().isEmpty()) {
-			logger.warn("The OCR process has no input images: " + process.getName());
-			return false;
-		}
-		return true;
-	}
-	
-	/**
-	 * Creates the process from directory.
-	 * 
-	 * @param directory
-	 *            the directory
-	 * @param extension
-	 *            only directories containing files of this type will be processed
-	 * @return the abbyy ocr process
-	 */
 
 	@Override
 	public Boolean init() {

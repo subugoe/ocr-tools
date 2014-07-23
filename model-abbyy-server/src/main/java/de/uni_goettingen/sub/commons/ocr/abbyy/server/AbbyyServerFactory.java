@@ -16,7 +16,6 @@ public class AbbyyServerFactory extends OcrFactoryWithProperties {
 	
 	@Override
 	public OCREngine createEngine() {
-		// TODO: credentials don't work for gbv-fraktur
 		return new AbbyyServerOCREngine(userProperties);
 	}
 

@@ -126,7 +126,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 		return instance;
 	}
 
-	@Override
+	
 	public Observable recognize (OCRProcess p) throws OCRException {
 		AbbyyCLIOCRProcess process = (AbbyyCLIOCRProcess) p;
 
@@ -235,16 +235,13 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	*/
 
 	@Override
-	public Observable addOcrProcess (OCRProcess ocrp) {
-		return null;
-		// TODO Auto-generated method stub
-
+	public void addOcrProcess (OCRProcess ocrp) {
+		ocrProcess.add(ocrp);
 	}
 
 	@Override
 	public List<OCRProcess> getOcrProcess () {
-		// TODO Auto-generated method stub
-		return null;
+		return ocrProcess;
 	}
 
 	protected class SegmentedFinereaderCLIOCRProcess implements Runnable {
@@ -282,9 +279,8 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	}
 
 	@Override
-	public Observable recognize () {
-		// TODO Auto-generated method stub
-		return null;
+	public void recognize () {
+		recognize(ocrProcess.get(0));
 	}
 
 	@Override

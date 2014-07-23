@@ -16,13 +16,12 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#addOcrProcess(de.uni_goettingen.sub.commons.ocr.api.OCRProcess)
 	 */
 	@Override
-	public Observable addOcrProcess(OCRProcess process) {
+	public void addOcrProcess(OCRProcess process) {
 		if (process instanceof TesseractOCRProcess) {
 			ocrProcess.add((TesseractOCRProcess) process);
 		} else {
 			ocrProcess.add(new TesseractOCRProcess(process));
 		}
-		return null;
 	}
 
 	/* (non-Javadoc)
@@ -34,26 +33,15 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize(de.uni_goettingen.sub.commons.ocr.api.OCRProcess)
-	 */
-	@Override
-	public Observable recognize(OCRProcess process) {
-		addOcrProcess(process);
-		recognize();
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize()
 	 */
 	@Override
-	public Observable recognize() {
+	public void recognize() {
 
 		for (OCRProcess process : ocrProcess) {
 			((TesseractOCRProcess) process).start();
 		}
 
-		return null;
 	}
 
 	/* (non-Javadoc)

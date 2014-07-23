@@ -1,6 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk;
 
-import java.util.Observable;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
@@ -15,30 +14,18 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 public class OcrsdkEngine extends AbstractOCREngine {
 
 	/**
-	 * Starts the one process that is passed.
-	 */
-	@Override
-	public Observable recognize(OCRProcess process) {
-		addOcrProcess(process);
-		recognize();
-		return null;
-	}
-
-	/**
 	 * Starts all processes that have been added before.
 	 */
 	@Override
-	public Observable recognize() {
+	public void recognize() {
 		for (OCRProcess process : ocrProcess) {
 			((OcrsdkProcess)process).start();
 		}
-		return null;
 	}
 
 	@Override
-	public Observable addOcrProcess(OCRProcess ocrp) {
+	public void addOcrProcess(OCRProcess ocrp) {
 		ocrProcess.add(ocrp);
-		return null;
 	}
 
 	@Override

@@ -21,7 +21,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
  */
 
 import java.util.List;
-import java.util.Observable;
 
 /**
  * The Interface OCREngine is the main entry point for each engine. It also
@@ -36,16 +35,6 @@ import java.util.Observable;
  */
 public interface OCREngine {
 
-	/**
-	 * Recognize. Starts the recognition of the {@link OCRProcess} hold in the
-	 * internal queue. The returned {@link java.util.Observable} can be used to
-	 * track the progress of the recognition process.
-	 * 
-	 * @param process
-	 *            the process
-	 * @return the observable
-	 */
-	abstract public Observable recognize(OCRProcess process);
 
 	/**
 	 * Recognize the list of given OCRProcess. Throws an IllegalStateException
@@ -53,10 +42,9 @@ public interface OCREngine {
 	 * The returned {@link java.util.Observable} can be used to track the
 	 * progress of the recognition process.
 	 * 
-	 * @return the observer
 	 * @see OCRProcess
 	 */
-	abstract public Observable recognize();
+	abstract public void recognize();
 
 	/**
 	 * Stops a running recognizer. Returns false if the recognizer isn't running
@@ -77,7 +65,7 @@ public interface OCREngine {
 	 * @see OCRProcess
 	 */
 
-	abstract public Observable addOcrProcess(OCRProcess ocrp);
+	abstract public void addOcrProcess(OCRProcess ocrp);
 
 	/**
 	 * Adds OCR process.
