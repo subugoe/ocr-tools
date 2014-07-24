@@ -63,7 +63,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 
 	protected static Boolean rest = false;
 
-	protected Queue<AbbyyOCRProcess> processes = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
+	protected Queue<AbbyyOCRProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
 
 	protected URI lockURI;
 	
@@ -103,7 +103,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		boolean processIsOk = checkProcessState(process);
 
 		if (processIsOk) {
-	     	processes.add((AbbyyOCRProcess) process);
+	     	processesQueue.add((AbbyyOCRProcess) process);
 		}
 	}
 
@@ -122,23 +122,23 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	
 	@Override
 	public void recognize() {
-		try {
-			if (!started && !processes.isEmpty()) {
-				start();
-			} else if (processes.isEmpty()) {
-				throw new IllegalStateException("Queue is empty!");
-			}
-		} finally {
-			started = false;
+		if (started) {
+			logger.warn("Recognition is already running and cannot be started a second time.");
+			return;
 		}
+		if (processesQueue.isEmpty()) {
+			logger.warn("Cannot start recognition, there are no processes.");
+			return;
+		}
+		startRecognition();
 	}
 
-	protected void start() {
+	private void startRecognition() {
 		started = true;
 		
 		try {
 			String overwrite = userProperties.getProperty("lock.overwrite");
-			boolean overwriteLock = (overwrite != null && overwrite.equals("true"));
+			boolean overwriteLock = "true".equals(overwrite);
 
 			String serverLockFile = ConfigParser.SERVER_LOCK_FILE_NAME;
 			lockURI = new URI(config.getServerURL() + serverLockFile);
@@ -165,8 +165,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 //		boolean skipCharCoords = "false".equals(charCoords);
 		boolean skipCharCoords = false;
 		
-		while (!processes.isEmpty()) {
-			AbbyyOCRProcess process = processes.poll();
+		while (!processesQueue.isEmpty()) {
+			AbbyyOCRProcess process = processesQueue.poll();
 			process.setTime(new Date().getTime());
 			if (!skipCharCoords) {
 				Map<String, String> params = new HashMap<String, String>();
@@ -194,37 +194,9 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		started = false;
 	}
 	
-
-	/* start JMX methods */
-	public String getWaitingProcesses() {
-		String names = "";
-		for (Runnable r : pool.getQueue()) {
-			OCRProcess p = (OCRProcess) r;
-			names += p.getName() + " ";
-		}
-		return names;
-	}
-	
-	public int getWaitingProcessesCount() {
-		return pool.getQueue().size();
-	}
-	
-	public int getRunningProcessesCount() {
-		return pool.getActiveCount();
-	}
-	
-	public void removeWaitingProcesses() {
-		pool.getQueue().clear();
-	}
-	
-	public void removeAllProcesses() {
-		pool.shutdownNow();
-	}
-	/* end JMX methods */
-	
 	/**
 	 * Controls the program flow depending on the state of the server lock.
-	 * Can be overwritten by subclasses to implement a different state management.
+	 * Can be overridden by subclasses to implement a different state management.
 	 * 
 	 * @throws IOException
 	 */
@@ -255,7 +227,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	}
 	
 	/**
-	 * Factory method for an executor. Subclasses can overwrite this method to
+	 * Factory method for an executor. Subclasses can override this method to
 	 * return their own implementation.
 	 * 
 	 * @return an instance of a pool/executor
@@ -274,27 +246,42 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		}
 	}
 	
-
-	@Override
-	public Boolean init() {
-		// TODO: check server connection here
-		return true;
-	}
-
-	@Override
-	public Boolean stop() {
-		return false;
-	}
-	
 	@Override
 	public int getEstimatedDurationInSeconds() {
 		long durationInMillis = 0;
 		
-		for (OCRProcess process : processes) {
+		for (OCRProcess process : processesQueue) {
 			long imagesInProcess = process.getOcrImages().size();
 			durationInMillis += imagesInProcess * config.minMillisPerFile;
 		}
 		return (int) (durationInMillis / 1000);
 	}
+
+	/* start JMX methods */
+	public String getWaitingProcesses() {
+		String names = "";
+		for (Runnable r : pool.getQueue()) {
+			OCRProcess p = (OCRProcess) r;
+			names += p.getName() + " ";
+		}
+		return names;
+	}
+	
+	public int getWaitingProcessesCount() {
+		return pool.getQueue().size();
+	}
+	
+	public int getRunningProcessesCount() {
+		return pool.getActiveCount();
+	}
+	
+	public void removeWaitingProcesses() {
+		pool.getQueue().clear();
+	}
+	
+	public void removeAllProcesses() {
+		pool.shutdownNow();
+	}
+	/* end JMX methods */
 
 }

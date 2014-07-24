@@ -1,6 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.tesseract;
 
-import java.util.Observable;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -25,14 +24,6 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#init()
-	 */
-	@Override
-	public Boolean init() {
-		throw new UnsupportedOperationException();
-	}
-
-	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#recognize()
 	 */
 	@Override
@@ -42,14 +33,6 @@ public class TesseractOCREngine extends AbstractOCREngine implements OCREngine {
 			((TesseractOCRProcess) process).start();
 		}
 
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#stop()
-	 */
-	@Override
-	public Boolean stop() {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

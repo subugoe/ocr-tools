@@ -47,15 +47,6 @@ public interface OCREngine {
 	abstract public void recognize();
 
 	/**
-	 * Stops a running recognizer. Returns false if the recognizer isn't running
-	 * or waits for a {@link OCRProcess} to finish.
-	 * 
-	 * @return true if the engine starts to shut down or already is shut down,
-	 *         false otherwise.
-	 */
-	abstract public Boolean stop();
-
-	/**
 	 * Adds a OCR process. The returned {@link java.util.Observable} can be used
 	 * to track the progress of the recognition process.
 	 * 
@@ -86,7 +77,7 @@ public interface OCREngine {
 	 * 
 	 * @return true if the engine could be initialized, false otherwise
 	 */
-	abstract public Boolean init();
+	//abstract public Boolean init();
 
 	abstract public int getEstimatedDurationInSeconds();
 }

@@ -29,16 +29,6 @@ public class OcrsdkEngine extends AbstractOCREngine {
 	}
 
 	@Override
-	public Boolean stop() {
-		return false;
-	}
-	
-	@Override
-	public Boolean init() {
-		return false;
-	}
-
-	@Override
 	public int getEstimatedDurationInSeconds() {
 		int duration = 0;
 		for (OCRProcess process : ocrProcess) {

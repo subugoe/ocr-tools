@@ -98,13 +98,7 @@ public class AbbyyServerOCREngineTest {
 //		OCROutput output = engine.newOcrOutput();
 //		assertTrue(output instanceof AbbyyOCROutput);
 //	}
-	
-	@Test(expected=IllegalStateException.class)
-	public void recognizeNoProcesses() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-		engine.recognize();
-	}
-	
+		
 //	@Test(expected=IllegalStateException.class)
 //	public void recognizeNoServer() throws Exception {
 //		MyServers.stopDavServer();

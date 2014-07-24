@@ -273,20 +273,8 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	}
 
 	@Override
-	public Boolean init () {
-		// TODO: Check if engine is licencesed
-		return true;
-	}
-
-	@Override
 	public void recognize () {
 		recognize(ocrProcess.get(0));
-	}
-
-	@Override
-	public Boolean stop () {
-		// TODO Auto-generated method stub
-		return true;
 	}
 
 	@SuppressWarnings("serial")
