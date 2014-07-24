@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
@@ -47,7 +46,6 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +59,6 @@ import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -89,21 +86,16 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			.getLogger(AbbyyOCRProcess.class);
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
 	// TODO: Use static fields from the engine class here.
-	
-	protected URI serverUri;
-	
+		
 	// The folder URLs.
 	protected URI inputUri, outputUri, errorUri;
 
-	private URI errorTicketUri;
 	private URI errorResultUri;
 	private URI outputResultUri;
 	private URI ticketUri;
 
-	// State variables.
-	// Set if process is failed
 	private Boolean failed = false;
-	protected String errorDescription = null;
+	private String errorDescription = null;
 	// Set if process is done
 	private Boolean done = true;
 
@@ -138,11 +130,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	protected Document xmlExport;
 	private Long maxSize;
 
-	private Long maxFiles;
-	private Long totalFileCount;
 	//ID Number for AbbyyOCRProcess
 	private String processId ;
-	private Long totalFileSize = 0l;
 	static Object monitor = new Object();
 
 	private boolean alreadyBeenHere = false;
@@ -155,7 +144,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	public AbbyyOCRProcess(Properties userProperties) {
 		super();
 		String propertiesFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
-		this.config = new ConfigParser("/" + propertiesFile).parse();
+		// TODO: make non-static
+		AbbyyOCRProcess.config = new ConfigParser("/" + propertiesFile).parse();
 		String user = userProperties.getProperty("user");
 		String password = userProperties.getProperty("password");
 		if (user != null) {
@@ -170,17 +160,11 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	}
 	
 	private void init() {
-		if (!config.isParsed()) {
-			throw new IllegalStateException();
-		}
 		processId = java.util.UUID.randomUUID().toString();
-		//processId = config.getId_Process();
-		// Set constraints
 		maxSize = config.getMaxSize();
-		maxFiles = config.getMaxFiles();
 
 		try {
-			serverUri = new URI(config.getServerURL());
+			URI serverUri = new URI(config.getServerURL());
 			inputUri = new URI(serverUri + config.getInput() + "/");
 			outputUri = new URI(serverUri + config.getOutput() + "/");
 			errorUri = new URI(serverUri + config.getError() + "/");
@@ -213,10 +197,6 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	public void run() {
 
 		startTime = System.currentTimeMillis();
-
-		if (hotfolder == null) {
-			throw new IllegalStateException("No Hotfolder set!");
-		}
 		
 		if (encoding.equals("UTF8")) {
 			ocrProcessMetadata.setEncoding("UTF-8");
@@ -262,7 +242,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			// Set the file names and URIs
 			String tmpTicket = name + ".xml";
 			ticketUri = new URI(inputUri.toString() + tmpTicket);
-			errorTicketUri = new URI(errorUri.toString() + tmpTicket);
+			URI errorTicketUri = new URI(errorUri.toString() + tmpTicket);
 			errorResultUri = new URI(errorUri.toString() + tmpTicket
 					+ config.reportSuffix);
 
@@ -671,41 +651,23 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public void checkServerState() throws URISyntaxException, IOException, IllegalStateException {
-		if (maxSize != 0 && maxFiles != 0) {
+		if (maxSize != 0) {
 
-			// check if a slash is already appended
 			final URI configServerUri = new URI(config.getServerURL());
-			Map<URI, Long> sizeMap = new HashMap<URI, Long>(); 
-			sizeMap.put(new URI(configServerUri.toString() + config.getInput()
-					+ "/"), 0l);
-			sizeMap.put(new URI(configServerUri.toString() + config.getOutput()
-					+ "/"), 0l);
-			sizeMap.put(new URI(configServerUri.toString() + config.getError()
-					+ "/"), 0l);				
-			
+			URI inUri = new URI(configServerUri.toString() + config.getInput() + "/");
+			URI outUri = new URI(configServerUri.toString() + config.getOutput() + "/");
+			URI errUri = new URI(configServerUri.toString() + config.getError() + "/");				
+			long totalFileSize = hotfolder.getTotalSize(inUri) 
+					+ hotfolder.getTotalSize(outUri) 
+					+ hotfolder.getTotalSize(errUri);
 
-			for (URI uri : sizeMap.keySet()) {
-				sizeMap.put(uri, hotfolder.getTotalSize(uri));
-			}
-			totalFileCount = Integer.valueOf(sizeMap.size()).longValue();
-			for (Long size : sizeMap.values()) {
-				if (size != null && size != 0) {
-					totalFileSize += size;
-				}
-			}
 			logger.debug("TotalFileSize = " + totalFileSize);
-			if (maxFiles != 0 && totalFileCount > maxFiles) {
-				logger.error("Too much files. Max number of files is "
-						+ maxFiles + ". Number of files on server: "
-						+ totalFileCount + ".\nExit program. (" + getName() + ")");
-				throw new IllegalStateException("Max number of files exeded");
-			}
-			if (maxSize != 0 && totalFileSize > maxSize) {
+			if (totalFileSize > maxSize) {
 				logger.error("Size of files is too much files. Max size of all files is "
 						+ maxSize
 						+ ". Size of files on server: "
 						+ totalFileSize + ".\nExit program. (" + getName() + ")");
-				throw new IllegalStateException("Max size of files exeded");
+				throw new IllegalStateException("Max size of files exceeded");
 			}
 		} else {
 			logger.warn("Server state checking is disabled. (" + getName() + ")");

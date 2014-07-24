@@ -28,7 +28,6 @@ import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -45,23 +44,15 @@ import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 
 
 public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
-	protected Long startTimeForProcess = null;
-	protected AbbyySerializerTextMD abbyySerializerTextMD;
-	
-	protected Long endTimeForProcess = null;
 	
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngine.class);
 
 	protected ConfigParser config;
 
 	protected Hotfolder hotfolder;
-	protected OCRProcessMetadata ocrProcessMetadata;
-
-	protected static Boolean rest = false;
 
 	protected Queue<AbbyyOCRProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
 
@@ -233,7 +224,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 * @return an instance of a pool/executor
 	 */
 	protected OCRExecuter createPool() {
-		return new OCRExecuter(config.getMaxThreads(), hotfolder);
+		// TODO: make a field
+		return new OCRExecuter(config.getMaxThreads());
 	}
 	
 	protected void cleanUp() {

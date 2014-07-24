@@ -66,14 +66,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 */
 	private Condition unpaused = pauseLock.newCondition();
 
-
-	/**
-	 * hotfolder is used to access any file system like backend. This can be
-	 * used to integrate external systems like Grid storage or WebDAV based
-	 * hotfolders.
-	 * */
-	protected Hotfolder hotfolder;
-
 	/**
 	 * Instantiates a new oCR executer.Creates a new ThreadPoolExecutor with the
 	 * given initial parameters and default thread factory and handler.
@@ -95,10 +87,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 *            before they are executed. This queue will hold only the
 	 *            Runnable tasks submitted by the execute method.
 	 */
-	public OCRExecuter(Integer maxThreads, Hotfolder hotfolder) {
+	public OCRExecuter(Integer maxThreads) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
-		this.hotfolder = hotfolder;
 	}
 
 	/*
@@ -114,9 +105,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		if (r instanceof AbbyyOCRProcess) {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
 			try {
-				getFileSize(abbyyOCRProcess);
+				abbyyOCRProcess.checkServerState();
 			} catch (IllegalStateException e1) {
-				logger.debug("wait because :", e1);
+				logger.warn("wait because :", e1);
 				//pause();
 			} catch (IOException e1) {
 				logger.error("Could not execute MultiStatus method (" + abbyyOCRProcess.getName() + ")", e1);
@@ -161,9 +152,9 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
 
 			try {
-				getFileSize(abbyyOCRProcess);
+				abbyyOCRProcess.checkServerState();
 			} catch (IllegalStateException e1) {
-				logger.debug("(" + abbyyOCRProcess.getName() + ") wait because :", e1);
+				logger.warn("(" + abbyyOCRProcess.getName() + ") wait because :", e1);
 				//pause();
 			} catch (IOException e1) {
 				logger.error("Could not execute MultiStatus method (" + abbyyOCRProcess.getName() + ")", e1);
@@ -199,20 +190,6 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		} finally {
 			pauseLock.unlock();
 		}
-	}
-
-	/**
-	 * Gets the alle filesize representing this process.
-	 * 
-	 * @param p
-	 *            represent the process
-	 * @return the Calculate size of the OCRImages representing this process
-	 * @throws URISyntaxException
-	 * @throws IOException
-	 */
-	protected void getFileSize(AbbyyOCRProcess p) throws IOException,
-			URISyntaxException, IllegalStateException {
-		p.checkServerState();
 	}
 
 	public void execute(AbbyyOCRProcess process, boolean splittingEnabled) {

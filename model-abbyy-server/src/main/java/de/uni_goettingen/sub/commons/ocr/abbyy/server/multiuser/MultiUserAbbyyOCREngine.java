@@ -6,7 +6,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,14 +14,11 @@ import com.hazelcast.core.HazelcastInstance;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRExecuter;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	final static Logger logger = LoggerFactory
 			.getLogger(MultiUserAbbyyOCREngine.class);
 
-	private static MultiUserAbbyyOCREngine instance;
-	
 	private HazelcastInstance hazelcast;
 	
 	public MultiUserAbbyyOCREngine(Properties userProps) {
@@ -35,20 +31,6 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	protected MultiUserAbbyyOCREngine(HazelcastInstance haz) {
 		super(new Properties());
 		hazelcast = haz;
-	}
-
-	public static synchronized MultiUserAbbyyOCREngine getInstance() {
-
-		if (instance == null) {
-			instance = new MultiUserAbbyyOCREngine(new Properties());
-		}
-		return instance;
-	}
-	// we need this for our Web Service, because each request needs its own instance
-	public static MultiUserAbbyyOCREngine newOCREngine() {
-		MultiUserAbbyyOCREngine engine = null;
-		engine = new MultiUserAbbyyOCREngine(new Properties());
-		return engine;
 	}
 
 	/**
@@ -102,7 +84,7 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 
 	@Override
 	protected OCRExecuter createPool() {
-		return new HazelcastOCRExecutor(config.getMaxThreads(), hotfolder, hazelcast);
+		return new HazelcastOCRExecutor(config.getMaxThreads(), hazelcast);
 	}
 
 	@Override

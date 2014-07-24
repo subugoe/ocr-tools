@@ -13,7 +13,6 @@ import com.hazelcast.core.ItemListener;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ItemComparator;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRExecuter;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 
 public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, EntryListener{
 
@@ -25,9 +24,8 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 	protected IMap<String, AbbyyOCRProcess> queuedProcesses;
 	protected ISet<String> runningProcesses;
 
-	public HazelcastOCRExecutor(Integer maxThreads, Hotfolder hotfolder,
-			HazelcastInstance hazelcast) {
-		super(maxThreads, hotfolder);
+	public HazelcastOCRExecutor(Integer maxThreads, HazelcastInstance hazelcast) {
+		super(maxThreads);
 		maxProcesses = maxThreads;
 		order = new ItemComparator();
 		q = new PriorityQueue<AbbyyOCRProcess>(100, order);
