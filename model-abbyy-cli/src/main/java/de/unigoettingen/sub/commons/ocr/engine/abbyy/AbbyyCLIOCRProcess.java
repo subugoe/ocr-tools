@@ -42,6 +42,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.unigoettingen.sub.commons.ocr.util.abbyy.LanguageMapper;
 
 public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess, Runnable {
 
@@ -126,10 +127,10 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		//TODO: add default languages to config
 		for (Locale l : getLanguages()) {
 
-			if (AbbyyTicket.LANGUAGE_MAP.get(l) == null) {
+			if (LanguageMapper.getAbbyyNotation(l) == null) {
 				throw new OCRException();
 			}
-			arglist.add(AbbyyTicket.LANGUAGE_MAP.get(l));
+			arglist.add(LanguageMapper.getAbbyyNotation(l));
 		}
 
 		//Input files
