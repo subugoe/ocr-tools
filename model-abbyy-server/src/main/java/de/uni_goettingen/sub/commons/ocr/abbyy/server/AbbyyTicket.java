@@ -19,15 +19,11 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
  */
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +40,8 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.ImageProcessingParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.InputFile;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.MSWordExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.OutputFileFormatSettings;
-import com.abbyy.recognitionServer10Xml.xmlTicketV1.PDFExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.PDFAExportSettings;
+import com.abbyy.recognitionServer10Xml.xmlTicketV1.PDFExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.TextExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XMLExportSettings;
@@ -71,12 +66,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	private static final long serialVersionUID = -1775048479151012925L;
 
 	private final static Logger logger = LoggerFactory.getLogger(AbbyyTicket.class);
-
-	/**
-	 * This Map contains the mapping from java.util.Locale to the Strings needed
-	 * by Abbyy
-	 */
-	//public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
 
 	/** The namespace used for the AbbyyTicket files. */
 	public final static String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlTicket-v1.xsd";
@@ -113,9 +102,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 	/** The timeout for the process */
 	protected Long processTimeout = null;
-
-	/** is represents the InputStream for files being read */
-	private InputStream is;
 
 	// The configuration.
 	protected static ConfigParser config;
@@ -220,57 +206,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 	protected AbbyyTicket() {
 		super();
-	}
-
-	public AbbyyTicket(InputStream is) {
-		this.is = is;
-	}
-
-	public AbbyyTicket(URL url) throws IOException {
-		this(url.openStream());
-	}
-
-	public void parseTicket() throws MalformedURLException {
-		// TODO: Finish this method
-		XmlOptions options = new XmlOptions();
-		// Set the namespace
-		options.setLoadSubstituteNamespaces(Collections.singletonMap("",
-				NAMESPACE));
-		// Load the Xml
-		XmlTicketDocument ticketDoc = null;
-		try {
-			ticketDoc = XmlTicketDocument.Factory.parse(is, options);
-		} catch (XmlException e) {
-			logger.error("Parsing of XML failed (" + getName() + ")", e);
-		} catch (IOException e) {
-			logger.error("IO (read of ticket ) failed (" + getName() + ")", e);
-		}
-		if (ticketDoc == null) {
-			return;
-		}
-		XmlTicket ticket = ticketDoc.getXmlTicket();
-		ExportParams params = ticket.getExportParams();
-
-		List<InputFile> fl = ticket.getInputFileList();
-		for (InputFile i : fl) {
-			AbbyyOCRImage aoi = new AbbyyOCRImage();
-			aoi.setRemoteFileName(i.getName());
-			super.addImage(aoi);
-		}
-		getOcrOutputs().clear();
-		for (OutputFileFormatSettings offs : params.getExportFormatList()) {
-			if (offs.isSetOutputFileFormat()) {
-				String fileFormat = offs.getOutputFileFormat();
-				if(fileFormat.equals("Text")) {
-					fileFormat = "TXT";
-				}
-				OCRFormat format = OCRFormat.parseOCRFormat(fileFormat);
-				String location = offs.getOutputLocation();
-				AbbyyOCROutput aoo = new AbbyyOCROutput();
-				aoo.setRemoteLocation(location);
-				addOutput(format, aoo);
-			}
-		}
 	}
 
 	public synchronized void write(final OutputStream out,

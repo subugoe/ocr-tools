@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class LanguageMapper {
 
-	public final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
+	private final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
 
 	static {
 
