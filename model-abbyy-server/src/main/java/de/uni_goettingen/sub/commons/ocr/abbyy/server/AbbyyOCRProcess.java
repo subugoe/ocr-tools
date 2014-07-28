@@ -49,10 +49,6 @@ import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
-
 import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument;
 import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument.Document;
 import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
@@ -64,6 +60,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
@@ -76,10 +73,11 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
  * @author abergna
  * @author cmahnke
  */
-public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,Serializable,Cloneable,
+public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRProcess,Serializable,Cloneable,
 		Runnable {
 
 	transient private HotfolderProvider hotfolderProvider = new HotfolderProvider();
+	transient private AbbyyTicket abbyyTicket;
 	private static final long serialVersionUID = -402196937662439454L;
 	// The Constant logger.
 	private final static Logger logger = LoggerFactory
@@ -136,13 +134,18 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 
 	private boolean alreadyBeenHere = false;
 	
+	protected static ConfigParser config;
+	protected static String encoding = "UTF8";
+
 	// for unit tests
 	void setHotfolderProvider(HotfolderProvider newProvider) {
 		hotfolderProvider = newProvider;
 	}
+	void setAbbyyTicket(AbbyyTicket newTicket) {
+		abbyyTicket = newTicket;
+	}
 	
 	public AbbyyOCRProcess(Properties userProperties) {
-		super();
 		String propertiesFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
 		// TODO: make non-static
 		AbbyyOCRProcess.config = new ConfigParser("/" + propertiesFile).parse();
@@ -156,6 +159,8 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 		}
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
 		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
+		abbyyTicket = new AbbyyTicket(this);
+		abbyyTicket.setConfig(config);
 		init();
 	}
 	
@@ -257,7 +262,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 			synchronized (monitor) {
 				logger.info("Creating AbbyyTicket (" + getName() + ")");
 				OutputStream os = hotfolder.createTmpFile(tmpTicket);
-				write(os, name);
+				abbyyTicket.write(os, name);
 				os.close();
 			}
 
@@ -721,7 +726,7 @@ public class AbbyyOCRProcess extends AbbyyTicket implements Observer,OCRProcess,
 				throw new OCRException(e);
 			}
 		}
-		processTimeout = (long) getOcrImages().size() * config.maxMillisPerFile;
+		abbyyTicket.setProcessTimeout((long) getOcrImages().size() * config.maxMillisPerFile);
 		aoo.setRemoteLocation(config.serverOutputLocation);
 		if (aoo.getRemoteFilename() == null) {
 			aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
