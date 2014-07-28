@@ -56,7 +56,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
-import de.unigoettingen.sub.commons.ocr.util.abbyy.LanguageMapper;
+import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
 
 //TODO: one Locale might represent multiple langueages: <Language>GermanNewSpelling</Language>
 
@@ -88,7 +88,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	 */
 	public final static Map<OCRFormat, String> FORMAT_MAPPING;
 
-	protected final static Map<OCRTextType, String> TEXTTYP_MAP;
 
 	/** Predefined recognition parameters */
 	protected static RecognitionParams recognitionSettings;
@@ -170,16 +169,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		QUALITY_MAP.put(OCRQuality.FAST, "Fast");
 
 		recognitionSettings = RecognitionParams.Factory.newInstance();
-		// Might be Normal, Typewriter, Matrix, OCR_A, OCR_B, MICR_E13B, Gothic
-		TEXTTYP_MAP = new HashMap<OCRTextType, String>();
-		TEXTTYP_MAP.put(OCRTextType.NORMAL, "Normal");
-		TEXTTYP_MAP.put(OCRTextType.TYPEWRITER, "Typewriter");
-		TEXTTYP_MAP.put(OCRTextType.MATRIX, "Matrix");
-		TEXTTYP_MAP.put(OCRTextType.OCR_A, "OCR_A");
-		TEXTTYP_MAP.put(OCRTextType.OCR_B, "OCR_B");
-		TEXTTYP_MAP.put(OCRTextType.MICR_E13B, "MICR_E13B");
-		TEXTTYP_MAP.put(OCRTextType.GOTHIC, "Gothic");
-		
+
 		//priorities: Low, BelowNormal, Normal, AboveNormal, High
 		PRIORITY_MAP = new HashMap<OCRPriority, String>();		
 		PRIORITY_MAP.put(OCRPriority.HIGH, "High");
@@ -276,8 +266,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		}
 
 		if (textType != null) {
-			recognitionSettings.setTextTypeArray(new String[] { TEXTTYP_MAP
-					.get(getTextType()) });
+			recognitionSettings.setTextTypeArray(new String[] { ToAbbyyMapper.getTextType(textType) });
 		}
 		// Use predefined variables here
 		RecognitionParams recognitionParams = (RecognitionParams) recognitionSettings
@@ -288,7 +277,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		}
 
 		for (Locale l : langs) {
-			recognitionParams.addLanguage(LanguageMapper.getAbbyyNotation(l));
+			recognitionParams.addLanguage(ToAbbyyMapper.getLanguage(l));
 
 		}
 
@@ -298,7 +287,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		if (config.defaultLangs != null) {
 			for (Locale l : config.defaultLangs) {
 				if (!langs.contains(l)) {
-					recognitionParams.addLanguage(LanguageMapper.getAbbyyNotation(l));
+					recognitionParams.addLanguage(ToAbbyyMapper.getLanguage(l));
 				}
 			}
 		}

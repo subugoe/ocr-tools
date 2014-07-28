@@ -4,9 +4,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class LanguageMapper {
+import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
+
+public class ToAbbyyMapper {
 
 	private final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
+	private final static Map<OCRTextType, String> TEXTTYPE_MAP = new HashMap<OCRTextType, String>();
 
 	static {
 
@@ -132,9 +135,22 @@ public class LanguageMapper {
 		LANGUAGE_MAP.put(new Locale("zh"), "Chinese");
 		/*LANGUAGE_MAP.put(new Locale("za"), "Zhuang");	*/
 
+		TEXTTYPE_MAP.put(OCRTextType.NORMAL, "Normal");
+		TEXTTYPE_MAP.put(OCRTextType.TYPEWRITER, "Typewriter");
+		TEXTTYPE_MAP.put(OCRTextType.MATRIX, "Matrix");
+		TEXTTYPE_MAP.put(OCRTextType.OCR_A, "OCR_A");
+		TEXTTYPE_MAP.put(OCRTextType.OCR_B, "OCR_B");
+		TEXTTYPE_MAP.put(OCRTextType.MICR_E13B, "MICR_E13B");
+		TEXTTYPE_MAP.put(OCRTextType.GOTHIC, "Gothic");
+
 	}
-	public static String getAbbyyNotation(Locale locale) {
+	
+	public static String getLanguage(Locale locale) {
 		return LANGUAGE_MAP.get(locale);
+	}
+	
+	public static String getTextType(OCRTextType textType) {
+		return TEXTTYPE_MAP.get(textType);
 	}
 	
 }
