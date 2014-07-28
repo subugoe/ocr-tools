@@ -52,9 +52,7 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
 
@@ -76,18 +74,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	 */
 	protected final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
 
-	/**
-	 * A Map containing mappings from the internal Enums to engine specific
-	 * quality settings
-	 */
-	protected final static Map<OCRQuality, String> QUALITY_MAP;
-
-	/**
-	 * A Map containing mappings from the internal Enums to engine specific
-	 * format settings
-	 */
-	public final static Map<OCRFormat, String> FORMAT_MAPPING;
-
 
 	/** Predefined recognition parameters */
 	protected static RecognitionParams recognitionSettings;
@@ -95,7 +81,6 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 	/** Predefined image processing parameters */
 	protected final static ImageProcessingParams imageProcessingSettings;
 
-	protected final static Map<OCRPriority, String> PRIORITY_MAP;
 	
 	protected static String encoding = "UTF8";
 
@@ -162,32 +147,11 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		FORMAT_FRAGMENTS.put(OCRFormat.HTML, null);
 		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
 
-		// This is one of Thorough, Balanced or Fast
-		QUALITY_MAP = new HashMap<OCRQuality, String>();
-		QUALITY_MAP.put(OCRQuality.BEST, "Thorough");
-		QUALITY_MAP.put(OCRQuality.BALANCED, "Balanced");
-		QUALITY_MAP.put(OCRQuality.FAST, "Fast");
-
 		recognitionSettings = RecognitionParams.Factory.newInstance();
 
-		//priorities: Low, BelowNormal, Normal, AboveNormal, High
-		PRIORITY_MAP = new HashMap<OCRPriority, String>();		
-		PRIORITY_MAP.put(OCRPriority.HIGH, "High");
-		PRIORITY_MAP.put(OCRPriority.ABOVENORMAL, "AboveNormal");
-		PRIORITY_MAP.put(OCRPriority.NORMAL, "Normal");
-		PRIORITY_MAP.put(OCRPriority.BELOWNORMAL, "BelowNormal");
-		PRIORITY_MAP.put(OCRPriority.LOW, "Low");
 		
 		imageProcessingSettings = ImageProcessingParams.Factory.newInstance();
 
-		FORMAT_MAPPING = new HashMap<OCRFormat, String>();
-		FORMAT_MAPPING.put(OCRFormat.DOC, "MSWord");
-		FORMAT_MAPPING.put(OCRFormat.HTML, "HTML");
-		FORMAT_MAPPING.put(OCRFormat.XHTML, "HTML");
-		FORMAT_MAPPING.put(OCRFormat.PDF, "PDF");
-		FORMAT_MAPPING.put(OCRFormat.PDFA, "PDFA");
-		FORMAT_MAPPING.put(OCRFormat.XML, "XML");
-		FORMAT_MAPPING.put(OCRFormat.TXT, "Text");
 	}
 
 	public AbbyyTicket(OCRProcess process) {
@@ -260,7 +224,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 		ticket.setImageProcessingParams(imageProcessingParams);
 
 		if (priority != null) {
-			ticket.setPriority(PRIORITY_MAP.get(getPriority()));
+			ticket.setPriority(ToAbbyyMapper.getPriority(priority));
 		}else {
 			ticket.setPriority("Normal");
 		}
@@ -281,7 +245,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 
 		}
 
-		recognitionParams.setRecognitionQuality(QUALITY_MAP.get(quality));
+		recognitionParams.setRecognitionQuality(ToAbbyyMapper.getQuality(quality));
 
 		// Add default languages from config
 		if (config.defaultLangs != null) {
@@ -324,7 +288,7 @@ public class AbbyyTicket extends AbstractOCRProcess implements OCRProcess {
 				continue;
 			}
 			exportFormat.setOutputFlowType("SharedFolder");
-			exportFormat.setOutputFileFormat(FORMAT_MAPPING.get(of));
+			exportFormat.setOutputFileFormat(ToAbbyyMapper.getOutputFormat(of));
 
 			AbbyyOCROutput aoo = (AbbyyOCROutput) entry.getValue();
 			// TODO: Check what we need to set in single file mode
