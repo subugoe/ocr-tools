@@ -88,8 +88,7 @@ public class AbbyyTicket {
 	/** The timeout for the process */
 	protected Long processTimeout = null;
 
-	// The configuration.
-	protected static ConfigParser config;
+	protected ConfigParser config;
 
 	private static XmlOptions opts = new XmlOptions();
 	private OCRProcess ocrProcess;

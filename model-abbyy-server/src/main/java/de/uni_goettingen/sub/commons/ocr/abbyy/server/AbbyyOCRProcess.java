@@ -79,18 +79,13 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	transient private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	transient private AbbyyTicket abbyyTicket;
 	private static final long serialVersionUID = -402196937662439454L;
-	// The Constant logger.
 	private final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcess.class);
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
-	// TODO: Use static fields from the engine class here.
-		
-	// The folder URLs.
-	protected URI inputUri, outputUri, errorUri;
+	protected URI inputDavUri, outputDavUri, errorDavUri;
 
 	private URI errorResultUri;
 	private URI outputResultUri;
-	private URI ticketUri;
 
 	private Boolean failed = false;
 	private String errorDescription = null;
@@ -108,11 +103,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	private Set<OCRFormat> formatForSubProcess = new HashSet<OCRFormat>();
 	
 	protected Map<File, List<File>> resultfilesForAllSubProcess = new HashMap<File, List<File>>();
-	//localOutput from CLI 
 	private String outResultUri = null;
 	private Observer obs;
 	private boolean finished = false;
-	//Number of SubProcesses
 	protected int splitNumberForSubProcess;
 	
 	private Long endTime = 0L;
@@ -128,13 +121,12 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	protected Document xmlExport;
 	private Long maxSize;
 
-	//ID Number for AbbyyOCRProcess
 	private String processId ;
 	static Object monitor = new Object();
 
 	private boolean alreadyBeenHere = false;
 	
-	protected static ConfigParser config;
+	transient protected ConfigParser config;
 	protected static String encoding = "UTF8";
 
 	// for unit tests
@@ -148,7 +140,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	public AbbyyOCRProcess(Properties userProperties) {
 		String propertiesFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
 		// TODO: make non-static
-		AbbyyOCRProcess.config = new ConfigParser("/" + propertiesFile).parse();
+		config = new ConfigParser("/" + propertiesFile).parse();
 		String user = userProperties.getProperty("user");
 		String password = userProperties.getProperty("password");
 		if (user != null) {
@@ -170,9 +162,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 		try {
 			URI serverUri = new URI(config.getServerURL());
-			inputUri = new URI(serverUri + config.getInput() + "/");
-			outputUri = new URI(serverUri + config.getOutput() + "/");
-			errorUri = new URI(serverUri + config.getError() + "/");
+			inputDavUri = new URI(serverUri + config.getInput() + "/");
+			outputDavUri = new URI(serverUri + config.getOutput() + "/");
+			errorDavUri = new URI(serverUri + config.getError() + "/");
 		} catch (URISyntaxException e) {
 			logger.error("Can't setup server uris (" + getName() + ")", e);
 			throw new OCRException(e);
@@ -213,7 +205,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}
 
 		// If we use the static method to create a process some fields aren't
-		// set correctly (remoteUri, remoteFileName)
+		// set (remoteUri, remoteFileName)
 		for (OCRImage image : getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) image;
 			String remoteFileName = aoi.getUri().toString();
@@ -227,10 +219,10 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			}
 			URI remoteImageUri, errorImageUri = null;
 			try {
-				errorImageUri = new URI(this.errorUri.toString() + remoteFileName);
-				remoteImageUri = new URI(inputUri.toString() + remoteFileName);
+				errorImageUri = new URI(errorDavUri.toString() + remoteFileName);
+				remoteImageUri = new URI(inputDavUri.toString() + remoteFileName);
 			} catch (URISyntaxException e) {
-				logger.error("Error contructing remote URL. (" + getName() + ")");
+				logger.error("Error contructing remote URL. (" + getName() + ")", e);
 				throw new OCRException(e);
 			}
 			if (aoi.getRemoteUri() == null) {
@@ -243,25 +235,20 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		// Add the metadata descriptor (result file) to the outputs
 		addMetadataOutput();
 
+		URI ticketDavUri = null;
 		try {
 			// Set the file names and URIs
-			String tmpTicket = name + ".xml";
-			ticketUri = new URI(inputUri.toString() + tmpTicket);
-			URI errorTicketUri = new URI(errorUri.toString() + tmpTicket);
-			errorResultUri = new URI(errorUri.toString() + tmpTicket
+			String ticketFileName = name + ".xml";
+			ticketDavUri = new URI(inputDavUri.toString() + ticketFileName);
+			URI errorTicketUri = new URI(errorDavUri.toString() + ticketFileName);
+			errorResultUri = new URI(errorDavUri.toString() + ticketFileName
 					+ config.reportSuffix);
 
-			if (config.dryRun) {
-				// No interaction with the server and IO wanted, just return
-				// here
-				logger.info("Process is in dry run mode, don't write anything");
-				return;
-			}
 			// Create ticket, copy files and ticket
 			// Write ticket to temp file
 			synchronized (monitor) {
 				logger.info("Creating AbbyyTicket (" + getName() + ")");
-				OutputStream os = hotfolder.createTmpFile(tmpTicket);
+				OutputStream os = hotfolder.createTmpFile(ticketFileName);
 				abbyyTicket.write(os, name);
 				os.close();
 			}
@@ -276,23 +263,18 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			cleanImages(convertList(getOcrImages()));
 
 			//TODO: remove
-			URI ticketLogPath = new File("/home/dennis/temp/tickets/" + tmpTicket).toURI();
-			hotfolder.copyTmpFile(tmpTicket, ticketLogPath);
+			URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
+			hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
 
 			// Copy the ticket
 			logger.info("Copying ticket to server (" + getName() + ")");
-			hotfolder.copyTmpFile(tmpTicket, ticketUri);
+			hotfolder.copyTmpFile(ticketFileName, ticketDavUri);
 			// delete ticket tmp
 			logger.debug("Delete ticket tmp  (" + getName() + ")");
-			hotfolder.deleteTmpFile(tmpTicket);
+			hotfolder.deleteTmpFile(ticketFileName);
 			// Copy the files
 			logger.info("Copying images to server. (" + getName() + ")");
-			copyFilesToServer(getOcrImages());
-
-			if (config.copyOnly) {
-				logger.info("Process is in copy only mode, don't wait for results");
-				return;
-			}
+			copyImagesToServer(getOcrImages());
 
 			// Wait for results if needed
 			Long minWait = getOcrImages().size() * config.minMillisPerFile;
@@ -388,7 +370,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				cleanImages(convertList(getOcrImages()));
 				cleanOutputs(getOcrOutputs());
 				// Delete the error metadata
-				hotfolder.deleteIfExists(ticketUri);
+				hotfolder.deleteIfExists(ticketDavUri);
 				hotfolder.deleteIfExists(errorTicketUri);
 				
 				// Error Reports
@@ -429,7 +411,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 					cleanOutputs(getOcrOutputs());
 				}
 				//hotfolder.deleteIfExists(errorResultUri);
-				hotfolder.deleteIfExists(ticketUri);
+				hotfolder.deleteIfExists(ticketDavUri);
 				if (outputResultUri != null || !isResult) {
 					hotfolder.deleteIfExists(outputResultUri);
 				}
@@ -612,7 +594,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	 * @throws URISyntaxException
 	 * @throws FileSystemException
 	 */
-	private void copyFilesToServer(final List<OCRImage> fileInfos)
+	private void copyImagesToServer(final List<OCRImage> fileInfos)
 			throws InterruptedException, IOException, URISyntaxException {
 		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (OCRImage info : fileInfos) {
@@ -719,7 +701,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		String[] urlParts = output.getUri().toString().split("/");
 		if (aoo.getRemoteUri() == null) {
 			try {
-				aoo.setRemoteUri(new URI(outputUri.toString()
+				aoo.setRemoteUri(new URI(outputDavUri.toString()
 						+ urlParts[urlParts.length - 1]));
 			} catch (URISyntaxException e) {
 				logger.error("Error while setting up URIs (" + getName() + ")");

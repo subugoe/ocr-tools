@@ -98,12 +98,6 @@ public class ConfigParser {
 	public final static String ABBYY_VERSION = "abbyyVersionNumber";
 	protected String abbyyVersionNumber;
 	//Process specific settings
-	public final static Boolean DEFAULT_COPYONLY = false;
-	public final static String PARAMETER_COPYONLY = "copyOnly";
-	protected Boolean copyOnly;
-	public final static Boolean DEFAULT_DRYRUN = false;
-	public final static String PARAMETER_DRYRUN = "dryRun";
-	protected Boolean dryRun;
 	public final static Long DEFAULT_CHECKINTERVAL = 20000l;
 	public final static String PARAMETER_CHECKINTERVAL = "checkInterval";
 	protected Long checkInterval;
@@ -198,8 +192,6 @@ public class ConfigParser {
 		processId = java.util.UUID.randomUUID().toString();
 		abbyyVersionNumber = config.getString(ABBYY_VERSION, null);
 		
-		copyOnly = config.getBoolean(PARAMETER_COPYONLY, DEFAULT_COPYONLY);
-		dryRun = config.getBoolean(PARAMETER_DRYRUN, DEFAULT_DRYRUN);
 		checkInterval = config.getLong(PARAMETER_CHECKINTERVAL, DEFAULT_CHECKINTERVAL);
 
 		ticketTmpStore = config.getString(PARAMETER_TICKETTMPSTORE, DEFAULT_TICKETTMPSTORE);

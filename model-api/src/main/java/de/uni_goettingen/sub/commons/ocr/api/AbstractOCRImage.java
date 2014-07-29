@@ -52,6 +52,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 * @param imageUri
 	 *            the image uri
 	 */
+	// TODO: remove?
 	public AbstractOCRImage(URI imageUri) {
 		this.imageUri = imageUri;
 	}
@@ -75,6 +76,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 *            image. Implementations should extend {@link AbstractOCRImage}
 	 *            to add further methods for example for handling Streams.
 	 */
+	// TODO: remove
 	public AbstractOCRImage(OCRImage i) {
 		this(i.getUri(), i.getOrientation());
 		this.size = ((AbstractOCRImage)i).getSize();
@@ -90,6 +92,7 @@ public abstract class AbstractOCRImage implements OCRImage {
 	 *            calculations and display there is a method to get the rotation
 	 *            in degrees.
 	 */
+	// TODO: remove
 	public AbstractOCRImage(URI imageUri, Orientation orientation) {
 		this.imageUri = imageUri;
 		this.orientation = orientation;
