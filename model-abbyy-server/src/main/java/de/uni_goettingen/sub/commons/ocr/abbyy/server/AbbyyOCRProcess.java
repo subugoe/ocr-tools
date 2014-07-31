@@ -206,6 +206,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 		// If we use the static method to create a process some fields aren't
 		// set (remoteUri, remoteFileName)
+		// TODO: move this into addOcrImage()
 		for (OCRImage image : getOcrImages()) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) image;
 			String remoteFileName = aoi.getUri().toString();

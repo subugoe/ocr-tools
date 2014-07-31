@@ -166,16 +166,6 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * Sets the resultFragments, This is used, if we don't create 
-	 * the result in single file mode
-	 * @param resultFragments      
-	 */
-	public void setResultFragments (List<URI> resultFragments) {
-		this.resultFragments = resultFragments;
-		singleFile = false;
-	}
-
-	/**
 	 * Gets the remoteFilename, This is the local file name on the remote system.
 	 * @return the remoteFilename		
 	 */
