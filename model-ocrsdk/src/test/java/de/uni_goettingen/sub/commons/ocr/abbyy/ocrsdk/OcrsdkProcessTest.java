@@ -53,7 +53,7 @@ public class OcrsdkProcessTest {
 		OcrsdkOutput outputTxt = new OcrsdkOutput();
 		outputTxt.setUri(new File("target/testResult.txt").toURI());
 		OcrsdkProcess process = new OcrsdkProcess("", "");
-		process.addImage(image);
+		process.addOcrImage(image);
 		process.addOutput(OCRFormat.XML, outputXml);
 		process.addOutput(OCRFormat.TXT, outputTxt);
 		process.addLanguage(Locale.ENGLISH);
@@ -63,7 +63,7 @@ public class OcrsdkProcessTest {
 
 	@Test
 	public void usesTheRestClientCorrectly() {
-		process.addImage(imageMock);
+		process.addOcrImage(imageMock);
 		process.addOutput(OCRFormat.XML, outputMock);
 		process.start();
 		
@@ -74,7 +74,7 @@ public class OcrsdkProcessTest {
 
 	@Test
 	public void forwardsSeveralOutputFormats() {
-		process.addImage(imageMock);
+		process.addOcrImage(imageMock);
 		process.addOutput(OCRFormat.XML, outputMock);
 		process.addOutput(OCRFormat.TXT, outputMock);
 		process.start();
@@ -85,8 +85,8 @@ public class OcrsdkProcessTest {
 
 	@Test
 	public void forwardsTwoImages() {
-		process.addImage(imageMock);
-		process.addImage(imageMock);
+		process.addOcrImage(imageMock);
+		process.addOcrImage(imageMock);
 		process.addOutput(OCRFormat.XML, outputMock);
 		process.start();
 		
@@ -95,7 +95,7 @@ public class OcrsdkProcessTest {
 
 	@Test
 	public void forwardsTwoLanguages() {
-		process.addImage(imageMock);
+		process.addOcrImage(imageMock);
 		process.addOutput(OCRFormat.XML, outputMock);
 		process.addLanguage(Locale.ENGLISH);
 		process.addLanguage(Locale.GERMAN);
@@ -107,7 +107,7 @@ public class OcrsdkProcessTest {
 
 	@Test
 	public void forwardsTextType() {
-		process.addImage(imageMock);
+		process.addOcrImage(imageMock);
 		process.addOutput(OCRFormat.XML, outputMock);
 		process.setTextType(OCRTextType.GOTHIC);
 		process.start();
@@ -117,7 +117,7 @@ public class OcrsdkProcessTest {
 
 	@Test
 	public void canSaveReceivedXmlResult() throws IOException {
-		process.addImage(imageMock);
+		process.addOcrImage(imageMock);
 		process.addOutput(OCRFormat.XML, outputMock);
 		process.start();
 		
@@ -130,7 +130,7 @@ public class OcrsdkProcessTest {
 	
 	@Test
 	public void canSaveTwoReceivedResults() throws IOException {
-		process.addImage(imageMock);
+		process.addOcrImage(imageMock);
 		process.addOutput(OCRFormat.XML, outputMock);
 		process.addOutput(OCRFormat.TXT, outputMock);
 		process.start();

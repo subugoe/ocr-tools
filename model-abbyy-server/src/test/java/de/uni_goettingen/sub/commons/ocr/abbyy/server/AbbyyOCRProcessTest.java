@@ -127,8 +127,8 @@ public class AbbyyOCRProcessTest {
 		im1.setSize(1L);
 		AbbyyOCRImage im2 = new AbbyyOCRImage(new File("/test2").toURI());
 		im2.setSize(2L);
-		process.addImage(im1);
-		process.addImage(im2);
+		process.addOcrImage(im1);
+		process.addOcrImage(im2);
 		long totalSize = process.calculateSize();
 		assertEquals(3L, totalSize);
 	}
@@ -145,7 +145,7 @@ public class AbbyyOCRProcessTest {
 			// could be the .svn directory
 			if(imageFile.isFile()) {
 				AbbyyOCRImage image = new AbbyyOCRImage(imageFile.toURI());
-				process.addImage(image);
+				process.addOcrImage(image);
 			}
 		}
 

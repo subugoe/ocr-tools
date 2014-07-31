@@ -44,13 +44,6 @@ public abstract class AbstractOCROutput implements OCROutput {
 	/** The params that should be used to generate this output representation. */
 	protected Map<String, String> params = new HashMap<String, String>();
 
-	//State variables
-	/**
-	 * This indicates that the results <u>should</u> exist, the API doesn't
-	 * guarantee this to be true.
-	 */
-	protected Boolean isResult = false;
-
 	/**
 	 * Instantiates a new abstract ocr output.
 	 */
@@ -113,13 +106,6 @@ public abstract class AbstractOCROutput implements OCROutput {
 	public void setUri (URI uri) {
 		this.outputUri = uri;
 
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCROutput#isResult()
-	 */
-	public Boolean isResult () {
-		return isResult;
 	}
 	
 	/* (non-Javadoc)

@@ -90,15 +90,4 @@ public interface OCROutput {
 	 */
 	abstract public void setParams (Map<String, String> params);
 
-	/**
-	 * Checks if this OCROutout represents a result. If this isn't set this
-	 * {@link OCROutput} is just a description what the caller expects to be the
-	 * result. Note: This indicates that the results <u>should</u> exist. The
-	 * API doesn't guarantee this to be true.
-	 * 
-	 * @return true if this {@link OCROutput} represents a result, false
-	 *         otherwise
-	 */
-	abstract public Boolean isResult ();
-
 }
