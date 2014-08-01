@@ -279,8 +279,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			copyImagesToServer(getOcrImages());
 
 			// Wait for results if needed
-			Long minWait = getOcrImages().size() * config.minMillisPerFile;
-			Long maxWait = getOcrImages().size() * config.maxMillisPerFile;
+			long minWait = getOcrImages().size() * config.minMillisPerFile;
+			long maxWait = getOcrImages().size() * config.maxMillisPerFile;
 			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes) (" + getName() + ")");
 			// TODO: make a collaborator
 			Thread.sleep(minWait);
@@ -293,55 +293,58 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 					outputs.remove(OCRFormat.METADATA);
 				}
 
+				long restTime = maxWait - minWait;
 				logger.info("Waking up, waiting another "
-						+ (maxWait - minWait) + " milli seconds for results (" + (maxWait-minWait)/1000/60 + " minutes) (" + getName() + ")");
-				if (waitForResults(outputs, maxWait-minWait)) {
-					//for Serializer
-					List<URI> listOfLocalURI = new ArrayList<URI>();
-					// Everything should be ok, get the files
-					for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
-						final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
-						if (o.isSingleFile()) {
-							URI remoteUri = o.getRemoteUri();
-							URI localUri = o.getUri();
-							//for Serializer
-							listOfLocalURI.add(localUri);
-							try {
-								logger.debug("Copy from " + remoteUri + " to "
-										+ localUri +  "(" + getName() + ")");
-								hotfolder.copyFile(remoteUri, localUri);
-							} catch (Exception e) {
-								logger.warn("Can NOT Copy from " + remoteUri
-										+ " to " + localUri + " (" + getName() + ")");
-							}
-							try {
-								if (!new File(localUri).exists()) {
-									logger.debug("another try Copy from "
-											+ remoteUri + " to " + localUri);
-									Thread.sleep(100);
-									hotfolder.copyFile(remoteUri, localUri);
-								}
-							} catch (Exception e) {
-								logger.error("Can NOT Copy from " + remoteUri
-										+ " to " + localUri + " (" + getName() + ")", e);
-								throw new OCRException("Can NOT Copy from "
-										+ remoteUri + " to " + localUri, e);
-							}
-							if (new File(localUri).exists()) {
-								logger.debug("Deleting remote file "
-										+ remoteUri + " (" + getName() + ")");
-								hotfolder.deleteIfExists(remoteUri);
-							}
-						} else {
-							// The results are fragmented, merge them
-							mergeResult(entry.getKey(), o);
+						+ restTime + " milli seconds for results (" + restTime/1000/60 + " minutes) (" + getName() + ")");
+				
+				waitForResults(restTime);
+				
+				//for Serializer
+				List<URI> listOfLocalURI = new ArrayList<URI>();
+				// Everything should be ok, get the files
+				for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
+					final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
+					if (o.isSingleFile()) {
+						URI remoteUri = o.getRemoteUri();
+						URI localUri = o.getUri();
+						//for Serializer
+						listOfLocalURI.add(localUri);
+						try {
+							logger.debug("Copy from " + remoteUri + " to "
+									+ localUri +  "(" + getName() + ")");
+							hotfolder.copyFile(remoteUri, localUri);
+						} catch (Exception e) {
+							logger.warn("Can NOT Copy from " + remoteUri
+									+ " to " + localUri + " (" + getName() + ")");
 						}
+						try {
+							if (!new File(localUri).exists()) {
+								logger.debug("another try Copy from "
+										+ remoteUri + " to " + localUri);
+								Thread.sleep(100);
+								hotfolder.copyFile(remoteUri, localUri);
+							}
+						} catch (Exception e) {
+							logger.error("Can NOT Copy from " + remoteUri
+									+ " to " + localUri + " (" + getName() + ")", e);
+							throw new OCRException("Can NOT Copy from "
+									+ remoteUri + " to " + localUri, e);
+						}
+						if (new File(localUri).exists()) {
+							logger.debug("Deleting remote file "
+									+ remoteUri + " (" + getName() + ")");
+							hotfolder.deleteIfExists(remoteUri);
+						}
+					} else {
+						// The results are fragmented, merge them
+						mergeResult(entry.getKey(), o);
 					}
-					endTime = System.currentTimeMillis();
-					processTimeResult = getDuration();
-					ocrProcessMetadata.setDuration(processTimeResult);
-					logger.info("OCR Output file has been created successfully after "+  getDuration() + " milliseconds (" + getName() + ")");
-					setOcrProcessMetadata(ocrProcessMetadata);
+				}
+				endTime = System.currentTimeMillis();
+				processTimeResult = getDuration();
+				ocrProcessMetadata.setDuration(processTimeResult);
+				logger.info("OCR Output file has been created successfully after "+  getDuration() + " milliseconds (" + getName() + ")");
+				setOcrProcessMetadata(ocrProcessMetadata);
 					//Serializer
 //					if(!getSegmentation()){
 //						for (URI l : listOfLocalURI) {
@@ -361,9 +364,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 //					}
 						
 					// end of serializer
-				} else {
-					failed = true;
-				}
+					
 			} catch (TimeoutExcetion e) {
 				logger.error("Got an timeout while waiting for results (" + getName() + ")", e);
 				failed = true;
@@ -525,64 +526,65 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	 * @throws URISyntaxException
 	 */
 
-	private Boolean waitForResults(final Map<OCRFormat, OCROutput> results,
-			Long timeout) throws TimeoutExcetion, InterruptedException,
+	private void waitForResults(long timeout) throws TimeoutExcetion, InterruptedException,
 			IOException, URISyntaxException {
-		Long start = System.currentTimeMillis();
-		Boolean check = true;
-		Boolean putfalse = false;
-		Map<URI, Boolean> expectedUris = new HashMap<URI, Boolean>();
-		for (Map.Entry<OCRFormat, OCROutput> entry : results.entrySet()) {
-			final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
-			if (o.isSingleFile()) {
-				URI u = o.getRemoteUri();
-				expectedUris.put(u, false);
-			} else {
-				for (URI u : o.getResultFragments()) {
-					expectedUris.put(u, false);
+		long start = System.currentTimeMillis();
+		
+		List<URI> mustBeThereUris = extractFromOutputs();
+		
+		outerLoop:
+		while (true) {
+
+			checkIfError(start, timeout);
+
+			for (URI expectedUri : mustBeThereUris) {
+				if (!hotfolder.exists(expectedUri)) {
+					logger.debug(expectedUri.toString() + " is not yet available (" + getName() + ")");
+					waitALittle();
+					continue outerLoop;
 				}
 			}
+			logger.debug("Got all files. (" + getName() + ")");
+			break;
 		}
-		while (check) {
-			for (Map.Entry<URI, Boolean> entry : expectedUris.entrySet()) {
-				URI u = entry.getKey();
-				Boolean bool = entry.getValue();
-				if (!bool && hotfolder.exists(u)) {
-					logger.debug(u.toString() + " is available (" + getName() + ")");
-					expectedUris.put(u, true);
-				} else {
-					logger.debug(u.toString() + " is not available (" + getName() + ")");
-					putfalse = true;
-				}
-			}
-			if (putfalse) {
-				for (URI uri : expectedUris.keySet()) {
-					expectedUris.put(uri, false);
-				}
-			}
-			if (!expectedUris.containsValue(false)) {
-				logger.debug("Got all files. (" + getName() + ")");
-				break;
-			}
-			if (System.currentTimeMillis() > start + timeout) {
-				//check = false;
-				isResult = true;
-				logger.debug("Waited too long - fail (" + getName() + ")");
-				throw new TimeoutExcetion();
-			}
-			if (hotfolder.exists(errorResultUri)) {
-				logger.error("Server reported an error in file: " + errorResultUri + " (" + getName() + ")");
-				throw new TimeoutExcetion();
-			}
-			putfalse = false;
-			long waitInterval = getOcrImages().size() * config.checkInterval;
-			logger.debug("Waiting for " + waitInterval
-					+ " milli seconds (" + waitInterval/1000/60 + " minutes) (" + getName() + ")");
-			Thread.sleep(waitInterval);
-		}
-		return true;
+		
 	}
 
+	private List<URI> extractFromOutputs() {
+		List<URI> mustBeThereUris = new ArrayList<URI>();
+		for (Map.Entry<OCRFormat, OCROutput> entry : getOcrOutputs().entrySet()) {
+			final AbbyyOCROutput output = (AbbyyOCROutput) entry.getValue();
+			if (output.isSingleFile()) {
+				URI uri = output.getRemoteUri();
+				mustBeThereUris.add(uri);
+			} else {
+				for (URI uri : output.getResultFragments()) {
+					mustBeThereUris.add(uri);
+				}
+			}
+		}
+		return mustBeThereUris;
+	}
+	
+	private void checkIfError(long start, long timeout) throws TimeoutExcetion, IOException {
+		if (System.currentTimeMillis() > start + timeout) {
+			isResult = true;
+			logger.error("Waited too long - fail (" + getName() + ")");
+			throw new TimeoutExcetion();
+		}
+		if (hotfolder.exists(errorResultUri)) {
+			logger.error("Server reported an error in file: " + errorResultUri + " (" + getName() + ")");
+			throw new TimeoutExcetion();
+		}
+	}
+	
+	private void waitALittle() throws InterruptedException {
+		long waitInterval = getOcrImages().size() * config.checkInterval;
+		logger.debug("Waiting for " + waitInterval
+				+ " milli seconds (" + waitInterval/1000/60 + " minutes) (" + getName() + ")");
+		Thread.sleep(waitInterval);
+	}
+	
 	/**
 	 * Copy a url from source to destination. Assumes overwrite.
 	 * 
@@ -599,7 +601,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	 */
 	private void copyImagesToServer(final List<OCRImage> fileInfos)
 			throws InterruptedException, IOException, URISyntaxException {
-		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (OCRImage info : fileInfos) {
 			AbbyyOCRImage image = (AbbyyOCRImage) info;
 
@@ -831,7 +832,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			hotfolder.deleteIfExists(errorImageUri);
 		}
 	}
-	//Language for MetaData
+	
 	private void setLanguageforMetadata(Set<Locale> language) {
 		List<Locale> lang = new ArrayList<Locale>();
 		for (Locale l : language) {
