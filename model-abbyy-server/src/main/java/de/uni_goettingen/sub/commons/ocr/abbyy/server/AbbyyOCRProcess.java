@@ -128,6 +128,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	
 	transient protected ConfigParser config;
 	protected static String encoding = "UTF8";
+	private URI inputTicketUri;
+	private URI errorTicketUri;
 
 	// for unit tests
 	void setHotfolderProvider(HotfolderProvider newProvider) {
@@ -185,16 +187,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		return this.getProcessId().hashCode();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
-
-		startTime = System.currentTimeMillis();
-		
+	private void fillMetadata() {
 		if (encoding.equals("UTF8")) {
 			ocrProcessMetadata.setEncoding("UTF-8");
 		} else {
@@ -203,7 +196,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		if (langs != null) {
 			setLanguageforMetadata(langs);
 		}
-
+	}
+	
+	private void enrichImages() {
 		// If we use the static method to create a process some fields aren't
 		// set (remoteUri, remoteFileName)
 		// TODO: move this into addOcrImage()
@@ -230,50 +225,56 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				aoi.setRemoteUri(remoteImageUri);
 				aoi.setErrorUri(errorImageUri);
 			}
-
 		}
+	}
+	
+	private void createAndSendTicket() throws URISyntaxException, IOException {
+		String ticketFileName = name + ".xml";
+		inputTicketUri = new URI(inputDavUri.toString() + ticketFileName);
+		errorTicketUri = new URI(errorDavUri.toString() + ticketFileName);
+		
+		synchronized (monitor) {
+			logger.info("Creating AbbyyTicket (" + getName() + ")");
+			OutputStream os = hotfolder.createTmpFile(ticketFileName);
+			abbyyTicket.write(os, name);
+			os.close();
+		}
+		
+		//TODO: remove
+		URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
+		hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
 
-		// Add the metadata descriptor (result file) to the outputs
+		logger.info("Copying ticket to server (" + getName() + ")");
+		hotfolder.copyTmpFile(ticketFileName, inputTicketUri);
+		
+		logger.debug("Delete ticket tmp  (" + getName() + ")");
+		hotfolder.deleteTmpFile(ticketFileName);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+
+		startTime = System.currentTimeMillis();
+		
+		fillMetadata();
+		enrichImages();
 		addMetadataOutput();
 
-		URI ticketDavUri = null;
 		try {
-			// Set the file names and URIs
-			String ticketFileName = name + ".xml";
-			ticketDavUri = new URI(inputDavUri.toString() + ticketFileName);
-			URI errorTicketUri = new URI(errorDavUri.toString() + ticketFileName);
-			errorResultUri = new URI(errorDavUri.toString() + ticketFileName
-					+ config.reportSuffix);
-
-			// Create ticket, copy files and ticket
-			// Write ticket to temp file
-			synchronized (monitor) {
-				logger.info("Creating AbbyyTicket (" + getName() + ")");
-				OutputStream os = hotfolder.createTmpFile(ticketFileName);
-				abbyyTicket.write(os, name);
-				os.close();
-			}
-
+			String resultxmlFileName = name + ".xml" + config.reportSuffix;
+			errorResultUri = new URI(errorDavUri.toString() + resultxmlFileName);
+			
 			logger.info("Cleaning Server (" + getName() + ")");
 
-			// Clean the server here to avoid GUIDs as filenames
 			cleanOutputs(getOcrOutputs());
-			// Remove all files that are part of this process, they
-			// shouldn't
-			// exist yet.
 			cleanImages(convertList(getOcrImages()));
-
-			//TODO: remove
-			URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
-			hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
-
-			// Copy the ticket
-			logger.info("Copying ticket to server (" + getName() + ")");
-			hotfolder.copyTmpFile(ticketFileName, ticketDavUri);
-			// delete ticket tmp
-			logger.debug("Delete ticket tmp  (" + getName() + ")");
-			hotfolder.deleteTmpFile(ticketFileName);
-			// Copy the files
+			createAndSendTicket();
+			
 			logger.info("Copying images to server. (" + getName() + ")");
 			copyImagesToServer(getOcrImages());
 
@@ -281,6 +282,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			Long minWait = getOcrImages().size() * config.minMillisPerFile;
 			Long maxWait = getOcrImages().size() * config.maxMillisPerFile;
 			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes) (" + getName() + ")");
+			// TODO: make a collaborator
 			Thread.sleep(minWait);
 
 			try {
@@ -371,7 +373,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				cleanImages(convertList(getOcrImages()));
 				cleanOutputs(getOcrOutputs());
 				// Delete the error metadata
-				hotfolder.deleteIfExists(ticketDavUri);
+				hotfolder.deleteIfExists(inputTicketUri);
 				hotfolder.deleteIfExists(errorTicketUri);
 				
 				// Error Reports
@@ -412,7 +414,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 					cleanOutputs(getOcrOutputs());
 				}
 				//hotfolder.deleteIfExists(errorResultUri);
-				hotfolder.deleteIfExists(ticketDavUri);
+				hotfolder.deleteIfExists(inputTicketUri);
 				if (outputResultUri != null || !isResult) {
 					hotfolder.deleteIfExists(outputResultUri);
 				}
@@ -600,27 +602,23 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		// iterate over all Files and put them to Abbyy-server inputFolder:
 		for (OCRImage info : fileInfos) {
 			AbbyyOCRImage image = (AbbyyOCRImage) info;
-			if (image.toString().endsWith("/")) {
-				logger.trace("Creating new directory "
-						+ image.getRemoteUri().toString() + "! (" + getName() + ")");
-				// Create the directory
-				hotfolder.mkDir(image.getRemoteUri());
-			} else {
-				String to = image.getRemoteUri().toString()
-						.replace(config.password, "***");
-				logger.trace("Copy from " + image.getUri().toString() + " to "
-						+ to + " (" + getName() + ")");
-				try {
-					hotfolder.copyFile(image.getUri(), image.getRemoteUri());
-				} catch (IOException e) {
-					logger.debug("can not Copy from "
-							+ image.getUri().toString() + " to " + to + " (" + getName() + ")");
-					logger.debug("another try Copy from "
-							+ image.getUri().toString() + " to " + to + " (" + getName() + ")");
-					hotfolder.copyFile(image.getUri(), image.getRemoteUri());
-				}
 
+			URI fromUri = image.getUri();
+			URI toUri = image.getRemoteUri();
+			String toUriWothoutPassword = toUri.toString()
+					.replace(config.password, "***");
+			logger.trace("Copy from " + fromUri.toString() + " to "
+					+ toUriWothoutPassword + " (" + getName() + ")");
+			try {
+				hotfolder.copyFile(fromUri, toUri);
+			} catch (IOException e) {
+				logger.debug("can not Copy from "
+						+ fromUri.toString() + " to " + toUriWothoutPassword + " (" + getName() + ")");
+				logger.debug("another try Copy from "
+						+ fromUri.toString() + " to " + toUriWothoutPassword + " (" + getName() + ")");
+				hotfolder.copyFile(fromUri, toUri);
 			}
+
 		}
 	}
 
