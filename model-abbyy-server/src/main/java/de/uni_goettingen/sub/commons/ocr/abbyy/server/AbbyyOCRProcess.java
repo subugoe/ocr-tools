@@ -61,7 +61,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
@@ -113,7 +112,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 	protected Hotfolder hotfolder;
 	transient protected XmlParser xmlParser;
-	transient protected AbbyySerializerTextMD abbyySerializerTextMD;
 	
 	protected XmlResultDocument xmlResultDocument;
 	protected DocumentDocument xmlExportDocument;
@@ -263,7 +261,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		
 		fillMetadata();
 		enrichImages();
-		addMetadataOutput();
+		addResultXmlOutput();
 
 		try {
 			String resultxmlFileName = name + ".xml" + config.reportSuffix;
@@ -271,6 +269,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			
 			logger.info("Cleaning Server (" + getName() + ")");
 
+			// TODO: ServerCleaner class
 			cleanOutputs(getOcrOutputs());
 			cleanImages(convertList(getOcrImages()));
 			createAndSendTicket();
@@ -299,16 +298,12 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				
 				waitForResults(restTime);
 				
-				//for Serializer
-				List<URI> listOfLocalURI = new ArrayList<URI>();
 				// Everything should be ok, get the files
 				for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
 					final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
 					if (o.isSingleFile()) {
 						URI remoteUri = o.getRemoteUri();
 						URI localUri = o.getUri();
-						//for Serializer
-						listOfLocalURI.add(localUri);
 						try {
 							logger.debug("Copy from " + remoteUri + " to "
 									+ localUri +  "(" + getName() + ")");
@@ -345,25 +340,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				ocrProcessMetadata.setDuration(processTimeResult);
 				logger.info("OCR Output file has been created successfully after "+  getDuration() + " milliseconds (" + getName() + ")");
 				setOcrProcessMetadata(ocrProcessMetadata);
-					//Serializer
-//					if(!getSegmentation()){
-//						for (URI l : listOfLocalURI) {
-//							if ((l.toString())
-//									.endsWith("xml" + config.reportSuffix)) {
-//								InputStream resultStream = new FileInputStream(new File(l));
-//								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-//										.parseXmlResult(resultStream);
-//							}
-//							if ((l.toString()).endsWith(name + ".xml")) {
-//								InputStream isDoc = new FileInputStream(new File(l));
-//								((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-//										.parseXmlExport(isDoc);
-//							}
-//						}
-//						serializerTextMD(ocrProcessMetadata, name);
-//					}
-						
-					// end of serializer
 					
 			} catch (TimeoutExcetion e) {
 				logger.error("Got an timeout while waiting for results (" + getName() + ")", e);
@@ -462,32 +438,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			images.add((AbbyyOCRImage) i);
 		}
 		return images;
-	}
-
-	private void serializerTextMD(OCRProcessMetadata ocrProcessMetadata,
-			String textMD) {
-		abbyySerializerTextMD = new AbbyySerializerTextMD(ocrProcessMetadata);
-		logger.debug("Creating " + name + "-textMD.xml (" + getName() + ")");
-		if(getSegmentation()){
-			abbyySerializerTextMD.write(new File(textMD));
-			logger.debug("TextMD Created " + textMD + " (" + getName() + ")");
-		}else{
-			Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
-			OCRFormat lastKey = getLastKey(outputs);
-			AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(lastKey);
-			URI urii;
-			try {
-				String localUrl = out.getUri().toString().replaceAll(lastKey.toString().toLowerCase(),
-						"xml" + config.reportSuffix);
-				urii = new URI(localUrl.replace(".xml" + config.reportSuffix, "-textMD.xml"));
-				abbyySerializerTextMD.write(new File(urii));
-				logger.debug("TextMD Created " + urii.toString() + " (" + getName() + ")");
-			} catch (URISyntaxException e) {
-				logger.error("CAN NOT Copying Serializer textMD to local " + name
-						+ "-textMD.xml (" + getName() + ")", e);
-			}
-		}
-		
 	}
 
 	/**
@@ -730,7 +680,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		ocrProcessMetadata.setFormat(sb.toString());
 	}
 
-	private synchronized void addMetadataOutput() {
+	private synchronized void addResultXmlOutput() {
 		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
 		OCRFormat lastKey = getLastKey(outputs);
 		AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(lastKey);
