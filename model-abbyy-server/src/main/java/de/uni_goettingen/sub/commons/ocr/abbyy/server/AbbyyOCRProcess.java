@@ -88,8 +88,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 	private Boolean failed = false;
 	private String errorDescription = null;
-	// Set if process is done
-	private Boolean done = true;
 
 	private Boolean isResult = false;
 	
@@ -111,12 +109,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	private Long processTimeResult = 0L;
 
 	protected Hotfolder hotfolder;
-	transient protected XmlParser xmlParser;
 	
-	protected XmlResultDocument xmlResultDocument;
-	protected DocumentDocument xmlExportDocument;
-	protected XmlResult xmlResultEngine;
-	protected Document xmlExport;
 	private Long maxSize;
 
 	private String processId ;
@@ -249,6 +242,46 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		hotfolder.deleteTmpFile(ticketFileName);
 	}
 	
+	private void copyResultsFromServer() throws MergeException, IOException {
+		for (Map.Entry<OCRFormat, OCROutput> entry : ocrOutputs.entrySet()) {
+			final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
+			if (o.isSingleFile()) {
+				URI remoteUri = o.getRemoteUri();
+				URI localUri = o.getUri();
+				try {
+					logger.debug("Copy from " + remoteUri + " to "
+							+ localUri +  "(" + getName() + ")");
+					hotfolder.copyFile(remoteUri, localUri);
+				} catch (Exception e) {
+					logger.warn("Can NOT Copy from " + remoteUri
+							+ " to " + localUri + " (" + getName() + ")");
+				}
+				try {
+					if (!new File(localUri).exists()) {
+						logger.debug("another try Copy from "
+								+ remoteUri + " to " + localUri);
+						Thread.sleep(100);
+						hotfolder.copyFile(remoteUri, localUri);
+					}
+				} catch (Exception e) {
+					logger.error("Can NOT Copy from " + remoteUri
+							+ " to " + localUri + " (" + getName() + ")", e);
+					throw new OCRException("Can NOT Copy from "
+							+ remoteUri + " to " + localUri, e);
+				}
+				if (new File(localUri).exists()) {
+					logger.debug("Deleting remote file "
+							+ remoteUri + " (" + getName() + ")");
+					hotfolder.deleteIfExists(remoteUri);
+				}
+			} else {
+				// The results are fragmented, merge them
+				mergeResult(entry.getKey(), o);
+			}
+		}
+
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -285,11 +318,10 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			Thread.sleep(minWait);
 
 			try {
-				Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
 				
 				if (!config.waitForResultXml()) {
 					// TODO: this is a hack for fraktur server that does not give us the result xml
-					outputs.remove(OCRFormat.METADATA);
+					ocrOutputs.remove(OCRFormat.METADATA);
 				}
 
 				long restTime = maxWait - minWait;
@@ -298,43 +330,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				
 				waitForResults(restTime);
 				
-				// Everything should be ok, get the files
-				for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
-					final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
-					if (o.isSingleFile()) {
-						URI remoteUri = o.getRemoteUri();
-						URI localUri = o.getUri();
-						try {
-							logger.debug("Copy from " + remoteUri + " to "
-									+ localUri +  "(" + getName() + ")");
-							hotfolder.copyFile(remoteUri, localUri);
-						} catch (Exception e) {
-							logger.warn("Can NOT Copy from " + remoteUri
-									+ " to " + localUri + " (" + getName() + ")");
-						}
-						try {
-							if (!new File(localUri).exists()) {
-								logger.debug("another try Copy from "
-										+ remoteUri + " to " + localUri);
-								Thread.sleep(100);
-								hotfolder.copyFile(remoteUri, localUri);
-							}
-						} catch (Exception e) {
-							logger.error("Can NOT Copy from " + remoteUri
-									+ " to " + localUri + " (" + getName() + ")", e);
-							throw new OCRException("Can NOT Copy from "
-									+ remoteUri + " to " + localUri, e);
-						}
-						if (new File(localUri).exists()) {
-							logger.debug("Deleting remote file "
-									+ remoteUri + " (" + getName() + ")");
-							hotfolder.deleteIfExists(remoteUri);
-						}
-					} else {
-						// The results are fragmented, merge them
-						mergeResult(entry.getKey(), o);
-					}
-				}
+				copyResultsFromServer();
+				
 				endTime = System.currentTimeMillis();
 				processTimeResult = getDuration();
 				ocrProcessMetadata.setDuration(processTimeResult);
@@ -356,7 +353,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				// Error Reports
 				logger.debug("Trying to parse file" + errorResultUri + " (" + getName() + ")");
 				if (hotfolder.exists(errorResultUri)) {
-					xmlParser = new XmlParser();
+					XmlParser xmlParser = new XmlParser();
 					logger.debug("Trying to parse EXISTS file" + errorResultUri + " (" + getName() + ")");
 					InputStream is = new FileInputStream(new File(
 							errorResultUri.toString()));
@@ -384,7 +381,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			logger.error("Error during OCR Process (" + getName() + ")", e);
 			failed = true;
 		} finally {
-			xmlParser = null;
 			try {	
 				cleanImages(convertList(getOcrImages()));
 				if (!isResult) {
@@ -440,41 +436,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		return images;
 	}
 
-	/**
-	 * Checks if is failed.
-	 * 
-	 * @return the boolean
-	 */
 	public Boolean isFailed() {
 		return failed;
 	}
-
-	/**
-	 * Checks if is Done.
-	 * 
-	 * @return the boolean
-	 */
-	public Boolean isDone() {
-		return done;
-	}
-
-	/**
-	 * Waits for results, returns true if they are available in the given time.
-	 * This method never returns false!
-	 * 
-	 * @param results
-	 *            the results
-	 * @param timeout
-	 *            the timeout
-	 * @return true, if the results are available.
-	 * @throws TimeoutExcetion
-	 *             the timeout excetion
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws URISyntaxException
-	 */
 
 	private void waitForResults(long timeout) throws TimeoutExcetion, InterruptedException,
 			IOException, URISyntaxException {
@@ -535,20 +499,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		Thread.sleep(waitInterval);
 	}
 	
-	/**
-	 * Copy a url from source to destination. Assumes overwrite.
-	 * 
-	 * @param fileInfos
-	 *            is a List of The Class AbbyyOCRImage. Is a representation of
-	 *            an OCRImage suitable for holding references to remote files as
-	 *            used by the Abbyy Recognition Server
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 * @throws URISyntaxException
-	 * @throws FileSystemException
-	 */
 	private void copyImagesToServer(final List<OCRImage> fileInfos)
 			throws InterruptedException, IOException, URISyntaxException {
 		for (OCRImage info : fileInfos) {
@@ -574,10 +524,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	}
 
 	public Long getDuration() {
-		if (done) {
-			return endTime - startTime;
-		}
-		return null;
+		return endTime - startTime;
 	}
 
 	/**
@@ -806,10 +753,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}
 	}
 
-	//Split in SubProcess
 	protected List<AbbyyOCRProcess> split(){		
-		//Example: getOcrImages().size()=234 and  imagesNumberForSubprocess=50, 234 < 75=(50+25)
-		//so is optimal for Abbyy
 		if(getOcrImages().size() <= config.imagesNumberForSubprocess){
 			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
 			sp.add(this);
