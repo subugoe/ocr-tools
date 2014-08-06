@@ -132,7 +132,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	
 	public AbbyyOCRProcess(Properties userProperties) {
 		String propertiesFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
-		// TODO: make non-static
+
 		config = new ConfigParser("/" + propertiesFile).parse();
 		String user = userProperties.getProperty("user");
 		String password = userProperties.getProperty("password");
@@ -141,6 +141,10 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}
 		if (password != null) {
 			config.setPassword(password);
+		}
+		
+		if ("true".equals(userProperties.getProperty("books.split"))) {
+			setSplitProcess(true);
 		}
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
 		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
@@ -232,8 +236,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}
 		
 		//TODO: remove
-//		URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
-//		hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
+		URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
+		hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
 
 		logger.info("Copying ticket to server (" + getName() + ")");
 		hotfolder.copyTmpFile(ticketFileName, inputTicketUri);
@@ -797,7 +801,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 					sP = (AbbyyOCRProcess) this.clone();
 					sP.setObs((Observer)this);
 					sP.ocrImages.clear();
-					sP.ocrOutputs.clear();					
+					sP.ocrOutputs.clear();
 				} catch (CloneNotSupportedException e1) {
 					logger.error("Clone Not Supported Exception:  (" + getName() + ")", e1);
 					return null;
@@ -822,6 +826,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				}	
 				sP.setTime(new Date().getTime());
 			    listNumber++;
+			    sP.abbyyTicket = new AbbyyTicket(sP);
+			    sP.abbyyTicket.setConfig(config);
 				cloneProcesses.add(sP);
 		}
 		return cloneProcesses;

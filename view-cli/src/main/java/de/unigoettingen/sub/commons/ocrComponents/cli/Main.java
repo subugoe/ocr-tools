@@ -92,7 +92,7 @@ public class Main {
 		options.addOption("outformats", true, "Output formats, e.g. pdf,xml - required");
 		options.addOption("prio", true, "Priority: -2, -1, 0, 1, or 2. default is 0");
 		options.addOption("engine", true, "OCR engine, e.g. abbyy, abbyy-multiuser, ocrsdk, tesseract (default is abbyy)");
-		options.addOption("props", true, "Further properties, comma-separated. E.g. -props lock.overwrite=true,user=hans,filesegments=true");
+		options.addOption("props", true, "Further properties, comma-separated. E.g. -props lock.overwrite=true,user=hans,books.split=true");
 		CommandLineParser parser = new GnuParser();
 
 		try {
