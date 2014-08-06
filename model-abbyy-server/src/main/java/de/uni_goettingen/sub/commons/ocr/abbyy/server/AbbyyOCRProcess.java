@@ -49,11 +49,6 @@ import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument;
-import com.abbyy.fineReaderXml.fineReader10SchemaV1.DocumentDocument.Document;
-import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument;
-import com.abbyy.recognitionServer10Xml.xmlResultSchemaV1.XmlResultDocument.XmlResult;
-
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
@@ -143,9 +138,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			config.setPassword(password);
 		}
 		
-		if ("true".equals(userProperties.getProperty("books.split"))) {
-			setSplitProcess(true);
-		}
 		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
 		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 		abbyyTicket = new AbbyyTicket(this);
@@ -781,7 +773,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			return subProcesses;
 		}
 	}
-	//The subprocess will be here cloned from the Process
+	
 	protected List<AbbyyOCRProcess> cloneProcess(){
 		List<AbbyyOCRProcess> cloneProcesses = new ArrayList<AbbyyOCRProcess>();
 		Map<OCRFormat, OCROutput> outs = new HashMap<OCRFormat, OCROutput>();

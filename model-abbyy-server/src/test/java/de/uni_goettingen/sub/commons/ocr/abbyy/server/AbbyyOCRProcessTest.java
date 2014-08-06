@@ -136,7 +136,6 @@ public class AbbyyOCRProcessTest {
 	public void runProcessInThread(String jobName, boolean split) throws IOException, InterruptedException {
 		AbbyyOCRProcess process = new AbbyyOCRProcess(new Properties());
 		process.setName(jobName);
-		process.setSplitProcess(split);
 		
 		File bookDir = new File(LOCAL_INPUT, jobName);
 

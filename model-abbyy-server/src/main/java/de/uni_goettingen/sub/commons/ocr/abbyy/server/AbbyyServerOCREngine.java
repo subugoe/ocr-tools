@@ -167,8 +167,12 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 					xmlOutput.setParams(params);
 				}
 			}
-			boolean processSplitting = process.getSplitProcess(); 
-			pool.execute(process, processSplitting);
+			boolean split = "true".equals(userProperties.getProperty("books.split"));
+			if (split) {
+				pool.executeWithSplit(process);
+			} else {
+				pool.execute(process);
+			}
 		}
 
 		pool.shutdown();
