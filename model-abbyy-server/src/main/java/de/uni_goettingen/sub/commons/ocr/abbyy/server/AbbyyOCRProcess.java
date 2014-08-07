@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -70,8 +69,6 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRProcess,Serializable,Cloneable,
 		Runnable {
 
-	transient private HotfolderProvider hotfolderProvider = new HotfolderProvider();
-	transient private AbbyyTicket abbyyTicket;
 	private static final long serialVersionUID = -402196937662439454L;
 	private final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcess.class);
@@ -116,6 +113,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	protected static String encoding = "UTF8";
 	private URI inputTicketUri;
 	private URI errorTicketUri;
+
+	transient private HotfolderProvider hotfolderProvider = new HotfolderProvider();
+	transient private AbbyyTicket abbyyTicket;
 
 	// for unit tests
 	void setHotfolderProvider(HotfolderProvider newProvider) {
@@ -878,8 +878,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}		
 	}
 
-	// merge if nosubProcessfailed is true 
-	//merge Results and ProcessMetaData
 	private String merge(Boolean noSubProcessfailed) {	
 		String uriTextMD = null;
 		File abbyyMergedResult = null;
@@ -962,7 +960,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		return uriTextMD;
 	}
 	
-	//remove local files from the list after merge
 	protected void removeSubProcessResults(Map<File, List<File>> resultFiles){
 		for(List<File> files : resultFiles.values()) {
 			for(File file : files) {
@@ -996,10 +993,5 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	public void setIsFinished() {
 		this.finished = true;
 	}
-
-
-	
-
-
 	
 }

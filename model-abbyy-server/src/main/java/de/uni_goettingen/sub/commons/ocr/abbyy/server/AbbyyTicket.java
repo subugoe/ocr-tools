@@ -385,8 +385,4 @@ public class AbbyyTicket {
 		this.config = config;
 	}
 
-	//
-//	protected void clearOcrImageList(){
-//		ocrImages.clear();
-//	}
 }

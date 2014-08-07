@@ -31,7 +31,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 
 /**
  * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
