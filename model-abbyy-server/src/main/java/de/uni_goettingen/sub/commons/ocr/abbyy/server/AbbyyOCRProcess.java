@@ -138,7 +138,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			config.setPassword(password);
 		}
 		
-		ocrProcessMetadata = new AbbyyOCRProcessMetadata();
 		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
 		abbyyTicket = new AbbyyTicket(this);
 		abbyyTicket.setConfig(config);
@@ -173,18 +172,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	public int hashCode() {
 		return this.getProcessId().hashCode();
 	}
-	
-	private void fillMetadata() {
-		if (encoding.equals("UTF8")) {
-			ocrProcessMetadata.setEncoding("UTF-8");
-		} else {
-			ocrProcessMetadata.setEncoding(encoding);
-		}
-		if (langs != null) {
-			setLanguageforMetadata(langs);
-		}
-	}
-	
+		
 	private void enrichImages() {
 		// If we use the static method to create a process some fields aren't
 		// set (remoteUri, remoteFileName)
@@ -288,7 +276,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 		startTime = System.currentTimeMillis();
 		
-		fillMetadata();
 		enrichImages();
 		addResultXmlOutput();
 
@@ -330,9 +317,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				
 				endTime = System.currentTimeMillis();
 				processTimeResult = getDuration();
-				ocrProcessMetadata.setDuration(processTimeResult);
 				logger.info("OCR Output file has been created successfully after "+  getDuration() + " milliseconds (" + getName() + ")");
-				setOcrProcessMetadata(ocrProcessMetadata);
 					
 			} catch (TimeoutExcetion e) {
 				logger.error("Got an timeout while waiting for results (" + getName() + ")", e);
@@ -612,15 +597,10 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	// TODO: relevant?
 	//@Override
 	public void setOcrOutputs(Map<OCRFormat, OCROutput> outputs) {
-		StringBuffer sb = new StringBuffer();
 		for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
 			OCRFormat format = entry.getKey();
 			addOutput(format, entry.getValue());
-			// set Format for ocrProcessMetadata
-			sb.append(format.toString());
-			sb.append(" ");
 		}
-		ocrProcessMetadata.setFormat(sb.toString());
 	}
 
 	private synchronized void addResultXmlOutput() {
@@ -726,14 +706,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}
 	}
 	
-	private void setLanguageforMetadata(Set<Locale> language) {
-		List<Locale> lang = new ArrayList<Locale>();
-		for (Locale l : language) {
-			lang.add(l);
-		}
-		ocrProcessMetadata.setLanguages(lang);
-	}
-
 	/**
 	 * The Class TimeoutExcetion.
 	 */
@@ -755,16 +727,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			sp.add(this);
 			return sp;
 		}else{		
-			// setencoding for ocrProcessMetadata
-			if (encoding.equals("UTF8")) {
-				ocrProcessMetadata.setEncoding("UTF-8");
-			} else {
-				ocrProcessMetadata.setEncoding(encoding);
-			}
-			// set Language for ocrProcessMetadata
-			if (langs != null) {
-				setLanguageforMetadata(langs);
-			}
 			//rename subProcess ID
 			for(AbbyyOCRProcess subProcess : cloneProcess()){	
 				subProcess.setProcessId(getProcessId()+ subProcess.getName());
@@ -908,7 +870,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			startTime = System.currentTimeMillis();
 			String uriTextMD = merge(!oneFailed);
 			endTime = System.currentTimeMillis();
-			ocrProcessMetadata.setDuration(getDuration() + processTimeResult);
 			if(!uriTextMD.equals("FAILED")){
 				//serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
 				removeSubProcessResults(resultfilesForAllSubProcess);
@@ -939,8 +900,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 					if(noSubProcessfailed){
 						try {
 							isDoc = new FileInputStream(file);		
-							((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-								.parseXmlExport(isDoc);
 						} catch (FileNotFoundException e) {
 							logger.error("Error contructing FileInputStream for: "+file.toString() + " (" + getName() + ")", e);
 						} finally {
@@ -966,8 +925,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 						} catch (FileNotFoundException e) {
 							logger.error("Error contructing FileInputStream for: "+fileResult.toString() + " (" + getName() + ")", e);
 						}
-						((AbbyyOCRProcessMetadata) ocrProcessMetadata)
-								.parseXmlResult(resultStream);
 					}					
 					fileResults.add(fileResult);			
 				}		

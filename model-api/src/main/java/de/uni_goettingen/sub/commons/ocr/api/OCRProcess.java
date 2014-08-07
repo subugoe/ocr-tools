@@ -25,9 +25,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlType;
-
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 
 
@@ -163,29 +160,6 @@ public interface OCRProcess {
 	 */
 	abstract public Boolean isFinished();
 	
-	
-	/**
-	 * Gets the OCR output metadata for this {@link OCRProcess}. This can be
-	 * used to filter the results for accuracy or to save it for further
-	 * processing. Implementations not generating this information should throw
-	 * a {@link java.lang.UnsupportedOperationException}. The location and / or
-	 * name of this method may change in future releases.
-	 * 
-	 * @return the OCR output metadata
-	 * @see OCRProcessMetadata
-	 */
-	abstract OCRProcessMetadata getOcrProcessMetadata();
-	
-	/**
-	 * Sets the OCR output metadata for this {@link OCRProcess}. This can be
-	 * used to filter the results for accuracy or to save it for further
-	 * processing. Implementations not generating this information should throw
-	 * a {@link java.lang.UnsupportedOperationException}. The location and / or
-	 * name of this method may change in future releases.
-	 * 
-	 * @see OCRProcessMetadata
-	 */
-	abstract void setOcrProcessMetadata(OCRProcessMetadata ocrProcessMetadata);
 	
 	/**
 	 * Gets the quality that should be produced by an engine while processing

@@ -21,7 +21,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcessMetadata;
 import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 
@@ -70,15 +69,6 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	}
 
 	private long duration = 0l;
-	
-	@Override
-	public OCRProcessMetadata getOcrProcessMetadata() {
-		
-		OCRProcessMetadata meta = new TesseractOCRProcessMetadata();
-		meta.setDuration(duration);
-		
-		return meta;
-	}
 	
 	/**
 	 * Instantiates a new tesseract ocr process.
