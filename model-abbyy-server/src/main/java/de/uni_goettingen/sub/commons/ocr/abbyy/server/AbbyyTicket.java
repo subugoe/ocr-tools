@@ -377,10 +377,6 @@ public class AbbyyTicket {
 //		super.addImage(aoi);
 //	}
 
-	protected ConfigParser getConfig() {
-		return config;
-	}
-
 	protected void setConfig(ConfigParser config) {
 		this.config = config;
 	}

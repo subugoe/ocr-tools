@@ -23,7 +23,9 @@ public class AbbyyServerFactory extends OcrFactoryWithProperties {
 
 	@Override
 	public OCRProcess createProcess() {
-		return new AbbyyOCRProcess(userProperties);
+		AbbyyOCRProcess process = new AbbyyOCRProcess();
+		process.initialize(userProperties);
+		return process;
 	}
 
 	@Override

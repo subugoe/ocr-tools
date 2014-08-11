@@ -56,6 +56,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 
@@ -116,6 +117,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 	transient private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	transient private AbbyyTicket abbyyTicket;
+	transient private FileAccess fileAccess = new FileAccess();
+	private Properties fileProps;
 
 	// for unit tests
 	void setHotfolderProvider(HotfolderProvider newProvider) {
@@ -124,13 +127,28 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	void setAbbyyTicket(AbbyyTicket newTicket) {
 		abbyyTicket = newTicket;
 	}
+	void setFileAccess(FileAccess newAccess) {
+		fileAccess = newAccess;
+	}
 	
-	public AbbyyOCRProcess(Properties userProperties) {
-		String propertiesFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
+	public AbbyyOCRProcess() {
+		
+	}
+	
+	public void initialize(Properties userProps) {
+
+		String propertiesFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
+		fileProps = fileAccess.getPropertiesFromFile(propertiesFile);
 
 		config = new ConfigParser("/" + propertiesFile).parse();
-		String user = userProperties.getProperty("user");
-		String password = userProperties.getProperty("password");
+		String user = userProps.getProperty("user");
+		String password = userProps.getProperty("password");
+		if (user != null) {
+			fileProps.setProperty("username", user);
+		}
+		if (password != null) {
+			fileProps.setProperty("password", password);
+		}
 		if (user != null) {
 			config.setUsername(user);
 		}
@@ -138,21 +156,18 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			config.setPassword(password);
 		}
 		
-		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
+		hotfolder = hotfolderProvider.createHotfolder(fileProps.getProperty("serverUrl"), fileProps.getProperty("username"), fileProps.getProperty("password"));
 		abbyyTicket = new AbbyyTicket(this);
 		abbyyTicket.setConfig(config);
-		init();
-	}
-	
-	private void init() {
+
 		processId = java.util.UUID.randomUUID().toString();
-		maxSize = config.getMaxSize();
+		maxSize = Long.parseLong(fileProps.getProperty("maxSize"));
 
 		try {
-			URI serverUri = new URI(config.getServerURL());
-			inputDavUri = new URI(serverUri + config.getInput() + "/");
-			outputDavUri = new URI(serverUri + config.getOutput() + "/");
-			errorDavUri = new URI(serverUri + config.getError() + "/");
+			URI serverUri = new URI(fileProps.getProperty("serverUrl"));
+			inputDavUri = new URI(serverUri + fileProps.getProperty("input") + "/");
+			outputDavUri = new URI(serverUri + fileProps.getProperty("output") + "/");
+			errorDavUri = new URI(serverUri + fileProps.getProperty("error") + "/");
 		} catch (URISyntaxException e) {
 			logger.error("Can't setup server uris (" + getName() + ")", e);
 			throw new OCRException(e);
@@ -280,7 +295,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		addResultXmlOutput();
 
 		try {
-			String resultxmlFileName = name + ".xml" + config.reportSuffix;
+			String resultxmlFileName = name + ".xml.result.xml";
 			errorResultUri = new URI(errorDavUri.toString() + resultxmlFileName);
 			
 			logger.info("Cleaning Server (" + getName() + ")");
@@ -294,19 +309,14 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			copyImagesToServer(getOcrImages());
 
 			// Wait for results if needed
-			long minWait = getOcrImages().size() * config.minMillisPerFile;
-			long maxWait = getOcrImages().size() * config.maxMillisPerFile;
+			long minWait = getOcrImages().size() * Long.parseLong(fileProps.getProperty("minMillisPerFile"));
+			long maxWait = getOcrImages().size() * Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
 			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes) (" + getName() + ")");
 			// TODO: make a collaborator
 			Thread.sleep(minWait);
 
 			try {
 				
-				if (!config.waitForResultXml()) {
-					// TODO: this is a hack for fraktur server that does not give us the result xml
-					ocrOutputs.remove(OCRFormat.METADATA);
-				}
-
 				long restTime = maxWait - minWait;
 				logger.info("Waking up, waiting another "
 						+ restTime + " milli seconds for results (" + restTime/1000/60 + " minutes) (" + getName() + ")");
@@ -474,7 +484,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	}
 	
 	private void waitALittle() throws InterruptedException {
-		long waitInterval = getOcrImages().size() * config.checkInterval;
+		long waitInterval = getOcrImages().size() * Long.parseLong(fileProps.getProperty("checkInterval"));
 		logger.debug("Waiting for " + waitInterval
 				+ " milli seconds (" + waitInterval/1000/60 + " minutes) (" + getName() + ")");
 		Thread.sleep(waitInterval);
@@ -488,7 +498,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			URI fromUri = image.getUri();
 			URI toUri = image.getRemoteUri();
 			String toUriWothoutPassword = toUri.toString()
-					.replace(config.password, "***");
+					.replace(fileProps.getProperty("password"), "***");
 			logger.trace("Copy from " + fromUri.toString() + " to "
 					+ toUriWothoutPassword + " (" + getName() + ")");
 			try {
@@ -518,10 +528,10 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	public void checkServerState() throws URISyntaxException, IOException, IllegalStateException {
 		if (maxSize != 0) {
 
-			final URI configServerUri = new URI(config.getServerURL());
-			URI inUri = new URI(configServerUri.toString() + config.getInput() + "/");
-			URI outUri = new URI(configServerUri.toString() + config.getOutput() + "/");
-			URI errUri = new URI(configServerUri.toString() + config.getError() + "/");				
+			final URI configServerUri = new URI(fileProps.getProperty("serverUrl"));
+			URI inUri = new URI(configServerUri.toString() + fileProps.getProperty("input") + "/");
+			URI outUri = new URI(configServerUri.toString() + fileProps.getProperty("output") + "/");
+			URI errUri = new URI(configServerUri.toString() + fileProps.getProperty("error") + "/");				
 			long totalFileSize = hotfolder.getTotalSize(inUri) 
 					+ hotfolder.getTotalSize(outUri) 
 					+ hotfolder.getTotalSize(errUri);
@@ -586,8 +596,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				throw new OCRException(e);
 			}
 		}
-		abbyyTicket.setProcessTimeout((long) getOcrImages().size() * config.maxMillisPerFile);
-		aoo.setRemoteLocation(config.serverOutputLocation);
+		long maxMillis = Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
+		abbyyTicket.setProcessTimeout((long) getOcrImages().size() * maxMillis);
+		aoo.setRemoteLocation(fileProps.getProperty("serverOutputLocation"));
 		if (aoo.getRemoteFilename() == null) {
 			aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
 		}
@@ -610,15 +621,15 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		AbbyyOCROutput metadata = new AbbyyOCROutput(out);
 
 		try {
-			String resultXmlFolder = config.getResultXmlFolder();
-			String outputFolder = config.getOutput();
+			String resultXmlFolder = fileProps.getProperty("resultXmlFolder");
+			String outputFolder = fileProps.getProperty("output");
 			// The remote file name
 			outputResultUri = new URI(out
 					.getRemoteUri()
 					.toString()
 					.replace(outputFolder, resultXmlFolder)
 					.replaceAll(lastKey.toString().toLowerCase(),
-							"xml" + config.reportSuffix));
+							"xml.result.xml"));
 			metadata.setRemoteUri(outputResultUri);
 
 			// The local file name
@@ -626,7 +637,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 					.getUri()
 					.toString()
 					.replaceAll(lastKey.toString().toLowerCase(),
-							"xml" + config.reportSuffix)));
+							"xml.result.xml")));
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs (" + getName() + ")");
 			throw new OCRException(e);
@@ -721,8 +732,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}
 	}
 
-	protected List<AbbyyOCRProcess> split(){		
-		if(getOcrImages().size() <= config.imagesNumberForSubprocess){
+	protected List<AbbyyOCRProcess> split(){
+		int imagesNumber = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));
+		if(getOcrImages().size() <= imagesNumber){
 			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
 			sp.add(this);
 			return sp;
@@ -748,7 +760,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}
 		int listNumber = 1;
 		setSegmentation(true);
-		List<List<OCRImage>> imageChunks = splitingImages(getOcrImages(), config.imagesNumberForSubprocess);
+		int imagesNumber = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));
+		List<List<OCRImage>> imageChunks = splitingImages(getOcrImages(), imagesNumber);
 		for(List<OCRImage> imgs : imageChunks){				
 				AbbyyOCRProcess sP = null;
 				try {
@@ -915,7 +928,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				}
 				files.add(file); 
 				if(i == 0){
-					fileResult = new File(outResultUri + "/" + sn + ".xml"+ config.reportSuffix);
+					fileResult = new File(outResultUri + "/" + sn + ".xml.result.xml");
 					InputStream resultStream = null;
 					if(noSubProcessfailed){
 						try {
@@ -932,7 +945,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				logger.debug("Waiting... for Merge Proccessing (" + getName() + ")");
 				//mergeFiles for input format if Supported
 				abbyyMergedResult = new File(outResultUri + "/" + name + "." + f.toString().toLowerCase());
-				FileMerger.abbyyVersionNumber = config.abbyyVersionNumber;
+				FileMerger.abbyyVersionNumber = fileProps.getProperty("abbyyVersionNumber");
 				FileMerger.mergeFiles(f, files, abbyyMergedResult);
 				logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED (" + getName() + ")");
 				resultfilesForAllSubProcess.put(abbyyMergedResult, files);	
@@ -943,17 +956,17 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			if(noSubProcessfailed){
 				logger.debug("Waiting... for Merge Proccessing (" + getName() + ")");
 				//mergeFiles for Abbyy Result xml.result.xml
-				abbyyMergedResult = new File(outResultUri + "/" + name + ".xml" + config.reportSuffix);
+				abbyyMergedResult = new File(outResultUri + "/" + name + ".xml.result.xml");
 				FileMerger.mergeAbbyyXMLResults(fileResults , abbyyMergedResult);
 				resultfilesForAllSubProcess.put(abbyyMergedResult, fileResults);
-				logger.debug(name + ".xml" + config.reportSuffix+ " MERGED (" + getName() + ")");			
+				logger.debug(name + ".xml.result.xml" + " MERGED (" + getName() + ")");			
 				uriTextMD = outResultUri + "/" + name;
 			}else {
 				uriTextMD = "FAILED";
 			}
 			
 		} catch (IOException e) {
-			logger.error("ERROR contructing :" +new File(outResultUri + "/" + name + ".xml" + config.reportSuffix).toString() + " (" + getName() + ")", e);
+			logger.error("ERROR contructing :" +new File(outResultUri + "/" + name + ".xml.result.xml").toString() + " (" + getName() + ")", e);
 		} catch (XMLStreamException e) {
 			logger.error("ERROR in mergeAbbyyXML : (" + getName() + ")", e);
 		}		

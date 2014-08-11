@@ -114,15 +114,19 @@ public class AbbyyOCRProcessTest {
 
 	@Test
 	public void equality() {
-		AbbyyOCRProcess a1 = new AbbyyOCRProcess(new Properties());
-		AbbyyOCRProcess a2 = new AbbyyOCRProcess(new Properties());
+		AbbyyOCRProcess a1 = new AbbyyOCRProcess();
+		a1.initialize(new Properties());
+		AbbyyOCRProcess a2 = new AbbyyOCRProcess();
+		a2.initialize(new Properties());
 		assertFalse(a1.equals(a2));
 		assertFalse(a1.hashCode() == a2.hashCode());
 	}
 	
 	@Test
 	public void calculateSize() {
-		AbbyyOCRProcess process = new AbbyyOCRProcess(new Properties());
+		AbbyyOCRProcess process = new AbbyyOCRProcess();
+		process.initialize(new Properties());
+
 		AbbyyOCRImage im1 = new AbbyyOCRImage(new File("/test1").toURI());
 		im1.setSize(1L);
 		AbbyyOCRImage im2 = new AbbyyOCRImage(new File("/test2").toURI());
@@ -134,7 +138,9 @@ public class AbbyyOCRProcessTest {
 	}
 	
 	public void runProcessInThread(String jobName, boolean split) throws IOException, InterruptedException {
-		AbbyyOCRProcess process = new AbbyyOCRProcess(new Properties());
+		AbbyyOCRProcess process = new AbbyyOCRProcess();
+		process.initialize(new Properties());
+
 		process.setName(jobName);
 		
 		File bookDir = new File(LOCAL_INPUT, jobName);
