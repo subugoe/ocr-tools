@@ -53,11 +53,8 @@ public class AbbyyOCRProcessTest {
 	final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcessTest.class);
 
-	private static ConfigParser config;
-
 	@BeforeClass
 	public static void initBeforeClass() throws Exception {
-		config = new ConfigParser().parse();
 		MyServers.startDavServer();
 	}
 	

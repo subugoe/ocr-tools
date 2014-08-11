@@ -18,7 +18,7 @@ public class MyServers {
 	private static Server davServer;
 	private static AbbyyServerSimulator abbyyServer;
 
-	private final static File lock = new File(DAV_FOLDER, ConfigParser.SERVER_LOCK_FILE_NAME);
+	private final static File lock = new File(DAV_FOLDER, "server.lock");
 
 	public static void startDavServer() throws Exception {
 		startDavServer(PathConstants.DAV_PORT);

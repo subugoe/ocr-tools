@@ -135,7 +135,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 			String overwrite = userProps.getProperty("lock.overwrite");
 			boolean overwriteLock = "true".equals(overwrite);
 
-			String serverLockFile = ConfigParser.SERVER_LOCK_FILE_NAME;
+			String serverLockFile = "server.lock";
 			lockURI = new URI(fileProps.getProperty("serverUrl") + serverLockFile);
 			
 			// need to synchronize because of the Web Service

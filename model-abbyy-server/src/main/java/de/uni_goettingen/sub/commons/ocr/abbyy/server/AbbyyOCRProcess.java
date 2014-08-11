@@ -110,7 +110,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 	private boolean alreadyBeenHere = false;
 	
-	transient protected ConfigParser config;
+	//transient protected ConfigParser config;
 	protected static String encoding = "UTF8";
 	private URI inputTicketUri;
 	private URI errorTicketUri;
@@ -140,7 +140,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		String propertiesFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
 		fileProps = fileAccess.getPropertiesFromFile(propertiesFile);
 
-		config = new ConfigParser("/" + propertiesFile).parse();
 		String user = userProps.getProperty("user");
 		String password = userProps.getProperty("password");
 		if (user != null) {
@@ -149,16 +148,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		if (password != null) {
 			fileProps.setProperty("password", password);
 		}
-		if (user != null) {
-			config.setUsername(user);
-		}
-		if (password != null) {
-			config.setPassword(password);
-		}
 		
 		hotfolder = hotfolderProvider.createHotfolder(fileProps.getProperty("serverUrl"), fileProps.getProperty("username"), fileProps.getProperty("password"));
 		abbyyTicket = new AbbyyTicket(this);
-		abbyyTicket.setConfig(config);
 
 		processId = java.util.UUID.randomUUID().toString();
 		maxSize = Long.parseLong(fileProps.getProperty("maxSize"));
@@ -794,7 +786,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				sP.setTime(new Date().getTime());
 			    listNumber++;
 			    sP.abbyyTicket = new AbbyyTicket(sP);
-			    sP.abbyyTicket.setConfig(config);
 				cloneProcesses.add(sP);
 		}
 		return cloneProcesses;

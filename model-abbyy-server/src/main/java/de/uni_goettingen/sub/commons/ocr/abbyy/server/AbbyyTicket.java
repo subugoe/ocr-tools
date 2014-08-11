@@ -21,11 +21,8 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -87,8 +84,6 @@ public class AbbyyTicket {
 
 	/** The timeout for the process */
 	protected Long processTimeout = null;
-
-	protected ConfigParser config;
 
 	private static XmlOptions opts = new XmlOptions();
 	private OCRProcess ocrProcess;
@@ -163,7 +158,7 @@ public class AbbyyTicket {
 			final String identifier) throws IOException {
 
 		// Sanity checks
-		if (out == null || config == null) {
+		if (out == null) {
 			logger.error("OutputStream and / or configuration is not set! (" + ocrProcess.getName() + ")");
 			throw new IllegalStateException();
 		}
@@ -214,9 +209,6 @@ public class AbbyyTicket {
 		// Use predefined variables here
 		ImageProcessingParams imageProcessingParams = (ImageProcessingParams) imageProcessingSettings
 				.copy();
-		if (config.convertToBW) {
-			imageProcessingParams.setConvertToBWFormat(true);
-		}
 		imageProcessingParams.setDeskew(false);
 		ticket.setImageProcessingParams(imageProcessingParams);
 
@@ -247,21 +239,10 @@ public class AbbyyTicket {
 
 		recognitionParams.setRecognitionQuality(ToAbbyyMapper.getQuality(ocrProcess.getQuality()));
 
-		// Add default languages from config
-		if (config.defaultLangs != null) {
-			for (Locale l : config.defaultLangs) {
-				if (!langs.contains(l)) {
-					recognitionParams.addLanguage(ToAbbyyMapper.getLanguage(l));
-				}
-			}
-		}
 		ticket.setRecognitionParams(recognitionParams);
 		ExportParams exportParams = ticket.addNewExportParams();
-		// TODO: check if we need to set a different string if we want seperate
-		// files
-		if (!config.singleFile) {
-			exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
-		}
+			
+		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
 
 		if (ocrProcess.getOcrOutputs() == null || ocrProcess.getOcrOutputs().size() < 1) {
 			throw new OCRException("No export options given!");
@@ -297,30 +278,9 @@ public class AbbyyTicket {
 				exportFormat.setNamingRule(aoo.getRemoteFilename());
 
 			}
-			if (aoo.getRemoteLocation() == null) {
-				exportFormat.setOutputLocation(config.serverOutputLocation);
-			} else {
-				exportFormat.setOutputLocation(aoo.getRemoteLocation());
-			}
+			exportFormat.setOutputLocation(aoo.getRemoteLocation());
+			
 			settings.add(exportFormat);
-			// If single files should be created, the result files need to be
-			// added to the OCROuput object
-
-			if (config.singleFile) {
-				for (OCRImage aoi : ocrProcess.getOcrImages()) {
-					String file = ((AbbyyOCRImage) aoi).getRemoteUri()
-							.toString() + "." + of.toString().toLowerCase();
-					try {
-						aoo.setSingleFile(true);
-						aoo.addResultFragment(new URI(file));
-					} catch (URISyntaxException e) {
-						logger.error(
-								"Error while setting URI in single file mode (" + ocrProcess.getName() + ")",
-								e);
-						throw new OCRException(e);
-					}
-				}
-			}
 		}
 
 		for (int j = 0; j < settings.size(); j++) {
@@ -334,18 +294,6 @@ public class AbbyyTicket {
 
 		// goes into the global temp directory
 		ticketDoc.save(out, opts);
-
-		// TODO: Validation cannot be used, because the server does not accept
-		// valid tickets with xsi:type attributes
-		if (config.validateTicket && !ticketDoc.validate(validationOptions)) {
-			logger.error("AbbyyTicket not valid! " + identifier);
-
-			Iterator iter = validationErrors.iterator();
-		    while (iter.hasNext()) {
-		        logger.error(">>>>> " + iter.next() + "\n");
-		    }
-			throw new OCRException("AbbyyTicket not valid! " + identifier);
-		}
 
 	}
 
@@ -377,8 +325,5 @@ public class AbbyyTicket {
 //		super.addImage(aoi);
 //	}
 
-	protected void setConfig(ConfigParser config) {
-		this.config = config;
-	}
 
 }
