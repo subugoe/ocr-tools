@@ -13,7 +13,9 @@ public class AbbyyMultiuserFactory  extends AbbyyServerFactory {
 	
 	@Override
 	public OCREngine createEngine() {
-		return new MultiUserAbbyyOCREngine(userProperties);
+		MultiUserAbbyyOCREngine engine = new MultiUserAbbyyOCREngine(userProperties);
+		engine.initialize();
+		return engine;
 	}
 
 }

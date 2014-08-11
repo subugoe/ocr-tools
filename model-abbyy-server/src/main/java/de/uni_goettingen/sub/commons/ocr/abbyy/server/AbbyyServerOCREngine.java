@@ -44,6 +44,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 
 public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
@@ -64,15 +65,24 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	
 	protected Properties userProperties = new Properties();
 	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
+	private FileAccess fileAccess = new FileAccess();
 
 	// for unit tests
 	void setHotfolderProvider(HotfolderProvider newProvider) {
 		hotfolderProvider = newProvider;
 	}
+	void setFileAccess(FileAccess newAccess) {
+		fileAccess = newAccess;
+	}
 	
 	public AbbyyServerOCREngine(Properties initUserProperties) {
 		userProperties = initUserProperties;
-		String configFile = userProperties.getProperty("abbyy.config");
+	}
+	
+	public void initialize() {
+		String configFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
+		Properties fileProperties = fileAccess.getPropertiesFromFile(configFile);
+		
 		if (configFile != null) {
 			config = new ConfigParser("/" + configFile).parse();
 		} else {
@@ -149,7 +159,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 			logger.error("Error with server lock file " + lockURI, e);
 		}
 		
-		pool = createPool();
+		pool = createPool(config.getMaxThreads());
 
 		// TODO: need this?
 //		String charCoords = extraOptions.get("output.xml.charcoordinates");
@@ -227,9 +237,9 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	 * 
 	 * @return an instance of a pool/executor
 	 */
-	protected OCRExecuter createPool() {
+	protected OCRExecuter createPool(int maxThreads) {
 		// TODO: make a field
-		return new OCRExecuter(config.getMaxThreads());
+		return new OCRExecuter(maxThreads);
 	}
 	
 	protected void cleanUp() {

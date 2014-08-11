@@ -216,8 +216,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}
 		
 		//TODO: remove
-		URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
-		hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
+//		URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
+//		hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
 
 		logger.info("Copying ticket to server (" + getName() + ")");
 		hotfolder.copyTmpFile(ticketFileName, inputTicketUri);

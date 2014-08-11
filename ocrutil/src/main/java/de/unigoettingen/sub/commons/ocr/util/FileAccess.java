@@ -80,7 +80,7 @@ public class FileAccess {
 			File f = new File(getClass().getResource("/" + file).getFile());
 			props.load(inputStreamFromFile(f));
 		} catch (IOException e) {
-			// TODO: logger
+			// TODO: logger or throw
 			System.err.println("Could not load file:" + file);
 		}
 		return props;
@@ -91,7 +91,7 @@ public class FileAccess {
 		try {
 			is = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
-			// TODO: logger
+			// TODO: logger or throw
 			System.err.println("Could not load file:" + file);
 		}
 		return is;
