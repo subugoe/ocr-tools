@@ -51,8 +51,6 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngine.class);
 
-	protected ConfigParser config;
-
 	protected Hotfolder hotfolder;
 
 	protected Queue<AbbyyOCRProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
@@ -63,7 +61,8 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	
 	private OCRExecuter pool;
 	
-	protected Properties userProperties = new Properties();
+	protected Properties userProps = new Properties();
+	private Properties fileProps = new Properties();
 	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	private FileAccess fileAccess = new FileAccess();
 
@@ -76,27 +75,22 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	}
 	
 	public AbbyyServerOCREngine(Properties initUserProperties) {
-		userProperties = initUserProperties;
+		userProps = initUserProperties;
 	}
 	
 	public void initialize() {
-		String configFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
-		Properties fileProperties = fileAccess.getPropertiesFromFile(configFile);
+		String configFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
+		fileProps = fileAccess.getPropertiesFromFile(configFile);
 		
-		if (configFile != null) {
-			config = new ConfigParser("/" + configFile).parse();
-		} else {
-			config = new ConfigParser().parse();
-		}
-		String user = userProperties.getProperty("user");
-		String password = userProperties.getProperty("password");
+		String user = userProps.getProperty("user");
+		String password = userProps.getProperty("password");
 		if (user != null) {
-			config.setUsername(user);
+			fileProps.setProperty("username", user);
 		}
 		if (password != null) {
-			config.setPassword(password);
+			fileProps.setProperty("password", password);
 		}
-		hotfolder = hotfolderProvider.createHotfolder(config.getServerURL(), config.getUsername(), config.getPassword());
+		hotfolder = hotfolderProvider.createHotfolder(fileProps.getProperty("serverUrl"), fileProps.getProperty("username"), fileProps.getProperty("password"));
 	}
 
 	@Override
@@ -138,11 +132,11 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		started = true;
 		
 		try {
-			String overwrite = userProperties.getProperty("lock.overwrite");
+			String overwrite = userProps.getProperty("lock.overwrite");
 			boolean overwriteLock = "true".equals(overwrite);
 
 			String serverLockFile = ConfigParser.SERVER_LOCK_FILE_NAME;
-			lockURI = new URI(config.getServerURL() + serverLockFile);
+			lockURI = new URI(fileProps.getProperty("serverUrl") + serverLockFile);
 			
 			// need to synchronize because of the Web Service
 			synchronized(monitor) {
@@ -159,7 +153,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 			logger.error("Error with server lock file " + lockURI, e);
 		}
 		
-		pool = createPool(config.getMaxThreads());
+		pool = createPool(Integer.parseInt(fileProps.getProperty("maxThreads")));
 
 		// TODO: need this?
 //		String charCoords = extraOptions.get("output.xml.charcoordinates");
@@ -177,7 +171,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 					xmlOutput.setParams(params);
 				}
 			}
-			boolean split = "true".equals(userProperties.getProperty("books.split"));
+			boolean split = "true".equals(userProps.getProperty("books.split"));
 			if (split) {
 				pool.executeWithSplit(process);
 			} else {
@@ -258,7 +252,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		
 		for (OCRProcess process : processesQueue) {
 			long imagesInProcess = process.getOcrImages().size();
-			durationInMillis += imagesInProcess * config.minMillisPerFile;
+			durationInMillis += imagesInProcess * Integer.parseInt(fileProps.getProperty("minMillisPerFile"));
 		}
 		return (int) (durationInMillis / 1000);
 	}
