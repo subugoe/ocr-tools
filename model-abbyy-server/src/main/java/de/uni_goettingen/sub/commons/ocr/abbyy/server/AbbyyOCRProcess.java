@@ -21,7 +21,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,7 +34,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -119,6 +117,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	transient private AbbyyTicket abbyyTicket;
 	transient private FileAccess fileAccess = new FileAccess();
 	private Properties fileProps;
+	transient private HotfolderManager hotfolderManager;
 
 	// for unit tests
 	void setHotfolderProvider(HotfolderProvider newProvider) {
@@ -129,6 +128,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	}
 	void setFileAccess(FileAccess newAccess) {
 		fileAccess = newAccess;
+	}
+	void setHotfolderManager(HotfolderManager newManager) {
+		hotfolderManager = newManager;
 	}
 	
 	public AbbyyOCRProcess() {
@@ -150,6 +152,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		}
 		
 		hotfolder = hotfolderProvider.createHotfolder(fileProps.getProperty("serverUrl"), fileProps.getProperty("username"), fileProps.getProperty("password"));
+		hotfolderManager = new HotfolderManager(hotfolder);
 		abbyyTicket = new AbbyyTicket(this);
 
 		processId = java.util.UUID.randomUUID().toString();
@@ -288,9 +291,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			
 			logger.info("Cleaning Server (" + getName() + ")");
 
-			// TODO: ServerCleaner class
-			cleanOutputs(getOcrOutputs());
-			cleanImages(convertList(getOcrImages()));
+			hotfolderManager.deleteOutputs(ocrOutputs);
+			hotfolderManager.deleteImages(ocrImages);
 			createAndSendTicket();
 			
 			logger.info("Copying images to server. (" + getName() + ")");
@@ -323,8 +325,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				
 				logger.debug("Trying to delete files of the failed process (" + getName() + ")");
 				// Clean server, to reclaim storage
-				cleanImages(convertList(getOcrImages()));
-				cleanOutputs(getOcrOutputs());
+				hotfolderManager.deleteImages(ocrImages);
+				hotfolderManager.deleteOutputs(ocrOutputs);
 				// Delete the error metadata
 				hotfolder.deleteIfExists(inputTicketUri);
 				hotfolder.deleteIfExists(errorTicketUri);
@@ -361,9 +363,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			failed = true;
 		} finally {
 			try {	
-				cleanImages(convertList(getOcrImages()));
+				hotfolderManager.deleteImages(ocrImages);
 				if (!isResult) {
-					cleanOutputs(getOcrOutputs());
+					hotfolderManager.deleteOutputs(ocrOutputs);
 				}
 				//hotfolder.deleteIfExists(errorResultUri);
 				hotfolder.deleteIfExists(inputTicketUri);
@@ -405,14 +407,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			size += aoi.getSize();
 		}
 		return size;
-	}
-
-	private static List<AbbyyOCRImage> convertList(List<OCRImage> ocrImages) {
-		List<AbbyyOCRImage> images = new LinkedList<AbbyyOCRImage>();
-		for (OCRImage i : ocrImages) {
-			images.add((AbbyyOCRImage) i);
-		}
-		return images;
 	}
 
 	public Boolean isFailed() {
@@ -479,17 +473,15 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 			URI fromUri = image.getUri();
 			URI toUri = image.getRemoteUri();
-			String toUriWothoutPassword = toUri.toString()
-					.replace(fileProps.getProperty("password"), "***");
-			logger.trace("Copy from " + fromUri.toString() + " to "
-					+ toUriWothoutPassword + " (" + getName() + ")");
+			logger.debug("Copy from " + fromUri.toString() + " to "
+					+ toUri + " (" + getName() + ")");
 			try {
 				hotfolder.copyFile(fromUri, toUri);
 			} catch (IOException e) {
 				logger.debug("can not Copy from "
-						+ fromUri.toString() + " to " + toUriWothoutPassword + " (" + getName() + ")");
+						+ fromUri.toString() + " to " + toUri + " (" + getName() + ")");
 				logger.debug("another try Copy from "
-						+ fromUri.toString() + " to " + toUriWothoutPassword + " (" + getName() + ")");
+						+ fromUri.toString() + " to " + toUri + " (" + getName() + ")");
 				hotfolder.copyFile(fromUri, toUri);
 			}
 
@@ -626,55 +618,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		return lastOutput;
 	}
 
-	/**
-	 * Removes all outputs of this process from the server, this includes the
-	 * output and the error folders. Use this method to clean up after errors
-	 * and before sending new ones to avoid GUIDs as output name, since they
-	 * aren't predictable.
-	 * 
-	 * @param outputs
-	 *            Map of the outputs to remove
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
-	private void cleanOutputs(final Map<OCRFormat, OCROutput> outputs)
-			throws IOException {
-		for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
-			AbbyyOCROutput out = (AbbyyOCROutput) entry.getValue();
-			URI remoteUri = out.getRemoteUri();
-			logger.trace("Trying to remove output from output folder: "
-					+ remoteUri.toString() + " (" + getName() + ")");
-			hotfolder.deleteIfExists(remoteUri);
-		}
-	}
-
-	/**
-	 * Removes all images of this process from the server, this includes the
-	 * input and the error folders. Use this method to clean up after errors and
-	 * before sending new ones.
-	 * 
-	 * @param images
-	 *            List of images to remove
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
-	private void cleanImages(final List<AbbyyOCRImage> images)
-			throws IOException {
-		for (AbbyyOCRImage image : images) {
-			URI remoteUri = image.getRemoteUri();
-			logger.trace("Trying to remove image from input folder: "
-					+ remoteUri.toString() + " (" + getName() + ")");
-			hotfolder.deleteIfExists(remoteUri);
-			URI errorImageUri = image.getErrorUri();
-			logger.trace("Trying to remove image from error folder: "
-					+ errorImageUri.toString() + " (" + getName() + ")");
-			hotfolder.deleteIfExists(errorImageUri);
-		}
-	}
-	
-	/**
-	 * The Class TimeoutExcetion.
-	 */
 	public static class TimeoutExcetion extends Exception {
 
 		/** The Constant serialVersionUID. */
