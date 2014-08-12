@@ -277,34 +277,6 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 		recognize(ocrProcess.get(0));
 	}
 
-	@SuppressWarnings("serial")
-	protected static void mergeResultFiles (Map<OCRFormat, AbbyyOCROutput> outputs) {
-		Map<OCRFormat, Exception> exceptions = new HashMap<OCRFormat, Exception>();
-		for (Map.Entry<OCRFormat, AbbyyOCROutput> entry : outputs.entrySet()) {
-			OCRFormat f = entry.getKey();
-			if (FileMerger.isSegmentable(f)) {
-				throw new OCRException("Format " + f.toString() + " isn't mergable!");
-			}
-			final AbbyyOCROutput o = entry.getValue();
-			File file = new File(o.getUri());
-			//Convert URI list to File list, the hardly readable way ;-)
-			List<File> inputFiles = new ArrayList<File>() {
-				{
-					for (URI u : o.getResultFragments()) {
-						add(new File(u));
-					}
-				}
-			};
-			try {
-				FileMerger.mergeFiles(f, inputFiles, file);
-			} catch (IllegalArgumentException e) {
-				exceptions.put(f, e);
-			}
-		}
-		if (!exceptions.isEmpty()) {
-			throw new OCRException("Error while merging files.");
-		}
-	}
 
 	@Override
 	public int getEstimatedDurationInSeconds() {

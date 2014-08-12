@@ -236,38 +236,34 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	private void copyResultsFromServer() throws MergeException, IOException {
 		for (Map.Entry<OCRFormat, OCROutput> entry : ocrOutputs.entrySet()) {
 			final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
-			if (o.isSingleFile()) {
-				URI remoteUri = o.getRemoteUri();
-				URI localUri = o.getUri();
-				try {
-					logger.debug("Copy from " + remoteUri + " to "
-							+ localUri +  "(" + getName() + ")");
+
+			URI remoteUri = o.getRemoteUri();
+			URI localUri = o.getUri();
+			try {
+				logger.debug("Copy from " + remoteUri + " to "
+						+ localUri +  "(" + getName() + ")");
+				hotfolder.copyFile(remoteUri, localUri);
+			} catch (Exception e) {
+				logger.warn("Can NOT Copy from " + remoteUri
+						+ " to " + localUri + " (" + getName() + ")");
+			}
+			try {
+				if (!new File(localUri).exists()) {
+					logger.debug("another try Copy from "
+							+ remoteUri + " to " + localUri);
+					Thread.sleep(100);
 					hotfolder.copyFile(remoteUri, localUri);
-				} catch (Exception e) {
-					logger.warn("Can NOT Copy from " + remoteUri
-							+ " to " + localUri + " (" + getName() + ")");
 				}
-				try {
-					if (!new File(localUri).exists()) {
-						logger.debug("another try Copy from "
-								+ remoteUri + " to " + localUri);
-						Thread.sleep(100);
-						hotfolder.copyFile(remoteUri, localUri);
-					}
-				} catch (Exception e) {
-					logger.error("Can NOT Copy from " + remoteUri
-							+ " to " + localUri + " (" + getName() + ")", e);
-					throw new OCRException("Can NOT Copy from "
-							+ remoteUri + " to " + localUri, e);
-				}
-				if (new File(localUri).exists()) {
-					logger.debug("Deleting remote file "
-							+ remoteUri + " (" + getName() + ")");
-					hotfolder.deleteIfExists(remoteUri);
-				}
-			} else {
-				// The results are fragmented, merge them
-				mergeResult(entry.getKey(), o);
+			} catch (Exception e) {
+				logger.error("Can NOT Copy from " + remoteUri
+						+ " to " + localUri + " (" + getName() + ")", e);
+				throw new OCRException("Can NOT Copy from "
+						+ remoteUri + " to " + localUri, e);
+			}
+			if (new File(localUri).exists()) {
+				logger.debug("Deleting remote file "
+						+ remoteUri + " (" + getName() + ")");
+				hotfolder.deleteIfExists(remoteUri);
 			}
 		}
 
@@ -451,14 +447,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		List<URI> mustBeThereUris = new ArrayList<URI>();
 		for (Map.Entry<OCRFormat, OCROutput> entry : getOcrOutputs().entrySet()) {
 			final AbbyyOCROutput output = (AbbyyOCROutput) entry.getValue();
-			if (output.isSingleFile()) {
-				URI uri = output.getRemoteUri();
-				mustBeThereUris.add(uri);
-			} else {
-				for (URI uri : output.getResultFragments()) {
-					mustBeThereUris.add(uri);
-				}
-			}
+			URI uri = output.getRemoteUri();
+			mustBeThereUris.add(uri);
 		}
 		return mustBeThereUris;
 	}
@@ -539,25 +529,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		} else {
 			logger.warn("Server state checking is disabled. (" + getName() + ")");
 		}
-	}
-
-	private void mergeResult(final OCRFormat format, final AbbyyOCROutput output)
-			throws IOException, MergeException {
-		if (!FileMerger.isSegmentable(format)) {
-			throw new OCRException("Format " + format.toString()
-					+ " isn't mergable!");
-		}
-		// TODO: Use the hotfolder stuff here, since we can redirect IO in this
-		// layer
-		OutputStream os = new FileOutputStream(new File(output.getUri()));
-		
-		List<InputStream> inputFiles = new ArrayList<InputStream>();
-			
-		for (URI u : output.getResultFragments()) {
-			inputFiles.add(hotfolder.openInputStream(u));
-		}			
-		
-		FileMerger.mergeStreams(format, inputFiles, os);
 	}
 
 	/**
@@ -674,14 +645,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			logger.trace("Trying to remove output from output folder: "
 					+ remoteUri.toString() + " (" + getName() + ")");
 			hotfolder.deleteIfExists(remoteUri);
-			// Also remove result fragments if they exist.
-			if (!out.isSingleFile()) {
-				for (URI u : out.getResultFragments()) {
-					logger.trace("Trying to remove output fragment from output folder: "
-							+ remoteUri.toString() + " (" + getName() + ")");
-					hotfolder.deleteIfExists(u);
-				}
-			}
 		}
 	}
 

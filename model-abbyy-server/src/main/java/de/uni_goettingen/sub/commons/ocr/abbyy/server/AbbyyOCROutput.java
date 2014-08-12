@@ -33,9 +33,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
  * system, usally a relative file name and thus represented as a String. -
  * remoteURL, an URL representing the remote file, it should be resolveable from
  * the local Server.-remoteLocation, The remote location represents the location 
- * on the remote system, something like D\:\\Recognition\\GDZ\\output. -singleFile,
- * If this is set the process is split into separate files. -resultFragments, This 
- * is used, if we don't create the result in single file mode
+ * on the remote system, something like D\:\\Recognition\\GDZ\\output.
  */
 public class AbbyyOCROutput extends AbstractOCROutput {
 
@@ -48,12 +46,6 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	/** The URI of the file, need to be resolvable from the local machine. */
 	protected URI remoteUri;
 	
-
-	/** If this is set the process is split into separate files  */
-	private Boolean singleFile = true;
-	//This is used, if we don't create the result in single file mode
-	private List<URI> resultFragments = new ArrayList<URI>();
-
 	//Add some informations about the location of error files
 	/** The URIs to expect in case an error has happened on the server */
 	protected List<URI> errorImages = new ArrayList<URI>();
@@ -85,17 +77,14 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	 * @param params, @see de.uni_goettingen.sub.commons.ocr.api.OCROutput#setParams(java.util.Map)
 	 * @param remoteUri, This represents the URI to the remote system.
 	 * @param remoteLocation, The remote location represents the location on the remote system
-	 * @param singleFile, If this is set the process is split into separate files
 	 * @param resultFragments, This is used, if we don't create the result in single file mode
 	 */
-	public AbbyyOCROutput(URI uri, Map<String, String> params, URI remoteUri, String remoteLocation, Boolean singleFile, List<URI> resultFragments) {
+	public AbbyyOCROutput(URI uri, Map<String, String> params, URI remoteUri, String remoteLocation) {
 		super();
 		this.outputUri = uri;
 		this.params = params;
 		this.remoteUri = remoteUri;
 		this.remoteLocation = remoteLocation;
-		this.singleFile = singleFile;
-		this.resultFragments = resultFragments;
 	}
 
 	/**
@@ -103,7 +92,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	 * @param aoo the aoo
 	 */
 	public AbbyyOCROutput(AbbyyOCROutput aoo) {
-		this(aoo.outputUri, aoo.params, aoo.remoteUri, aoo.remoteLocation, aoo.singleFile, aoo.resultFragments);		
+		this(aoo.outputUri, aoo.params, aoo.remoteUri, aoo.remoteLocation);		
 	}
 
 	/**
@@ -139,33 +128,6 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	}
 
 	/**
-	 * If this is set the process is split into separate files
-	 * @return the singleFile	
-	 */
-	public Boolean isSingleFile () {
-		return singleFile;
-	}
-
-	/**
-	 * Gets ResoltFragments, This is used, if we don't create the 
-	 * result in single file mode
-	 * @return the resultFragments	
-	 */
-	public List<URI> getResultFragments () {
-		return resultFragments;
-	}
-
-	/**
-	 * Adds the resultfragment.This is used, if we don't create the 
-	 * result in single file mode
-	 * @param uri the uri
-	 */
-	public void addResultFragment (URI uri) {
-		this.resultFragments.add(uri);
-		singleFile = false;
-	}
-
-	/**
 	 * Gets the remoteFilename, This is the local file name on the remote system.
 	 * @return the remoteFilename		
 	 */
@@ -181,12 +143,4 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 		this.remoteFilename = remoteFilename;
 	}
 	
-	/**
-	 * Sets the singlefile. 
-	 * @param singleFile, If this is set the process is split into separate files 
-	 */
-	protected void setSingleFile (Boolean singleFile) {
-		this.singleFile = singleFile;
-	}
-
 }
