@@ -56,7 +56,6 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
-import de.unigoettingen.sub.commons.ocr.util.FileMerger.MergeException;
 
 /**
  * The Class AbbyyOCRProcess.
@@ -236,47 +235,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		hotfolder.deleteTmpFile(ticketFileName);
 	}
 	
-	private void copyResultsFromServer() throws MergeException, IOException {
-		for (Map.Entry<OCRFormat, OCROutput> entry : ocrOutputs.entrySet()) {
-			final AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
-
-			URI remoteUri = o.getRemoteUri();
-			URI localUri = o.getUri();
-			try {
-				logger.debug("Copy from " + remoteUri + " to "
-						+ localUri +  "(" + getName() + ")");
-				hotfolder.copyFile(remoteUri, localUri);
-			} catch (Exception e) {
-				logger.warn("Can NOT Copy from " + remoteUri
-						+ " to " + localUri + " (" + getName() + ")");
-			}
-			try {
-				if (!new File(localUri).exists()) {
-					logger.debug("another try Copy from "
-							+ remoteUri + " to " + localUri);
-					Thread.sleep(100);
-					hotfolder.copyFile(remoteUri, localUri);
-				}
-			} catch (Exception e) {
-				logger.error("Can NOT Copy from " + remoteUri
-						+ " to " + localUri + " (" + getName() + ")", e);
-				throw new OCRException("Can NOT Copy from "
-						+ remoteUri + " to " + localUri, e);
-			}
-			if (new File(localUri).exists()) {
-				logger.debug("Deleting remote file "
-						+ remoteUri + " (" + getName() + ")");
-				hotfolder.deleteIfExists(remoteUri);
-			}
-		}
-
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Runnable#run()
-	 */
 	@Override
 	public void run() {
 
@@ -290,15 +248,14 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			errorResultUri = new URI(errorDavUri.toString() + resultxmlFileName);
 			
 			logger.info("Cleaning Server (" + getName() + ")");
-
 			hotfolderManager.deleteOutputs(ocrOutputs);
 			hotfolderManager.deleteImages(ocrImages);
+			
 			createAndSendTicket();
 			
 			logger.info("Copying images to server. (" + getName() + ")");
-			copyImagesToServer(getOcrImages());
+			hotfolderManager.copyImagesToHotfolder(ocrImages);
 
-			// Wait for results if needed
 			long minWait = getOcrImages().size() * Long.parseLong(fileProps.getProperty("minMillisPerFile"));
 			long maxWait = getOcrImages().size() * Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
 			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes) (" + getName() + ")");
@@ -313,7 +270,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				
 				waitForResults(restTime);
 				
-				copyResultsFromServer();
+				hotfolderManager.retrieveResults(ocrOutputs);
 				
 				endTime = System.currentTimeMillis();
 				processTimeResult = getDuration();
@@ -466,28 +423,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		Thread.sleep(waitInterval);
 	}
 	
-	private void copyImagesToServer(final List<OCRImage> fileInfos)
-			throws InterruptedException, IOException, URISyntaxException {
-		for (OCRImage info : fileInfos) {
-			AbbyyOCRImage image = (AbbyyOCRImage) info;
-
-			URI fromUri = image.getUri();
-			URI toUri = image.getRemoteUri();
-			logger.debug("Copy from " + fromUri.toString() + " to "
-					+ toUri + " (" + getName() + ")");
-			try {
-				hotfolder.copyFile(fromUri, toUri);
-			} catch (IOException e) {
-				logger.debug("can not Copy from "
-						+ fromUri.toString() + " to " + toUri + " (" + getName() + ")");
-				logger.debug("another try Copy from "
-						+ fromUri.toString() + " to " + toUri + " (" + getName() + ")");
-				hotfolder.copyFile(fromUri, toUri);
-			}
-
-		}
-	}
-
 	public Long getDuration() {
 		return endTime - startTime;
 	}

@@ -102,10 +102,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 			// This should be an upload
 			put(to.toString(), new File(from));
 		} else if (!isLocal(from) && isLocal(to)) {
-			// This should be a download
-			// outdir = outdir.endsWith(File.separator) ? outdir : outdir +
-			// File.separator;
-			// File localFile = new File(outdir + localfilename);
+			// TODO: retry several times
 			getWebdavFile(from, new File(to));
 		} else if (isLocal(from) && isLocal(to)) {
 			// Just copy local files

@@ -36,6 +36,26 @@ public class HotfolderManager {
 		}
 	}
 
+	public void copyImagesToHotfolder(List<OCRImage> ocrImages) throws IOException {
+		for (OCRImage ocrImage : ocrImages) {
+			AbbyyOCRImage image = (AbbyyOCRImage) ocrImage;
+			URI fromUri = image.getUri();
+			URI toUri = image.getRemoteUri();
+			hotfolder.copyFile(fromUri, toUri);
+		}
+	}
+
+	public void retrieveResults(Map<OCRFormat, OCROutput> ocrOutputs) throws IOException {
+		for (Map.Entry<OCRFormat, OCROutput> entry : ocrOutputs.entrySet()) {
+			AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
+
+			URI remoteUri = o.getRemoteUri();
+			URI localUri = o.getUri();
+			hotfolder.copyFile(remoteUri, localUri);
+			hotfolder.deleteIfExists(remoteUri);
+		}
+	}
+
 	
 	
 }
