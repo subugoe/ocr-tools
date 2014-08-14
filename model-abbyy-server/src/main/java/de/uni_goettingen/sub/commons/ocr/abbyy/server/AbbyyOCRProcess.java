@@ -162,6 +162,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			inputDavUri = new URI(serverUri + fileProps.getProperty("input") + "/");
 			outputDavUri = new URI(serverUri + fileProps.getProperty("output") + "/");
 			errorDavUri = new URI(serverUri + fileProps.getProperty("error") + "/");
+
+			abbyyTicket.setRemoteInputFolder(inputDavUri);
+			abbyyTicket.setRemoteErrorFolder(errorDavUri);
 		} catch (URISyntaxException e) {
 			logger.error("Can't setup server uris (" + getName() + ")", e);
 			throw new OCRException(e);
@@ -211,30 +214,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			}
 		}
 	}
-	
-	private void createAndSendTicket() throws URISyntaxException, IOException {
-		String ticketFileName = name + ".xml";
-		inputTicketUri = new URI(inputDavUri.toString() + ticketFileName);
-		errorTicketUri = new URI(errorDavUri.toString() + ticketFileName);
 		
-		synchronized (monitor) {
-			logger.info("Creating AbbyyTicket (" + getName() + ")");
-			OutputStream os = hotfolder.createTmpFile(ticketFileName);
-			abbyyTicket.write(os, name);
-			os.close();
-		}
-		
-		//TODO: remove
-//		URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
-//		hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
-
-		logger.info("Copying ticket to server (" + getName() + ")");
-		hotfolder.copyTmpFile(ticketFileName, inputTicketUri);
-		
-		logger.debug("Delete ticket tmp  (" + getName() + ")");
-		hotfolder.deleteTmpFile(ticketFileName);
-	}
-	
 	@Override
 	public void run() {
 
@@ -251,7 +231,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			hotfolderManager.deleteOutputs(ocrOutputs);
 			hotfolderManager.deleteImages(ocrImages);
 			
-			createAndSendTicket();
+			logger.info("Creating and sending Abbyy ticket (" + getName() + ")");
+			hotfolderManager.createAndSendTicket(abbyyTicket, name);
+
+			errorTicketUri = new URI(errorDavUri.toString() + name + ".xml");
+			inputTicketUri = new URI(inputDavUri.toString() + name + ".xml");
 			
 			logger.info("Copying images to server. (" + getName() + ")");
 			hotfolderManager.copyImagesToHotfolder(ocrImages);
@@ -627,6 +611,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				sP.setTime(new Date().getTime());
 			    listNumber++;
 			    sP.abbyyTicket = new AbbyyTicket(sP);
+			    sP.abbyyTicket.setRemoteInputFolder(inputDavUri);
+			    sP.abbyyTicket.setRemoteErrorFolder(errorDavUri);
 				cloneProcesses.add(sP);
 		}
 		return cloneProcesses;

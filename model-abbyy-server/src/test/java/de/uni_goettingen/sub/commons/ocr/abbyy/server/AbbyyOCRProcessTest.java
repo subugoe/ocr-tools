@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -136,6 +137,8 @@ public class AbbyyOCRProcessTest {
 	
 	public void runProcessInThread(String jobName, boolean split) throws IOException, InterruptedException {
 		AbbyyOCRProcess process = new AbbyyOCRProcess();
+		Properties props = new Properties();
+		props.load(new FileInputStream(System.getProperty("user.dir") + "/src/test/resources/gbv-antiqua.properties"));
 		process.initialize(new Properties());
 
 		process.setName(jobName);

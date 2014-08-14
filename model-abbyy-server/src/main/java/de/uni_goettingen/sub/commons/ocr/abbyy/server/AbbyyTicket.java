@@ -21,6 +21,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +88,10 @@ public class AbbyyTicket {
 
 	private static XmlOptions opts = new XmlOptions();
 	private OCRProcess ocrProcess;
+
+	private URI remoteInputFolder;
+
+	private URI remoteErrorFolder;
 
 	static {
 
@@ -310,6 +315,19 @@ public class AbbyyTicket {
 	 */
 	public void setProcessTimeout(Long oCRTimeOut) {
 		this.processTimeout = oCRTimeOut;
+	}
+
+	public void setRemoteInputFolder(URI newFolder) {
+		remoteInputFolder = newFolder;
+	}
+	public URI getRemoteInputFolder() {
+		return remoteInputFolder;
+	}
+	public void setRemoteErrorFolder(URI newFolder) {
+		remoteErrorFolder = newFolder;
+	}
+	public URI getRemoteErrorFolder() {
+		return remoteErrorFolder;
 	}
 
 	// TODO: Check if this is called if a List of OCRImage is set

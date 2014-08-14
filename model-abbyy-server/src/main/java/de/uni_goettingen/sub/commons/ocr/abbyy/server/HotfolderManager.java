@@ -1,7 +1,9 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +15,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 public class HotfolderManager {
 
 	private Hotfolder hotfolder;
+	static Object monitor = new Object();
 
 	public HotfolderManager(Hotfolder initHotfolder) {
 		hotfolder = initHotfolder;
@@ -54,6 +57,24 @@ public class HotfolderManager {
 			hotfolder.copyFile(remoteUri, localUri);
 			hotfolder.deleteIfExists(remoteUri);
 		}
+	}
+
+	public void createAndSendTicket(AbbyyTicket abbyyTicket, String name) throws IOException, URISyntaxException {
+		String ticketFileName = name + ".xml";
+		URI inputTicketUri = new URI(abbyyTicket.getRemoteInputFolder().toString() + ticketFileName);
+		
+		synchronized (monitor) {
+			OutputStream os = hotfolder.createTmpFile(ticketFileName);
+			abbyyTicket.write(os, name);
+			os.close();
+		}
+		
+		//TODO: remove
+//		URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
+//		hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
+
+		hotfolder.copyTmpFile(ticketFileName, inputTicketUri);
+		hotfolder.deleteTmpFile(ticketFileName);
 	}
 
 	
