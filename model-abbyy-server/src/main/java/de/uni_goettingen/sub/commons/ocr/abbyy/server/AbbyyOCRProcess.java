@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -79,7 +78,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	private Boolean failed = false;
 	private String errorDescription = null;
 
-	private Boolean isResult = false;
+//	private Boolean isResult = false;
 	
 	private Long startTime = 0L;
 	
@@ -260,7 +259,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				processTimeResult = getDuration();
 				logger.info("OCR Output file has been created successfully after "+  getDuration() + " milliseconds (" + getName() + ")");
 					
-			} catch (TimeoutExcetion e) {
+			} catch (TimeoutException e) {
 				logger.error("Got an timeout while waiting for results (" + getName() + ")", e);
 				failed = true;
 				
@@ -305,12 +304,10 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		} finally {
 			try {	
 				hotfolderManager.deleteImages(ocrImages);
-				if (!isResult) {
-					hotfolderManager.deleteOutputs(ocrOutputs);
-				}
+				hotfolderManager.deleteOutputs(ocrOutputs);
 				//hotfolder.deleteIfExists(errorResultUri);
 				hotfolder.deleteIfExists(inputTicketUri);
-				if (outputResultUri != null || !isResult) {
+				if (outputResultUri != null) {
 					hotfolder.deleteIfExists(outputResultUri);
 				}
 				if(obs != null && getSegmentation()) {
@@ -354,7 +351,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		return failed;
 	}
 
-	private void waitForResults(long timeout) throws TimeoutExcetion, InterruptedException,
+	private void waitForResults(long timeout) throws TimeoutException, InterruptedException,
 			IOException, URISyntaxException {
 		long start = System.currentTimeMillis();
 		
@@ -388,15 +385,15 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		return mustBeThereUris;
 	}
 	
-	private void checkIfError(long start, long timeout) throws TimeoutExcetion, IOException {
+	private void checkIfError(long start, long timeout) throws TimeoutException, IOException {
 		if (System.currentTimeMillis() > start + timeout) {
-			isResult = true;
+			
 			logger.error("Waited too long - fail (" + getName() + ")");
-			throw new TimeoutExcetion();
+			throw new TimeoutException();
 		}
 		if (hotfolder.exists(errorResultUri)) {
 			logger.error("Server reported an error in file: " + errorResultUri + " (" + getName() + ")");
-			throw new TimeoutExcetion();
+			throw new TimeoutException();
 		}
 	}
 	
@@ -535,18 +532,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			lastOutput = k;
 		}
 		return lastOutput;
-	}
-
-	public static class TimeoutExcetion extends Exception {
-
-		/** The Constant serialVersionUID. */
-		private static final long serialVersionUID = -3002142265497735648L;
-		/**
-		 * Instantiates a new timeout excetion.
-		 */
-		public TimeoutExcetion() {
-			super();
-		}
 	}
 
 	protected List<AbbyyOCRProcess> split(){

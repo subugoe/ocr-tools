@@ -7,13 +7,17 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
 public class HotfolderManager {
-
+	private final static Logger logger = LoggerFactory
+			.getLogger(HotfolderManager.class);
 	private Hotfolder hotfolder;
 	static Object monitor = new Object();
 
