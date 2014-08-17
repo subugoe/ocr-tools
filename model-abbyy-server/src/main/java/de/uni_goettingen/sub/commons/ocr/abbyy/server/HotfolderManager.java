@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,8 +17,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
 public class HotfolderManager {
-	private final static Logger logger = LoggerFactory
-			.getLogger(HotfolderManager.class);
+	private final static Logger logger = LoggerFactory.getLogger(HotfolderManager.class);
 	private Hotfolder hotfolder;
 	static Object monitor = new Object();
 
@@ -81,6 +81,56 @@ public class HotfolderManager {
 		hotfolder.deleteTmpFile(ticketFileName);
 	}
 
+	public void waitForResults(long timeout, long waitInterval,
+			Map<OCRFormat, OCROutput> outputs, URI errorResultXmlUri) throws TimeoutException, IOException, InterruptedException {		
+		long start = System.currentTimeMillis();
+		
+		List<URI> mustBeThereUris = extractFromOutputs(outputs);
+		
+		outerLoop:
+		while (true) {
+
+			checkIfError(start, timeout, errorResultXmlUri);
+
+			for (URI expectedUri : mustBeThereUris) {
+				if (!hotfolder.exists(expectedUri)) {
+					logger.debug(expectedUri.toString() + " is not yet available");
+					waitALittle(waitInterval);
+					continue outerLoop;
+				}
+			}
+			logger.debug("Got all files.");
+			break;
+		}
+	}
+
+	private List<URI> extractFromOutputs(Map<OCRFormat, OCROutput> outputs) {
+		List<URI> mustBeThereUris = new ArrayList<URI>();
+		for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
+			final AbbyyOCROutput output = (AbbyyOCROutput) entry.getValue();
+			URI uri = output.getRemoteUri();
+			mustBeThereUris.add(uri);
+		}
+		return mustBeThereUris;
+	}
 	
+	private void checkIfError(long start, long timeout, URI errorResultXmlUri) throws TimeoutException, IOException {
+		if (System.currentTimeMillis() > start + timeout) {
+			
+			logger.error("Waited too long - fail ");
+			throw new TimeoutException();
+		}
+		if (hotfolder.exists(errorResultXmlUri)) {
+			logger.error("Server reported an error in file: " + errorResultXmlUri);
+			throw new TimeoutException();
+		}
+	}
+	
+	private void waitALittle(long waitInterval) throws InterruptedException {
+		logger.debug("Waiting for " + waitInterval
+				+ " milli seconds (" + waitInterval/1000/60 + " minutes)");
+		Thread.sleep(waitInterval);
+	}
+
 	
 }

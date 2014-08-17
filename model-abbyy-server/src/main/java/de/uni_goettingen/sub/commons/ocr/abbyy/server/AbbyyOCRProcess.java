@@ -251,7 +251,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				logger.info("Waking up, waiting another "
 						+ restTime + " milli seconds for results (" + restTime/1000/60 + " minutes) (" + getName() + ")");
 				
-				waitForResults(restTime);
+				long waitInterval = getOcrImages().size() * Long.parseLong(fileProps.getProperty("checkInterval"));
+				hotfolderManager.waitForResults(restTime, waitInterval, ocrOutputs, errorResultUri);
 				
 				hotfolderManager.retrieveResults(ocrOutputs);
 				
@@ -349,59 +350,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 	public Boolean isFailed() {
 		return failed;
-	}
-
-	private void waitForResults(long timeout) throws TimeoutException, InterruptedException,
-			IOException, URISyntaxException {
-		long start = System.currentTimeMillis();
-		
-		List<URI> mustBeThereUris = extractFromOutputs();
-		
-		outerLoop:
-		while (true) {
-
-			checkIfError(start, timeout);
-
-			for (URI expectedUri : mustBeThereUris) {
-				if (!hotfolder.exists(expectedUri)) {
-					logger.debug(expectedUri.toString() + " is not yet available (" + getName() + ")");
-					waitALittle();
-					continue outerLoop;
-				}
-			}
-			logger.debug("Got all files. (" + getName() + ")");
-			break;
-		}
-		
-	}
-
-	private List<URI> extractFromOutputs() {
-		List<URI> mustBeThereUris = new ArrayList<URI>();
-		for (Map.Entry<OCRFormat, OCROutput> entry : getOcrOutputs().entrySet()) {
-			final AbbyyOCROutput output = (AbbyyOCROutput) entry.getValue();
-			URI uri = output.getRemoteUri();
-			mustBeThereUris.add(uri);
-		}
-		return mustBeThereUris;
-	}
-	
-	private void checkIfError(long start, long timeout) throws TimeoutException, IOException {
-		if (System.currentTimeMillis() > start + timeout) {
-			
-			logger.error("Waited too long - fail (" + getName() + ")");
-			throw new TimeoutException();
-		}
-		if (hotfolder.exists(errorResultUri)) {
-			logger.error("Server reported an error in file: " + errorResultUri + " (" + getName() + ")");
-			throw new TimeoutException();
-		}
-	}
-	
-	private void waitALittle() throws InterruptedException {
-		long waitInterval = getOcrImages().size() * Long.parseLong(fileProps.getProperty("checkInterval"));
-		logger.debug("Waiting for " + waitInterval
-				+ " milli seconds (" + waitInterval/1000/60 + " minutes) (" + getName() + ")");
-		Thread.sleep(waitInterval);
 	}
 	
 	public Long getDuration() {
