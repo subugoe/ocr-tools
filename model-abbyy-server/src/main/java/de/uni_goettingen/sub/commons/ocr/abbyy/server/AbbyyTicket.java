@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -320,14 +321,14 @@ public class AbbyyTicket {
 	public void setRemoteInputFolder(URI newFolder) {
 		remoteInputFolder = newFolder;
 	}
-	public URI getRemoteInputFolder() {
-		return remoteInputFolder;
+	public URI getRemoteInputUri() throws URISyntaxException {
+		return new URI(remoteInputFolder.toString() + ocrProcess.getName() + ".xml");
 	}
 	public void setRemoteErrorFolder(URI newFolder) {
 		remoteErrorFolder = newFolder;
 	}
-	public URI getRemoteErrorFolder() {
-		return remoteErrorFolder;
+	public URI getRemoteErrorUri() throws URISyntaxException {
+		return new URI(remoteErrorFolder.toString() + ocrProcess.getName() + ".xml");
 	}
 
 	// TODO: Check if this is called if a List of OCRImage is set

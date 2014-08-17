@@ -73,13 +73,10 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	protected URI inputDavUri, outputDavUri, errorDavUri;
 
 	private URI errorResultUri;
-	private URI outputResultUri;
 
 	private Boolean failed = false;
 	private String errorDescription = null;
 
-//	private Boolean isResult = false;
-	
 	private Long startTime = 0L;
 	
 	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
@@ -106,10 +103,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 	private boolean alreadyBeenHere = false;
 	
-	//transient protected ConfigParser config;
 	protected static String encoding = "UTF8";
-	private URI inputTicketUri;
-	private URI errorTicketUri;
 
 	transient private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	transient private AbbyyTicket abbyyTicket;
@@ -233,9 +227,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			logger.info("Creating and sending Abbyy ticket (" + getName() + ")");
 			hotfolderManager.createAndSendTicket(abbyyTicket, name);
 
-			errorTicketUri = new URI(errorDavUri.toString() + name + ".xml");
-			inputTicketUri = new URI(inputDavUri.toString() + name + ".xml");
-			
 			logger.info("Copying images to server. (" + getName() + ")");
 			hotfolderManager.copyImagesToHotfolder(ocrImages);
 
@@ -269,8 +260,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				hotfolderManager.deleteImages(ocrImages);
 				hotfolderManager.deleteOutputs(ocrOutputs);
 				// Delete the error metadata
-				hotfolder.deleteIfExists(inputTicketUri);
-				hotfolder.deleteIfExists(errorTicketUri);
+				hotfolderManager.deleteTicket(abbyyTicket);
 				
 				// Error Reports
 				logger.debug("Trying to parse file" + errorResultUri + " (" + getName() + ")");
@@ -307,10 +297,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				hotfolderManager.deleteImages(ocrImages);
 				hotfolderManager.deleteOutputs(ocrOutputs);
 				//hotfolder.deleteIfExists(errorResultUri);
-				hotfolder.deleteIfExists(inputTicketUri);
-				if (outputResultUri != null) {
-					hotfolder.deleteIfExists(outputResultUri);
-				}
+				hotfolderManager.deleteTicket(abbyyTicket);
 				if(obs != null && getSegmentation()) {
 					setIsFinished();
 					obs.update(this, this);
@@ -318,6 +305,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				logger.info("Process finished  (" + getName() + ")");
 			} catch (IOException e) {
 				logger.error("Unable to clean up! (" + getName() + ")", e);
+			} catch (URISyntaxException e) {
+				logger.warn("Could not delete abbyy ticket (" + getName() + ")", e);
 			}
 		}
 
@@ -423,7 +412,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			String resultXmlFolder = fileProps.getProperty("resultXmlFolder");
 			String outputFolder = fileProps.getProperty("output");
 			// The remote file name
-			outputResultUri = new URI(out
+			URI outputResultUri = new URI(out
 					.getRemoteUri()
 					.toString()
 					.replace(outputFolder, resultXmlFolder)

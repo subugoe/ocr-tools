@@ -65,7 +65,7 @@ public class HotfolderManager {
 
 	public void createAndSendTicket(AbbyyTicket abbyyTicket, String name) throws IOException, URISyntaxException {
 		String ticketFileName = name + ".xml";
-		URI inputTicketUri = new URI(abbyyTicket.getRemoteInputFolder().toString() + ticketFileName);
+		URI inputTicketUri = abbyyTicket.getRemoteInputUri();
 		
 		synchronized (monitor) {
 			OutputStream os = hotfolder.createTmpFile(ticketFileName);
@@ -151,6 +151,11 @@ public class HotfolderManager {
 		} else {
 			logger.warn("Server state checking is disabled.");
 		}
+	}
+
+	public void deleteTicket(AbbyyTicket abbyyTicket) throws IOException, URISyntaxException {
+		hotfolder.deleteIfExists(abbyyTicket.getRemoteInputUri());
+		hotfolder.deleteIfExists(abbyyTicket.getRemoteErrorUri());
 	}
 
 	
