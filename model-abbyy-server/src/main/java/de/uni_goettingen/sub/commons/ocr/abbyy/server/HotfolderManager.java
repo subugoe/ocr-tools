@@ -132,5 +132,26 @@ public class HotfolderManager {
 		Thread.sleep(waitInterval);
 	}
 
+	public void checkIfEnoughSpace(long maxSize, URI inputFolder,
+			URI outputFolder, URI errorFolder) throws IOException {
+		if (maxSize != 0) {
+
+			long totalFileSize = hotfolder.getTotalSize(inputFolder) 
+					+ hotfolder.getTotalSize(outputFolder) 
+					+ hotfolder.getTotalSize(errorFolder);
+
+			logger.debug("TotalFileSize = " + totalFileSize);
+			if (totalFileSize > maxSize) {
+				logger.error("Size of files is too much files. Max size of all files is "
+						+ maxSize
+						+ ". Size of files on server: "
+						+ totalFileSize + ".\nExit program.");
+				throw new IllegalStateException("Max size of files exceeded");
+			}
+		} else {
+			logger.warn("Server state checking is disabled.");
+		}
+	}
+
 	
 }

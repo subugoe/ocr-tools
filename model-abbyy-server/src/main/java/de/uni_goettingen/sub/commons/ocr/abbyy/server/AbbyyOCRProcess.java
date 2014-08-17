@@ -363,28 +363,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public void checkServerState() throws URISyntaxException, IOException, IllegalStateException {
-		if (maxSize != 0) {
-
-			final URI configServerUri = new URI(fileProps.getProperty("serverUrl"));
-			URI inUri = new URI(configServerUri.toString() + fileProps.getProperty("input") + "/");
-			URI outUri = new URI(configServerUri.toString() + fileProps.getProperty("output") + "/");
-			URI errUri = new URI(configServerUri.toString() + fileProps.getProperty("error") + "/");				
-			long totalFileSize = hotfolder.getTotalSize(inUri) 
-					+ hotfolder.getTotalSize(outUri) 
-					+ hotfolder.getTotalSize(errUri);
-
-			logger.debug("TotalFileSize = " + totalFileSize);
-			if (totalFileSize > maxSize) {
-				logger.error("Size of files is too much files. Max size of all files is "
-						+ maxSize
-						+ ". Size of files on server: "
-						+ totalFileSize + ".\nExit program. (" + getName() + ")");
-				throw new IllegalStateException("Max size of files exceeded");
-			}
-		} else {
-			logger.warn("Server state checking is disabled. (" + getName() + ")");
-		}
+	public void checkHotfolderState() throws IOException, IllegalStateException {
+		hotfolderManager.checkIfEnoughSpace(maxSize, inputDavUri, outputDavUri, errorDavUri);
 	}
 
 	/**
