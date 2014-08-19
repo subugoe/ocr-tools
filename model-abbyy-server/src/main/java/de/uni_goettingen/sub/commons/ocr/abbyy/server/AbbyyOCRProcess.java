@@ -45,8 +45,6 @@ import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -94,7 +92,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	private Long endTime = 0L;
 	private Long processTimeResult = 0L;
 
-	protected Hotfolder hotfolder;
 	
 	private Long maxSize;
 
@@ -105,16 +102,12 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	
 	protected static String encoding = "UTF8";
 
-	transient private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	transient private AbbyyTicket abbyyTicket;
 	transient private FileAccess fileAccess = new FileAccess();
 	private Properties fileProps;
 	transient private HotfolderManager hotfolderManager;
 
 	// for unit tests
-	void setHotfolderProvider(HotfolderProvider newProvider) {
-		hotfolderProvider = newProvider;
-	}
 	void setAbbyyTicket(AbbyyTicket newTicket) {
 		abbyyTicket = newTicket;
 	}
@@ -143,8 +136,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 			fileProps.setProperty("password", password);
 		}
 		
-		hotfolder = hotfolderProvider.createHotfolder(fileProps.getProperty("serverUrl"), fileProps.getProperty("username"), fileProps.getProperty("password"));
-		hotfolderManager = new HotfolderManager(hotfolder);
+		hotfolderManager = new HotfolderManager(fileProps.getProperty("serverUrl"), fileProps.getProperty("username"), fileProps.getProperty("password"));
 		abbyyTicket = new AbbyyTicket(this);
 
 		processId = java.util.UUID.randomUUID().toString();
@@ -262,16 +254,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				// Delete the error metadata
 				hotfolderManager.deleteTicket(abbyyTicket);
 				
-				// Error Reports
-				logger.debug("Trying to parse file" + errorResultUri + " (" + getName() + ")");
-				if (hotfolder.exists(errorResultUri)) {
-					XmlParser xmlParser = new XmlParser();
-					logger.debug("Trying to parse EXISTS file" + errorResultUri + " (" + getName() + ")");
-					InputStream is = new FileInputStream(new File(
-							errorResultUri.toString()));
-					errorDescription = xmlParser.xmlresultErrorparse(is, name);
-					//hotfolder.deleteIfExists(errorResultUri);
-				}
+				errorDescription = hotfolderManager.readFromErrorFile(errorResultUri, name);
 			}
 		} catch (XMLStreamException e) {
 			// Set failed here since the results isn't worth much without

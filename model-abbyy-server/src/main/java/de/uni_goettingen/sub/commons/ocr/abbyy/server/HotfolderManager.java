@@ -1,6 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,10 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -20,8 +24,14 @@ public class HotfolderManager {
 	private final static Logger logger = LoggerFactory.getLogger(HotfolderManager.class);
 	private Hotfolder hotfolder;
 	static Object monitor = new Object();
+	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 
-	public HotfolderManager(Hotfolder initHotfolder) {
+	public HotfolderManager(String serverUrl, String user, String password) {
+		hotfolder = hotfolderProvider.createHotfolder(serverUrl, user, password);
+	}
+	
+	// for unit tests
+	HotfolderManager(Hotfolder initHotfolder) {
 		hotfolder = initHotfolder;
 	}
 
@@ -156,6 +166,19 @@ public class HotfolderManager {
 	public void deleteTicket(AbbyyTicket abbyyTicket) throws IOException, URISyntaxException {
 		hotfolder.deleteIfExists(abbyyTicket.getRemoteInputUri());
 		hotfolder.deleteIfExists(abbyyTicket.getRemoteErrorUri());
+	}
+
+	public String readFromErrorFile(URI errorResultUri, String processName) throws IOException, XMLStreamException {
+		String errorDescription = "";
+		logger.debug("Trying to parse file" + errorResultUri + " (" + processName + ")");
+		if (hotfolder.exists(errorResultUri)) {
+			XmlParser xmlParser = new XmlParser();
+			logger.debug("Trying to parse EXISTS file" + errorResultUri + " (" + processName + ")");
+			InputStream is = hotfolder.openInputStream(errorResultUri);
+			errorDescription = xmlParser.xmlresultErrorparse(is, processName);
+			//hotfolder.deleteIfExists(errorResultUri);
+		}
+		return errorDescription;
 	}
 
 	
