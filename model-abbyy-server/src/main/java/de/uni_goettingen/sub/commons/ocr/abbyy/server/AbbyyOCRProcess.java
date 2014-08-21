@@ -19,24 +19,16 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-
-
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Properties;
 import java.util.Set;
 
@@ -45,14 +37,13 @@ import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
-import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 
 /**
  * The Class AbbyyOCRProcess.
@@ -61,7 +52,7 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger;
  * @author abergna
  * @author cmahnke
  */
-public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRProcess,Serializable,Cloneable,
+public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Serializable,Cloneable,
 		Runnable {
 
 	private static final long serialVersionUID = -402196937662439454L;
@@ -72,10 +63,10 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 	private URI errorResultUri;
 
-	private Boolean failed = false;
+	Boolean failed = false;
 	private String errorDescription = null;
 
-	private Long startTime = 0L;
+	Long startTime = 0L;
 	
 	List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
 	
@@ -85,11 +76,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	
 	protected Map<File, List<File>> resultfilesForAllSubProcess = new HashMap<File, List<File>>();
 	String outResultUri = null;
-	private Observer obs;
+	private transient ProcessMergingObserver obs;
 	private boolean finished = false;
 	
-	private Long endTime = 0L;
-	private Long processTimeResult = 0L;
+	Long endTime = 0L;
+	Long processTimeResult = 0L;
 
 	
 	private Long maxSize;
@@ -97,8 +88,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	private String processId ;
 	static Object monitor = new Object();
 
-	private boolean alreadyBeenHere = false;
-	
 	protected static String encoding = "UTF8";
 
 	transient AbbyyTicket abbyyTicket;
@@ -286,7 +275,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 				hotfolderManager.deleteTicket(abbyyTicket);
 				if(obs != null && getSegmentation()) {
 					setIsFinished();
-					obs.update(this, this);
+					obs.update();
 				}		
 				logger.info("Process finished  (" + getName() + ")");
 			} catch (IOException e) {
@@ -446,149 +435,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		return super.clone();
 	}
 
-	
-	/**
-	 * Observer can respond via its update method on changes an observable. 
-	 * This happens only when registering Observer in Observable.
-	 * 
-	 * In our sample implementation is in the update method only checks a list of 
-	 * observers, if all successfully completed. then all Results should be merged
-	 * 
-	 */
-	public void update(Observable o, Object arg) {
-		synchronized (monitor) {	   
-			for (AbbyyOCRProcess sub : subProcesses) {
-				boolean currentFinished = sub.getIsFinished();
-				if (!currentFinished){
-					processTimeResult = 0L;
-					return;
-				}
-				processTimeResult = processTimeResult + sub.processTimeResult;
-			}
-			// only get here when all processes are finished
-
-			// it might happen that a subprocess (not the last one) must wait too 
-			// long in the monitor and gets here after the last one, because it 
-			// also finds out that all subprocesses have finished
-			if (alreadyBeenHere) {
-				return;
-			}
-			alreadyBeenHere = true;
-			
-			boolean oneFailed = false;
-			for (AbbyyOCRProcess sub : subProcesses) {
-				oneFailed = sub.failed;
-				if (oneFailed) {
-					break;		
-				}
-			}
-			startTime = System.currentTimeMillis();
-			String uriTextMD = merge(!oneFailed);
-			endTime = System.currentTimeMillis();
-			if(!uriTextMD.equals("FAILED")){
-				//serializerTextMD(ocrProcessMetadata, uriTextMD + "-textMD.xml");		   				
-				removeSubProcessResults(resultfilesForAllSubProcess);
-			}
-				 
-		}		
-	}
-
-	private String merge(Boolean noSubProcessfailed) {	
-		String uriTextMD = null;
-		File abbyyMergedResult = null;
-		int i = 0, j =0;
-		List<File> fileResults = new ArrayList<File>(); 
-		for (OCRFormat f : formatForSubProcess){
-			if (!FileMerger.isSegmentable(f)) {
-				throw new OCRException("Format " + f.toString()
-						+ " isn't mergable!");
-			}
-			List<File> files = new ArrayList<File>(); 
-			for(String sn : subProcessNames){				
-				File fileResult,file = new File(outResultUri + "/" + sn + "." + f.toString().toLowerCase());
-				//parse only once enough for ProcessMetadata
-				if ((f.toString().toLowerCase()).equals("xml") && j == 0) {
-					InputStream isDoc = null;
-					j++;
-					if(noSubProcessfailed){
-						try {
-							isDoc = new FileInputStream(file);		
-						} catch (FileNotFoundException e) {
-							logger.error("Error contructing FileInputStream for: "+file.toString() + " (" + getName() + ")", e);
-						} finally {
-							try {
-								if (isDoc != null) {
-									isDoc.close();
-								}
-							} catch (IOException e) {
-								logger.error("Could not close Stream. (" + getName() + ")", e);
-							}
-						}
-						
-					}
-					
-				}
-				files.add(file); 
-				if(i == 0){
-					fileResult = new File(outResultUri + "/" + sn + ".xml.result.xml");
-					InputStream resultStream = null;
-					if(noSubProcessfailed){
-						try {
-							resultStream = new FileInputStream(fileResult);
-						} catch (FileNotFoundException e) {
-							logger.error("Error contructing FileInputStream for: "+fileResult.toString() + " (" + getName() + ")", e);
-						}
-					}					
-					fileResults.add(fileResult);			
-				}		
-			}
-			i++;
-			if(noSubProcessfailed){
-				logger.debug("Waiting... for Merge Proccessing (" + getName() + ")");
-				//mergeFiles for input format if Supported
-				abbyyMergedResult = new File(outResultUri + "/" + name + "." + f.toString().toLowerCase());
-				FileMerger.abbyyVersionNumber = fileProps.getProperty("abbyyVersionNumber");
-				FileMerger.mergeFiles(f, files, abbyyMergedResult);
-				logger.debug(name + "." + f.toString().toLowerCase()+ " MERGED (" + getName() + ")");
-				resultfilesForAllSubProcess.put(abbyyMergedResult, files);	
-			}
-					
-		}
-		try {
-			if(noSubProcessfailed){
-				logger.debug("Waiting... for Merge Proccessing (" + getName() + ")");
-				//mergeFiles for Abbyy Result xml.result.xml
-				abbyyMergedResult = new File(outResultUri + "/" + name + ".xml.result.xml");
-				FileMerger.mergeAbbyyXMLResults(fileResults , abbyyMergedResult);
-				resultfilesForAllSubProcess.put(abbyyMergedResult, fileResults);
-				logger.debug(name + ".xml.result.xml" + " MERGED (" + getName() + ")");			
-				uriTextMD = outResultUri + "/" + name;
-			}else {
-				uriTextMD = "FAILED";
-			}
-			
-		} catch (IOException e) {
-			logger.error("ERROR contructing :" +new File(outResultUri + "/" + name + ".xml.result.xml").toString() + " (" + getName() + ")", e);
-		} catch (XMLStreamException e) {
-			logger.error("ERROR in mergeAbbyyXML : (" + getName() + ")", e);
-		}		
-		return uriTextMD;
-	}
-	
-	protected void removeSubProcessResults(Map<File, List<File>> resultFiles){
-		for(List<File> files : resultFiles.values()) {
-			for(File file : files) {
-				file.delete();
-			}
-		}
-	}
-		
-
-	public Observer getObs() {
+	public ProcessMergingObserver getObs() {
 		return obs;
 	}
 
-	public void setObs(Observer obs) {
+	public void setObs(ProcessMergingObserver obs) {
 		this.obs = obs;
 	}
 

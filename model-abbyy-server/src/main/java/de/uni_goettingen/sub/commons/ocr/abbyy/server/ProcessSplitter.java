@@ -21,12 +21,14 @@ public class ProcessSplitter {
 	//private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
 	private final static Logger logger = LoggerFactory
 			.getLogger(ProcessSplitter.class);
+	private ProcessMergingObserver mergingObserver = new ProcessMergingObserver();
 	
 //	public List<AbbyyOCRProcess> getSubProcesses() {
 //		return subProcesses;
 //	}
 	
 	public List<AbbyyOCRProcess> split(AbbyyOCRProcess process, int splitSize) {
+		mergingObserver.setParentProcess(process);
 		if(process.getOcrImages().size() <= splitSize){
 			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
 			sp.add(process);
@@ -61,7 +63,7 @@ public class ProcessSplitter {
 				AbbyyOCRProcess sP = null;
 				try {
 					sP = (AbbyyOCRProcess) process.clone();
-					sP.setObs((Observer)process);
+					sP.setObs(mergingObserver);
 					sP.getOcrImages().clear();
 					sP.getOcrOutputs().clear();
 				} catch (CloneNotSupportedException e1) {
