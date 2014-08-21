@@ -77,17 +77,16 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 
 	private Long startTime = 0L;
 	
-	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
+	List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
 	
-	private List<String> subProcessNames = new ArrayList<String>();
+	List<String> subProcessNames = new ArrayList<String>();
 	
-	private Set<OCRFormat> formatForSubProcess = new HashSet<OCRFormat>();
+	Set<OCRFormat> formatForSubProcess = new HashSet<OCRFormat>();
 	
 	protected Map<File, List<File>> resultfilesForAllSubProcess = new HashMap<File, List<File>>();
-	private String outResultUri = null;
+	String outResultUri = null;
 	private Observer obs;
 	private boolean finished = false;
-	protected int splitNumberForSubProcess;
 	
 	private Long endTime = 0L;
 	private Long processTimeResult = 0L;
@@ -102,10 +101,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	
 	protected static String encoding = "UTF8";
 
-	transient private AbbyyTicket abbyyTicket;
+	transient AbbyyTicket abbyyTicket;
 	transient private FileAccess fileAccess = new FileAccess();
 	private Properties fileProps;
 	transient private HotfolderManager hotfolderManager;
+	transient private ProcessSplitter processSplitter = new ProcessSplitter();
 
 	// for unit tests
 	void setAbbyyTicket(AbbyyTicket newTicket) {
@@ -116,6 +116,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 	}
 	void setHotfolderManager(HotfolderManager newManager) {
 		hotfolderManager = newManager;
+	}
+	void setProcessSplitter(ProcessSplitter newSplitter) {
+		processSplitter = newSplitter;
 	}
 	
 	public AbbyyOCRProcess() {
@@ -434,119 +437,15 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements Observer,OCRP
 		return lastOutput;
 	}
 
-	protected List<AbbyyOCRProcess> split(){
-		int imagesNumber = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));
-		if(getOcrImages().size() <= imagesNumber){
-			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
-			sp.add(this);
-			return sp;
-		}else{		
-			//rename subProcess ID
-			for(AbbyyOCRProcess subProcess : cloneProcess()){	
-				subProcess.setProcessId(getProcessId()+ subProcess.getName());
-				subProcesses.add(subProcess);		
-			}
-			return subProcesses;
-		}
+	public List<AbbyyOCRProcess> split() {
+		int splitSize = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));
+		return processSplitter.split(this, splitSize);
 	}
 	
-	protected List<AbbyyOCRProcess> cloneProcess(){
-		List<AbbyyOCRProcess> cloneProcesses = new ArrayList<AbbyyOCRProcess>();
-		Map<OCRFormat, OCROutput> outs = new HashMap<OCRFormat, OCROutput>();
-		for (OCRFormat f : getOcrOutputs().keySet()) {
-			OCROutput aoo = new AbbyyOCROutput();
-			aoo.setUri(getOcrOutputs().get(f).getUri());
-			outResultUri = getOcrOutputs().get(f).getlocalOutput();
-			aoo.setlocalOutput(outResultUri);
-			outs.put(f, aoo);
-		}
-		int listNumber = 1;
-		setSegmentation(true);
-		int imagesNumber = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));
-		List<List<OCRImage>> imageChunks = splitingImages(getOcrImages(), imagesNumber);
-		for(List<OCRImage> imgs : imageChunks){				
-				AbbyyOCRProcess sP = null;
-				try {
-					sP = (AbbyyOCRProcess) this.clone();
-					sP.setObs((Observer)this);
-					sP.ocrImages.clear();
-					sP.ocrOutputs.clear();
-				} catch (CloneNotSupportedException e1) {
-					logger.error("Clone Not Supported Exception:  (" + getName() + ")", e1);
-					return null;
-				}
-				sP.setOcrImages(imgs);
-				sP.setName(name + "_" + listNumber + "oF" + splitNumberForSubProcess);			
-				subProcessNames.add(name + "_" + listNumber + "oF" + splitNumberForSubProcess);
-				String localuri = null;
-				for (Map.Entry<OCRFormat, OCROutput> entry : outs.entrySet()) {
-					OCROutput aoo = new AbbyyOCROutput();
-					URI localUri = entry.getValue().getUri();
-					localuri = localUri.toString().replace(name, sP.getName());
-					try {
-						localUri = new URI(localuri);	
-					} catch (URISyntaxException e) {
-						logger.error("Error contructing localUri URL: "+ localuri + " (" + getName() + ")", e);
-					}
-					aoo.setUri(localUri);	
-					OCRFormat f = entry.getKey();
-					sP.addOutput(f, aoo);
-					formatForSubProcess.add(f);
-				}	
-				sP.setTime(new Date().getTime());
-			    listNumber++;
-			    sP.abbyyTicket = new AbbyyTicket(sP);
-			    sP.abbyyTicket.setRemoteInputFolder(inputDavUri);
-			    sP.abbyyTicket.setRemoteErrorFolder(errorDavUri);
-				cloneProcesses.add(sP);
-		}
-		return cloneProcesses;
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
-	
-	/** 
-	 * The list of images to be shared here imagesNumberForSubprocess (properties 
-	 * from config). Here a list of lists will be created.
-	 * For example: 
-	 * 
-	 * + The process is between (250 and 274) images in the list and 
-	 * imagesNumberForSubprocess = 50, here are 5 lists created, the final list has 
-	 * (50 or 74) images. because the restnumber <50/2 
-	 * 
-	 * + The process is between (276 and 299) images in the list and imagesNumberForSubprocess = 50, here 6
-	 * lists are created, the final list has (26 or 49) images. because the restnumber> = 50/2
-	 * 
-	 * Advantage in Abbyy with Error tolerance
-	 * */
-	protected List<List<OCRImage>> splitingImages(List<OCRImage> allImages, int chunkSize){
-		List<List<OCRImage>> allChunks = new ArrayList<List<OCRImage>>();		
-		int fullChunks = allImages.size() / chunkSize;
-		int restNumber = allImages.size() % chunkSize;
-		
-		int chunkCounter = 1;
-		int imageCounter = 0;		
-		List<OCRImage> oneChunk = new ArrayList<OCRImage>();
-		for(OCRImage o : allImages){
-			imageCounter++;
-			if(imageCounter <= chunkSize  && chunkCounter <= fullChunks){					
-				oneChunk.add(o);									
-				if(chunkSize == imageCounter){
-					allChunks.add(oneChunk);
-					oneChunk = new ArrayList<OCRImage>();
-					imageCounter = 0;
-					chunkCounter++;
-				}				
-			}else{				
-				oneChunk.add(o);				
-				if(imageCounter == restNumber) {
-					allChunks.add(oneChunk);
-				}
-			}							
-		}
-		
-		splitNumberForSubProcess = allChunks.size();
-		return allChunks;		
-	}
-	
+
 	
 	/**
 	 * Observer can respond via its update method on changes an observable. 
