@@ -162,7 +162,7 @@ public class AbbyyOCRProcessTest {
 		process.addOutput(format, output);
 		
 		if (split) {
-			List<AbbyyOCRProcess> processes = process.split();
+			List<AbbyyOCRProcess> processes = new ProcessSplitter().split(process, 2);
 			List<Thread> runningThreads = new ArrayList<Thread>();
 			for (AbbyyOCRProcess sub : processes) {
 				Thread thread = new Thread(sub);

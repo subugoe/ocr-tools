@@ -94,7 +94,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	transient private FileAccess fileAccess = new FileAccess();
 	private Properties fileProps;
 	transient private HotfolderManager hotfolderManager;
-	transient private ProcessSplitter processSplitter = new ProcessSplitter();
 
 	// for unit tests
 	void setAbbyyTicket(AbbyyTicket newTicket) {
@@ -105,9 +104,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 	void setHotfolderManager(HotfolderManager newManager) {
 		hotfolderManager = newManager;
-	}
-	void setProcessSplitter(ProcessSplitter newSplitter) {
-		processSplitter = newSplitter;
 	}
 	
 	public AbbyyOCRProcess() {
@@ -424,11 +420,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			lastOutput = k;
 		}
 		return lastOutput;
-	}
-
-	public List<AbbyyOCRProcess> split() {
-		int splitSize = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));
-		return processSplitter.split(this, splitSize);
 	}
 	
 	public Object clone() throws CloneNotSupportedException {

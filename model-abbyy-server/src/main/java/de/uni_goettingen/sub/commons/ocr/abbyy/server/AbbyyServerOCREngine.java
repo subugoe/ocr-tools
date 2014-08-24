@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
@@ -65,13 +66,17 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	private Properties fileProps = new Properties();
 	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	private FileAccess fileAccess = new FileAccess();
-
+	private ProcessSplitter processSplitter = new ProcessSplitter();
+	
 	// for unit tests
 	void setHotfolderProvider(HotfolderProvider newProvider) {
 		hotfolderProvider = newProvider;
 	}
 	void setFileAccess(FileAccess newAccess) {
 		fileAccess = newAccess;
+	}
+	void setProcessSplitter(ProcessSplitter newSplitter) {
+		processSplitter = newSplitter;
 	}
 	
 	public AbbyyServerOCREngine(Properties initUserProperties) {
@@ -173,7 +178,11 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 			}
 			boolean split = "true".equals(userProps.getProperty("books.split"));
 			if (split) {
-				pool.executeWithSplit(process);
+				int splitSize = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));
+				List<AbbyyOCRProcess> subProcesses = processSplitter.split(process, splitSize);
+				for (AbbyyOCRProcess subProcess : subProcesses) {
+					pool.execute(subProcess);
+				}
 			} else {
 				pool.execute(process);
 			}

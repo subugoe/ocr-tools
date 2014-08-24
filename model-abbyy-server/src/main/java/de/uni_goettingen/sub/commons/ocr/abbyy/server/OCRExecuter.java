@@ -187,11 +187,4 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
-	public void executeWithSplit(AbbyyOCRProcess process) {
-		List<AbbyyOCRProcess> sp = process.split();
-		for (AbbyyOCRProcess p : sp) {
-			execute(p);
-		}
-	}
-
 }
