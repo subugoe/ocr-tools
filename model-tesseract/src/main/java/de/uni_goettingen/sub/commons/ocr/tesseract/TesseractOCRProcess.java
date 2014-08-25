@@ -70,15 +70,6 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 
 	private long duration = 0l;
 	
-	/**
-	 * Instantiates a new tesseract ocr process.
-	 * 
-	 * @param process
-	 *            the process
-	 */
-	public TesseractOCRProcess(OCRProcess process) {
-		super(process);
-	}
 
 	/**
 	 * Instantiates a new tesseract ocr process.

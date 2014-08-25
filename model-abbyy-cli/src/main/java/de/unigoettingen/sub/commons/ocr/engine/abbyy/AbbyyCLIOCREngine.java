@@ -130,16 +130,16 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	public Observable recognize (OCRProcess p) throws OCRException {
 		AbbyyCLIOCRProcess process = (AbbyyCLIOCRProcess) p;
 
-		if (process.getOcrImages().size() < SEGSIZE) {
+		if (process.getNumberOfImages() < SEGSIZE) {
 			//TODO: Start Thread here
 			queue.add(new Thread(process));
-			logger.trace("No segmentation needed for " + String.valueOf(process.getOcrImages()) + " images.");
+			logger.trace("No segmentation needed for images.");
 		} else {
 			//TODO: create seperate processes for segments
 
-			logger.info("Segmentation needed for " + String.valueOf(process.getOcrImages()) + " images.");
+			logger.info("Segmentation needed for images.");
 			//Segment into multiple processes
-			segCount = new Double(Math.floor((double) process.getOcrImages().size() / SEGSIZE)).intValue();
+			segCount = new Double(Math.floor((double) process.getNumberOfImages() / SEGSIZE)).intValue();
 			logger.info("Number of segments:" + String.valueOf(segCount));
 			List<AbbyyCLIOCRProcess> segments = new ArrayList<AbbyyCLIOCRProcess>();
 			//TODO: This should be connected to OCROutput

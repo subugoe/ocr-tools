@@ -23,7 +23,7 @@ public class ProcessSplitter {
 		
 	public List<AbbyyOCRProcess> split(AbbyyOCRProcess process, int splitSize) {
 		mergingObserver.setParentProcess(process);
-		if(process.getOcrImages().size() <= splitSize){
+		if(process.getNumberOfImages() <= splitSize){
 			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
 			sp.add(process);
 			return sp;
@@ -51,14 +51,13 @@ public class ProcessSplitter {
 		int listNumber = 1;
 		process.setSegmentation(true);
 		int imagesNumber = splitSize;
-		List<List<OCRImage>> imageChunks = splitingImages(process.getOcrImages(), imagesNumber);
+		List<List<OCRImage>> imageChunks = splitingImages(process.getImages(), imagesNumber);
 		int splitNumberForSubProcess = imageChunks.size();
 		for(List<OCRImage> imgs : imageChunks){				
 				AbbyyOCRProcess sP = null;
 				try {
 					sP = (AbbyyOCRProcess) process.clone();
 					sP.setObs(mergingObserver);
-					sP.getOcrImages().clear();
 					sP.getOcrOutputs().clear();
 				} catch (CloneNotSupportedException e1) {
 					logger.error("Clone Not Supported Exception: ", e1);

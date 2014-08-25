@@ -123,8 +123,8 @@ public class AbbyyTicketTest {
 		}
 
 		assertTrue(imgList.size() == 10);
-		when(process.getOcrImages()).thenReturn(imgList);
-		assertTrue(process.getOcrImages().size() == 10);
+//		when(process.getOcrImages()).thenReturn(imgList);
+		assertTrue(process.getNumberOfImages() == 10);
 
 		when(ocri.getUri()).thenReturn(new File("/tmp").toURI());
 

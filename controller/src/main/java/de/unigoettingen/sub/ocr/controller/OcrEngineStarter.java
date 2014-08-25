@@ -44,7 +44,7 @@ public class OcrEngineStarter {
 				OCRImage image = factory.createImage();
 				image.setUri(page.toURI());
 				image.setSize(page.length());
-				process.addOcrImage(image);
+				process.addImage(image);
 			}
 			
 			for (String outFormat : params.outputFormats) {

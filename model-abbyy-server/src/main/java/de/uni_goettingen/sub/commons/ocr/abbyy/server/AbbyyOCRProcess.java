@@ -155,7 +155,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		// If we use the static method to create a process some fields aren't
 		// set (remoteUri, remoteFileName)
 		// TODO: move this into addOcrImage()
-		for (OCRImage image : getOcrImages()) {
+		for (OCRImage image : ocrImages) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) image;
 			String remoteFileName = aoi.getUri().toString();
 			remoteFileName = name
@@ -203,8 +203,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			logger.info("Copying images to server. (" + getName() + ")");
 			hotfolderManager.copyImagesToHotfolder(ocrImages);
 
-			long minWait = getOcrImages().size() * Long.parseLong(fileProps.getProperty("minMillisPerFile"));
-			long maxWait = getOcrImages().size() * Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
+			long minWait = ocrImages.size() * Long.parseLong(fileProps.getProperty("minMillisPerFile"));
+			long maxWait = ocrImages.size() * Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
 			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes) (" + getName() + ")");
 			// TODO: make a collaborator
 			Thread.sleep(minWait);
@@ -215,7 +215,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 				logger.info("Waking up, waiting another "
 						+ restTime + " milli seconds for results (" + restTime/1000/60 + " minutes) (" + getName() + ")");
 				
-				long waitInterval = getOcrImages().size() * Long.parseLong(fileProps.getProperty("checkInterval"));
+				long waitInterval = ocrImages.size() * Long.parseLong(fileProps.getProperty("checkInterval"));
 				hotfolderManager.waitForResults(restTime, waitInterval, ocrOutputs, errorResultUri);
 				
 				hotfolderManager.retrieveResults(ocrOutputs);
@@ -294,7 +294,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	 */
 	public Long calculateSize() {
 		Long size = 0l;
-		for (OCRImage i : getOcrImages()) {
+		for (OCRImage i : ocrImages) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) i;
 			size += aoi.getSize();
 		}
@@ -349,7 +349,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			}
 		}
 		long maxMillis = Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
-		abbyyTicket.setProcessTimeout((long) getOcrImages().size() * maxMillis);
+		abbyyTicket.setProcessTimeout((long) ocrImages.size() * maxMillis);
 		aoo.setRemoteLocation(fileProps.getProperty("serverOutputLocation"));
 		if (aoo.getRemoteFilename() == null) {
 			aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
@@ -444,4 +444,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		this.finished = true;
 	}
 	
+	public List<String> getRemoteImageNames() {
+		List<String> imageNames = new ArrayList<String>();
+		for (OCRImage image : ocrImages) {
+			imageNames.add(((AbbyyOCRImage)image).getRemoteFileName());
+		}
+		return imageNames;
+	}
 }

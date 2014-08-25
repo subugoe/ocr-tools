@@ -88,7 +88,7 @@ public class AbbyyTicket {
 	protected Long processTimeout = null;
 
 	private static XmlOptions opts = new XmlOptions();
-	private OCRProcess ocrProcess;
+	private AbbyyOCRProcess ocrProcess;
 
 	private URI remoteInputFolder;
 
@@ -156,7 +156,7 @@ public class AbbyyTicket {
 
 	}
 
-	public AbbyyTicket(OCRProcess initProcess) {
+	public AbbyyTicket(AbbyyOCRProcess initProcess) {
 		ocrProcess = initProcess;
 	}
 
@@ -206,12 +206,11 @@ public class AbbyyTicket {
 			ticket.setOCRTimeout(BigInteger.valueOf(processTimeout));
 		}
 
-		for (OCRImage aoi : ocrProcess.getOcrImages()) {
+		for (String imageFileName : ocrProcess.getRemoteImageNames()) {
 			InputFile inputFile = ticket.addNewInputFile();
-			String file = ((AbbyyOCRImage) aoi).getRemoteFileName();
-			inputFile.setName(file);
-
+			inputFile.setName(imageFileName);
 		}
+		
 		// Use predefined variables here
 		ImageProcessingParams imageProcessingParams = (ImageProcessingParams) imageProcessingSettings
 				.copy();

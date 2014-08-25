@@ -100,24 +100,10 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 
 	@Override
 	public void addOcrProcess(OCRProcess process) {
-		boolean processIsOk = checkProcessState(process);
-
-		if (processIsOk) {
-	     	processesQueue.add((AbbyyOCRProcess) process);
+		AbbyyOCRProcess abbyyProcess = (AbbyyOCRProcess) process;
+		if (abbyyProcess.canBeStarted()) {
+	     	processesQueue.add(abbyyProcess);
 		}
-	}
-
-	private boolean checkProcessState(OCRProcess process) {
-		if (process.getOcrOutputs() == null || process.getOcrOutputs().isEmpty()) {
-			logger.warn("The OCR process has no outputs: " + process.getName());
-			return false;
-		}
-
-		if (process.getOcrImages() == null || process.getOcrImages().isEmpty()) {
-			logger.warn("The OCR process has no input images: " + process.getName());
-			return false;
-		}
-		return true;
 	}
 	
 	@Override
@@ -260,7 +246,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		long durationInMillis = 0;
 		
 		for (OCRProcess process : processesQueue) {
-			long imagesInProcess = process.getOcrImages().size();
+			long imagesInProcess = process.getNumberOfImages();
 			durationInMillis += imagesInProcess * Integer.parseInt(fileProps.getProperty("minMillisPerFile"));
 		}
 		return (int) (durationInMillis / 1000);

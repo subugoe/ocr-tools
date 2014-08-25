@@ -53,28 +53,11 @@ public interface OCRProcess {
 	abstract public Set<Locale> getLanguages();
 
 	abstract public void addLanguage(Locale lang);
+		
+	abstract public void addImage(OCRImage image);
+
+	public int getNumberOfImages();
 	
-	/**
-	 * Gets a List of {@link OCRImage}. These are the images that will be
-	 * recognized.
-	 * 
-	 * @return the ocr image
-	 * @see OCRImage
-	 */
-	abstract public List<OCRImage> getOcrImages();
-
-	abstract public void addOcrImage(OCRImage image);
-
-	/**
-	 * Sets a List of {@link OCRImage}. These are the images that will be
-	 * recognized.
-	 * 
-	 * @param ocrImages
-	 *            the new ocr images
-	 * @see OCRImage
-	 */
-	abstract public void setOcrImages(List<OCRImage> ocrImages);
-
 
 	/**
 	 * Gets the ocr output as a Map. The keys of this map represent the
@@ -133,25 +116,6 @@ public interface OCRProcess {
 	 */
 	abstract public void setTime(Long time);
 	
-	/**
-	 * Gets the params that should be used for recognition. Since these a
-	 * specific to a {@link OCRProcess}, they should only be used to adjust the
-	 * recognition options, not the output.
-	 * 
-	 * @return the params
-	 */	
-	abstract public Map<String, String> getParams();
-
-	/**
-	 * Sets the params that should be used for recognition. Since these a
-	 * specific to a {@link OCRProcess}, they should only be used to adjust the
-	 * recognition options, not the output.
-	 * 
-	 * @param params
-	 *            the params
-	 */
-	abstract public void setParams(Map<String, String> params);
-
 	/**
 	 * Checks if this {@link OCRProcess} is finished. This method may throw an
 	 * 

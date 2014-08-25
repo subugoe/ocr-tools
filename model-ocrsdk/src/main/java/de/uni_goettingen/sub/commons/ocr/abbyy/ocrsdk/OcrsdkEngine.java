@@ -32,7 +32,7 @@ public class OcrsdkEngine extends AbstractOCREngine {
 	public int getEstimatedDurationInSeconds() {
 		int duration = 0;
 		for (OCRProcess process : ocrProcess) {
-			int imagesInProcess = process.getOcrImages().size();
+			int imagesInProcess = process.getNumberOfImages();
 			duration += imagesInProcess * 5;
 		}
 		return duration;

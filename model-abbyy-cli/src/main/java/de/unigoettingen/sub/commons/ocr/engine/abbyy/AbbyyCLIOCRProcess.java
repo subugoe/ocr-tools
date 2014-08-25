@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyTicket;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -62,31 +61,9 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 	//Internal state variables
 	private Integer progress;
 
-	protected AbbyyCLIOCRProcess(OCRProcess process) {
-		super(process);
-	}
-
-	protected AbbyyCLIOCRProcess(AbbyyCLIOCRProcess process) {
-		this(process.getOcrImages(), process.getLanguages(), process.getOcrOutputs(), process.cmd, process.setOrientation, process.traceEngine);
-	}
-
-	protected AbbyyCLIOCRProcess(List<OCRImage> ocrImages, Set<Locale> langs, Map<OCRFormat, OCROutput> output, List<String> cmd, Boolean setOrientation, Boolean traceEngine) {
-		this.ocrImages = ocrImages;
-		this.langs = langs;
-		this.ocrOutputs = output;
-		this.cmd = cmd;
-		this.setOrientation = setOrientation;
-		this.traceEngine = traceEngine;
-	}
-
-	public AbbyyCLIOCRProcess(List<String> cmd) {
-		super();
-		this.cmd = cmd;
-	}
-
 	private List<String> buildInputFileList (String param) throws URISyntaxException {
 		ArrayList<String> arglist = new ArrayList<String>();
-		for (OCRImage image : getOcrImages()) {
+		for (OCRImage image : ocrImages) {
 			File file = new File(image.getUri());
 			arglist.add(param);
 			arglist.add(file.getAbsolutePath());
@@ -222,7 +199,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 				Integer page = Integer.decode(m.group(1));
 				if (page > 0) {
 					//This just calculates the progress for the current segment.
-					progress = (getOcrImages().size() / 100) * page;
+					progress = (ocrImages.size() / 100) * page;
 				}
 				logger.trace("Recognized " + progress + "%");
 			}

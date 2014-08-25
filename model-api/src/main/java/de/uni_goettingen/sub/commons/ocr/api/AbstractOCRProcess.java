@@ -29,6 +29,9 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -47,6 +50,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	private static final long serialVersionUID = 3302775196071887966L;
 
+	final static Logger logger = LoggerFactory.getLogger(AbstractOCRProcess.class);
 	/** The name of this process, this is needed for serialization of a process */
 	protected String name;
 
@@ -75,50 +79,11 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	transient protected Map<OCRFormat, OCROutput> ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
 
-	/** The params that should be used adjust the recognition process. */
-	protected Map<String, String> params = new HashMap<String, String>();
-
-	//State variables
-	/** This indicates that process has failed. */
 	protected Boolean isFinished = false;
 	/** for Subdivision the process*/
     protected Boolean segmentation = false;
     	
 	protected Long time;
-	/**
-	 * Instantiates a new abstract OCR process.
-	 */
-	protected AbstractOCRProcess() {
-	}
-
-	/**
-	 * Instantiates a new abstract OCR process using a copy constructor.
-	 * 
-	 * @param process
-	 *            the process
-	 */
-	public AbstractOCRProcess(OCRProcess process) {
-		//Copy Constructor
-		this(process.getOcrImages(), new HashSet<Locale>(process.getLanguages()), new HashMap<OCRFormat, OCROutput> (process.getOcrOutputs()));
-	}
-
-	/**
-	 * Instantiates a new abstract OCR process. This constructor will be used by
-	 * the copy constructor.
-	 * 
-	 * @param ocrImages
-	 *            a {@link List} of {@link OCRImage}
-	 * @param langs
-	 *            a {@link Set} of {@link Locale} repreenting the languages that
-	 *            should be recognized
-	 * @param output
-	 *            the output
-	 */
-	public AbstractOCRProcess(List<OCRImage> ocrImages, Set<Locale> langs, Map<OCRFormat, OCROutput> output) {
-		this.ocrImages = ocrImages;
-		this.langs = langs;
-		this.ocrOutputs = output;
-	}
 
 	/**
 	 * Add a new language.
@@ -140,12 +105,12 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrImages()
 	 */
-	public List<OCRImage> getOcrImages () {
+	public List<OCRImage> getImages () {
 		return ocrImages;
 	}
 
 	@Override
-	public void addOcrImage(OCRImage image) {
+	public void addImage(OCRImage image) {
 		ocrImages.add(image);
 	}
 	
@@ -156,6 +121,24 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 		this.ocrImages = ocrImages;
 	}
 
+	@Override
+	public int getNumberOfImages() {
+		return ocrImages.size();
+	}
+	
+	public boolean canBeStarted() {
+		if (ocrOutputs == null || ocrOutputs.isEmpty()) {
+			logger.warn("The OCR process has no outputs: " + getName());
+			return false;
+		}
+
+		if (ocrImages == null || ocrImages.isEmpty()) {
+			logger.warn("The OCR process has no input images: " + getName());
+			return false;
+		}
+		return true;
+	}
+	
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getName()
 	 */
@@ -175,20 +158,6 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	 */
 	public Map<OCRFormat, OCROutput> getOcrOutputs () {
 		return this.ocrOutputs;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getParams()
-	 */
-	public Map<String, String> getParams () {
-		return this.params;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setParams(java.util.Map)
-	 */
-	public void setParams (Map<String, String> params) {
-		this.params = params;
 	}
 
 	/* (non-Javadoc)
