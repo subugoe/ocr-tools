@@ -20,9 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
@@ -51,7 +49,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	protected List<URI> errorImages = new ArrayList<URI>();
 	
 	public AbbyyOCROutput(URI uri) {
-		super(uri, new HashMap<String, String>(), null);
+		super(uri, null);
 	}
 
 	public AbbyyOCROutput(OCROutput ocrOutput) {
@@ -79,10 +77,9 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	 * @param remoteLocation, The remote location represents the location on the remote system
 	 * @param resultFragments, This is used, if we don't create the result in single file mode
 	 */
-	public AbbyyOCROutput(URI uri, Map<String, String> params, URI remoteUri, String remoteLocation) {
+	public AbbyyOCROutput(URI uri, URI remoteUri, String remoteLocation) {
 		super();
 		this.outputUri = uri;
-		this.params = params;
 		this.remoteUri = remoteUri;
 		this.remoteLocation = remoteLocation;
 	}
@@ -92,7 +89,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	 * @param aoo the aoo
 	 */
 	public AbbyyOCROutput(AbbyyOCROutput aoo) {
-		this(aoo.outputUri, aoo.params, aoo.remoteUri, aoo.remoteLocation);		
+		this(aoo.outputUri, aoo.remoteUri, aoo.remoteLocation);		
 	}
 
 	/**

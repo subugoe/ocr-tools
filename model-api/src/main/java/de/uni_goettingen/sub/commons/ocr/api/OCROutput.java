@@ -68,26 +68,4 @@ public interface OCROutput {
 	 */
 	abstract public void setlocalOutput (String uri);
 	
-	
-	/**
-	 * Gets the params that should be used for creation of output files. Since
-	 * these a specific to a {@link OCRFormat} and the used engine, they should
-	 * only be used to adjust the output, not for recognition options. This can
-	 * be used to set variants of the output like different versions of PDF.
-	 * 
-	 * @return a {@link Map} with the options
-	 */
-	abstract public Map<String, String> getParams ();
-
-	/**
-	 * Sets the params that should be used for creation of output files. Since
-	 * these a specific to a {@link OCRFormat} and the used engine, they should
-	 * only be used to adjust the output, not for recognition options. This can
-	 * be used to set variants of the output like different versions of PDF.
-	 * 
-	 * @param params
-	 *            the {@link Map} params with the options
-	 */
-	abstract public void setParams (Map<String, String> params);
-
 }

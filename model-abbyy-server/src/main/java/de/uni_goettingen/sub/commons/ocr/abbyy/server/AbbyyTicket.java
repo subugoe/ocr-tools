@@ -167,11 +167,7 @@ public class AbbyyTicket {
 		if (out == null) {
 			logger.error("OutputStream and / or configuration is not set! (" + ocrProcess.getName() + ")");
 			throw new IllegalStateException();
-		}
-		if (ocrProcess.getOcrOutputs().size() < 1) {
-			throw new IllegalStateException("no outputs defined!");
-		}
-		
+		}		
 		
 		XMLExportSettings xmlSettings = XMLExportSettings.Factory
 				.newInstance(opts);
@@ -180,15 +176,6 @@ public class AbbyyTicket {
 		// default is false. Might be reset later if the parameter is set
 		xmlSettings.setWriteCharactersFormatting(true);
 		xmlSettings.setWriteCharAttributes(true);
-
-		OCROutput xmlOutput = ocrProcess.getOcrOutputs().get(OCRFormat.XML);
-		if (xmlOutput != null) {
-			String charCoords = xmlOutput.getParams().get("charCoordinates");
-			if ("true".equals(charCoords)) {
-				xmlSettings.setWriteCharactersFormatting(true);
-				xmlSettings.setWriteCharAttributes(true);
-			}
-		}
 
 		// We have to change the type here, or else the server does not accept
 		// the ticket containing the xsi:type attribute.

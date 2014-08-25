@@ -20,7 +20,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;

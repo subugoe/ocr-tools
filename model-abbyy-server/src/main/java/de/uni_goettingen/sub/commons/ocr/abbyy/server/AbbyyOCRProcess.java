@@ -367,7 +367,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 
 	private synchronized void addResultXmlOutput() {
-		Map<OCRFormat, OCROutput> outputs = getOcrOutputs();
+		Map<OCRFormat, OCROutput> outputs = ocrOutputs;
 		OCRFormat lastKey = getLastKey(outputs);
 		AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(lastKey);
 		AbbyyOCROutput metadata = new AbbyyOCROutput(out);

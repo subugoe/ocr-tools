@@ -41,9 +41,6 @@ public abstract class AbstractOCROutput implements OCROutput {
 	/** The URI as String where the output file should be stored. */
 	protected String outputDir;
 
-	/** The params that should be used to generate this output representation. */
-	protected Map<String, String> params = new HashMap<String, String>();
-
 	/**
 	 * Instantiates a new abstract ocr output.
 	 */
@@ -60,7 +57,7 @@ public abstract class AbstractOCROutput implements OCROutput {
 	 *            the ocr output
 	 */
 	public AbstractOCROutput(OCROutput ocrOutput) {
-		this(ocrOutput.getUri(), ocrOutput.getParams(), ocrOutput.getlocalOutput());
+		this(ocrOutput.getUri(), ocrOutput.getlocalOutput());
 	}
 
 	/**
@@ -73,17 +70,9 @@ public abstract class AbstractOCROutput implements OCROutput {
 	 * @param outputDir
 	 * 			  The URI as String where the output file should be stored.           
 	 */
-	public AbstractOCROutput(URI uri, Map<String, String> params, String outputDir) {
+	public AbstractOCROutput(URI uri, String outputDir) {
 		this.outputUri = uri;
-		this.params = params;
 		this.outputDir = outputDir;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCROutput#getParams()
-	 */
-	public Map<String, String> getParams () {
-		return this.params;
 	}
 
 	/* (non-Javadoc)
@@ -91,13 +80,6 @@ public abstract class AbstractOCROutput implements OCROutput {
 	 */
 	public URI getUri () {
 		return this.outputUri;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCROutput#setParams(java.util.Map)
-	 */
-	public void setParams (Map<String, String> params) {
-		this.params = params;
 	}
 
 	/* (non-Javadoc)

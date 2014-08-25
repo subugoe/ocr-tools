@@ -26,9 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -38,12 +36,10 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
@@ -145,23 +141,10 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		}
 		
 		pool = createPool(Integer.parseInt(fileProps.getProperty("maxThreads")));
-
-		// TODO: need this?
-//		String charCoords = extraOptions.get("output.xml.charcoordinates");
-//		boolean skipCharCoords = "false".equals(charCoords);
-		boolean skipCharCoords = false;
 		
 		while (!processesQueue.isEmpty()) {
 			AbbyyOCRProcess process = processesQueue.poll();
 			process.setTime(new Date().getTime());
-			if (!skipCharCoords) {
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("charCoordinates", "true");
-				OCROutput xmlOutput = process.getOcrOutputs().get(OCRFormat.XML);
-				if (xmlOutput != null) {
-					xmlOutput.setParams(params);
-				}
-			}
 			boolean split = "true".equals(userProps.getProperty("books.split"));
 			if (split) {
 				int splitSize = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));

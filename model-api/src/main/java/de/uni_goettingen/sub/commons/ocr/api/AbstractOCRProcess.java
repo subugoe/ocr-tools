@@ -20,7 +20,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -128,12 +127,12 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	
 	public boolean canBeStarted() {
 		if (ocrOutputs == null || ocrOutputs.isEmpty()) {
-			logger.warn("The OCR process has no outputs: " + getName());
+			logger.warn("The OCR process has no outputs: " + name);
 			return false;
 		}
 
 		if (ocrImages == null || ocrImages.isEmpty()) {
-			logger.warn("The OCR process has no input images: " + getName());
+			logger.warn("The OCR process has no input images: " + name);
 			return false;
 		}
 		return true;
