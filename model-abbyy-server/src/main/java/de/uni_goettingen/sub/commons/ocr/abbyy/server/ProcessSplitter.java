@@ -17,28 +17,23 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
 public class ProcessSplitter {
 
-	//private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
 	private final static Logger logger = LoggerFactory
 			.getLogger(ProcessSplitter.class);
 	private ProcessMergingObserver mergingObserver = new ProcessMergingObserver();
-	
-//	public List<AbbyyOCRProcess> getSubProcesses() {
-//		return subProcesses;
-//	}
-	
+		
 	public List<AbbyyOCRProcess> split(AbbyyOCRProcess process, int splitSize) {
 		mergingObserver.setParentProcess(process);
 		if(process.getOcrImages().size() <= splitSize){
 			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
 			sp.add(process);
 			return sp;
-		}else{		
-			//rename subProcess ID
-			for(AbbyyOCRProcess subProcess : cloneProcess(process, splitSize)){	
+		}else{
+			List<AbbyyOCRProcess> subProcesses = cloneProcess(process, splitSize);
+			for(AbbyyOCRProcess subProcess : subProcesses){	
 				subProcess.setProcessId(process.getProcessId()+ subProcess.getName());
-				process.subProcesses.add(subProcess);		
+				mergingObserver.addSubProcess(subProcess);		
 			}
-			return process.subProcesses;
+			return subProcesses;
 		}
 	}
 
@@ -71,7 +66,6 @@ public class ProcessSplitter {
 				}
 				sP.setOcrImages(imgs);
 				sP.setName(process.getName() + "_" + listNumber + "oF" + splitNumberForSubProcess);			
-				process.subProcessNames.add(process.getName() + "_" + listNumber + "oF" + splitNumberForSubProcess);
 				String localuri = null;
 				for (Map.Entry<OCRFormat, OCROutput> entry : outs.entrySet()) {
 					OCROutput aoo = new AbbyyOCROutput();
@@ -85,7 +79,6 @@ public class ProcessSplitter {
 					aoo.setUri(localUri);	
 					OCRFormat f = entry.getKey();
 					sP.addOutput(f, aoo);
-					process.formatForSubProcess.add(f);
 				}	
 				sP.setTime(new Date().getTime());
 			    listNumber++;

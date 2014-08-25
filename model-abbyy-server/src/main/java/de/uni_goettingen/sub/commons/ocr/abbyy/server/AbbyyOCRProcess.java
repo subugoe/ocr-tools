@@ -66,15 +66,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	Boolean failed = false;
 	private String errorDescription = null;
 
-	Long startTime = 0L;
+	Long startTime = 0L;	
 	
-	List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
-	
-	List<String> subProcessNames = new ArrayList<String>();
-	
-	Set<OCRFormat> formatForSubProcess = new HashSet<OCRFormat>();
-	
-	protected Map<File, List<File>> resultfilesForAllSubProcess = new HashMap<File, List<File>>();
 	String outResultUri = null;
 	private transient ProcessMergingObserver obs;
 	private boolean finished = false;
