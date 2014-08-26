@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -38,11 +37,8 @@ import org.slf4j.LoggerFactory;
  * implementations. It also adds a few static utility methods for easier
  * creation of processes.
  * 
- * @version 0.9
- * @author abergna
- * @author cmahnke
  */
-public abstract class AbstractOCRProcess extends Observable implements OCRProcess,Serializable {
+public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 
 	/**
 	 * 
@@ -79,17 +75,15 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	transient protected Map<OCRFormat, OCROutput> ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
 
 	protected Boolean isFinished = false;
-	/** for Subdivision the process*/
-    protected Boolean segmentation = false;
-    	
-	protected Long time;
 
+    	
 	/**
 	 * Add a new language.
 	 * 
 	 * @param locale
 	 *            the {@link Locale} representing the language to be added
 	 */
+	@Override
 	public void addLanguage (Locale locale) {
 		langs.add(locale);
 	}
@@ -97,13 +91,11 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getLanguages()
 	 */
+	@Override
 	public Set<Locale> getLanguages () {
 		return langs;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrImages()
-	 */
 	public List<OCRImage> getImages () {
 		return ocrImages;
 	}
@@ -134,6 +126,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getName()
 	 */
+	@Override
 	public String getName () {
 		return name;
 	}
@@ -141,6 +134,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setName(java.lang.String)
 	 */
+	@Override
 	public void setName (String name) {
 		this.name = name;
 	}
@@ -179,6 +173,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getTextTyp()
 	 */
+	@Override
 	public OCRTextType getTextType () {
 		return this.textType;
 	}
@@ -187,6 +182,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setTextTyp(de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRTextTyp)
 	 */
+	@Override
 	public void setTextType (OCRTextType t) {
 		this.textType = t ;
 	}
@@ -194,6 +190,7 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getPriority()
 	 */
+	@Override
 	public OCRPriority getPriority() {
 		return this.priority;
 	}
@@ -201,56 +198,14 @@ public abstract class AbstractOCRProcess extends Observable implements OCRProces
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setPriority(de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRPriority)
 	 */
+	@Override
 	public void setPriority(OCRPriority p) {
 		this.priority = p;
 	}
-	/**
-	 * Adds the output for the given format, this might be a helpful utility
-	 * method when working with Lists
-	 * 
-	 * @param format
-	 *            the format to add
-	 * @param output
-	 *            the output, the output settings for the given format
-	 * @see OCRFormat
-	 * @see OCROutput
-	 * @see #setOcrOutputs(Map);
-	 */
+
+	@Override
 	public void addOutput (OCRFormat format, OCROutput output) {
-		if (ocrOutputs == null) {
-			// We use a LinkedHashMap to get the order of the elements
-			// predictable
-			ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
-		}
 		ocrOutputs.put(format, output);
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getTime()
-	 */
-	public Long getTime() {
-		return time;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setTime(java.lang.Long)
-	 */
-	public void setTime(Long time) {
-		this.time = time;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getSegmentation()
-	 */
-	public Boolean getSegmentation() {
-		return segmentation;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#setSegmentation(java.lang.Boolean)
-	 */
-	public void setSegmentation(Boolean segmentaion) {
-		this.segmentation = segmentaion;
 	}
 	
 }

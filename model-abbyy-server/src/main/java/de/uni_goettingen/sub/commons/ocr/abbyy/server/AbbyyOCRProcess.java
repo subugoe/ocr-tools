@@ -71,9 +71,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	Long endTime = 0L;
 	Long processTimeResult = 0L;
 
+	private long time;
+	private boolean segmentation = false;
 	
-	private Long maxSize;
-
 	private String processId ;
 	static Object monitor = new Object();
 
@@ -94,11 +94,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	void setHotfolderManager(HotfolderManager newManager) {
 		hotfolderManager = newManager;
 	}
-	
-	public AbbyyOCRProcess() {
 		
-	}
-	
 	public void initialize(Properties userProps) {
 
 		String propertiesFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
@@ -117,7 +113,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		abbyyTicket = new AbbyyTicket(this);
 
 		processId = java.util.UUID.randomUUID().toString();
-		maxSize = Long.parseLong(fileProps.getProperty("maxSize"));
 
 		try {
 			URI serverUri = new URI(fileProps.getProperty("serverUrl"));
@@ -134,55 +129,13 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof AbbyyOCRProcess) {
-			AbbyyOCRProcess process = (AbbyyOCRProcess) obj;
-			return this.getProcessId().equals(process.getProcessId());
-		}
-		return false;
-	}
-	
-	@Override
-	public int hashCode() {
-		return this.getProcessId().hashCode();
-	}
-		
-	private void enrichImages() {
-		// If we use the static method to create a process some fields aren't
-		// set (remoteUri, remoteFileName)
-		// TODO: move this into addOcrImage()
-		for (OCRImage image : ocrImages) {
-			AbbyyOCRImage aoi = (AbbyyOCRImage) image;
-			String remoteFileName = aoi.getUri().toString();
-			remoteFileName = name
-					+ "-"
-					+ remoteFileName.substring(
-							remoteFileName.lastIndexOf("/") + 1,
-							remoteFileName.length());
-			if (aoi.getRemoteFileName() == null) {
-				aoi.setRemoteFileName(remoteFileName);
-			}
-			URI remoteImageUri, errorImageUri = null;
-			try {
-				errorImageUri = new URI(errorDavUri.toString() + remoteFileName);
-				remoteImageUri = new URI(inputDavUri.toString() + remoteFileName);
-			} catch (URISyntaxException e) {
-				logger.error("Error contructing remote URL. (" + getName() + ")", e);
-				throw new OCRException(e);
-			}
-			if (aoi.getRemoteUri() == null) {
-				aoi.setRemoteUri(remoteImageUri);
-				aoi.setErrorUri(errorImageUri);
-			}
-		}
-	}
-		
-	@Override
 	public void run() {
+
+		long maxMillis = Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
+		abbyyTicket.setProcessTimeout((long) ocrImages.size() * maxMillis);
 
 		startTime = System.currentTimeMillis();
 		
-		enrichImages();
 		addResultXmlOutput();
 
 		try {
@@ -272,6 +225,32 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 
 	}
 
+	@Override
+	public void addImage(OCRImage image) {
+		AbbyyOCRImage aoi = (AbbyyOCRImage) image;
+		String remoteFileName = aoi.getUri().toString();
+		remoteFileName = name
+				+ "-"
+				+ remoteFileName.substring(
+						remoteFileName.lastIndexOf("/") + 1,
+						remoteFileName.length());
+		if (aoi.getRemoteFileName() == null) {
+			aoi.setRemoteFileName(remoteFileName);
+		}
+		URI remoteImageUri, errorImageUri = null;
+		try {
+			errorImageUri = new URI(errorDavUri.toString() + remoteFileName);
+			remoteImageUri = new URI(inputDavUri.toString() + remoteFileName);
+		} catch (URISyntaxException e) {
+			logger.error("Error contructing remote URL. (" + getName() + ")", e);
+			throw new OCRException(e);
+		}
+		if (aoi.getRemoteUri() == null) {
+			aoi.setRemoteUri(remoteImageUri);
+			aoi.setErrorUri(errorImageUri);
+		}
+		super.addImage(image);
+	}
 	
 	
 	/**
@@ -313,26 +292,12 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public void checkHotfolderState() throws IOException, IllegalStateException {
+		long maxSize = Long.parseLong(fileProps.getProperty("maxSize"));
 		hotfolderManager.checkIfEnoughSpace(maxSize, inputDavUri, outputDavUri, errorDavUri);
 	}
 
-	/**
-	 * Adds the output for the given format
-	 * 
-	 * @param format
-	 *            the format to add
-	 * @param output
-	 *            the output, the output settings for the given format
-	 * 
-	 */
 	@Override
 	public void addOutput(OCRFormat format, OCROutput output) {
-		// Make sure we only add values, not replace existing ones
-		if (ocrOutputs == null || ocrOutputs.size() == 0) {
-			// We use a LinkedHashMap to get the order of the elements
-			// predictable
-			ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
-		}
 		AbbyyOCROutput aoo = new AbbyyOCROutput(output);
 		String[] urlParts = output.getUri().toString().split("/");
 		if (aoo.getRemoteUri() == null) {
@@ -344,22 +309,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 				throw new OCRException(e);
 			}
 		}
-		long maxMillis = Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
-		abbyyTicket.setProcessTimeout((long) ocrImages.size() * maxMillis);
 		aoo.setRemoteLocation(fileProps.getProperty("serverOutputLocation"));
 		if (aoo.getRemoteFilename() == null) {
 			aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
 		}
 		ocrOutputs.put(format, aoo);
-	}
-
-	// TODO: relevant?
-	//@Override
-	public void setOcrOutputs(Map<OCRFormat, OCROutput> outputs) {
-		for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
-			OCRFormat format = entry.getKey();
-			addOutput(format, entry.getValue());
-		}
 	}
 
 	private synchronized void addResultXmlOutput() {
@@ -411,10 +365,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		return lastOutput;
 	}
 	
-	public ProcessMergingObserver getObs() {
-		return obs;
-	}
-
 	public void setMerger(ProcessMergingObserver obs) {
 		this.obs = obs;
 	}
@@ -457,4 +407,35 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			throw new InternalError("Could not clone " + AbbyyOCRProcess.class);
 		}
 	}
+	
+	public Long getTime() {
+		return time;
+	}
+
+	public void setTime(Long time) {
+		this.time = time;
+	}
+
+	public Boolean getSegmentation() {
+		return segmentation;
+	}
+
+	public void setSegmentation(Boolean segmentaion) {
+		this.segmentation = segmentaion;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof AbbyyOCRProcess) {
+			AbbyyOCRProcess process = (AbbyyOCRProcess) obj;
+			return this.getProcessId().equals(process.getProcessId());
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getProcessId().hashCode();
+	}
+
 }

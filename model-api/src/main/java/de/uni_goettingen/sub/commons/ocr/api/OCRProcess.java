@@ -101,19 +101,6 @@ public interface OCRProcess {
 	 */
 	abstract public String getName();
 
-	/**
-	 * Gets the time for process sort in hazelcastQueue.
-	 *
-	 * @return the time
-	 */
-	abstract public Long getTime();
-	
-	/**
-	 * Sets the time for process sort in hazelcastQueue.
-	 *
-	 * @param time the new time
-	 */
-	abstract public void setTime(Long time);
 	
 	/**
 	 * Checks if this {@link OCRProcess} is finished. This method may throw an
@@ -203,19 +190,5 @@ public interface OCRProcess {
 	 *            the new priority
 	 */
 	abstract void setPriority(OCRPriority p);
-
-	/**
-	 * Gets the segmentation. 
-	 *
-	 * @return the segmentation true: split Process in SubProcess
-	 */
-	abstract public Boolean getSegmentation();
-	
-	/**
-	 * Sets the segmentation.
-	 *
-	 * @param segmentaion the new segmentation
-	 */
-	abstract public void setSegmentation(Boolean segmentaion);
 	
 }
