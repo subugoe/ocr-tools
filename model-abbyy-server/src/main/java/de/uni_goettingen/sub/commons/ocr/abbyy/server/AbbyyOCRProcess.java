@@ -18,19 +18,15 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -415,15 +411,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		return lastOutput;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
-
 	public ProcessMergingObserver getObs() {
 		return obs;
 	}
 
-	public void setObs(ProcessMergingObserver obs) {
+	public void setMerger(ProcessMergingObserver obs) {
 		this.obs = obs;
 	}
 
@@ -450,5 +442,19 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			imageNames.add(((AbbyyOCRImage)image).getRemoteFileName());
 		}
 		return imageNames;
+	}
+	
+	public AbbyyOCRProcess createSubProcess() {
+		try {
+			AbbyyOCRProcess subProcess = (AbbyyOCRProcess)super.clone();
+			subProcess.ocrImages = new ArrayList<OCRImage>();
+			subProcess.ocrOutputs =  new LinkedHashMap<OCRFormat, OCROutput>();
+			subProcess.abbyyTicket = new AbbyyTicket(subProcess);
+			subProcess.abbyyTicket.setRemoteInputFolder(inputDavUri);
+			subProcess.abbyyTicket.setRemoteErrorFolder(errorDavUri);
+			return subProcess;
+		} catch (CloneNotSupportedException e) {
+			throw new InternalError("Could not clone " + AbbyyOCRProcess.class);
+		}
 	}
 }

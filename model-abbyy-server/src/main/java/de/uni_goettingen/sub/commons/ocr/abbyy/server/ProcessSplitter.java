@@ -4,7 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,17 +19,23 @@ public class ProcessSplitter {
 	private final static Logger logger = LoggerFactory
 			.getLogger(ProcessSplitter.class);
 	private ProcessMergingObserver mergingObserver = new ProcessMergingObserver();
+	
+	// for unit tests
+	void setProcessMergingObserver(ProcessMergingObserver newObserver) {
+		mergingObserver = newObserver;
+	}
 		
 	public List<AbbyyOCRProcess> split(AbbyyOCRProcess process, int splitSize) {
 		mergingObserver.setParentProcess(process);
-		if(process.getNumberOfImages() <= splitSize){
+		if (process.getNumberOfImages() <= splitSize) {
 			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
 			sp.add(process);
 			return sp;
-		}else{
-			List<AbbyyOCRProcess> subProcesses = cloneProcess(process, splitSize);
+		} else {
+			process.setSegmentation(true);
+			List<AbbyyOCRProcess> subProcesses = createSubProcesses(process, splitSize);
 			for(AbbyyOCRProcess subProcess : subProcesses){	
-				subProcess.setProcessId(process.getProcessId()+ subProcess.getName());
+				subProcess.setMerger(mergingObserver);
 				mergingObserver.addSubProcess(subProcess);		
 			}
 			return subProcesses;
@@ -38,84 +43,61 @@ public class ProcessSplitter {
 	}
 
 	
-	private List<AbbyyOCRProcess> cloneProcess(AbbyyOCRProcess process, int splitSize){
-		List<AbbyyOCRProcess> cloneProcesses = new ArrayList<AbbyyOCRProcess>();
-		Map<OCRFormat, OCROutput> outs = new HashMap<OCRFormat, OCROutput>();
-		for (OCRFormat f : process.getOcrOutputs().keySet()) {
-			OCROutput aoo = new AbbyyOCROutput();
-			aoo.setUri(process.getOcrOutputs().get(f).getUri());
-			process.outResultUri = process.getOcrOutputs().get(f).getlocalOutput();
-			aoo.setlocalOutput(process.outResultUri);
-			outs.put(f, aoo);
+	private List<AbbyyOCRProcess> createSubProcesses(AbbyyOCRProcess process, int splitSize) {
+		List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
+
+		List<List<OCRImage>> imageChunks = splitImages(process.getImages(), splitSize);
+		int chunkIndex = 1;
+		int numberOfChunks = imageChunks.size();
+		for(List<OCRImage> chunk : imageChunks){				
+			AbbyyOCRProcess subProcess = process.createSubProcess();
+
+			for (OCRImage imageFromChunk : chunk) {
+				subProcess.addImage(imageFromChunk);
+			}
+			
+			String subProcessName = process.getName() + "_" + chunkIndex + "of" + numberOfChunks;
+			subProcess.setName(subProcessName);
+			subProcess.setProcessId(process.getProcessId() + subProcessName);
+			
+			addOutputsToSubProcess(subProcess, process);
+			
+			subProcess.setTime(new Date().getTime());
+			subProcesses.add(subProcess);
+			
+			chunkIndex++;
 		}
-		int listNumber = 1;
-		process.setSegmentation(true);
-		int imagesNumber = splitSize;
-		List<List<OCRImage>> imageChunks = splitingImages(process.getImages(), imagesNumber);
-		int splitNumberForSubProcess = imageChunks.size();
-		for(List<OCRImage> imgs : imageChunks){				
-				AbbyyOCRProcess sP = null;
-				try {
-					sP = (AbbyyOCRProcess) process.clone();
-					sP.setObs(mergingObserver);
-					sP.getOcrOutputs().clear();
-				} catch (CloneNotSupportedException e1) {
-					logger.error("Clone Not Supported Exception: ", e1);
-					return null;
-				}
-				sP.setOcrImages(imgs);
-				sP.setName(process.getName() + "_" + listNumber + "oF" + splitNumberForSubProcess);			
-				String localuri = null;
-				for (Map.Entry<OCRFormat, OCROutput> entry : outs.entrySet()) {
-					OCROutput aoo = new AbbyyOCROutput();
-					URI localUri = entry.getValue().getUri();
-					localuri = localUri.toString().replace(process.getName(), sP.getName());
-					try {
-						localUri = new URI(localuri);	
-					} catch (URISyntaxException e) {
-						logger.error("Error contructing localUri URL: "+ localuri + " (" + process.getName() + ")", e);
-					}
-					aoo.setUri(localUri);	
-					OCRFormat f = entry.getKey();
-					sP.addOutput(f, aoo);
-				}	
-				sP.setTime(new Date().getTime());
-			    listNumber++;
-			    sP.abbyyTicket = new AbbyyTicket(sP);
-			    sP.abbyyTicket.setRemoteInputFolder(process.inputDavUri);
-			    sP.abbyyTicket.setRemoteErrorFolder(process.errorDavUri);
-				cloneProcesses.add(sP);
-		}
-		return cloneProcesses;
+		return subProcesses;
 	}
-	
-	private List<List<OCRImage>> splitingImages(List<OCRImage> allImages, int chunkSize){
-		List<List<OCRImage>> allChunks = new ArrayList<List<OCRImage>>();		
-		int fullChunks = allImages.size() / chunkSize;
-		int restNumber = allImages.size() % chunkSize;
+
+	private List<List<OCRImage>> splitImages(List<OCRImage> allImages, int chunkSize){
+		List<List<OCRImage>> allChunks = new ArrayList<List<OCRImage>>();	
 		
-		int chunkCounter = 1;
-		int imageCounter = 0;		
-		List<OCRImage> oneChunk = new ArrayList<OCRImage>();
-		for(OCRImage o : allImages){
-			imageCounter++;
-			if(imageCounter <= chunkSize  && chunkCounter <= fullChunks){					
-				oneChunk.add(o);									
-				if(chunkSize == imageCounter){
-					allChunks.add(oneChunk);
-					oneChunk = new ArrayList<OCRImage>();
-					imageCounter = 0;
-					chunkCounter++;
-				}				
-			}else{				
-				oneChunk.add(o);				
-				if(imageCounter == restNumber) {
-					allChunks.add(oneChunk);
-				}
-			}							
+		for (int from = 0; from < allImages.size(); from += chunkSize) {
+			int to = Math.min(from + chunkSize, allImages.size());
+			List<OCRImage> chunk = new ArrayList<OCRImage>(allImages.subList(from, to));
+			allChunks.add(chunk);
 		}
 		
 		return allChunks;		
 	}
 
+	private void addOutputsToSubProcess(AbbyyOCRProcess subProcess, AbbyyOCRProcess process) {
+		for (Map.Entry<OCRFormat, OCROutput> entry : process.getOcrOutputs().entrySet()) {
+			OCROutput subOutput = new AbbyyOCROutput();
+			URI localUri = entry.getValue().getUri();
+			String localUriString = localUri.toString().replace(process.getName(), subProcess.getName());
+			try {
+				localUri = new URI(localUriString);	
+			} catch (URISyntaxException e) {
+				logger.error("Error contructing localUri URL: "+ localUriString + " (" + process.getName() + ")", e);
+			}
+			subOutput.setUri(localUri);
+			subOutput.setlocalOutput(entry.getValue().getlocalOutput());
+			process.outResultUri = entry.getValue().getlocalOutput();
+			OCRFormat outputFormat = entry.getKey();
+			subProcess.addOutput(outputFormat, subOutput);
+		}
+	}
+	
 }
