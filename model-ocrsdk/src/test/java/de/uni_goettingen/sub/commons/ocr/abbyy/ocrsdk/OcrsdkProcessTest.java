@@ -25,7 +25,8 @@ public class OcrsdkProcessTest {
 	private String resultTxt = "txt-document";
 	
 	private OcrsdkImage imageMock = mock(OcrsdkImage.class);
-	private OcrsdkOutput outputMock = mock(OcrsdkOutput.class);
+	private OcrsdkOutput outputXmlMock = mock(OcrsdkOutput.class);
+	private OcrsdkOutput outputTxtMock = mock(OcrsdkOutput.class);
 	private OcrsdkClient clientMock = mock(OcrsdkClient.class);
 	
 	private OcrsdkProcess process;
@@ -39,6 +40,9 @@ public class OcrsdkProcessTest {
 		InputStream txtOutput = new ByteArrayInputStream(resultTxt.getBytes());
 		when(clientMock.getResultForFormat("txt")).thenReturn(txtOutput);
 		
+		when(outputXmlMock.getFormat()).thenReturn(OCRFormat.XML);
+		when(outputTxtMock.getFormat()).thenReturn(OCRFormat.TXT);
+		
 		process = new OcrsdkProcess("user", "pass");
 		
 		
@@ -50,12 +54,14 @@ public class OcrsdkProcessTest {
 		OcrsdkImage image = new OcrsdkImage(new File("src/test/resources/Picture_010.tif").toURI());
 		OcrsdkOutput outputXml = new OcrsdkOutput();
 		outputXml.setUri(new File("target/testResult.xml").toURI());
+		outputXml.setFormat(OCRFormat.XML);
 		OcrsdkOutput outputTxt = new OcrsdkOutput();
 		outputTxt.setUri(new File("target/testResult.txt").toURI());
+		outputTxt.setFormat(OCRFormat.TXT);
 		OcrsdkProcess process = new OcrsdkProcess("", "");
 		process.addImage(image);
-		process.addOutput(OCRFormat.XML, outputXml);
-		process.addOutput(OCRFormat.TXT, outputTxt);
+		process.addOutput(outputXml);
+		process.addOutput(outputTxt);
 		process.addLanguage(Locale.ENGLISH);
 		process.addLanguage(Locale.GERMAN);
 		process.start();
@@ -64,7 +70,7 @@ public class OcrsdkProcessTest {
 	@Test
 	public void usesTheRestClientCorrectly() {
 		process.addImage(imageMock);
-		process.addOutput(OCRFormat.XML, outputMock);
+		process.addOutput(outputXmlMock);
 		process.start();
 		
 		verify(clientMock, times(1)).submitImage(fakeImage);
@@ -75,8 +81,8 @@ public class OcrsdkProcessTest {
 	@Test
 	public void forwardsSeveralOutputFormats() {
 		process.addImage(imageMock);
-		process.addOutput(OCRFormat.XML, outputMock);
-		process.addOutput(OCRFormat.TXT, outputMock);
+		process.addOutput(outputXmlMock);
+		process.addOutput(outputTxtMock);
 		process.start();
 		
 		verify(clientMock, times(1)).addExportFormat("xml");
@@ -87,7 +93,7 @@ public class OcrsdkProcessTest {
 	public void forwardsTwoImages() {
 		process.addImage(imageMock);
 		process.addImage(imageMock);
-		process.addOutput(OCRFormat.XML, outputMock);
+		process.addOutput(outputXmlMock);
 		process.start();
 		
 		verify(clientMock, times(2)).submitImage(fakeImage);
@@ -96,7 +102,7 @@ public class OcrsdkProcessTest {
 	@Test
 	public void forwardsTwoLanguages() {
 		process.addImage(imageMock);
-		process.addOutput(OCRFormat.XML, outputMock);
+		process.addOutput(outputXmlMock);
 		process.addLanguage(Locale.ENGLISH);
 		process.addLanguage(Locale.GERMAN);
 		process.start();
@@ -108,7 +114,7 @@ public class OcrsdkProcessTest {
 	@Test
 	public void forwardsTextType() {
 		process.addImage(imageMock);
-		process.addOutput(OCRFormat.XML, outputMock);
+		process.addOutput(outputXmlMock);
 		process.setTextType(OCRTextType.GOTHIC);
 		process.start();
 		
@@ -118,11 +124,11 @@ public class OcrsdkProcessTest {
 	@Test
 	public void canSaveReceivedXmlResult() throws IOException {
 		process.addImage(imageMock);
-		process.addOutput(OCRFormat.XML, outputMock);
+		process.addOutput(outputXmlMock);
 		process.start();
 		
 		ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
-		verify(outputMock, times(1)).save(argument.capture());
+		verify(outputXmlMock, times(1)).save(argument.capture());
 
 		InputStream is = argument.getValue();
 		assertEquals("saved result document", "<xml-document/>", IOUtils.toString(is));
@@ -131,16 +137,20 @@ public class OcrsdkProcessTest {
 	@Test
 	public void canSaveTwoReceivedResults() throws IOException {
 		process.addImage(imageMock);
-		process.addOutput(OCRFormat.XML, outputMock);
-		process.addOutput(OCRFormat.TXT, outputMock);
+		process.addOutput(outputXmlMock);
+		process.addOutput(outputTxtMock);
 		process.start();
 		
 		ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
-		verify(outputMock, times(2)).save(argument.capture());
+		verify(outputXmlMock, times(1)).save(argument.capture());
 
-		List<InputStream> iss = argument.getAllValues();
-		assertEquals("saved xml document", "<xml-document/>", IOUtils.toString(iss.get(0)));
-		assertEquals("saved text document", "txt-document", IOUtils.toString(iss.get(1)));
+		InputStream iss = argument.getValue();
+		assertEquals("saved xml document", "<xml-document/>", IOUtils.toString(iss));
+		
+		verify(outputTxtMock, times(1)).save(argument.capture());
+
+		iss = argument.getValue();
+		assertEquals("saved text document", "txt-document", IOUtils.toString(iss));
 	}
 	
 }

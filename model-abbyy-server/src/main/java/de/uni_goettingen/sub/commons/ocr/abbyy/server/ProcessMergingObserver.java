@@ -72,7 +72,7 @@ public class ProcessMergingObserver {
 		int i = 0;
 		List<File> fileResults = new ArrayList<File>();
 
-		Set<OCRFormat> formatsWithoutResultXml = new HashSet<OCRFormat>(subProcesses.get(0).getOcrOutputs().keySet());
+		Set<OCRFormat> formatsWithoutResultXml = new HashSet<OCRFormat>(subProcesses.get(0).getAllOutputFormats());
 		formatsWithoutResultXml.remove(OCRFormat.METADATA);
 		
 		for (OCRFormat f : formatsWithoutResultXml){
@@ -82,10 +82,10 @@ public class ProcessMergingObserver {
 			}
 			List<File> files = new ArrayList<File>(); 
 			for(AbbyyOCRProcess subProcess : subProcesses) {
-				File file = new File(subProcess.getOcrOutputs().get(f).getUri());
+				File file = new File(subProcess.getOutputUriForFormat(f));
 				files.add(file); 
 				if(i == 0){
-					File fileResult = new File(subProcess.getOcrOutputs().get(OCRFormat.METADATA).getUri());
+					File fileResult = new File(subProcess.getOutputUriForFormat(OCRFormat.METADATA));
 					fileResults.add(fileResult);			
 				}		
 			}

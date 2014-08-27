@@ -117,7 +117,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		//options | format | file
 		//-xca -xeca | -f XML | -of
 
-		for (OCRFormat ef : getOcrOutputs().keySet()) {
+		for (OCRFormat ef : getAllOutputFormats()) {
 
 			arglist.add("-f");
 			arglist.add(AbbyyCLIOCREngine.FORMAT_MAPPING.get(ef));
@@ -129,7 +129,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 			}
 
 			arglist.add("-of");
-			String outFile = new File(getOcrOutputs().get(ef).getUri()).getAbsolutePath();
+			String outFile = new File(getOutputUriForFormat(ef)).getAbsolutePath();
 			arglist.add(outFile);
 
 		}

@@ -35,10 +35,10 @@ public class HotfolderManager {
 		hotfolder = initHotfolder;
 	}
 
-	public void deleteOutputs(Map<OCRFormat, OCROutput> outputs) throws IOException {
-		for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
-			AbbyyOCROutput out = (AbbyyOCROutput) entry.getValue();
-			URI remoteUri = out.getRemoteUri();
+	public void deleteOutputs(List<OCROutput> outputs) throws IOException {
+		for (OCROutput out : outputs) {
+			AbbyyOCROutput abbyyOut = (AbbyyOCROutput) out;
+			URI remoteUri = abbyyOut.getRemoteUri();
 			hotfolder.deleteIfExists(remoteUri);
 		}
 	}
@@ -62,9 +62,9 @@ public class HotfolderManager {
 		}
 	}
 
-	public void retrieveResults(Map<OCRFormat, OCROutput> ocrOutputs) throws IOException {
-		for (Map.Entry<OCRFormat, OCROutput> entry : ocrOutputs.entrySet()) {
-			AbbyyOCROutput o = (AbbyyOCROutput) entry.getValue();
+	public void retrieveResults(List<OCROutput> ocrOutputs) throws IOException {
+		for (OCROutput entry : ocrOutputs) {
+			AbbyyOCROutput o = (AbbyyOCROutput) entry;
 
 			URI remoteUri = o.getRemoteUri();
 			URI localUri = o.getUri();
@@ -92,7 +92,7 @@ public class HotfolderManager {
 	}
 
 	public void waitForResults(long timeout, long waitInterval,
-			Map<OCRFormat, OCROutput> outputs, URI errorResultXmlUri) throws TimeoutException, IOException, InterruptedException {		
+			List<OCROutput> outputs, URI errorResultXmlUri) throws TimeoutException, IOException, InterruptedException {		
 		long start = System.currentTimeMillis();
 		
 		List<URI> mustBeThereUris = extractFromOutputs(outputs);
@@ -114,10 +114,10 @@ public class HotfolderManager {
 		}
 	}
 
-	private List<URI> extractFromOutputs(Map<OCRFormat, OCROutput> outputs) {
+	private List<URI> extractFromOutputs(List<OCROutput> outputs) {
 		List<URI> mustBeThereUris = new ArrayList<URI>();
-		for (Map.Entry<OCRFormat, OCROutput> entry : outputs.entrySet()) {
-			final AbbyyOCROutput output = (AbbyyOCROutput) entry.getValue();
+		for (OCROutput out : outputs) {
+			final AbbyyOCROutput output = (AbbyyOCROutput) out;
 			URI uri = output.getRemoteUri();
 			mustBeThereUris.add(uri);
 		}

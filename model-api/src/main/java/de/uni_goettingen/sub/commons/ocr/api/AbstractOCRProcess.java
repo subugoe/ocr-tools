@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -40,9 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3302775196071887966L;
 
 	final static Logger logger = LoggerFactory.getLogger(AbstractOCRProcess.class);
@@ -72,11 +70,10 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 	 * The images that should be converted, are stored in the given format at
 	 * the given location
 	 */
-	transient protected Map<OCRFormat, OCROutput> ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
+	transient protected List<OCROutput> ocrOutputs = new ArrayList<OCROutput>();
 
 	protected Boolean isFinished = false;
 
-    	
 	/**
 	 * Add a new language.
 	 * 
@@ -142,7 +139,7 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getOcrOutput()
 	 */
-	public Map<OCRFormat, OCROutput> getOcrOutputs () {
+	public List<OCROutput> getOcrOutputs () {
 		return this.ocrOutputs;
 	}
 
@@ -204,8 +201,25 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 	}
 
 	@Override
-	public void addOutput (OCRFormat format, OCROutput output) {
-		ocrOutputs.put(format, output);
+	public void addOutput (OCROutput output) {
+		ocrOutputs.add(output);
+	}
+	
+	public Set<OCRFormat> getAllOutputFormats() {
+		Set<OCRFormat> formats = new HashSet<OCRFormat>();
+		for (OCROutput output : ocrOutputs) {
+			formats.add(output.getFormat());
+		}
+		return formats;
+	}
+	
+	public URI getOutputUriForFormat(OCRFormat format) {
+		for (OCROutput output : ocrOutputs) {
+			if (output.getFormat().equals(format)) {
+				return output.getUri();
+			}
+		}
+		return null;
 	}
 	
 }

@@ -68,4 +68,7 @@ public interface OCROutput {
 	 */
 	abstract public void setlocalOutput (String uri);
 	
+	public void setFormat(OCRFormat format);
+	public OCRFormat getFormat();
+	
 }

@@ -158,8 +158,9 @@ public class AbbyyOCRProcessTest {
 		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
 		AbbyyOCROutput output = new AbbyyOCROutput(outputFile.toURI());
 		output.setlocalOutput(LOCAL_OUTPUT.getAbsolutePath());
+		output.setFormat(format);
 
-		process.addOutput(format, output);
+		process.addOutput(output);
 		
 		if (split) {
 			List<AbbyyOCRProcess> processes = new ProcessSplitter().split(process, 2);

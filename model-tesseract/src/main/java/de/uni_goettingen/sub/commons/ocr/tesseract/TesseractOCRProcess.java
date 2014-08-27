@@ -87,16 +87,12 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	 * de.uni_goettingen.sub.commons.ocr.api.OCROutput)
 	 */
 	@Override
-	public void addOutput(OCRFormat format, OCROutput output) {
+	public void addOutput(OCROutput output) {
 
 		if(!output.getUri().toString().startsWith("file:"))
 			throw new RuntimeException("Tesseract can only handle local files");
-		
-		if (ocrOutputs == null) {
-			ocrOutputs = new LinkedHashMap<OCRFormat, OCROutput>();
-		}
-				
-		ocrOutputs.put(format, output);
+						
+		ocrOutputs.add(output);
 	}
 
 	/**
@@ -107,13 +103,12 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 		
 		long start = System.currentTimeMillis();
 		
-		for (Map.Entry<OCRFormat, OCROutput> formatToOutput : ocrOutputs
-				.entrySet()) {
+		for (OCROutput formatToOutput : ocrOutputs) {
 
 			// eg TXT
-			OCRFormat format = formatToOutput.getKey();
+			OCRFormat format = formatToOutput.getFormat();
 
-			OCROutput output = formatToOutput.getValue();
+			OCROutput output = formatToOutput;
 
 			// to have a different file name for each OCRed text
 			int i = 1;

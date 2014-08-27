@@ -41,6 +41,8 @@ public abstract class AbstractOCROutput implements OCROutput {
 	/** The URI as String where the output file should be stored. */
 	protected String outputDir;
 
+	private OCRFormat format;
+	
 	/**
 	 * Instantiates a new abstract ocr output.
 	 */
@@ -57,7 +59,7 @@ public abstract class AbstractOCROutput implements OCROutput {
 	 *            the ocr output
 	 */
 	public AbstractOCROutput(OCROutput ocrOutput) {
-		this(ocrOutput.getUri(), ocrOutput.getlocalOutput());
+		this(ocrOutput.getUri(), ocrOutput.getlocalOutput(), ocrOutput.getFormat());
 	}
 
 	/**
@@ -70,9 +72,10 @@ public abstract class AbstractOCROutput implements OCROutput {
 	 * @param outputDir
 	 * 			  The URI as String where the output file should be stored.           
 	 */
-	public AbstractOCROutput(URI uri, String outputDir) {
+	public AbstractOCROutput(URI uri, String outputDir, OCRFormat format) {
 		this.outputUri = uri;
 		this.outputDir = outputDir;
+		this.format = format;
 	}
 
 	/* (non-Javadoc)
@@ -103,4 +106,13 @@ public abstract class AbstractOCROutput implements OCROutput {
 	public void setlocalOutput (String outputDir){
 		this.outputDir = outputDir;
 	}
+	
+	public void setFormat(OCRFormat newFormat) {
+		format = newFormat;
+	}
+	
+	public OCRFormat getFormat() {
+		return format;
+	}
+
 }

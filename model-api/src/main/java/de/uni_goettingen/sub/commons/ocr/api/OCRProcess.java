@@ -20,6 +20,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +66,7 @@ public interface OCRProcess {
 	 * @return the ocr output
 	 * @see OCROutput
 	 */
-	abstract public Map<OCRFormat, OCROutput> getOcrOutputs();
+	abstract public List<OCROutput> getOcrOutputs();
 
 	/**
 	 * Adds the output for the given format
@@ -76,7 +77,7 @@ public interface OCRProcess {
 	 *            the output, the output settings for the given format
 	 * 
 	 */
-	public void addOutput(OCRFormat format, OCROutput output);
+	public void addOutput(OCROutput output);
 	
 	/**
 	 * Sets the name of this {@link OCRProcess}. The nmae can be used by

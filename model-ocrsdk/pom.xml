@@ -15,6 +15,11 @@
 			<artifactId>model-api</artifactId>
 			<version>0.9-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>de.uni-goettingen.sub</groupId>
+			<artifactId>ocrutil</artifactId>
+			<version>0.9-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-codec</groupId>

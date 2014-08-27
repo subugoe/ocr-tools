@@ -128,7 +128,7 @@ public class AbbyyTicketTest {
 
 		when(ocri.getUri()).thenReturn(new File("/tmp").toURI());
 
-		when(process.getOcrOutputs()).thenReturn(OUTPUT_DEFINITIONS);
+//		when(process.getOcrOutputs()).thenReturn(OUTPUT_DEFINITIONS);
 
 	}
 

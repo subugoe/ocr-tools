@@ -66,7 +66,7 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		for (Locale language : langs) {
 			client.addLanguage(abbyy(language));
 		}
-		for (OCRFormat format : ocrOutputs.keySet()) {
+		for (OCRFormat format : getAllOutputFormats()) {
 			client.addExportFormat(abbyy(format));
 		}
 		client.addTextType(abbyy(textType));
@@ -77,10 +77,10 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		}
 		client.processDocument();
 		
-		for (Map.Entry<OCRFormat, OCROutput> entry : ocrOutputs.entrySet()) {
-			OCRFormat format = entry.getKey();
+		for (OCROutput entry : ocrOutputs) {
+			OCRFormat format = entry.getFormat();
 			InputStream result = client.getResultForFormat(abbyy(format));
-			OcrsdkOutput output = (OcrsdkOutput) entry.getValue();
+			OcrsdkOutput output = (OcrsdkOutput) entry;
 			output.save(result);
 		}
 		

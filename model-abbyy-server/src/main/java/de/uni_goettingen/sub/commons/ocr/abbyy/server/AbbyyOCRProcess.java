@@ -297,7 +297,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 
 	@Override
-	public void addOutput(OCRFormat format, OCROutput output) {
+	public void addOutput(OCROutput output) {
 		AbbyyOCROutput aoo = new AbbyyOCROutput(output);
 		String[] urlParts = output.getUri().toString().split("/");
 		if (aoo.getRemoteUri() == null) {
@@ -313,15 +313,15 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		if (aoo.getRemoteFilename() == null) {
 			aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
 		}
-		ocrOutputs.put(format, aoo);
+		ocrOutputs.add(aoo);
 	}
 
 	private synchronized void addResultXmlOutput() {
-		Map<OCRFormat, OCROutput> outputs = ocrOutputs;
-		OCRFormat lastKey = getLastKey(outputs);
-		AbbyyOCROutput out = (AbbyyOCROutput) outputs.get(lastKey);
+		AbbyyOCROutput out = (AbbyyOCROutput) ocrOutputs.get(0);
 		AbbyyOCROutput metadata = new AbbyyOCROutput(out);
 
+		OCRFormat firstFormatInList = ocrOutputs.get(0).getFormat();
+		
 		try {
 			String resultXmlFolder = fileProps.getProperty("resultXmlFolder");
 			String outputFolder = fileProps.getProperty("output");
@@ -330,7 +330,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 					.getRemoteUri()
 					.toString()
 					.replace(outputFolder, resultXmlFolder)
-					.replaceAll(lastKey.toString().toLowerCase(),
+					.replaceAll(firstFormatInList.toString().toLowerCase(),
 							"xml.result.xml"));
 			metadata.setRemoteUri(outputResultUri);
 
@@ -338,14 +338,14 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			metadata.setUri(new URI(out
 					.getUri()
 					.toString()
-					.replaceAll(lastKey.toString().toLowerCase(),
+					.replaceAll(firstFormatInList.toString().toLowerCase(),
 							"xml.result.xml")));
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs (" + getName() + ")");
 			throw new OCRException(e);
 		}
-		
-		addOutput(OCRFormat.METADATA, metadata);
+		metadata.setFormat(OCRFormat.METADATA);
+		addOutput(metadata);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -398,7 +398,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		try {
 			AbbyyOCRProcess subProcess = (AbbyyOCRProcess)super.clone();
 			subProcess.ocrImages = new ArrayList<OCRImage>();
-			subProcess.ocrOutputs =  new LinkedHashMap<OCRFormat, OCROutput>();
+			subProcess.ocrOutputs =  new ArrayList<OCROutput>();
 			subProcess.abbyyTicket = new AbbyyTicket(subProcess);
 			subProcess.abbyyTicket.setRemoteInputFolder(inputDavUri);
 			subProcess.abbyyTicket.setRemoteErrorFolder(errorDavUri);

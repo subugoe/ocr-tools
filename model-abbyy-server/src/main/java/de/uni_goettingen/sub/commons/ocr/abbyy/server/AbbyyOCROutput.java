@@ -49,7 +49,7 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	protected List<URI> errorImages = new ArrayList<URI>();
 	
 	public AbbyyOCROutput(URI uri) {
-		super(uri, null);
+		super(uri, null, null);
 	}
 
 	public AbbyyOCROutput(OCROutput ocrOutput) {
