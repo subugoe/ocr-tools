@@ -65,13 +65,6 @@
             <version>0.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.13</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>de.uni-goettingen.sub</groupId>
             <artifactId>model-tesseract</artifactId>
             <version>0.0.1-SNAPSHOT</version>
