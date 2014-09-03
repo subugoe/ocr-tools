@@ -43,7 +43,7 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 
 	private static final long serialVersionUID = 3302775196071887966L;
 
-	final static Logger logger = LoggerFactory.getLogger(AbstractOCRProcess.class);
+	private final static Logger logger = LoggerFactory.getLogger(AbstractOCRProcess.class);
 	/** The name of this process, this is needed for serialization of a process */
 	protected String name;
 

@@ -29,11 +29,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.5.6</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>1.6</version>
@@ -42,11 +37,6 @@
 			<groupId>de.unigoettingen.sub.commons</groupId>
 			<artifactId>util</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.5.6</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
