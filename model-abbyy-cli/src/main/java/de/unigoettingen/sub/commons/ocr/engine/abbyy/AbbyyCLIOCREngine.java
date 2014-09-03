@@ -19,7 +19,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,13 +32,11 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
-import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 
 public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OCREngine {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyCLIOCREngine.class);

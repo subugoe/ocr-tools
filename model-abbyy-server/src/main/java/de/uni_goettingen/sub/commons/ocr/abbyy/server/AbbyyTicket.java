@@ -48,10 +48,8 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
@@ -60,8 +58,6 @@ import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
 
 
 public class AbbyyTicket {
-
-	private static final long serialVersionUID = -1775048479151012925L;
 
 	private final static Logger logger = LoggerFactory.getLogger(AbbyyTicket.class);
 
@@ -97,11 +93,9 @@ public class AbbyyTicket {
 	static {
 
 		opts.setSavePrettyPrint();
-		opts.setSaveImplicitNamespaces(new HashMap<String, String>() {
-			{
-				put("", NAMESPACE);
-			}
-		});
+		Map<String, String> namespaces = new HashMap<String, String>();
+		namespaces.put("", NAMESPACE);
+		opts.setSaveImplicitNamespaces(namespaces);
 		opts.setUseDefaultNamespace();
 
 		FORMAT_FRAGMENTS = new HashMap<OCRFormat, OutputFileFormatSettings>();
@@ -280,10 +274,6 @@ public class AbbyyTicket {
 			exportParams.setExportFormatArray(j, settings.get(j));
 		}
 
-		ArrayList validationErrors = new ArrayList();
-		XmlOptions validationOptions = new XmlOptions();
-		validationOptions.setErrorListener(validationErrors);
-
 		// goes into the global temp directory
 		ticketDoc.save(out, opts);
 
@@ -316,19 +306,6 @@ public class AbbyyTicket {
 	public URI getRemoteErrorUri() throws URISyntaxException {
 		return new URI(remoteErrorFolder.toString() + ocrProcess.getName() + ".xml");
 	}
-
-	// TODO: Check if this is called if a List of OCRImage is set
-//	@Override
-//	public void addImage(OCRImage ocrImage) {
-//		AbbyyOCRImage aoi = new AbbyyOCRImage(ocrImage);
-//		String[] urlParts = ocrImage.getUri().toString().split("/");
-//		if (getName() == null) {
-//			logger.warn("Name for process not set, to avoid errors if your using parallel processes, we generate one.");
-//			setName(UUID.randomUUID().toString());
-//		}
-//		aoi.setRemoteFileName(getName() + "-" + urlParts[urlParts.length - 1]);
-//		super.addImage(aoi);
-//	}
 
 
 }

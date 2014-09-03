@@ -23,9 +23,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.stream.XMLStreamException;
@@ -346,23 +344,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		}
 		metadata.setFormat(OCRFormat.METADATA);
 		addOutput(metadata);
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <K> K getLastKey(final Map<K, ?> map) {
-		// A stupid hack to get the last key, maybe there is something better in
-		// commons-lang
-		if (!(map instanceof LinkedHashMap)) {
-			throw new IllegalArgumentException(
-					"Map needs to be of type LinkedHashMap, otherwise the order isn't predictable");
-		}
-		// We could use the keySet().toArray() method as well, but this isn't
-		// type save.
-		K lastOutput = null;
-		for (K k : map.keySet()) {
-			lastOutput = k;
-		}
-		return lastOutput;
 	}
 	
 	public void setMerger(ProcessMergingObserver obs) {

@@ -20,8 +20,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlEnum;
 

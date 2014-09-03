@@ -19,8 +19,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
  */
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;

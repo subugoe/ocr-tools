@@ -2,13 +2,11 @@ package de.uni_goettingen.sub.commons.ocr.tesseract;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 
 /**
  * Wrapper for the tesseract command-line tool. 

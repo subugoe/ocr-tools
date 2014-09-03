@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 

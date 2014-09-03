@@ -21,7 +21,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
  */
 
 import java.net.URI;
-import java.util.Map;
 
 /**
  * The Interface OCROutput represents the expected results before processing and

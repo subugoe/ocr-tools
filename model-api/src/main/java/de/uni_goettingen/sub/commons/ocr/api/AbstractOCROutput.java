@@ -20,8 +20,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
  */
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The Class AbstractOCROutput is a abstract super class for {@link OCRImage}

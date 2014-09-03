@@ -27,8 +27,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;

@@ -26,11 +26,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.ClassPathResource;
-
 /**
  * The class is a base class for other implementations of
  * Hotfolder. It provides some of the methods that can be implemented completely
