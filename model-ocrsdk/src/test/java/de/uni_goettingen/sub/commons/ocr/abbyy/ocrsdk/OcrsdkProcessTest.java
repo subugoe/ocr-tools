@@ -51,7 +51,8 @@ public class OcrsdkProcessTest {
 
 	//@Test
 	public void test() {
-		OcrsdkImage image = new OcrsdkImage(new File("src/test/resources/Picture_010.tif").toURI());
+		OcrsdkImage image = new OcrsdkImage();
+		image.setLocalUri(new File("src/test/resources/Picture_010.tif").toURI());
 		OcrsdkOutput outputXml = new OcrsdkOutput();
 		outputXml.setUri(new File("target/testResult.xml").toURI());
 		outputXml.setFormat(OCRFormat.XML);

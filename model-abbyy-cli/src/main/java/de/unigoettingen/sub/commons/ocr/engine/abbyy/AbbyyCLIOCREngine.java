@@ -44,7 +44,6 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	public static final Map<OCRFormat, String> FORMAT_MAPPING;
 	public static final Map<OCRFormat, List<String>> FORMAT_SETTINGS;
 	protected static final List<String> engineSettings;
-	public static final Map<Integer, String> ORIENTATION_MAPPINGS;
 
 	public static final Integer SEGSIZE = 300;
 
@@ -96,9 +95,6 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 		FORMAT_SETTINGS.get(OCRFormat.TXT).add("-tet");
 		FORMAT_SETTINGS.get(OCRFormat.TXT).add("UTF8");
 
-		ORIENTATION_MAPPINGS = new HashMap<Integer, String>();
-		ORIENTATION_MAPPINGS.put(OCRImage.Orientation.PORTRAIT.getDegree(), "NoRotation");
-		ORIENTATION_MAPPINGS.put(OCRImage.Orientation.LANDSCAPE.getDegree(), "Clockwise");
 
 	}
 

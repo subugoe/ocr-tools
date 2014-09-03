@@ -21,8 +21,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import java.net.URI;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage.Orientation;
 
 /**
  * The Class AbbyyOCRImage. Is a representation of an OCRImage suitable for
@@ -36,7 +34,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage.Orientation;
  * @author abergna
  * @author cmahnke
  */
-public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
+public class AbbyyOCRImage extends AbstractOCRImage {
 	/** This represents the filename that should be written to the ticket. */
 	private String remoteFileName;
 
@@ -45,90 +43,6 @@ public class AbbyyOCRImage extends AbstractOCRImage implements OCRImage {
 
 	/** This represents the URI if the images is part of a failed process. */
 	private URI errorUri;
-
-	/**
-	 * Instantiates a new AbbyyOCRImage.
-	 * 
-	 * @param imageUri
-	 *            the uri of image
-	 */
-
-	public AbbyyOCRImage(URI imageUri) {
-		super(imageUri);
-	}
-
-	/**
-	 * Instantiates a new AbbyyOCRImage.
-	 * 
-	 * @param uri
-	 *            The URI of the local file,
-	 * @param orientation
-	 *            {@link Orientation}
-	 * @param remoteUri
-	 *            , The URI of the file, need to be resolvable from the local
-	 *            machine.
-	 * @param remoteFileName
-	 *            , The local file name on the remote system.
-	 * @param size
-	 *            the size of the file
-	 */
-	public AbbyyOCRImage(URI uri, Orientation orientation, URI remoteUri,
-			String remoteFileName, Long size) {
-		this.imageUri = uri;
-		this.orientation = orientation;
-		this.remoteUri = remoteUri;
-		this.remoteFileName = remoteFileName;
-		this.size = size;
-	}
-
-	// This calls a copy constructor
-	/**
-	 * Instantiates a new AbbyyOCRImage.
-	 * 
-	 * @param i
-	 *            the OCRImage. This represents the a single image file to be
-	 *            recognized. Images are referenced by URI. {@link Orientation}
-	 *            is an Enum representing different possible orientations of an
-	 *            image.
-	 */
-	public AbbyyOCRImage(OCRImage i) {
-		super(i);
-	}
-
-	/**
-	 * Instantiates a new AbbyyOCRImage from a given {@link AbbyyOCRImage}.
-	 * 
-	 * @param i
-	 *            the i
-	 */
-	public AbbyyOCRImage(AbbyyOCRImage i) {
-		this(i.imageUri, i.orientation, i.remoteUri, i.remoteFileName, i.size);
-	}
-
-	/**
-	 * Instantiates a new abbyy ocr image.
-	 */
-	protected AbbyyOCRImage() {
-
-	}
-
-	/**
-	 * Instantiates a new AbbyyOCRImage.
-	 * 
-	 * @param imageUri
-	 *            The URI of the local file
-	 * @param remoteUri
-	 *            , The URI of the file, need to be resolvable from the local
-	 *            machine.
-	 * @param remoteFileName
-	 *            , The local file name on the remote system.
-	 */
-	public AbbyyOCRImage(URI imageUri, URI remoteUri, String remoteFileName) {
-		super(imageUri);
-		this.imageUri = imageUri;
-		this.remoteUri = remoteUri;
-		this.remoteFileName = remoteFileName;
-	}
 
 	/**
 	 * Gets the remoteFilename is the local file name on the remote system.

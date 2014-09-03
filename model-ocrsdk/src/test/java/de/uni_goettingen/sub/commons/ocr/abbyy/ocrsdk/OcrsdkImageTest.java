@@ -18,7 +18,8 @@ public class OcrsdkImageTest {
 	@Test
 	public void readBytesFromImageFile() throws IOException {
 		URI imageUri = new File("src/test/resources/fakeimage.txt").toURI();
-		OcrsdkImage image = new OcrsdkImage(imageUri);
+		OcrsdkImage image = new OcrsdkImage();
+		image.setLocalUri(imageUri);
 		byte[] imageBytes = image.getAsBytes();
 		assertEquals("byte array length", 2, imageBytes.length);
 		assertEquals("first byte", 'a', imageBytes[0]);

@@ -54,7 +54,7 @@ public class HotfolderManager {
 	public void copyImagesToHotfolder(List<OCRImage> ocrImages) throws IOException {
 		for (OCRImage ocrImage : ocrImages) {
 			AbbyyOCRImage image = (AbbyyOCRImage) ocrImage;
-			URI fromUri = image.getUri();
+			URI fromUri = image.getLocalUri();
 			URI toUri = image.getRemoteUri();
 			hotfolder.copyFile(fromUri, toUri);
 		}

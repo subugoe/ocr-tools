@@ -106,31 +106,31 @@ public class AbbyyTicketTest {
 		OUTPUT_DEFINITIONS.put(OCRFormat.XML, aoo);
 	}
 
-	@BeforeClass
-	public static void init() throws FileNotFoundException,
-			MalformedURLException, URISyntaxException {
-
-		// Create some mock images
-		List<OCRImage> imgList = new ArrayList<OCRImage>();
-		for (int i = 0; i < 10; i++) {
-			ocri = mock(AbstractOCRImage.class);
-			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
-			when(ocri.getUri()).thenReturn(new URI(imageUrl));
-			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
-			assertTrue(imageUrl.equals(aoi.getUri().toString()));
-			aoi.setRemoteFileName("remoteName" + i);
-			imgList.add(aoi);
-		}
-
-		assertTrue(imgList.size() == 10);
-//		when(process.getOcrImages()).thenReturn(imgList);
-		assertTrue(process.getNumberOfImages() == 10);
-
-		when(ocri.getUri()).thenReturn(new File("/tmp").toURI());
-
-//		when(process.getOcrOutputs()).thenReturn(OUTPUT_DEFINITIONS);
-
-	}
+//	@BeforeClass
+//	public static void init() throws FileNotFoundException,
+//			MalformedURLException, URISyntaxException {
+//
+//		// Create some mock images
+//		List<OCRImage> imgList = new ArrayList<OCRImage>();
+//		for (int i = 0; i < 10; i++) {
+//			ocri = mock(AbstractOCRImage.class);
+//			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
+//			when(ocri.getUri()).thenReturn(new URI(imageUrl));
+//			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
+//			assertTrue(imageUrl.equals(aoi.getUri().toString()));
+//			aoi.setRemoteFileName("remoteName" + i);
+//			imgList.add(aoi);
+//		}
+//
+//		assertTrue(imgList.size() == 10);
+////		when(process.getOcrImages()).thenReturn(imgList);
+//		assertTrue(process.getNumberOfImages() == 10);
+//
+//		when(ocri.getUri()).thenReturn(new File("/tmp").toURI());
+//
+////		when(process.getOcrOutputs()).thenReturn(OUTPUT_DEFINITIONS);
+//
+//	}
 
 //	@Test
 //	public void writeTicket() throws IOException {

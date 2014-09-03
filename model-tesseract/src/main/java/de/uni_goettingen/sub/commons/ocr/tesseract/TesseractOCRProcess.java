@@ -146,15 +146,15 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	private File getLocalImage(OCRImage image, String tempPath) {
 		File result = null;
 
-		String protocol = image.getUri().getScheme();
+		String protocol = image.getLocalUri().getScheme();
 
 		if (protocol.equals("file")) {
-			result = new File(image.getUri().getPath());
+			result = new File(image.getLocalUri().getPath());
 
 		} else {
 			try {
 				result = new File(tempPath);
-				InputStream is = image.getUri().toURL().openStream();
+				InputStream is = image.getLocalUri().toURL().openStream();
 				BufferedOutputStream bos = new BufferedOutputStream(
 						new FileOutputStream(result));
 
@@ -167,7 +167,7 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 				bos.close();
 
 			} catch (MalformedURLException e) {
-				logger.error("Not a URL: " + image.getUri(), e);
+				logger.error("Not a URL: " + image.getLocalUri(), e);
 			} catch (IOException e) {
 				logger.error("Error while downloading or saving image.", e);
 			}

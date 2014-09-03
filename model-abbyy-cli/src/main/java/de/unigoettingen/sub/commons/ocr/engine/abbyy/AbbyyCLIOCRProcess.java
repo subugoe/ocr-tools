@@ -61,15 +61,12 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 	private List<String> buildInputFileList (String param) throws URISyntaxException {
 		ArrayList<String> arglist = new ArrayList<String>();
 		for (OCRImage image : ocrImages) {
-			File file = new File(image.getUri());
+			File file = new File(image.getLocalUri());
 			arglist.add(param);
 			arglist.add(file.getAbsolutePath());
-			if (setOrientation && image.getOrientation() != OCRImage.Orientation.PORTRAIT) {
+			if (setOrientation) {
 				arglist.add("-ir");
-				String orientation = AbbyyCLIOCREngine.ORIENTATION_MAPPINGS.get(OCRImage.Orientation.PORTRAIT);
-				if (orientation != null) {
-					throw new OCRException("No mapping found for " + image.getOrientation().toString());
-				}
+				String orientation = "NoRotation";
 				arglist.add(orientation);
 			}
 

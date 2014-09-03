@@ -226,7 +226,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	@Override
 	public void addImage(OCRImage image) {
 		AbbyyOCRImage aoi = (AbbyyOCRImage) image;
-		String remoteFileName = aoi.getUri().toString();
+		String remoteFileName = aoi.getLocalUri().toString();
 		remoteFileName = name
 				+ "-"
 				+ remoteFileName.substring(
@@ -269,7 +269,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		Long size = 0l;
 		for (OCRImage i : ocrImages) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) i;
-			size += aoi.getSize();
+			size += aoi.getFileSize();
 		}
 		return size;
 	}

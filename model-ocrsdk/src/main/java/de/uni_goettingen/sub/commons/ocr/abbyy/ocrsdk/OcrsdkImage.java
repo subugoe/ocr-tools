@@ -14,16 +14,13 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
  *
  */
 public class OcrsdkImage extends AbstractOCRImage {
-
-	public OcrsdkImage() {
-		
-	}
 	
-	public OcrsdkImage(URI imageUri) {
-		super(imageUri);
-		if (!"file".equals(imageUri.getScheme())) {
+	@Override
+	public void setLocalUri(URI localUri) {
+		if (!"file".equals(localUri.getScheme())) {
 			throw new IllegalArgumentException("Only local files are supported");
 		}
+		super.setLocalUri(localUri);
 	}
 	
 	/**
@@ -34,9 +31,9 @@ public class OcrsdkImage extends AbstractOCRImage {
 	public byte[] getAsBytes() {
 		byte[] imageBytes = null;
 		try {
-			imageBytes = IOUtils.toByteArray(imageUri);
+			imageBytes = IOUtils.toByteArray(localUri);
 		} catch (IOException e) {
-			throw new IllegalStateException("Could not read from " + imageUri, e);
+			throw new IllegalStateException("Could not read from " + localUri, e);
 		}
 		return imageBytes;
 	}

@@ -20,7 +20,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 import java.net.URI;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage.Orientation;
 
 /**
  * The Class AbstractOCRImage is a abstract super class for {@link OCRImage}
@@ -33,125 +32,27 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRImage.Orientation;
  */
 public abstract class AbstractOCRImage implements OCRImage {
 
-	/** uri to image wich will be sent to OCR Engine */
-	protected URI imageUri = null;
+	protected URI localUri = null;
 
-	/**
-	 * The Enum Orientation. Orientation is expressed clockwise. For
-	 * calculations and display there is a method to get the rotation in
-	 * degrees.
-	 * */
-	protected Orientation orientation;
+	protected Long fileSize = 0l;
 
-	/** the size of the image, if known. */
-	protected Long size = 0l;
-
-	/**
-	 * Instantiates a new abstract OCRImage using a given {@link URI}.
-	 * 
-	 * @param imageUri
-	 *            the image uri
-	 */
-	// TODO: remove?
-	public AbstractOCRImage(URI imageUri) {
-		this.imageUri = imageUri;
+	@Override
+	public URI getLocalUri() {
+		return this.localUri;
 	}
 
-	/**
-	 * Instantiates a new abstract ocr image.
-	 */
-	protected AbstractOCRImage() {
-
+	@Override
+	public void setLocalUri(URI newUri) {
+		this.localUri = newUri;
 	}
 
-	/**
-	 * Instantiates a new abstract ocr image from a given {@link OCRImage}. This
-	 * is a simple copy constructor that can be used by subclasses. It can be
-	 * used to convert different subclasses into each other
-	 * 
-	 * @param i
-	 *            The OCRImage. This represents the a single image file to be
-	 *            recognized. Images are referenced by URI. {@link Orientation}
-	 *            is an Enum representing different possible orientations of an
-	 *            image. Implementations should extend {@link AbstractOCRImage}
-	 *            to add further methods for example for handling Streams.
-	 */
-	// TODO: remove
-	public AbstractOCRImage(OCRImage i) {
-		this(i.getUri(), i.getOrientation());
-		this.size = ((AbstractOCRImage)i).getSize();
+	public Long getFileSize() {
+		return fileSize;
 	}
 
-	/**
-	 * Instantiates a new abstract ocr image with the given arguments.
-	 * 
-	 * @param imageUri
-	 *            the image, uri to image wich will be sent to OCR Engine
-	 * @param orientation
-	 *            The Enum Orientation. Orientation is expressed clockwise. For
-	 *            calculations and display there is a method to get the rotation
-	 *            in degrees.
-	 */
-	// TODO: remove
-	public AbstractOCRImage(URI imageUri, Orientation orientation) {
-		this.imageUri = imageUri;
-		this.orientation = orientation;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#getUri()
-	 */
-	public URI getUri() {
-		return this.imageUri;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#setUri(java.net.URI)
-	 */
-	public void setUri(URI uri) {
-		this.imageUri = uri;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRImage#getOrientation()
-	 */
-	public Orientation getOrientation() {
-		return orientation;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.OCRImage#setOrientation(OCRImage
-	 * .Orientation)
-	 */
-	public void setOrientation(Orientation orientation) {
-		this.orientation = orientation;
-	}
-
-	/**
-	 * Gets the size of file
-	 * 
-	 * @return the size
-	 */
-	public Long getSize() {
-		return size;
-	}
-
-	/**
-	 * Sets the size of file
-	 * 
-	 * @param size
-	 */
-	public void setSize(Long size) {
-		this.size = size;
+	@Override
+	public void setFileSize(Long size) {
+		this.fileSize = size;
 	}
 
 }
