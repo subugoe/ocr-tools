@@ -122,7 +122,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			abbyyTicket.setRemoteErrorFolder(errorDavUri);
 		} catch (URISyntaxException e) {
 			logger.error("Can't setup server uris (" + getName() + ")", e);
-			throw new OCRException(e);
+			throw new IllegalArgumentException(e);
 		}
 	}
 
@@ -228,26 +228,19 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		AbbyyOCRImage image = new AbbyyOCRImage();
 		image.setLocalUri(localUri);
 		image.setFileSize(fileSize);
-		String remoteFileName = image.getLocalUri().toString();
-		remoteFileName = name
-				+ "-"
-				+ remoteFileName.substring(
-						remoteFileName.lastIndexOf("/") + 1,
-						remoteFileName.length());
-		if (image.getRemoteFileName() == null) {
-			image.setRemoteFileName(remoteFileName);
-		}
-		URI remoteImageUri, errorImageUri = null;
+		String localUriString = localUri.toString();
+		String remoteFileName = name + "-" + localUriString.substring(
+						localUriString.lastIndexOf("/") + 1,
+						localUriString.length());
+		image.setRemoteFileName(remoteFileName);
 		try {
-			errorImageUri = new URI(errorDavUri.toString() + remoteFileName);
-			remoteImageUri = new URI(inputDavUri.toString() + remoteFileName);
-		} catch (URISyntaxException e) {
-			logger.error("Error contructing remote URL. (" + getName() + ")", e);
-			throw new OCRException(e);
-		}
-		if (image.getRemoteUri() == null) {
+			URI errorImageUri = new URI(errorDavUri.toString() + remoteFileName);
+			URI remoteImageUri = new URI(inputDavUri.toString() + remoteFileName);
 			image.setRemoteUri(remoteImageUri);
 			image.setErrorUri(errorImageUri);
+		} catch (URISyntaxException e) {
+			logger.error("Error contructing remote URL. (" + getName() + ")", e);
+			throw new IllegalArgumentException(e);
 		}
 		ocrImages.add(image);
 	}
@@ -306,7 +299,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 						+ urlParts[urlParts.length - 1]));
 			} catch (URISyntaxException e) {
 				logger.error("Error while setting up URIs (" + getName() + ")");
-				throw new OCRException(e);
+				throw new IllegalArgumentException(e);
 			}
 		}
 		aoo.setRemoteLocation(fileProps.getProperty("serverOutputLocation"));
