@@ -224,16 +224,18 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 
 	@Override
-	public void addImage(OCRImage image) {
-		AbbyyOCRImage aoi = (AbbyyOCRImage) image;
-		String remoteFileName = aoi.getLocalUri().toString();
+	public void addImage(URI localUri, long fileSize) {
+		AbbyyOCRImage image = new AbbyyOCRImage();
+		image.setLocalUri(localUri);
+		image.setFileSize(fileSize);
+		String remoteFileName = image.getLocalUri().toString();
 		remoteFileName = name
 				+ "-"
 				+ remoteFileName.substring(
 						remoteFileName.lastIndexOf("/") + 1,
 						remoteFileName.length());
-		if (aoi.getRemoteFileName() == null) {
-			aoi.setRemoteFileName(remoteFileName);
+		if (image.getRemoteFileName() == null) {
+			image.setRemoteFileName(remoteFileName);
 		}
 		URI remoteImageUri, errorImageUri = null;
 		try {
@@ -243,11 +245,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			logger.error("Error contructing remote URL. (" + getName() + ")", e);
 			throw new OCRException(e);
 		}
-		if (aoi.getRemoteUri() == null) {
-			aoi.setRemoteUri(remoteImageUri);
-			aoi.setErrorUri(errorImageUri);
+		if (image.getRemoteUri() == null) {
+			image.setRemoteUri(remoteImageUri);
+			image.setErrorUri(errorImageUri);
 		}
-		super.addImage(image);
+		ocrImages.add(image);
 	}
 	
 	

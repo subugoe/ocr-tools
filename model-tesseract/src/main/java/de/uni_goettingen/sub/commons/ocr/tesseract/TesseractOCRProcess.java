@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -75,6 +77,14 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	 */
 	public TesseractOCRProcess() {
 		super();
+	}
+
+	@Override
+	public void addImage(URI localUri, long fileSize) {
+		OCRImage image = new AbstractOCRImage() {};
+		image.setLocalUri(localUri);
+		image.setFileSize(fileSize);
+		ocrImages.add(image);
 	}
 
 	/*

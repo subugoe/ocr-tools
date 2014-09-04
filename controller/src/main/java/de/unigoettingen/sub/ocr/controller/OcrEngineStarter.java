@@ -41,10 +41,7 @@ public class OcrEngineStarter {
 			process.setName(bookFolder.getName());
 			File[] allPages = fileAccess.getAllImagesFromFolder(bookFolder, params.inputFormats);
 			for (File page : allPages) {
-				OCRImage image = factory.createImage();
-				image.setLocalUri(page.toURI());
-				image.setFileSize(page.length());
-				process.addImage(image);
+				process.addImage(page.toURI(), page.length());
 			}
 			
 			for (String outFormat : params.outputFormats) {

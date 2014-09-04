@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -57,6 +59,14 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 
 	//Internal state variables
 	private Integer progress;
+
+	@Override
+	public void addImage(URI localUri, long fileSize) {
+		OCRImage image = new AbstractOCRImage() {};
+		image.setLocalUri(localUri);
+		image.setFileSize(fileSize);
+		ocrImages.add(image);
+	}
 
 	private List<String> buildInputFileList (String param) throws URISyntaxException {
 		ArrayList<String> arglist = new ArrayList<String>();

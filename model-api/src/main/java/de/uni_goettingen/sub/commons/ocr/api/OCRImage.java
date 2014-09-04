@@ -56,6 +56,8 @@ public interface OCRImage {
 	 * Sets the size of file
 	 * @param size 
 	 */
-	public void setFileSize(Long fileSize);
+	public void setFileSize(long fileSize);
+	
+	public long getFileSize();
 
 }

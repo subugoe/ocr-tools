@@ -94,11 +94,6 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 	public List<OCRImage> getImages () {
 		return ocrImages;
 	}
-
-	@Override
-	public void addImage(OCRImage image) {
-		ocrImages.add(image);
-	}
 	
 	@Override
 	public int getNumberOfImages() {

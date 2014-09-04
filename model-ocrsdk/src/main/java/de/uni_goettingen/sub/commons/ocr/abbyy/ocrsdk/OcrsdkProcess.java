@@ -1,6 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -56,6 +57,14 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 	 */
 	void setClient(OcrsdkClient client) {
 		this.client = client;
+	}
+	
+	@Override
+	public void addImage(URI localUri, long fileSize) {
+		OcrsdkImage image = new OcrsdkImage();
+		image.setLocalUri(localUri);
+		image.setFileSize(fileSize);
+		ocrImages.add(image);
 	}
 	
 	/**

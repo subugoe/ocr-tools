@@ -20,6 +20,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
+import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -49,11 +50,11 @@ public interface OCRProcess {
 	 * @return the set of languages
 	 * @see java.util.Locale
 	 */
-	abstract public Set<Locale> getLanguages();
+	public Set<Locale> getLanguages();
 
-	abstract public void addLanguage(Locale lang);
+	public void addLanguage(Locale lang);
 		
-	abstract public void addImage(OCRImage image);
+	public void addImage(URI localUri, long fileSize);
 
 	public int getNumberOfImages();
 	
@@ -65,7 +66,7 @@ public interface OCRProcess {
 	 * @return the ocr output
 	 * @see OCROutput
 	 */
-	abstract public List<OCROutput> getOcrOutputs();
+	public List<OCROutput> getOcrOutputs();
 
 	/**
 	 * Adds the output for the given format
@@ -88,7 +89,7 @@ public interface OCRProcess {
 	 * @param name
 	 *            the new name
 	 */
-	abstract public void setName(String name);
+	public void setName(String name);
 
 	/**
 	 * Gets the nameof this {@link OCRProcess}. The nae can be used by
@@ -99,7 +100,7 @@ public interface OCRProcess {
 	 * 
 	 * @return the name
 	 */
-	abstract public String getName();
+	public String getName();
 
 	
 	/**
@@ -108,7 +109,7 @@ public interface OCRProcess {
 	 * @return true if this {@link OCROutput} represents a result, false
 	 *         otherwise {@link OCRException} if the process failed
 	 */
-	abstract public Boolean isFinished();
+	public Boolean isFinished();
 	
 	
 	/**
@@ -119,7 +120,7 @@ public interface OCRProcess {
 	 *         {@link java.lang.UnsupportedOperationException} it it's not
 	 *         possible to use this setting.
 	 */
-	abstract OCRQuality getQuality();
+	public OCRQuality getQuality();
 
 	/**
 	 * Sets the quality that should be produced by an engine while processing
@@ -132,7 +133,7 @@ public interface OCRProcess {
 	 *            to change the quality of a running process, calls to this
 	 *            method will be ignored in this case.
 	 */
-	abstract void setQuality(OCRQuality q);
+	public void setQuality(OCRQuality q);
 
 	/**
 	 * The Enum OCRQuality. This enum represents three states of different
@@ -160,7 +161,7 @@ public interface OCRProcess {
 	 * 
 	 * @return the texttyp
 	 */
-	abstract OCRTextType getTextType();
+	public OCRTextType getTextType();
 
 	/**
 	 * Sets the texttyp. to describe the type of recognized text
@@ -168,7 +169,7 @@ public interface OCRProcess {
 	 * @param t
 	 *            the new texttyp
 	 */
-	abstract void setTextType(OCRTextType t);
+	public void setTextType(OCRTextType t);
 
 	/**
 	 * The Enum TextTyp. This enum represents 7 states of different
@@ -181,7 +182,7 @@ public interface OCRProcess {
 	 * 
 	 * @return the priority
 	 */
-	abstract OCRPriority getPriority();
+	public OCRPriority getPriority();
 
 	/**
 	 * Sets the priority. to describe the level of the job.
@@ -189,6 +190,6 @@ public interface OCRProcess {
 	 * @param p
 	 *            the new priority
 	 */
-	abstract void setPriority(OCRPriority p);
+	public void setPriority(OCRPriority p);
 	
 }

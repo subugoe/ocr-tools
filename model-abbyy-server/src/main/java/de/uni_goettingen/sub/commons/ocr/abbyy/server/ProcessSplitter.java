@@ -52,7 +52,7 @@ public class ProcessSplitter {
 			AbbyyOCRProcess subProcess = process.createSubProcess();
 
 			for (OCRImage imageFromChunk : chunk) {
-				subProcess.addImage(imageFromChunk);
+				subProcess.addImage(imageFromChunk.getLocalUri(), imageFromChunk.getFileSize());
 			}
 			
 			String subProcessName = process.getName() + "_" + chunkIndex + "of" + numberOfChunks;

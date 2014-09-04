@@ -6,8 +6,6 @@ public interface OcrFactory {
 	
 	public OCRProcess createProcess();
 	
-	public OCRImage createImage();
-	
 	public OCROutput createOutput();
 	
 }
