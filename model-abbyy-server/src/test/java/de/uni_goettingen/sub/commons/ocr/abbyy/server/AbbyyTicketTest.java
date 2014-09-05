@@ -100,7 +100,7 @@ public class AbbyyTicketTest {
 		}
 
 		final AbbyyOCROutput aoo = new AbbyyOCROutput();
-		aoo.setUri(resultUri);
+		aoo.setLocalUri(resultUri);
 		aoo.setRemoteFilename("result");
 
 		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();

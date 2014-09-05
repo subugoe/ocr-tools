@@ -328,7 +328,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			metadata.setRemoteUri(outputResultUri);
 
 			// The local file name
-			metadata.setUri(new URI(out
+			metadata.setLocalUri(new URI(out
 					.getLocalUri()
 					.toString()
 					.replaceAll(firstFormatInList.toString().toLowerCase(),

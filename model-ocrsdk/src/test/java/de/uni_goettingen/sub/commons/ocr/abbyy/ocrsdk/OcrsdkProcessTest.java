@@ -54,10 +54,10 @@ public class OcrsdkProcessTest {
 		OcrsdkImage image = new OcrsdkImage();
 		image.setLocalUri(new File("src/test/resources/Picture_010.tif").toURI());
 		OcrsdkOutput outputXml = new OcrsdkOutput();
-		outputXml.setUri(new File("target/testResult.xml").toURI());
+		outputXml.setLocalUri(new File("target/testResult.xml").toURI());
 		outputXml.setFormat(OCRFormat.XML);
 		OcrsdkOutput outputTxt = new OcrsdkOutput();
-		outputTxt.setUri(new File("target/testResult.txt").toURI());
+		outputTxt.setLocalUri(new File("target/testResult.txt").toURI());
 		outputTxt.setFormat(OCRFormat.TXT);
 		OcrsdkProcess process = new OcrsdkProcess("", "");
 		process.addImage(image.getLocalUri(), image.getFileSize());

@@ -20,7 +20,7 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 public class OcrsdkOutput extends AbstractOCROutput {
 	
 	@Override
-	public void setUri(URI outputUri) {
+	public void setLocalUri(URI outputUri) {
 		if (!"file".equals(outputUri.getScheme())) {
 			throw new IllegalArgumentException("Only local outputs are supported. URI is: " + outputUri);
 		}

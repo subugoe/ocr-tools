@@ -91,7 +91,7 @@ public class ProcessSplitter {
 			} catch (URISyntaxException e) {
 				logger.error("Error contructing localUri URL: "+ localUriString + " (" + process.getName() + ")", e);
 			}
-			subOutput.setUri(localUri);
+			subOutput.setLocalUri(localUri);
 			subOutput.setLocalDir(entry.getLocalDir());
 			process.outResultUri = entry.getLocalDir();
 			OCRFormat outputFormat = entry.getFormat();

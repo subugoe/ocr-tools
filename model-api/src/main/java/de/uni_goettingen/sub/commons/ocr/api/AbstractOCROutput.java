@@ -58,7 +58,7 @@ public abstract class AbstractOCROutput implements OCROutput {
 	}
 
 	@Override
-	public void setUri(URI uri) {
+	public void setLocalUri(URI uri) {
 		this.localUri = uri;
 
 	}

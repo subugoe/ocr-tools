@@ -49,7 +49,7 @@ public interface OCROutput {
 	 * @param uri
 	 *            the new uri
 	 */
-	public void setUri(URI uri);
+	public void setLocalUri(URI uri);
 	
 	/**
 	 * Gets the String Dir where the results should be stored. If {@link #isResult()}
