@@ -83,6 +83,10 @@ public class ProcessSplitter {
 
 	private void addOutputsToSubProcess(AbbyyOCRProcess subProcess, AbbyyOCRProcess process) {
 		for (OCROutput entry : process.getOcrOutputs()) {
+			// TODO: metadata should not be a special case
+			if (entry.getFormat() == OCRFormat.METADATA) {
+				continue;
+			}
 			OCROutput subOutput = new AbbyyOCROutput();
 			URI localUri = entry.getLocalUri();
 			String localUriString = localUri.toString().replace(process.getName(), subProcess.getName());
@@ -93,7 +97,7 @@ public class ProcessSplitter {
 			}
 			subOutput.setLocalUri(localUri);
 			subOutput.setLocalDir(entry.getLocalDir());
-			process.outResultUri = entry.getLocalDir();
+			logger.warn(entry.getLocalDir());
 			OCRFormat outputFormat = entry.getFormat();
 			subOutput.setFormat(outputFormat);
 			subProcess.addOutput(subOutput);

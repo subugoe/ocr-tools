@@ -72,6 +72,7 @@ public class ProcessMergingObserver {
 		int i = 0;
 		List<File> fileResults = new ArrayList<File>();
 
+		// TODO: metadata should not be a special case
 		Set<OCRFormat> formatsWithoutResultXml = new HashSet<OCRFormat>(subProcesses.get(0).getAllOutputFormats());
 		formatsWithoutResultXml.remove(OCRFormat.METADATA);
 		
@@ -93,7 +94,7 @@ public class ProcessMergingObserver {
 			if(noSubProcessfailed){
 				logger.debug("Waiting... for Merge Proccessing (" + parentProcess.getName() + ")");
 				//mergeFiles for input format if Supported
-				abbyyMergedResult = new File(parentProcess.outResultUri + "/" + parentProcess.getName() + "." + f.toString().toLowerCase());
+				abbyyMergedResult = new File(parentProcess.getOutputUriForFormat(f));
 				FileMerger.abbyyVersionNumber = "v10";
 				FileMerger.mergeFiles(f, files, abbyyMergedResult);
 				logger.debug(parentProcess.getName() + "." + f.toString().toLowerCase()+ " MERGED (" + parentProcess.getName() + ")");
@@ -105,14 +106,14 @@ public class ProcessMergingObserver {
 			if(noSubProcessfailed){
 				logger.debug("Waiting... for Merge Proccessing (" + parentProcess.getName() + ")");
 				//mergeFiles for Abbyy Result xml.result.xml
-				abbyyMergedResult = new File(parentProcess.outResultUri + "/" + parentProcess.getName() + ".xml.result.xml");
+				abbyyMergedResult = new File(parentProcess.getOutputUriForFormat(OCRFormat.METADATA));
 				FileMerger.mergeAbbyyXMLResults(fileResults , abbyyMergedResult);
 				logger.debug(parentProcess.getName() + ".xml.result.xml" + " MERGED (" + parentProcess.getName() + ")");			
 				removeSubProcessResults(fileResults);
 			}
 			
 		} catch (IOException e) {
-			logger.error("ERROR contructing :" +new File(parentProcess.outResultUri + "/" + parentProcess.getName() + ".xml.result.xml").toString() + " (" + parentProcess.getName() + ")", e);
+			logger.error("ERROR contructing result xml file (" + parentProcess.getName() + ")", e);
 		} catch (XMLStreamException e) {
 			logger.error("ERROR in mergeAbbyyXML : (" + parentProcess.getName() + ")", e);
 		}		

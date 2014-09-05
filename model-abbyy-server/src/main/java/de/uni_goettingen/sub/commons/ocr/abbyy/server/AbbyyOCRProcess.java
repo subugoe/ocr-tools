@@ -62,7 +62,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 
 	Long startTime = 0L;	
 	
-	String outResultUri = null;
 	private transient ProcessMergingObserver obs;
 	private boolean finished = false;
 	
@@ -134,8 +133,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 
 		startTime = System.currentTimeMillis();
 		
-		addResultXmlOutput();
-
 		try {
 			String resultxmlFileName = name + ".xml.result.xml";
 			errorResultUri = new URI(errorDavUri.toString() + resultxmlFileName);
@@ -307,6 +304,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
 		}
 		ocrOutputs.add(aoo);
+		
+		// TODO: metadata should not be a special case
+		if (getOutputUriForFormat(OCRFormat.METADATA) == null) {
+			addResultXmlOutput();
+		}
 	}
 
 	private synchronized void addResultXmlOutput() {
@@ -338,7 +340,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			throw new OCRException(e);
 		}
 		metadata.setFormat(OCRFormat.METADATA);
-		addOutput(metadata);
+		ocrOutputs.add(metadata);
 	}
 	
 	public void setMerger(ProcessMergingObserver obs) {
