@@ -36,19 +36,6 @@ public abstract class AbstractOCROutput implements OCROutput {
 	
 	private OCRFormat format;
 	
-	protected AbstractOCROutput() {
-
-	}
-
-	public AbstractOCROutput(OCROutput ocrOutput) {
-		this(ocrOutput.getLocalUri(), ocrOutput.getFormat());
-	}
-
-	public AbstractOCROutput(URI uri, OCRFormat format) {
-		this.localUri = uri;
-		this.format = format;
-	}
-
 	@Override
 	public URI getLocalUri() {
 		return this.localUri;

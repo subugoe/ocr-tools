@@ -21,7 +21,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 import java.net.URI;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
 /**
  * The Class AbbyyOCRImage. Is a representation of an OCROutput.
@@ -42,30 +41,14 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	/** The URI of the file, need to be resolvable from the local machine. */
 	protected URI remoteUri;
 	
-	public AbbyyOCROutput(OCROutput ocrOutput) {
-		super(ocrOutput);
-		if(ocrOutput instanceof AbbyyOCROutput) {
-			AbbyyOCROutput abbyyOutput = (AbbyyOCROutput) ocrOutput;
-			URI remote = abbyyOutput.getRemoteUri();
-			if(remote != null) {
-				this.setRemoteUri(remote);
-			}
-		}
-	}
-
 	protected AbbyyOCROutput() {
 		super();
 	}
 
-	public AbbyyOCROutput(URI uri, URI remoteUri, String remoteLocation) {
-		super();
-		this.localUri = uri;
-		this.remoteUri = remoteUri;
-		this.winPathForAbbyy = remoteLocation;
-	}
-
 	public AbbyyOCROutput(AbbyyOCROutput aoo) {
-		this(aoo.localUri, aoo.remoteUri, aoo.winPathForAbbyy);		
+		this.localUri = aoo.localUri;
+		this.remoteUri = aoo.remoteUri;
+		this.winPathForAbbyy = aoo.winPathForAbbyy;
 	}
 
 	public String getWindowsPathForAbbyy() {
