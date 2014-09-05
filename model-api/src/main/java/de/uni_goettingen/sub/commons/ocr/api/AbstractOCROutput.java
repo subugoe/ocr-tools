@@ -34,8 +34,6 @@ public abstract class AbstractOCROutput implements OCROutput {
 
 	protected URI localUri;
 	
-	protected String localDir;
-
 	private OCRFormat format;
 	
 	protected AbstractOCROutput() {
@@ -43,12 +41,11 @@ public abstract class AbstractOCROutput implements OCROutput {
 	}
 
 	public AbstractOCROutput(OCROutput ocrOutput) {
-		this(ocrOutput.getLocalUri(), ocrOutput.getLocalDir(), ocrOutput.getFormat());
+		this(ocrOutput.getLocalUri(), ocrOutput.getFormat());
 	}
 
-	public AbstractOCROutput(URI uri, String outputDir, OCRFormat format) {
+	public AbstractOCROutput(URI uri, OCRFormat format) {
 		this.localUri = uri;
-		this.localDir = outputDir;
 		this.format = format;
 	}
 
@@ -61,16 +58,6 @@ public abstract class AbstractOCROutput implements OCROutput {
 	public void setLocalUri(URI uri) {
 		this.localUri = uri;
 
-	}
-	
-	@Override
-	public String getLocalDir() {
-		return this.localDir;
-	}
-	
-	@Override
-	public void setLocalDir(String outputDir) {
-		this.localDir = outputDir;
 	}
 	
 	@Override

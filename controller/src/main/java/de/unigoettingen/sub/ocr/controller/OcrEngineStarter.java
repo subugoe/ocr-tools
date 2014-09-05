@@ -49,7 +49,6 @@ public class OcrEngineStarter {
 				File outputFolder = new File(params.outputFolder);
 				URI outputUri = new File(outputFolder, process.getName() + "." + outFormat.toLowerCase()).toURI();
 				output.setLocalUri(outputUri);
-				output.setLocalDir(outputFolder.getAbsolutePath());
 				output.setFormat(ocrFormat);
 				process.addOutput(output);
 			}

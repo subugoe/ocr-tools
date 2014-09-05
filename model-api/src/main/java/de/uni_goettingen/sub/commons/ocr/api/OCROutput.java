@@ -51,22 +51,6 @@ public interface OCROutput {
 	 */
 	public void setLocalUri(URI uri);
 	
-	/**
-	 * Gets the String Dir where the results should be stored. If {@link #isResult()}
-	 * is true, the result should be at this location.
-	 * 
-	 * @return the String dir
-	 */
-	public String getLocalDir();
-	
-	/**
-	 * Sets the String Dir for the result. If {@link #isResult()} is true, the result
-	 * should be at this location.
-	 * 
-	 * @param uri the new dir
-	 */
-	public void setLocalDir(String dir);
-	
 	public void setFormat(OCRFormat format);
 	public OCRFormat getFormat();
 	
