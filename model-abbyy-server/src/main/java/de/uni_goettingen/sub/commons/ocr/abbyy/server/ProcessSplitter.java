@@ -87,7 +87,6 @@ public class ProcessSplitter {
 			if (entry.getFormat() == OCRFormat.METADATA) {
 				continue;
 			}
-			OCROutput subOutput = new AbbyyOCROutput();
 			URI localUri = entry.getLocalUri();
 			String localUriString = localUri.toString().replace(process.getName(), subProcess.getName());
 			try {
@@ -95,10 +94,8 @@ public class ProcessSplitter {
 			} catch (URISyntaxException e) {
 				logger.error("Error contructing localUri URL: "+ localUriString + " (" + process.getName() + ")", e);
 			}
-			subOutput.setLocalUri(localUri);
 			OCRFormat outputFormat = entry.getFormat();
-			subOutput.setFormat(outputFormat);
-			subProcess.addOutput(subOutput);
+			subProcess.addOutput(localUri, outputFormat);
 		}
 	}
 	

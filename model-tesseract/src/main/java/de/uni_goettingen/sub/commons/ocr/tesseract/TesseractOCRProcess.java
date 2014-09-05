@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -87,20 +88,14 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 		ocrImages.add(image);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess#addOutput(de
-	 * .uni_goettingen.sub.commons.ocr.api.OCRFormat,
-	 * de.uni_goettingen.sub.commons.ocr.api.OCROutput)
-	 */
 	@Override
-	public void addOutput(OCROutput output) {
-
-		if(!output.getLocalUri().toString().startsWith("file:"))
+	public void addOutput(URI localUri, OCRFormat format) {
+		if(!localUri.toString().startsWith("file:"))
 			throw new RuntimeException("Tesseract can only handle local files");
-						
+		
+		OCROutput output = new AbstractOCROutput() {};
+		output.setLocalUri(localUri);
+		output.setFormat(format);
 		ocrOutputs.add(output);
 	}
 

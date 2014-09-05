@@ -77,7 +77,7 @@ public interface OCRProcess {
 	 *            the output, the output settings for the given format
 	 * 
 	 */
-	public void addOutput(OCROutput output);
+	public void addOutput(URI localUri, OCRFormat format);
 	
 	/**
 	 * Sets the name of this {@link OCRProcess}. The nmae can be used by

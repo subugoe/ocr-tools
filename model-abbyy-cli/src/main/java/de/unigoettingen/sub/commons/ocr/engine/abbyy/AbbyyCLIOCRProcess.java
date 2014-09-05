@@ -36,8 +36,10 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
@@ -66,6 +68,14 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		image.setLocalUri(localUri);
 		image.setFileSize(fileSize);
 		ocrImages.add(image);
+	}
+	
+	@Override
+	public void addOutput(URI localUri, OCRFormat format) {
+		OCROutput output = new AbstractOCROutput() {};
+		output.setLocalUri(localUri);
+		output.setFormat(format);
+		ocrOutputs.add(output);
 	}
 
 	private List<String> buildInputFileList (String param) throws URISyntaxException {

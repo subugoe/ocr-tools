@@ -61,8 +61,8 @@ public class OcrsdkProcessTest {
 		outputTxt.setFormat(OCRFormat.TXT);
 		OcrsdkProcess process = new OcrsdkProcess("", "");
 		process.addImage(image.getLocalUri(), image.getFileSize());
-		process.addOutput(outputXml);
-		process.addOutput(outputTxt);
+//		process.addOutput(outputXml);
+//		process.addOutput(outputTxt);
 		process.addLanguage(Locale.ENGLISH);
 		process.addLanguage(Locale.GERMAN);
 		process.start();
@@ -71,7 +71,7 @@ public class OcrsdkProcessTest {
 	//@Test
 	public void usesTheRestClientCorrectly() {
 //		process.addImage(imageMock);
-		process.addOutput(outputXmlMock);
+//		process.addOutput(outputXmlMock);
 		process.start();
 		
 		verify(clientMock, times(1)).submitImage(fakeImage);
@@ -82,8 +82,8 @@ public class OcrsdkProcessTest {
 	//@Test
 	public void forwardsSeveralOutputFormats() {
 //		process.addImage(imageMock);
-		process.addOutput(outputXmlMock);
-		process.addOutput(outputTxtMock);
+//		process.addOutput(outputXmlMock);
+//		process.addOutput(outputTxtMock);
 		process.start();
 		
 		verify(clientMock, times(1)).addExportFormat("xml");
@@ -94,7 +94,7 @@ public class OcrsdkProcessTest {
 	public void forwardsTwoImages() {
 //		process.addImage(imageMock);
 //		process.addImage(imageMock);
-		process.addOutput(outputXmlMock);
+//		process.addOutput(outputXmlMock);
 		process.start();
 		
 		verify(clientMock, times(2)).submitImage(fakeImage);
@@ -103,7 +103,7 @@ public class OcrsdkProcessTest {
 	//@Test
 	public void forwardsTwoLanguages() {
 //		process.addImage(imageMock);
-		process.addOutput(outputXmlMock);
+//		process.addOutput(outputXmlMock);
 		process.addLanguage(Locale.ENGLISH);
 		process.addLanguage(Locale.GERMAN);
 		process.start();
@@ -115,7 +115,7 @@ public class OcrsdkProcessTest {
 //	@Test
 	public void forwardsTextType() {
 //		process.addImage(imageMock);
-		process.addOutput(outputXmlMock);
+//		process.addOutput(outputXmlMock);
 		process.setTextType(OCRTextType.GOTHIC);
 		process.start();
 		
@@ -125,7 +125,7 @@ public class OcrsdkProcessTest {
 //	@Test
 	public void canSaveReceivedXmlResult() throws IOException {
 //		process.addImage(imageMock);
-		process.addOutput(outputXmlMock);
+//		process.addOutput(outputXmlMock);
 		process.start();
 		
 		ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);
@@ -138,8 +138,8 @@ public class OcrsdkProcessTest {
 //	@Test
 	public void canSaveTwoReceivedResults() throws IOException {
 //		process.addImage(imageMock);
-		process.addOutput(outputXmlMock);
-		process.addOutput(outputTxtMock);
+//		process.addOutput(outputXmlMock);
+//		process.addOutput(outputTxtMock);
 		process.start();
 		
 		ArgumentCaptor<InputStream> argument = ArgumentCaptor.forClass(InputStream.class);

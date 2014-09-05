@@ -67,6 +67,14 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		ocrImages.add(image);
 	}
 	
+	@Override
+	public void addOutput(URI localUri, OCRFormat format) {
+		OcrsdkOutput output = new OcrsdkOutput();
+		output.setLocalUri(localUri);
+		output.setFormat(format);
+		ocrOutputs.add(output);
+	}
+	
 	/**
 	 * Starts the execution of this process. Input images, output formats, and 
 	 * other settings must be set by now.

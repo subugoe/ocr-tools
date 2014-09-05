@@ -287,22 +287,20 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 
 	@Override
-	public void addOutput(OCROutput output) {
-		AbbyyOCROutput aoo = new AbbyyOCROutput(output);
-		String[] urlParts = output.getLocalUri().toString().split("/");
-		if (aoo.getRemoteUri() == null) {
-			try {
-				aoo.setRemoteUri(new URI(outputDavUri.toString()
-						+ urlParts[urlParts.length - 1]));
-			} catch (URISyntaxException e) {
-				logger.error("Error while setting up URIs (" + getName() + ")");
-				throw new IllegalArgumentException(e);
-			}
+	public void addOutput(URI localUri, OCRFormat format) {
+		AbbyyOCROutput aoo = new AbbyyOCROutput();
+		aoo.setLocalUri(localUri);
+		aoo.setFormat(format);
+		String[] urlParts = localUri.toString().split("/");
+		try {
+			aoo.setRemoteUri(new URI(outputDavUri.toString()
+					+ urlParts[urlParts.length - 1]));
+		} catch (URISyntaxException e) {
+			logger.error("Error while setting up URIs (" + getName() + ")");
+			throw new IllegalArgumentException(e);
 		}
 		aoo.setWindowsPathForAbbyy(fileProps.getProperty("serverOutputLocation"));
-		if (aoo.getRemoteFilename() == null) {
-			aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
-		}
+		aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
 		ocrOutputs.add(aoo);
 		
 		// TODO: metadata should not be a special case

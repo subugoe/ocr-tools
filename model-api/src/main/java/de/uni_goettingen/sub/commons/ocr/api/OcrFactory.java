@@ -5,7 +5,5 @@ public interface OcrFactory {
 	public OCREngine createEngine();
 	
 	public OCRProcess createProcess();
-	
-	public OCROutput createOutput();
-	
+		
 }

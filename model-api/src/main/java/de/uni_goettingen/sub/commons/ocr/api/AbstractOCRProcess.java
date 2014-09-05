@@ -193,11 +193,6 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 		this.priority = p;
 	}
 
-	@Override
-	public void addOutput (OCROutput output) {
-		ocrOutputs.add(output);
-	}
-	
 	public Set<OCRFormat> getAllOutputFormats() {
 		Set<OCRFormat> formats = new HashSet<OCRFormat>();
 		for (OCROutput output : ocrOutputs) {

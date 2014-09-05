@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
@@ -45,12 +44,9 @@ public class OcrEngineStarter {
 			
 			for (String outFormat : params.outputFormats) {
 				OCRFormat ocrFormat = OCRFormat.valueOf(outFormat);
-				OCROutput output = factory.createOutput();
 				File outputFolder = new File(params.outputFolder);
 				URI outputUri = new File(outputFolder, process.getName() + "." + outFormat.toLowerCase()).toURI();
-				output.setLocalUri(outputUri);
-				output.setFormat(ocrFormat);
-				process.addOutput(output);
+				process.addOutput(outputUri, ocrFormat);
 			}
 			
 			for (String lang : params.inputLanguages) {
