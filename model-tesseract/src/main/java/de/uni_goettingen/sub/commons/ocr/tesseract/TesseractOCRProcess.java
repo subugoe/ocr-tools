@@ -98,7 +98,7 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	@Override
 	public void addOutput(OCROutput output) {
 
-		if(!output.getUri().toString().startsWith("file:"))
+		if(!output.getLocalUri().toString().startsWith("file:"))
 			throw new RuntimeException("Tesseract can only handle local files");
 						
 		ocrOutputs.add(output);
@@ -188,9 +188,9 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	}
 
 	private File getLocalOutput(OCROutput output, String postfix) {
-		String protocol = output.getUri().getScheme();
+		String protocol = output.getLocalUri().getScheme();
 		if (protocol.equals("file")) {
-			return new File(output.getUri().getPath() + postfix);
+			return new File(output.getLocalUri().getPath() + postfix);
 		} else {
 			throw new RuntimeException("Unsupported protocol for outputs: "
 					+ protocol);

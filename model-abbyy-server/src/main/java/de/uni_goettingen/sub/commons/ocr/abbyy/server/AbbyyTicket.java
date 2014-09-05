@@ -264,7 +264,7 @@ public class AbbyyTicket {
 				exportFormat.setNamingRule(aoo.getRemoteFilename());
 
 			}
-			exportFormat.setOutputLocation(aoo.getRemoteLocation());
+			exportFormat.setOutputLocation(aoo.getWindowsPathForAbbyy());
 			
 			settings.add(exportFormat);
 		}

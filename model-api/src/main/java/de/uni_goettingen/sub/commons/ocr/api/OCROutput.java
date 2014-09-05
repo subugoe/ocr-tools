@@ -40,7 +40,7 @@ public interface OCROutput {
 	 * 
 	 * @return the uri
 	 */
-	abstract public URI getUri ();
+	public URI getLocalUri();
 
 	/**
 	 * Sets the uri for the result. If {@link #isResult()} is true, the result
@@ -49,7 +49,7 @@ public interface OCROutput {
 	 * @param uri
 	 *            the new uri
 	 */
-	abstract public void setUri (URI uri);
+	public void setUri(URI uri);
 	
 	/**
 	 * Gets the String Dir where the results should be stored. If {@link #isResult()}
@@ -57,7 +57,7 @@ public interface OCROutput {
 	 * 
 	 * @return the String dir
 	 */
-	abstract public String getlocalOutput ();
+	public String getLocalDir();
 	
 	/**
 	 * Sets the String Dir for the result. If {@link #isResult()} is true, the result
@@ -65,7 +65,7 @@ public interface OCROutput {
 	 * 
 	 * @param uri the new dir
 	 */
-	abstract public void setlocalOutput (String uri);
+	public void setLocalDir(String dir);
 	
 	public void setFormat(OCRFormat format);
 	public OCRFormat getFormat();

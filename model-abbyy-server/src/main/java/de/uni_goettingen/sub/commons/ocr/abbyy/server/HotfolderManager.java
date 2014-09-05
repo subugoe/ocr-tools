@@ -65,7 +65,7 @@ public class HotfolderManager {
 			AbbyyOCROutput o = (AbbyyOCROutput) entry;
 
 			URI remoteUri = o.getRemoteUri();
-			URI localUri = o.getUri();
+			URI localUri = o.getLocalUri();
 			hotfolder.copyFile(remoteUri, localUri);
 			hotfolder.deleteIfExists(remoteUri);
 		}

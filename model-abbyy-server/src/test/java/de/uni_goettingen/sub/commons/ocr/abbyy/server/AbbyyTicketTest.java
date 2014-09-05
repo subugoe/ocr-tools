@@ -99,7 +99,8 @@ public class AbbyyTicketTest {
 			e.printStackTrace();
 		}
 
-		final AbbyyOCROutput aoo = new AbbyyOCROutput(resultUri);
+		final AbbyyOCROutput aoo = new AbbyyOCROutput();
+		aoo.setUri(resultUri);
 		aoo.setRemoteFilename("result");
 
 		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();

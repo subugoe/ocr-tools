@@ -84,7 +84,7 @@ public class ProcessSplitter {
 	private void addOutputsToSubProcess(AbbyyOCRProcess subProcess, AbbyyOCRProcess process) {
 		for (OCROutput entry : process.getOcrOutputs()) {
 			OCROutput subOutput = new AbbyyOCROutput();
-			URI localUri = entry.getUri();
+			URI localUri = entry.getLocalUri();
 			String localUriString = localUri.toString().replace(process.getName(), subProcess.getName());
 			try {
 				localUri = new URI(localUriString);	
@@ -92,8 +92,8 @@ public class ProcessSplitter {
 				logger.error("Error contructing localUri URL: "+ localUriString + " (" + process.getName() + ")", e);
 			}
 			subOutput.setUri(localUri);
-			subOutput.setlocalOutput(entry.getlocalOutput());
-			process.outResultUri = entry.getlocalOutput();
+			subOutput.setLocalDir(entry.getLocalDir());
+			process.outResultUri = entry.getLocalDir();
 			OCRFormat outputFormat = entry.getFormat();
 			subOutput.setFormat(outputFormat);
 			subProcess.addOutput(subOutput);

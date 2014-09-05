@@ -292,7 +292,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	@Override
 	public void addOutput(OCROutput output) {
 		AbbyyOCROutput aoo = new AbbyyOCROutput(output);
-		String[] urlParts = output.getUri().toString().split("/");
+		String[] urlParts = output.getLocalUri().toString().split("/");
 		if (aoo.getRemoteUri() == null) {
 			try {
 				aoo.setRemoteUri(new URI(outputDavUri.toString()
@@ -302,7 +302,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 				throw new IllegalArgumentException(e);
 			}
 		}
-		aoo.setRemoteLocation(fileProps.getProperty("serverOutputLocation"));
+		aoo.setWindowsPathForAbbyy(fileProps.getProperty("serverOutputLocation"));
 		if (aoo.getRemoteFilename() == null) {
 			aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
 		}
@@ -329,7 +329,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 
 			// The local file name
 			metadata.setUri(new URI(out
-					.getUri()
+					.getLocalUri()
 					.toString()
 					.replaceAll(firstFormatInList.toString().toLowerCase(),
 							"xml.result.xml")));

@@ -24,7 +24,7 @@ public class OcrsdkOutput extends AbstractOCROutput {
 		if (!"file".equals(outputUri.getScheme())) {
 			throw new IllegalArgumentException("Only local outputs are supported. URI is: " + outputUri);
 		}
-		this.outputUri = outputUri;
+		this.localUri = outputUri;
 	}
 	
 	/**
@@ -33,12 +33,12 @@ public class OcrsdkOutput extends AbstractOCROutput {
 	 * @param streamToSave Input that will be saved to the URI
 	 */
 	public void save(InputStream streamToSave) {
-		File outFile = new File(outputUri);
+		File outFile = new File(localUri);
 		try {
 			OutputStream fos = new FileOutputStream(outFile);
 			IOUtils.copy(streamToSave, fos);
 		} catch (IOException e) {
-			throw new IllegalStateException("Could not save to " + outputUri);
+			throw new IllegalStateException("Could not save to " + localUri);
 		}
 	}
 

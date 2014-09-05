@@ -209,7 +209,7 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 	public URI getOutputUriForFormat(OCRFormat format) {
 		for (OCROutput output : ocrOutputs) {
 			if (output.getFormat().equals(format)) {
-				return output.getUri();
+				return output.getLocalUri();
 			}
 		}
 		return null;

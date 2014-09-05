@@ -26,89 +26,59 @@ import java.net.URI;
  * implementations. To support different unterlying {@link OCREngine}
  * implementations parameters can set as a simple {@link Map}.
  * 
- * @version 0.9
  * @author abergna
  * @author cmahnke
  * 
  */
 public abstract class AbstractOCROutput implements OCROutput {
 
-	/** The URI where the output file should be stored. */
-	protected URI outputUri;
+	protected URI localUri;
 	
-	/** The URI as String where the output file should be stored. */
-	protected String outputDir;
+	protected String localDir;
 
 	private OCRFormat format;
 	
-	/**
-	 * Instantiates a new abstract ocr output.
-	 */
 	protected AbstractOCROutput() {
 
 	}
 
-	/**
-	 * Instantiates a new abstract ocr output from a given {@link OCROutput}.
-	 * This is a simple copy constructor that can be used by subclasses. It can
-	 * be used to convert different subclasses into each other
-	 * 
-	 * @param ocrOutput
-	 *            the ocr output
-	 */
 	public AbstractOCROutput(OCROutput ocrOutput) {
-		this(ocrOutput.getUri(), ocrOutput.getlocalOutput(), ocrOutput.getFormat());
+		this(ocrOutput.getLocalUri(), ocrOutput.getLocalDir(), ocrOutput.getFormat());
 	}
 
-	/**
-	 * Instantiates a new abstract ocr output.
-	 * 
-	 * @param uri
-	 *            the uri where the results should be stored.
-	 * @param params
-	 *            the params, set variants of the output like different versions of PDF.
-	 * @param outputDir
-	 * 			  The URI as String where the output file should be stored.           
-	 */
 	public AbstractOCROutput(URI uri, String outputDir, OCRFormat format) {
-		this.outputUri = uri;
-		this.outputDir = outputDir;
+		this.localUri = uri;
+		this.localDir = outputDir;
 		this.format = format;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCROutput#getUri()
-	 */
-	public URI getUri () {
-		return this.outputUri;
+	@Override
+	public URI getLocalUri() {
+		return this.localUri;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCROutput#setUri(java.net.URI)
-	 */
-	public void setUri (URI uri) {
-		this.outputUri = uri;
+	@Override
+	public void setUri(URI uri) {
+		this.localUri = uri;
 
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCROutput#getlocalOutput()
-	 */
-	public String getlocalOutput (){
-		return this.outputDir;
+	@Override
+	public String getLocalDir() {
+		return this.localDir;
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCROutput#setlocalOutput(java.lang.String)
-	 */
-	public void setlocalOutput (String outputDir){
-		this.outputDir = outputDir;
+	@Override
+	public void setLocalDir(String outputDir) {
+		this.localDir = outputDir;
 	}
 	
+	@Override
 	public void setFormat(OCRFormat newFormat) {
 		format = newFormat;
 	}
 	
+	@Override
 	public OCRFormat getFormat() {
 		return format;
 	}

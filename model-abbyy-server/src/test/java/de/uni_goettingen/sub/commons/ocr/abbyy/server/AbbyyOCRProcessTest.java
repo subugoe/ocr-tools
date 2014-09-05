@@ -151,8 +151,9 @@ public class AbbyyOCRProcessTest {
 
 		OCRFormat format = OCRFormat.TXT;
 		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
-		AbbyyOCROutput output = new AbbyyOCROutput(outputFile.toURI());
-		output.setlocalOutput(LOCAL_OUTPUT.getAbsolutePath());
+		AbbyyOCROutput output = new AbbyyOCROutput();
+		output.setUri(outputFile.toURI());
+		output.setLocalDir(LOCAL_OUTPUT.getAbsolutePath());
 		output.setFormat(format);
 
 		process.addOutput(output);
