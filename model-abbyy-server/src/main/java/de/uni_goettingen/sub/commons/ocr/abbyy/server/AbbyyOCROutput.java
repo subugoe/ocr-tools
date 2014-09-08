@@ -33,17 +33,8 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
 public class AbbyyOCROutput extends AbstractOCROutput {
 	
 	/** The URI of the file, need to be resolvable from the local machine. */
-	protected URI remoteUri;
+	private URI remoteUri;
 	
-	protected AbbyyOCROutput() {
-		super();
-	}
-
-	public AbbyyOCROutput(AbbyyOCROutput aoo) {
-		this.localUri = aoo.localUri;
-		this.remoteUri = aoo.remoteUri;
-	}
-
 	public URI getRemoteUri() {
 		return remoteUri;
 	}

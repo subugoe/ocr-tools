@@ -315,7 +315,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 
 	private synchronized void addResultXmlOutput() {
 		AbbyyOCROutput out = (AbbyyOCROutput) ocrOutputs.get(0);
-		AbbyyOCROutput metadata = new AbbyyOCROutput(out);
+		AbbyyOCROutput metadata = new AbbyyOCROutput();
 
 		OCRFormat firstFormatInList = ocrOutputs.get(0).getFormat();
 		
