@@ -80,6 +80,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	transient private FileAccess fileAccess = new FileAccess();
 	private Properties fileProps;
 	transient private HotfolderManager hotfolderManager;
+	private String windowsPathForServer;
 
 	// for unit tests
 	void setAbbyyTicket(AbbyyTicket newTicket) {
@@ -110,7 +111,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		abbyyTicket = new AbbyyTicket(this);
 
 		processId = java.util.UUID.randomUUID().toString();
-
+		windowsPathForServer = fileProps.getProperty("serverOutputLocation");
+		
 		try {
 			URI serverUri = new URI(fileProps.getProperty("serverUrl"));
 			inputDavUri = new URI(serverUri + fileProps.getProperty("input") + "/");
@@ -123,6 +125,10 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			logger.error("Can't setup server uris (" + getName() + ")", e);
 			throw new IllegalArgumentException(e);
 		}
+	}
+	
+	public String getWindowsPathForServer() {
+		return windowsPathForServer;
 	}
 
 	@Override
@@ -299,7 +305,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			logger.error("Error while setting up URIs (" + getName() + ")");
 			throw new IllegalArgumentException(e);
 		}
-		aoo.setWindowsPathForAbbyy(fileProps.getProperty("serverOutputLocation"));
 		aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
 		ocrOutputs.add(aoo);
 		

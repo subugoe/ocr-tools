@@ -32,9 +32,6 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
  */
 public class AbbyyOCROutput extends AbstractOCROutput {
 
-	/** The remote location represents the location on the remote system, something like D\:\\Recognition\\GDZ\\output */
-	private String winPathForAbbyy;
-	
 	/** The local file name on the remote system. */
 	private String remoteFilename;
 	
@@ -48,15 +45,6 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 	public AbbyyOCROutput(AbbyyOCROutput aoo) {
 		this.localUri = aoo.localUri;
 		this.remoteUri = aoo.remoteUri;
-		this.winPathForAbbyy = aoo.winPathForAbbyy;
-	}
-
-	public String getWindowsPathForAbbyy() {
-		return winPathForAbbyy;
-	}
-
-	public void setWindowsPathForAbbyy(String winPathForAbbyy) {
-		this.winPathForAbbyy = winPathForAbbyy;
 	}
 
 	public URI getRemoteUri() {

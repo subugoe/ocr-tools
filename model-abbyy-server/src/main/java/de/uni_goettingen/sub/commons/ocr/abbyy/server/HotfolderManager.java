@@ -82,7 +82,7 @@ public class HotfolderManager {
 		}
 		
 		//TODO: remove
-//		URI ticketLogPath = new File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
+//		URI ticketLogPath = new java.io.File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
 //		hotfolder.copyTmpFile(ticketFileName, ticketLogPath);
 
 		hotfolder.copyTmpFile(ticketFileName, inputTicketUri);
