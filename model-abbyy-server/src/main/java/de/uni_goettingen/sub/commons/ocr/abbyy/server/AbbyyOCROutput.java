@@ -31,9 +31,6 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
  * on the remote system, something like D\:\\Recognition\\GDZ\\output.
  */
 public class AbbyyOCROutput extends AbstractOCROutput {
-
-	/** The local file name on the remote system. */
-	private String remoteFilename;
 	
 	/** The URI of the file, need to be resolvable from the local machine. */
 	protected URI remoteUri;
@@ -53,14 +50,6 @@ public class AbbyyOCROutput extends AbstractOCROutput {
 
 	public void setRemoteUri(URI remoteUri) {
 		this.remoteUri = remoteUri;
-	}
-
-	public String getRemoteFilename() {
-		return remoteFilename;
-	}
-
-	public void setRemoteFilename(String remoteFilename) {
-		this.remoteFilename = remoteFilename;
 	}
 	
 }

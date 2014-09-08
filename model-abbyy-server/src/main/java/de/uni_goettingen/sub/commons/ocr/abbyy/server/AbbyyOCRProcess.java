@@ -305,7 +305,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			logger.error("Error while setting up URIs (" + getName() + ")");
 			throw new IllegalArgumentException(e);
 		}
-		aoo.setRemoteFilename(urlParts[urlParts.length - 1]);
 		ocrOutputs.add(aoo);
 		
 		// TODO: metadata should not be a special case

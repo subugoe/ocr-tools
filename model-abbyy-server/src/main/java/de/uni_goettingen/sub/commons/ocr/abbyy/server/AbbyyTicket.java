@@ -258,12 +258,11 @@ public class AbbyyTicket {
 			exportFormat.setOutputFileFormat(ToAbbyyMapper.getOutputFormat(of));
 
 			AbbyyOCROutput aoo = (AbbyyOCROutput) entry;
-			// TODO: Check what we need to set in single file mode
-			if (aoo.getRemoteFilename().equals(
-					identifier + "." + of.toString().toLowerCase())) {
-				exportFormat.setNamingRule(aoo.getRemoteFilename());
 
-			}
+			String[] remoteUriParts = aoo.getRemoteUri().toString().split("/");
+			String fileName = remoteUriParts[remoteUriParts.length - 1];
+			exportFormat.setNamingRule(fileName);
+				
 			exportFormat.setOutputLocation(ocrProcess.getWindowsPathForServer());
 			
 			settings.add(exportFormat);
