@@ -138,6 +138,7 @@ public class AbbyyOCRProcessTest {
 		process.initialize(new Properties());
 
 		process.setName(jobName);
+		process.setOutputDir(LOCAL_OUTPUT);
 		
 		File bookDir = new File(LOCAL_INPUT, jobName);
 
@@ -152,7 +153,7 @@ public class AbbyyOCRProcessTest {
 		OCRFormat format = OCRFormat.TXT;
 		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
 
-		process.addOutput(outputFile.toURI(), format);
+		process.addOutput(format);
 		
 		if (split) {
 			List<AbbyyOCRProcess> processes = new ProcessSplitter().split(process, 2);

@@ -89,12 +89,9 @@ public class TesseractOCRProcess extends AbstractOCRProcess implements
 	}
 
 	@Override
-	public void addOutput(URI localUri, OCRFormat format) {
-		if(!localUri.toString().startsWith("file:"))
-			throw new RuntimeException("Tesseract can only handle local files");
-		
+	public void addOutput(OCRFormat format) {		
 		OCROutput output = new AbstractOCROutput() {};
-		output.setLocalUri(localUri);
+		output.setLocalUri(constructLocalUri(format));
 		output.setFormat(format);
 		ocrOutputs.add(output);
 	}

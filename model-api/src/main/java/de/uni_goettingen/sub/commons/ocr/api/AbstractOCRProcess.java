@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
@@ -72,6 +73,8 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 
 	protected Boolean isFinished = false;
 
+	protected File outputDir;
+	
 	/**
 	 * Add a new language.
 	 * 
@@ -208,6 +211,16 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public void setOutputDir(File newDir) {
+		outputDir = newDir;
+	}
+	
+	protected URI constructLocalUri(OCRFormat format) {
+		String fileName = name + "." + format.toString().toLowerCase();
+		return new File(outputDir, fileName).toURI();
 	}
 	
 }

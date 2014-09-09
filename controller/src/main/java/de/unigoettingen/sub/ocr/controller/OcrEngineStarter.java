@@ -1,7 +1,6 @@
 package de.unigoettingen.sub.ocr.controller;
 
 import java.io.File;
-import java.net.URI;
 import java.util.Locale;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
@@ -37,6 +36,7 @@ public class OcrEngineStarter {
 		for (File bookFolder : allBookFolders) {
 			OCRProcess process = factory.createProcess();
 			process.setName(bookFolder.getName());
+			process.setOutputDir(new File(params.outputFolder));
 			File[] allPages = fileAccess.getAllImagesFromFolder(bookFolder, params.inputFormats);
 			for (File page : allPages) {
 				process.addImage(page.toURI(), page.length());
@@ -44,9 +44,7 @@ public class OcrEngineStarter {
 			
 			for (String outFormat : params.outputFormats) {
 				OCRFormat ocrFormat = OCRFormat.valueOf(outFormat);
-				File outputFolder = new File(params.outputFolder);
-				URI outputUri = new File(outputFolder, process.getName() + "." + outFormat.toLowerCase()).toURI();
-				process.addOutput(outputUri, ocrFormat);
+				process.addOutput(ocrFormat);
 			}
 			
 			for (String lang : params.inputLanguages) {

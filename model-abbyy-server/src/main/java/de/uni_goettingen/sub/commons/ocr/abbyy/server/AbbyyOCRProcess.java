@@ -18,6 +18,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -53,7 +54,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	private final static Logger logger = LoggerFactory
 			.getLogger(AbbyyOCRProcess.class);
 	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
-	protected URI inputDavUri, outputDavUri, errorDavUri;
+	protected URI inputDavUri, outputDavUri, errorDavUri, resultXmlDavUri;
 
 	private URI errorResultUri;
 
@@ -68,7 +69,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	Long endTime = 0L;
 	Long processTimeResult = 0L;
 
-	private long time;
+	private long startedAtTimestamp;
 	private boolean segmentation = false;
 	
 	private String processId ;
@@ -118,6 +119,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			inputDavUri = new URI(serverUri + fileProps.getProperty("input") + "/");
 			outputDavUri = new URI(serverUri + fileProps.getProperty("output") + "/");
 			errorDavUri = new URI(serverUri + fileProps.getProperty("error") + "/");
+			resultXmlDavUri = new URI(serverUri + fileProps.getProperty("resultXmlFolder") + "/");
 
 			abbyyTicket.setRemoteInputFolder(inputDavUri);
 			abbyyTicket.setRemoteErrorFolder(errorDavUri);
@@ -293,14 +295,13 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 
 	@Override
-	public void addOutput(URI localUri, OCRFormat format) {
+	public void addOutput(OCRFormat format) {
 		AbbyyOCROutput aoo = new AbbyyOCROutput();
-		aoo.setLocalUri(localUri);
+		aoo.setLocalUri(constructLocalUri(format));
 		aoo.setFormat(format);
-		String[] urlParts = localUri.toString().split("/");
 		try {
-			aoo.setRemoteUri(new URI(outputDavUri.toString()
-					+ urlParts[urlParts.length - 1]));
+			String fileName = name + "." + format.toString().toLowerCase();
+			aoo.setRemoteUri(new URI(outputDavUri.toString() + fileName));
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs (" + getName() + ")");
 			throw new IllegalArgumentException(e);
@@ -314,29 +315,11 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 
 	private synchronized void addResultXmlOutput() {
-		AbbyyOCROutput out = (AbbyyOCROutput) ocrOutputs.get(0);
 		AbbyyOCROutput metadata = new AbbyyOCROutput();
-
-		OCRFormat firstFormatInList = ocrOutputs.get(0).getFormat();
-		
+		metadata.setLocalUri(new File(outputDir, name + ".xml.result.xml").toURI());
 		try {
-			String resultXmlFolder = fileProps.getProperty("resultXmlFolder");
-			String outputFolder = fileProps.getProperty("output");
-			// The remote file name
-			URI outputResultUri = new URI(out
-					.getRemoteUri()
-					.toString()
-					.replace(outputFolder, resultXmlFolder)
-					.replaceAll(firstFormatInList.toString().toLowerCase(),
-							"xml.result.xml"));
+			URI outputResultUri = new URI(resultXmlDavUri.toString() + name + ".xml.result.xml");
 			metadata.setRemoteUri(outputResultUri);
-
-			// The local file name
-			metadata.setLocalUri(new URI(out
-					.getLocalUri()
-					.toString()
-					.replaceAll(firstFormatInList.toString().toLowerCase(),
-							"xml.result.xml")));
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs (" + getName() + ")");
 			throw new OCRException(e);
@@ -388,12 +371,12 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		}
 	}
 	
-	public Long getTime() {
-		return time;
+	public Long getStartedAt() {
+		return startedAtTimestamp;
 	}
 
-	public void setTime(Long time) {
-		this.time = time;
+	public void setStartedAt(long time) {
+		this.startedAtTimestamp = time;
 	}
 
 	public Boolean getSegmentation() {

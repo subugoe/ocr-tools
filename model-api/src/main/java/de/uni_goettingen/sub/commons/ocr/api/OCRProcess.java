@@ -20,6 +20,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
+import java.io.File;
 import java.net.URI;
 import java.util.List;
 import java.util.Locale;
@@ -58,6 +59,7 @@ public interface OCRProcess {
 
 	public int getNumberOfImages();
 	
+	public void setOutputDir(File outputDir);
 
 	/**
 	 * Gets the ocr output as a Map. The keys of this map represent the
@@ -77,7 +79,7 @@ public interface OCRProcess {
 	 *            the output, the output settings for the given format
 	 * 
 	 */
-	public void addOutput(URI localUri, OCRFormat format);
+	public void addOutput(OCRFormat format);
 	
 	/**
 	 * Sets the name of this {@link OCRProcess}. The nmae can be used by

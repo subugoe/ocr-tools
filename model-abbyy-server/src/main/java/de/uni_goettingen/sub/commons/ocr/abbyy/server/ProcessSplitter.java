@@ -1,13 +1,8 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
@@ -15,8 +10,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 
 public class ProcessSplitter {
 
-	private final static Logger logger = LoggerFactory
-			.getLogger(ProcessSplitter.class);
 	private ProcessMergingObserver mergingObserver = new ProcessMergingObserver();
 	
 	// for unit tests
@@ -61,7 +54,7 @@ public class ProcessSplitter {
 			
 			addOutputsToSubProcess(subProcess, process);
 			
-			subProcess.setTime(new Date().getTime());
+			subProcess.setStartedAt(new Date().getTime());
 			subProcesses.add(subProcess);
 			
 			chunkIndex++;
@@ -87,15 +80,8 @@ public class ProcessSplitter {
 			if (entry.getFormat() == OCRFormat.METADATA) {
 				continue;
 			}
-			URI localUri = entry.getLocalUri();
-			String localUriString = localUri.toString().replace(process.getName(), subProcess.getName());
-			try {
-				localUri = new URI(localUriString);	
-			} catch (URISyntaxException e) {
-				logger.error("Error contructing localUri URL: "+ localUriString + " (" + process.getName() + ")", e);
-			}
 			OCRFormat outputFormat = entry.getFormat();
-			subProcess.addOutput(localUri, outputFormat);
+			subProcess.addOutput(outputFormat);
 		}
 	}
 	

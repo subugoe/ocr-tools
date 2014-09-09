@@ -144,7 +144,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 		
 		while (!processesQueue.isEmpty()) {
 			AbbyyOCRProcess process = processesQueue.poll();
-			process.setTime(new Date().getTime());
+			process.setStartedAt(new Date().getTime());
 			boolean split = "true".equals(userProps.getProperty("books.split"));
 			if (split) {
 				int splitSize = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));

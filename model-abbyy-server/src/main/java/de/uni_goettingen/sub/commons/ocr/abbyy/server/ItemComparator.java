@@ -33,7 +33,7 @@ public class ItemComparator implements Comparator<AbbyyOCRProcess>, Serializable
 		if (prio != 0) {
 			return prio;
 		} else {
-			return item1.getTime().compareTo(item2.getTime());
+			return item1.getStartedAt().compareTo(item2.getStartedAt());
 		}
 	}
 

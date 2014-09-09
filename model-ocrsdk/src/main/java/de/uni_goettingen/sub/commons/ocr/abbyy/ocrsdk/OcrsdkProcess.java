@@ -68,9 +68,9 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 	}
 	
 	@Override
-	public void addOutput(URI localUri, OCRFormat format) {
+	public void addOutput(OCRFormat format) {
 		OcrsdkOutput output = new OcrsdkOutput();
-		output.setLocalUri(localUri);
+		output.setLocalUri(constructLocalUri(format));
 		output.setFormat(format);
 		ocrOutputs.add(output);
 	}

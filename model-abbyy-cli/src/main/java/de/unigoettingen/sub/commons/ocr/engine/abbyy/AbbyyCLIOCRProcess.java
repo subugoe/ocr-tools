@@ -71,9 +71,9 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 	}
 	
 	@Override
-	public void addOutput(URI localUri, OCRFormat format) {
+	public void addOutput(OCRFormat format) {
 		OCROutput output = new AbstractOCROutput() {};
-		output.setLocalUri(localUri);
+		output.setLocalUri(constructLocalUri(format));
 		output.setFormat(format);
 		ocrOutputs.add(output);
 	}
