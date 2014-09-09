@@ -37,11 +37,9 @@ public class ProcessMergingObserver {
 		synchronized (monitor) {	   
 			for (AbbyyOCRProcess sub : subProcesses) {
 				boolean currentFinished = sub.getIsFinished();
-				if (!currentFinished){
-					parentProcess.processTimeResult = 0L;
+				if (!currentFinished) {
 					return;
 				}
-				parentProcess.processTimeResult = parentProcess.processTimeResult + sub.processTimeResult;
 			}
 			// only get here when all processes are finished
 
@@ -53,21 +51,17 @@ public class ProcessMergingObserver {
 			}
 			alreadyBeenHere = true;
 			
-			boolean oneFailed = false;
 			for (AbbyyOCRProcess sub : subProcesses) {
-				oneFailed = sub.failed;
-				if (oneFailed) {
-					break;		
+				if(sub.hasFailed()) {
+					logger.error("Could not merge process: " + parentProcess.getName());
+					throw new IllegalStateException("Subprocess failed: " + sub.getName());
 				}
 			}
-			parentProcess.startTime = System.currentTimeMillis();
-			merge(!oneFailed);
-			parentProcess.endTime = System.currentTimeMillis();
-				 
+			merge();				 
 		}		
 	}
 
-	private void merge(Boolean noSubProcessfailed) {	
+	private void merge() {	
 		File abbyyMergedResult = null;
 		int i = 0;
 		List<File> fileResults = new ArrayList<File>();
@@ -91,26 +85,22 @@ public class ProcessMergingObserver {
 				}		
 			}
 			i++;
-			if(noSubProcessfailed){
-				logger.debug("Waiting... for Merge Proccessing (" + parentProcess.getName() + ")");
-				//mergeFiles for input format if Supported
-				abbyyMergedResult = new File(parentProcess.getOutputUriForFormat(f));
-				FileMerger.abbyyVersionNumber = "v10";
-				FileMerger.mergeFiles(f, files, abbyyMergedResult);
-				logger.debug(parentProcess.getName() + "." + f.toString().toLowerCase()+ " MERGED (" + parentProcess.getName() + ")");
-				removeSubProcessResults(files);
-			}
+			logger.debug("Waiting... for Merge Proccessing (" + parentProcess.getName() + ")");
+			//mergeFiles for input format if Supported
+			abbyyMergedResult = new File(parentProcess.getOutputUriForFormat(f));
+			FileMerger.abbyyVersionNumber = "v10";
+			FileMerger.mergeFiles(f, files, abbyyMergedResult);
+			logger.debug(parentProcess.getName() + "." + f.toString().toLowerCase()+ " MERGED (" + parentProcess.getName() + ")");
+			removeSubProcessResults(files);
 					
 		}
 		try {
-			if(noSubProcessfailed){
-				logger.debug("Waiting... for Merge Proccessing (" + parentProcess.getName() + ")");
-				//mergeFiles for Abbyy Result xml.result.xml
-				abbyyMergedResult = new File(parentProcess.getOutputUriForFormat(OCRFormat.METADATA));
-				FileMerger.mergeAbbyyXMLResults(fileResults , abbyyMergedResult);
-				logger.debug(parentProcess.getName() + ".xml.result.xml" + " MERGED (" + parentProcess.getName() + ")");			
-				removeSubProcessResults(fileResults);
-			}
+			logger.debug("Waiting... for Merge Proccessing (" + parentProcess.getName() + ")");
+			//mergeFiles for Abbyy Result xml.result.xml
+			abbyyMergedResult = new File(parentProcess.getOutputUriForFormat(OCRFormat.METADATA));
+			FileMerger.mergeAbbyyXMLResults(fileResults , abbyyMergedResult);
+			logger.debug(parentProcess.getName() + ".xml.result.xml" + " MERGED (" + parentProcess.getName() + ")");			
+			removeSubProcessResults(fileResults);
 			
 		} catch (IOException e) {
 			logger.error("ERROR contructing result xml file (" + parentProcess.getName() + ")", e);
@@ -120,9 +110,9 @@ public class ProcessMergingObserver {
 	}
 	
 	protected void removeSubProcessResults(List<File> resultFiles){
-			for(File file : resultFiles) {
-				file.delete();
-			}
+		for(File file : resultFiles) {
+			file.delete();
+		}
 	}
 
 

@@ -24,7 +24,6 @@ public class ProcessSplitter {
 			sp.add(process);
 			return sp;
 		} else {
-			process.setSegmentation(true);
 			List<AbbyyOCRProcess> subProcesses = createSubProcesses(process, splitSize);
 			for(AbbyyOCRProcess subProcess : subProcesses){	
 				subProcess.setMerger(mergingObserver);

@@ -103,16 +103,6 @@ public interface OCRProcess {
 	 * @return the name
 	 */
 	public String getName();
-
-	
-	/**
-	 * Checks if this {@link OCRProcess} is finished. This method may throw an
-	 * 
-	 * @return true if this {@link OCROutput} represents a result, false
-	 *         otherwise {@link OCRException} if the process failed
-	 */
-	public Boolean isFinished();
-	
 	
 	/**
 	 * Gets the quality that should be produced by an engine while processing

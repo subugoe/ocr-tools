@@ -43,37 +43,24 @@ import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 /**
  * The Class AbbyyOCRProcess.
  * 
- * @version 0.9
- * @author abergna
- * @author cmahnke
  */
 public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Serializable,Cloneable,
 		Runnable {
 
 	private static final long serialVersionUID = -402196937662439454L;
-	private final static Logger logger = LoggerFactory
-			.getLogger(AbbyyOCRProcess.class);
-	public static final String NAMESPACE = "http://www.abbyy.com/RecognitionServer1.0_xml/XmlResult-schema-v1.xsd";
+	private final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcess.class);
 	protected URI inputDavUri, outputDavUri, errorDavUri, resultXmlDavUri;
 
-	private URI errorResultUri;
-
-	Boolean failed = false;
+	private boolean failed = false;
 	private String errorDescription = null;
 
-	Long startTime = 0L;	
 	
-	private transient ProcessMergingObserver obs;
+	private transient ProcessMergingObserver processMerger;
 	private boolean finished = false;
 	
-	Long endTime = 0L;
-	Long processTimeResult = 0L;
-
 	private long startedAtTimestamp;
-	private boolean segmentation = false;
 	
-	private String processId ;
-	static Object monitor = new Object();
+	private String processId;
 
 	protected static String encoding = "UTF8";
 
@@ -135,16 +122,13 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 
 	@Override
 	public void run() {
+		long startTime = System.currentTimeMillis();
 
 		long maxMillis = Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
 		abbyyTicket.setProcessTimeout((long) ocrImages.size() * maxMillis);
 
-		startTime = System.currentTimeMillis();
 		
-		try {
-			String resultxmlFileName = name + ".xml.result.xml";
-			errorResultUri = new URI(errorDavUri.toString() + resultxmlFileName);
-			
+		try {			
 			logger.info("Cleaning Server (" + getName() + ")");
 			hotfolderManager.deleteOutputs(ocrOutputs);
 			hotfolderManager.deleteImages(ocrImages);
@@ -161,6 +145,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			// TODO: make a collaborator
 			Thread.sleep(minWait);
 
+			String resultXmlFileName = name + ".xml.result.xml";
+			URI errorResultXmlUri = new URI(errorDavUri.toString() + resultXmlFileName);
 			try {
 				
 				long restTime = maxWait - minWait;
@@ -168,13 +154,12 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 						+ restTime + " milli seconds for results (" + restTime/1000/60 + " minutes) (" + getName() + ")");
 				
 				long waitInterval = ocrImages.size() * Long.parseLong(fileProps.getProperty("checkInterval"));
-				hotfolderManager.waitForResults(restTime, waitInterval, ocrOutputs, errorResultUri);
+				hotfolderManager.waitForResults(restTime, waitInterval, ocrOutputs, errorResultXmlUri);
 				
 				hotfolderManager.retrieveResults(ocrOutputs);
 				
-				endTime = System.currentTimeMillis();
-				processTimeResult = getDuration();
-				logger.info("OCR Output file has been created successfully after "+  getDuration() + " milliseconds (" + getName() + ")");
+				long endTime = System.currentTimeMillis();
+				logger.info("OCR Output file has been created successfully after " + (endTime - startTime) + " milliseconds (" + getName() + ")");
 					
 			} catch (TimeoutException e) {
 				logger.error("Got an timeout while waiting for results (" + getName() + ")", e);
@@ -187,7 +172,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 				// Delete the error metadata
 				hotfolderManager.deleteTicket(abbyyTicket);
 				
-				errorDescription = hotfolderManager.readFromErrorFile(errorResultUri, name);
+				errorDescription = hotfolderManager.readFromErrorFile(errorResultXmlUri, name);
 			}
 		} catch (XMLStreamException e) {
 			// Set failed here since the results isn't worth much without
@@ -214,9 +199,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 				hotfolderManager.deleteOutputs(ocrOutputs);
 				//hotfolder.deleteIfExists(errorResultUri);
 				hotfolderManager.deleteTicket(abbyyTicket);
-				if(obs != null && getSegmentation()) {
+				if(processMerger != null) {
 					setIsFinished();
-					obs.update();
+					processMerger.update();
 				}		
 				logger.info("Process finished  (" + getName() + ")");
 			} catch (IOException e) {
@@ -274,20 +259,14 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		return size;
 	}
 
-	public Boolean isFailed() {
+	public boolean hasFailed() {
 		return failed;
 	}
 	
-	public Long getDuration() {
-		return endTime - startTime;
-	}
-
 	/**
 	 * Check server state. check all three folders since the limits are for the
 	 * whole system.
 	 * 
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public void checkHotfolderState() throws IOException, IllegalStateException {
 		long maxSize = Long.parseLong(fileProps.getProperty("maxSize"));
@@ -328,8 +307,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		ocrOutputs.add(metadata);
 	}
 	
-	public void setMerger(ProcessMergingObserver obs) {
-		this.obs = obs;
+	public void setMerger(ProcessMergingObserver newMerger) {
+		processMerger = newMerger;
 	}
 
 	public String getProcessId() {
@@ -341,7 +320,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 
 	
-	public Boolean getIsFinished() {
+	public boolean getIsFinished() {
 		return finished;
 	}
 
@@ -379,14 +358,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		this.startedAtTimestamp = time;
 	}
 
-	public Boolean getSegmentation() {
-		return segmentation;
-	}
-
-	public void setSegmentation(Boolean segmentaion) {
-		this.segmentation = segmentaion;
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof AbbyyOCRProcess) {

@@ -71,8 +71,6 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 	 */
 	transient protected List<OCROutput> ocrOutputs = new ArrayList<OCROutput>();
 
-	protected Boolean isFinished = false;
-
 	protected File outputDir;
 	
 	/**
@@ -138,14 +136,6 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 	public List<OCROutput> getOcrOutputs () {
 		return this.ocrOutputs;
 	}
-
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#isFinished()
-	 */
-	public Boolean isFinished () {
-		return isFinished;
-	}
-
 
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.api.OCRProcess#getQuality()
