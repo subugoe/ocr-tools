@@ -171,6 +171,7 @@ public class HotfolderManager {
 		hotfolder.deleteIfExists(abbyyTicket.getRemoteErrorUri());
 	}
 
+	//TODO: remove?
 	public String readFromErrorFile(URI errorResultUri, String processName) throws IOException, XMLStreamException {
 		String errorDescription = "";
 		logger.debug("Trying to parse file" + errorResultUri + " (" + processName + ")");

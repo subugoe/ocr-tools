@@ -53,7 +53,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	protected URI inputDavUri, outputDavUri, errorDavUri, resultXmlDavUri;
 
 	private boolean failed = false;
-	private String errorDescription = null;
 	
 	private transient ProcessMergingObserver processMerger;
 	private boolean finished = false;
@@ -149,38 +148,23 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 
 			String resultXmlFileName = name + ".xml.result.xml";
 			URI errorResultXmlUri = new URI(errorDavUri.toString() + resultXmlFileName);
-			try {
 				
-				long restTime = maxWait - minWait;
-				logger.info("Waking up, waiting another "
-						+ restTime + " milli seconds for results (" + restTime/1000/60 + " minutes) (" + getName() + ")");
-				
-				long waitInterval = ocrImages.size() * Long.parseLong(fileProps.getProperty("checkInterval"));
-				hotfolderManager.waitForResults(restTime, waitInterval, ocrOutputs, errorResultXmlUri);
-				
-				hotfolderManager.retrieveResults(ocrOutputs);
-				
-				long endTime = System.currentTimeMillis();
-				logger.info("OCR Output file has been created successfully after " + (endTime - startTime) + " milliseconds (" + getName() + ")");
+			long restTime = maxWait - minWait;
+			logger.info("Waking up, waiting another "
+					+ restTime + " milli seconds for results (" + restTime/1000/60 + " minutes) (" + getName() + ")");
+			
+			long waitInterval = ocrImages.size() * Long.parseLong(fileProps.getProperty("checkInterval"));
+			hotfolderManager.waitForResults(restTime, waitInterval, ocrOutputs, errorResultXmlUri);
+			
+			hotfolderManager.retrieveResults(ocrOutputs);
+			
+			long endTime = System.currentTimeMillis();
+			logger.info("OCR Output file has been created successfully after " + (endTime - startTime) + " milliseconds (" + getName() + ")");
 					
-			} catch (TimeoutException e) {
-				logger.error("Got an timeout while waiting for results (" + getName() + ")", e);
-				failed = true;
-				
-				logger.debug("Trying to delete files of the failed process (" + getName() + ")");
-				// Clean server, to reclaim storage
-				hotfolderManager.deleteImages(ocrImages);
-				hotfolderManager.deleteOutputs(ocrOutputs);
-				// Delete the error metadata
-				hotfolderManager.deleteTicket(abbyyTicket);
-				
-				errorDescription = hotfolderManager.readFromErrorFile(errorResultXmlUri, name);
-			}
-		} catch (XMLStreamException e) {
-			// Set failed here since the results isn't worth much without
-			// metadata
+		} catch (TimeoutException e) {
+			logger.error("Got an timeout while waiting for results (" + getName() + ")", e);
 			failed = true;
-			logger.error("XML can not Parse, Missing Error Reports (" + getName() + "): ", e);
+			
 		} catch (IOException e) {
 			failed = true;
 			logger.error("Error writing files or ticket (" + getName() + ")", e);
@@ -233,15 +217,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 	
 	
-	/**
-	 * Gets the error description from xmlError.
-	 * 
-	 * @return the error description
-	 */
-	public String getErrorDescription() {
-		return errorDescription;
-	}
-
 	/**
 	 * Calculate size of the OCRImages representing this process
 	 * 
