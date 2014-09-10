@@ -86,7 +86,7 @@ public class ProcessMergingObserver {
 			}
 			i++;
 			logger.debug("Waiting... for Merge Proccessing (" + parentProcess.getName() + ")");
-			//mergeFiles for input format if Supported
+			
 			abbyyMergedResult = new File(parentProcess.getOutputUriForFormat(f));
 			FileMerger.abbyyVersionNumber = "v10";
 			FileMerger.mergeFiles(f, files, abbyyMergedResult);

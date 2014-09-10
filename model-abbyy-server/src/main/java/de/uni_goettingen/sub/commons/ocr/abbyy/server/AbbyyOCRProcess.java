@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.stream.XMLStreamException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +39,6 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.Pause;
 
-/**
- * The Class AbbyyOCRProcess.
- * 
- */
 public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Serializable,Cloneable,
 		Runnable {
 
@@ -265,7 +259,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		}
 	}
 
-	private synchronized void addResultXmlOutput() {
+	private void addResultXmlOutput() {
 		AbbyyOCROutput metadata = new AbbyyOCROutput();
 		metadata.setLocalUri(new File(outputDir, name + ".xml.result.xml").toURI());
 		try {
