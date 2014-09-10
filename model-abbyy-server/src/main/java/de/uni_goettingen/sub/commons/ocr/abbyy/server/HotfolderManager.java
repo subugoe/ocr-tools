@@ -17,12 +17,14 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
 import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
 import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
+import de.unigoettingen.sub.commons.ocr.util.Pause;
 
 public class HotfolderManager {
 	private final static Logger logger = LoggerFactory.getLogger(HotfolderManager.class);
 	private Hotfolder hotfolder;
 	static Object monitor = new Object();
 	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
+	private Pause pause = new Pause();
 
 	public HotfolderManager(String serverUrl, String user, String password) {
 		hotfolder = hotfolderProvider.createHotfolder(serverUrl, user, password);
@@ -31,6 +33,9 @@ public class HotfolderManager {
 	// for unit tests
 	HotfolderManager(Hotfolder initHotfolder) {
 		hotfolder = initHotfolder;
+	}
+	void setPause(Pause newPause) {
+		pause = newPause;
 	}
 
 	public void deleteOutputs(List<OCROutput> outputs) throws IOException {
@@ -90,7 +95,7 @@ public class HotfolderManager {
 	}
 
 	public void waitForResults(long timeout, long waitInterval,
-			List<OCROutput> outputs, URI errorResultXmlUri) throws TimeoutException, IOException, InterruptedException {		
+			List<OCROutput> outputs, URI errorResultXmlUri) throws TimeoutException, IOException {		
 		long start = System.currentTimeMillis();
 		
 		List<URI> mustBeThereUris = extractFromOutputs(outputs);
@@ -134,10 +139,10 @@ public class HotfolderManager {
 		}
 	}
 	
-	private void waitALittle(long waitInterval) throws InterruptedException {
+	private void waitALittle(long waitInterval) {
 		logger.debug("Waiting for " + waitInterval
 				+ " milli seconds (" + waitInterval/1000/60 + " minutes)");
-		Thread.sleep(waitInterval);
+		pause.forMilliseconds(waitInterval);
 	}
 
 	public void checkIfEnoughSpace(long maxSize, URI inputFolder,

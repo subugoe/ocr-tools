@@ -39,6 +39,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
 import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
+import de.unigoettingen.sub.commons.ocr.util.Pause;
 
 /**
  * The Class AbbyyOCRProcess.
@@ -53,7 +54,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 
 	private boolean failed = false;
 	private String errorDescription = null;
-
 	
 	private transient ProcessMergingObserver processMerger;
 	private boolean finished = false;
@@ -62,13 +62,12 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	
 	private String processId;
 
-	protected static String encoding = "UTF8";
-
-	transient AbbyyTicket abbyyTicket;
+	transient private AbbyyTicket abbyyTicket;
 	transient private FileAccess fileAccess = new FileAccess();
 	private Properties fileProps;
 	transient private HotfolderManager hotfolderManager;
 	private String windowsPathForServer;
+	private transient Pause pause = new Pause();
 
 	// for unit tests
 	void setAbbyyTicket(AbbyyTicket newTicket) {
@@ -79,6 +78,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 	void setHotfolderManager(HotfolderManager newManager) {
 		hotfolderManager = newManager;
+	}
+	void setPause(Pause newPause) {
+		pause = newPause;
 	}
 		
 	public void initialize(Properties userProps) {
@@ -142,8 +144,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			long minWait = ocrImages.size() * Long.parseLong(fileProps.getProperty("minMillisPerFile"));
 			long maxWait = ocrImages.size() * Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
 			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes) (" + getName() + ")");
-			// TODO: make a collaborator
-			Thread.sleep(minWait);
+			
+			pause.forMilliseconds(minWait);
 
 			String resultXmlFileName = name + ".xml.result.xml";
 			URI errorResultXmlUri = new URI(errorDavUri.toString() + resultXmlFileName);
@@ -182,11 +184,6 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		} catch (IOException e) {
 			failed = true;
 			logger.error("Error writing files or ticket (" + getName() + ")", e);
-		} catch (InterruptedException e) {
-			failed = true;
-			logger.error(
-					"OCR Process was interrupted while coping files to server or waiting for result. (" + getName() + ")",
-					e);
 		} catch (URISyntaxException e) {
 			logger.error("Error seting tmp URI for ticket (" + getName() + ")", e);
 			failed = true;
