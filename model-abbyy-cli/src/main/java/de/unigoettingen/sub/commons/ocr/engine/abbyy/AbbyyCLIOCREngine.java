@@ -141,7 +141,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 			for (int i = 0; i <= segCount; i++) {
 				/*
 				//Clone ORCResult here, rewrite the result file based on a pattern (suffix)
-				OcrOutput segOutput = new AbbyyOCROutput((AbbyyOCROutput) process.getOcrOutputs());
+				OcrOutput segOutput = new AbbyyOutput((AbbyyOutput) process.getOcrOutputs());
 				OcrProcess segProcess = new AbbyyCLIOCRProcess(process);
 				//TODO: Include just the images for the segment
 				Integer count = 0;

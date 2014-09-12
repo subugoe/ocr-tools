@@ -2,10 +2,10 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
 
 import java.util.Properties;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerFactory;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
 
-public class AbbyyMultiuserFactory  extends AbbyyServerFactory {
+public class AbbyyMultiuserFactory  extends AbbyyFactory {
 
 	public AbbyyMultiuserFactory(Properties userProperties) {
 		super(userProperties);
@@ -13,7 +13,7 @@ public class AbbyyMultiuserFactory  extends AbbyyServerFactory {
 	
 	@Override
 	public OcrEngine createEngine() {
-		MultiUserAbbyyOCREngine engine = new MultiUserAbbyyOCREngine(userProperties);
+		AbbyyMultiuserEngine engine = new AbbyyMultiuserEngine(userProperties);
 		engine.initialize();
 		return engine;
 	}

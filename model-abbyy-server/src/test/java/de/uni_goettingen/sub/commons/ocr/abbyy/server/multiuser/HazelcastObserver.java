@@ -10,11 +10,11 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.core.ISet;
 import com.hazelcast.core.ItemListener;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
 
 public class HazelcastObserver implements ItemListener, EntryListener {
 
-	private static IMap<String, AbbyyOCRProcess> queued;
+	private static IMap<String, AbbyyProcess> queued;
 	private static ISet<String> running;
 	
 	public static void main(String[] args) throws InterruptedException {
@@ -41,7 +41,7 @@ public class HazelcastObserver implements ItemListener, EntryListener {
 	public void itemRemoved(Object item) {
 		System.err.println("-----------------");
 		System.err.println("queued");
-		for (AbbyyOCRProcess pr : queued.values()) {
+		for (AbbyyProcess pr : queued.values()) {
 			System.err.println(pr.getName());
 		}
 

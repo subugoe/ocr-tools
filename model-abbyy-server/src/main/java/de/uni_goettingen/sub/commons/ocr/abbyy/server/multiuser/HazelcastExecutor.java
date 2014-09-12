@@ -10,25 +10,25 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.core.ISet;
 import com.hazelcast.core.ItemListener;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ItemComparator;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRExecuter;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.OcrExecutor;
 
-public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, EntryListener{
+public class HazelcastExecutor extends OcrExecutor implements ItemListener, EntryListener{
 
 	protected int maxProcesses;
-	protected Comparator<AbbyyOCRProcess> order;
+	protected Comparator<AbbyyProcess> order;
 
-	protected PriorityQueue<AbbyyOCRProcess> q;
+	protected PriorityQueue<AbbyyProcess> q;
 
-	protected IMap<String, AbbyyOCRProcess> queuedProcesses;
+	protected IMap<String, AbbyyProcess> queuedProcesses;
 	protected ISet<String> runningProcesses;
 
-	public HazelcastOCRExecutor(Integer maxThreads, HazelcastInstance hazelcast) {
+	public HazelcastExecutor(Integer maxThreads, HazelcastInstance hazelcast) {
 		super(maxThreads);
 		maxProcesses = maxThreads;
 		order = new ItemComparator();
-		q = new PriorityQueue<AbbyyOCRProcess>(100, order);
+		q = new PriorityQueue<AbbyyProcess>(100, order);
 
 		queuedProcesses = hazelcast.getMap("queued");
 		queuedProcesses.addEntryListener(this, true);
@@ -40,8 +40,8 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
-		if (r instanceof AbbyyOCRProcess) {
-			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
+		if (r instanceof AbbyyProcess) {
+			AbbyyProcess abbyyOCRProcess = (AbbyyProcess) r;
 
 			queuedProcesses.put(abbyyOCRProcess.getProcessId(), abbyyOCRProcess);
 			System.out.println("----------------  " + abbyyOCRProcess.getProcessId());
@@ -61,7 +61,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 					q.clear();
 					System.out.println("----------------  " + queuedProcesses);
 					q.addAll(queuedProcesses.values());
-					AbbyyOCRProcess head = q.poll();
+					AbbyyProcess head = q.poll();
 
 					currentIsHead = head.equals(abbyyOCRProcess);
 				}
@@ -77,7 +77,7 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 			}
 
 		} else {
-			throw new IllegalStateException("Not an AbbyyOCRProcess object");
+			throw new IllegalStateException("Not an AbbyyProcess object");
 		}
 
 	}
@@ -99,11 +99,11 @@ public class HazelcastOCRExecutor extends OCRExecuter implements ItemListener, E
 	@Override
 	protected void afterExecute(Runnable r, Throwable e) {
 		super.afterExecute(r, e);
-		if (r instanceof AbbyyOCRProcess) {
-			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
+		if (r instanceof AbbyyProcess) {
+			AbbyyProcess abbyyOCRProcess = (AbbyyProcess) r;
 			runningProcesses.remove(abbyyOCRProcess.getProcessId());
 		} else {
-			throw new IllegalStateException("Not a AbbyyOCRProcess object");
+			throw new IllegalStateException("Not a AbbyyProcess object");
 		}
 	}
 

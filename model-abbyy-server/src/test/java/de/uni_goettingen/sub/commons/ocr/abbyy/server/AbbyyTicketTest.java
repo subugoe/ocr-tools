@@ -54,8 +54,8 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.RecognitionParams;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCROutput;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyImage;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOutput;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyTicket;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractImage;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
@@ -99,7 +99,7 @@ public class AbbyyTicketTest {
 			e.printStackTrace();
 		}
 
-		final AbbyyOCROutput aoo = new AbbyyOCROutput();
+		final AbbyyOutput aoo = new AbbyyOutput();
 		aoo.setLocalUri(resultUri);
 
 		OUTPUT_DEFINITIONS = new HashMap<OcrFormat, OcrOutput>();
@@ -116,7 +116,7 @@ public class AbbyyTicketTest {
 //			ocri = mock(AbstractImage.class);
 //			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
 //			when(ocri.getUri()).thenReturn(new URI(imageUrl));
-//			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
+//			AbbyyImage aoi = new AbbyyImage(ocri);
 //			assertTrue(imageUrl.equals(aoi.getUri().toString()));
 //			aoi.setRemoteFileName("remoteName" + i);
 //			imgList.add(aoi);

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * The Class OCRExecuter is a ThreadPoolExecutor. Which is used to control the
+ * The Class OcrExecutor is a ThreadPoolExecutor. Which is used to control the
  * execution of tasks on the Recognition Server with respect of the resource
  * constrains, like total number of files and used storage.
  * 
@@ -42,9 +42,9 @@ import org.slf4j.LoggerFactory;
  * @author abergna
  * @author cmahnke
  */
-public class OCRExecuter extends ThreadPoolExecutor implements Executor {
+public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 	public final static Logger logger = LoggerFactory
-			.getLogger(OCRExecuter.class);
+			.getLogger(OcrExecutor.class);
 
 
 	/** paused the execution if true */
@@ -84,7 +84,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	 *            before they are executed. This queue will hold only the
 	 *            Runnable tasks submitted by the execute method.
 	 */
-	public OCRExecuter(Integer maxThreads) {
+	public OcrExecutor(Integer maxThreads) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
 	}
@@ -99,8 +99,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
-		if (r instanceof AbbyyOCRProcess) {
-			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
+		if (r instanceof AbbyyProcess) {
+			AbbyyProcess abbyyOCRProcess = (AbbyyProcess) r;
 			try {
 				abbyyOCRProcess.checkHotfolderState();
 			} catch (IllegalStateException e1) {
@@ -113,7 +113,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			waitIfPaused(t);
 
 		} else {
-			throw new IllegalStateException("Not a AbbyyOCRProcess object");
+			throw new IllegalStateException("Not a AbbyyProcess object");
 		}
 
 	}
@@ -143,8 +143,8 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 	@Override
 	protected void afterExecute(Runnable r, Throwable e) {
 		super.afterExecute(r, e);
-		if (r instanceof AbbyyOCRProcess) {
-			AbbyyOCRProcess abbyyOCRProcess = (AbbyyOCRProcess) r;
+		if (r instanceof AbbyyProcess) {
+			AbbyyProcess abbyyOCRProcess = (AbbyyProcess) r;
 
 			try {
 				abbyyOCRProcess.checkHotfolderState();
@@ -156,7 +156,7 @@ public class OCRExecuter extends ThreadPoolExecutor implements Executor {
 			}
 
 		} else {
-			throw new IllegalStateException("Not a AbbyyOCRProcess object");
+			throw new IllegalStateException("Not a AbbyyProcess object");
 		}
 	}
 

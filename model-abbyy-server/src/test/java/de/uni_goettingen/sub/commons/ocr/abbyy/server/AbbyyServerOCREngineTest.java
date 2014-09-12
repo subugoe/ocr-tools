@@ -39,9 +39,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyImage;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
@@ -73,36 +73,36 @@ public class AbbyyServerOCREngineTest {
 	
 	@Test
 	public void getInstance() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+		AbbyyEngine engine = new AbbyyEngine(new Properties());
 		assertNotNull(engine);
 	}
 	
 //	@Test
 //	public void newImage() {
-//		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//		AbbyyEngine engine = new AbbyyEngine(new Properties());
 //		OcrImage image = engine.newOcrImage(null);
-//		assertTrue(image instanceof AbbyyOCRImage);
+//		assertTrue(image instanceof AbbyyImage);
 //	}
 	
 //	@Test
 //	public void newProcess() {
-//		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//		AbbyyEngine engine = new AbbyyEngine(new Properties());
 //		OcrProcess process = engine.newOcrProcess();
-//		assertTrue(process instanceof AbbyyOCRProcess);
+//		assertTrue(process instanceof AbbyyProcess);
 //	}
 //	
 //	@Test
 //	public void newOutput() {
-//		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//		AbbyyEngine engine = new AbbyyEngine(new Properties());
 //		OcrOutput output = engine.newOcrOutput();
-//		assertTrue(output instanceof AbbyyOCROutput);
+//		assertTrue(output instanceof AbbyyOutput);
 //	}
 		
 //	@Test(expected=IllegalStateException.class)
 //	public void recognizeNoServer() throws Exception {
 //		MyServers.stopDavServer();
 //		try {
-//			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//			AbbyyEngine engine = new AbbyyEngine(new Properties());
 //			OcrProcess process = engine.newOcrProcess();
 //			engine.recognize(process);
 //		} finally {
@@ -112,7 +112,7 @@ public class AbbyyServerOCREngineTest {
 //	
 //	@Test(expected=IllegalStateException.class)
 //	public void recognizeEmptyProcess() {
-//			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//			AbbyyEngine engine = new AbbyyEngine(new Properties());
 //			OcrProcess process = engine.newOcrProcess();
 //			engine.recognize(process);
 //	}
@@ -123,7 +123,7 @@ public class AbbyyServerOCREngineTest {
 //		lock.createNewFile();
 //		
 //		try {
-//			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
+//			AbbyyEngine engine = new AbbyyEngine(new Properties());
 //			recognizeOneImage(engine);
 //		} finally {
 //			lock.delete();
@@ -137,7 +137,7 @@ public class AbbyyServerOCREngineTest {
 //		
 //		Properties props = new Properties();
 //		props.setProperty("lock.overwrite", "true");
-//		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(props);
+//		AbbyyEngine engine = new AbbyyEngine(props);
 //
 //		recognizeOneImage(engine);
 //		assertFalse(lock.exists());

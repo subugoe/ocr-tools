@@ -12,23 +12,23 @@ import org.slf4j.LoggerFactory;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.OCRExecuter;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyEngine;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.OcrExecutor;
 
-public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
+public class AbbyyMultiuserEngine extends AbbyyEngine {
 	final static Logger logger = LoggerFactory
-			.getLogger(MultiUserAbbyyOCREngine.class);
+			.getLogger(AbbyyMultiuserEngine.class);
 
 	private HazelcastInstance hazelcast;
 	
-	public MultiUserAbbyyOCREngine(Properties userProps) {
+	public AbbyyMultiuserEngine(Properties userProps) {
 		super(userProps);
 		System.setProperty("hazelcast.logging.type", "log4j");
 		hazelcast = Hazelcast.newHazelcastInstance(null);
 	}
 	
 	// for unit tests
-	protected MultiUserAbbyyOCREngine(HazelcastInstance haz) {
+	protected AbbyyMultiuserEngine(HazelcastInstance haz) {
 		super(new Properties());
 		hazelcast = haz;
 	}
@@ -83,8 +83,8 @@ public class MultiUserAbbyyOCREngine extends AbbyyServerOCREngine {
 	}
 
 	@Override
-	protected OCRExecuter createPool(int maxThreads) {
-		return new HazelcastOCRExecutor(maxThreads, hazelcast);
+	protected OcrExecutor createPool(int maxThreads) {
+		return new HazelcastExecutor(maxThreads, hazelcast);
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public class HotfolderManager {
 
 	public void deleteOutputs(List<OcrOutput> outputs) throws IOException {
 		for (OcrOutput out : outputs) {
-			AbbyyOCROutput abbyyOut = (AbbyyOCROutput) out;
+			AbbyyOutput abbyyOut = (AbbyyOutput) out;
 			URI remoteUri = abbyyOut.getRemoteUri();
 			hotfolder.deleteIfExists(remoteUri);
 		}
@@ -48,7 +48,7 @@ public class HotfolderManager {
 
 	public void deleteImages(List<OcrImage> images) throws IOException {
 		for (OcrImage ocrImage : images) {
-			AbbyyOCRImage image = (AbbyyOCRImage) ocrImage;
+			AbbyyImage image = (AbbyyImage) ocrImage;
 			URI remoteUri = image.getRemoteUri();
 			hotfolder.deleteIfExists(remoteUri);
 			URI errorImageUri = image.getErrorUri();
@@ -58,7 +58,7 @@ public class HotfolderManager {
 
 	public void copyImagesToHotfolder(List<OcrImage> ocrImages) throws IOException {
 		for (OcrImage ocrImage : ocrImages) {
-			AbbyyOCRImage image = (AbbyyOCRImage) ocrImage;
+			AbbyyImage image = (AbbyyImage) ocrImage;
 			URI fromUri = image.getLocalUri();
 			URI toUri = image.getRemoteUri();
 			hotfolder.copyFile(fromUri, toUri);
@@ -67,7 +67,7 @@ public class HotfolderManager {
 
 	public void retrieveResults(List<OcrOutput> ocrOutputs) throws IOException {
 		for (OcrOutput entry : ocrOutputs) {
-			AbbyyOCROutput o = (AbbyyOCROutput) entry;
+			AbbyyOutput o = (AbbyyOutput) entry;
 
 			URI remoteUri = o.getRemoteUri();
 			URI localUri = o.getLocalUri();
@@ -120,7 +120,7 @@ public class HotfolderManager {
 	private List<URI> extractFromOutputs(List<OcrOutput> outputs) {
 		List<URI> mustBeThereUris = new ArrayList<URI>();
 		for (OcrOutput out : outputs) {
-			final AbbyyOCROutput output = (AbbyyOCROutput) out;
+			final AbbyyOutput output = (AbbyyOutput) out;
 			URI uri = output.getRemoteUri();
 			mustBeThereUris.add(uri);
 		}

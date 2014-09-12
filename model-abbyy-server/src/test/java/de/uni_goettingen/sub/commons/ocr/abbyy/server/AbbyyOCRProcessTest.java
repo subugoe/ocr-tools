@@ -42,9 +42,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyImage;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyEngine;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractImage;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
@@ -79,7 +79,7 @@ public class AbbyyOCRProcessTest {
 	
 //	@Test
 //	public void newAbbyyProcess() {
-//		AbbyyOCRProcess aop = (AbbyyOCRProcess) new AbbyyServerOCREngine(new Properties()).newOcrProcess();
+//		AbbyyProcess aop = (AbbyyProcess) new AbbyyEngine(new Properties()).newOcrProcess();
 //		assertNotNull(aop);
 //	}
 
@@ -112,9 +112,9 @@ public class AbbyyOCRProcessTest {
 
 	@Test
 	public void equality() {
-		AbbyyOCRProcess a1 = new AbbyyOCRProcess();
+		AbbyyProcess a1 = new AbbyyProcess();
 		a1.initialize(new Properties());
-		AbbyyOCRProcess a2 = new AbbyyOCRProcess();
+		AbbyyProcess a2 = new AbbyyProcess();
 		a2.initialize(new Properties());
 		assertFalse(a1.equals(a2));
 		assertFalse(a1.hashCode() == a2.hashCode());
@@ -122,7 +122,7 @@ public class AbbyyOCRProcessTest {
 	
 	@Test
 	public void calculateSize() {
-		AbbyyOCRProcess process = new AbbyyOCRProcess();
+		AbbyyProcess process = new AbbyyProcess();
 		process.initialize(new Properties());
 
 		process.addImage(new File("/test1").toURI(), 1L);
@@ -132,7 +132,7 @@ public class AbbyyOCRProcessTest {
 	}
 	
 	public void runProcessInThread(String jobName, boolean split) throws IOException, InterruptedException {
-		AbbyyOCRProcess process = new AbbyyOCRProcess();
+		AbbyyProcess process = new AbbyyProcess();
 		Properties props = new Properties();
 		props.load(new FileInputStream(System.getProperty("user.dir") + "/src/test/resources/gbv-antiqua.properties"));
 		process.initialize(new Properties());
@@ -156,9 +156,9 @@ public class AbbyyOCRProcessTest {
 		process.addOutput(format);
 		
 		if (split) {
-			List<AbbyyOCRProcess> processes = new ProcessSplitter().split(process, 2);
+			List<AbbyyProcess> processes = new ProcessSplitter().split(process, 2);
 			List<Thread> runningThreads = new ArrayList<Thread>();
-			for (AbbyyOCRProcess sub : processes) {
+			for (AbbyyProcess sub : processes) {
 				Thread thread = new Thread(sub);
 				thread.start();
 				runningThreads.add(thread);
@@ -176,7 +176,7 @@ public class AbbyyOCRProcessTest {
 //	@Test
 //	public void createProcessViaAPI() throws MalformedURLException,
 //			URISyntaxException {
-//		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
+//		AbbyyEngine ase = new AbbyyEngine(new Properties());
 //		assertNotNull(ase);
 //		OcrProcess op = ase.newOcrProcess();
 //		List<OcrImage> imgList = new ArrayList<OcrImage>();
@@ -185,7 +185,7 @@ public class AbbyyOCRProcessTest {
 //			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
 //			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 //			logger.debug("Added url to list: " + imageUrl);
-//			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
+//			AbbyyImage aoi = new AbbyyImage(ocri);
 //			assertTrue(imageUrl.equals(aoi.getUri().toString()));
 //			aoi.setRemoteFileName("remoteName" + i);
 //			imgList.add(aoi);
@@ -198,7 +198,7 @@ public class AbbyyOCRProcessTest {
 //	public void createUrlBasedProcess() throws MalformedURLException,
 //			URISyntaxException {
 //		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
-//		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
+//		AbbyyEngine ase = new AbbyyEngine(new Properties());
 //		assertNotNull(ase);
 //		OcrProcess op = ase.newOcrProcess();
 //		List<OcrImage> imgList = new ArrayList<OcrImage>();

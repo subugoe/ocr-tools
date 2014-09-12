@@ -19,7 +19,7 @@ import org.junit.Test;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
+import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.MyServers;
 import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
@@ -53,7 +53,7 @@ public class HazelcastTest {
 //
 //	@Test
 //	public void test() {
-//		OcrEngine engine = MultiUserAbbyyOCREngine.getInstance();
+//		OcrEngine engine = AbbyyMultiuserEngine.getInstance();
 //		
 //		File inputDir = new File(LOCAL_INPUT, "oneImageBook");
 //		File outputFile = new File(LOCAL_OUTPUT, "oneImageBook.xml");
@@ -64,7 +64,7 @@ public class HazelcastTest {
 //	}
 //	
 //	private void recognize(OcrEngine engine, File inputDir, File outputFile) {
-//		AbbyyOCRProcess process = (AbbyyOCRProcess)engine.newOcrProcess();
+//		AbbyyProcess process = (AbbyyProcess)engine.newOcrProcess();
 //		String jobName = inputDir.getName();
 //		process.setName(jobName);
 //		
@@ -101,7 +101,7 @@ public class HazelcastTest {
 //			@Override
 //			public void run() {
 //					HazelcastInstance h1 = Hazelcast.newHazelcastInstance(null);
-//					OcrEngine engine = new MultiUserAbbyyOCREngine(h1);
+//					OcrEngine engine = new AbbyyMultiuserEngine(h1);
 //					recognize(engine, inputDir1, outputFile1);
 //			}
 //		};
@@ -112,7 +112,7 @@ public class HazelcastTest {
 //		
 //		// second instance
 //		HazelcastInstance h2 = Hazelcast.newHazelcastInstance(null);
-//		OcrEngine engine = new MultiUserAbbyyOCREngine(h2);
+//		OcrEngine engine = new AbbyyMultiuserEngine(h2);
 //		recognize(engine, inputDir2, outputFile2);
 //
 //		t.join();

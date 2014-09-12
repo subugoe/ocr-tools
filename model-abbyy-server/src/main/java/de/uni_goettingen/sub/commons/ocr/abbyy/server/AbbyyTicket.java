@@ -84,7 +84,7 @@ public class AbbyyTicket {
 	protected Long processTimeout = null;
 
 	private static XmlOptions opts = new XmlOptions();
-	private AbbyyOCRProcess ocrProcess;
+	private AbbyyProcess ocrProcess;
 
 	private URI remoteInputFolder;
 
@@ -150,7 +150,7 @@ public class AbbyyTicket {
 
 	}
 
-	public AbbyyTicket(AbbyyOCRProcess initProcess) {
+	public AbbyyTicket(AbbyyProcess initProcess) {
 		ocrProcess = initProcess;
 	}
 
@@ -257,7 +257,7 @@ public class AbbyyTicket {
 			exportFormat.setOutputFlowType("SharedFolder");
 			exportFormat.setOutputFileFormat(ToAbbyyMapper.getOutputFormat(of));
 
-			AbbyyOCROutput aoo = (AbbyyOCROutput) entry;
+			AbbyyOutput aoo = (AbbyyOutput) entry;
 
 			String[] remoteUriParts = aoo.getRemoteUri().toString().split("/");
 			String fileName = remoteUriParts[remoteUriParts.length - 1];

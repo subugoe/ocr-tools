@@ -6,22 +6,22 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFactoryWithProperties;
 
-public class AbbyyServerFactory extends OcrFactoryWithProperties {
+public class AbbyyFactory extends OcrFactoryWithProperties {
 
-	public AbbyyServerFactory(Properties userProperties) {
+	public AbbyyFactory(Properties userProperties) {
 		super(userProperties);
 	}
 	
 	@Override
 	public OcrEngine createEngine() {
-		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(userProperties);
+		AbbyyEngine engine = new AbbyyEngine(userProperties);
 		engine.initialize();
 		return engine;
 	}
 
 	@Override
 	public OcrProcess createProcess() {
-		AbbyyOCRProcess process = new AbbyyOCRProcess();
+		AbbyyProcess process = new AbbyyProcess();
 		process.initialize(userProperties);
 		return process;
 	}

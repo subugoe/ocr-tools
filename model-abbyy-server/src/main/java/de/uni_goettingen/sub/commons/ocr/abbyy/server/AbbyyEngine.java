@@ -44,19 +44,19 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 
-public class AbbyyServerOCREngine extends AbstractEngine implements OcrEngine {
+public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	
-	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngine.class);
+	final static Logger logger = LoggerFactory.getLogger(AbbyyEngine.class);
 
 	protected Hotfolder hotfolder;
 
-	protected Queue<AbbyyOCRProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyOCRProcess>();
+	protected Queue<AbbyyProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyProcess>();
 
 	protected URI lockURI;
 	
 	private static Object monitor = new Object();
 	
-	private OCRExecuter pool;
+	private OcrExecutor pool;
 	
 	protected Properties userProps = new Properties();
 	private Properties fileProps = new Properties();
@@ -75,7 +75,7 @@ public class AbbyyServerOCREngine extends AbstractEngine implements OcrEngine {
 		processSplitter = newSplitter;
 	}
 	
-	public AbbyyServerOCREngine(Properties initUserProperties) {
+	public AbbyyEngine(Properties initUserProperties) {
 		userProps = initUserProperties;
 	}
 	
@@ -96,7 +96,7 @@ public class AbbyyServerOCREngine extends AbstractEngine implements OcrEngine {
 
 	@Override
 	public void addOcrProcess(OcrProcess process) {
-		AbbyyOCRProcess abbyyProcess = (AbbyyOCRProcess) process;
+		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
 		if (abbyyProcess.canBeStarted()) {
 	     	processesQueue.add(abbyyProcess);
 		}
@@ -143,13 +143,13 @@ public class AbbyyServerOCREngine extends AbstractEngine implements OcrEngine {
 		pool = createPool(Integer.parseInt(fileProps.getProperty("maxThreads")));
 		
 		while (!processesQueue.isEmpty()) {
-			AbbyyOCRProcess process = processesQueue.poll();
+			AbbyyProcess process = processesQueue.poll();
 			process.setStartedAt(new Date().getTime());
 			boolean split = "true".equals(userProps.getProperty("books.split"));
 			if (split) {
 				int splitSize = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));
-				List<AbbyyOCRProcess> subProcesses = processSplitter.split(process, splitSize);
-				for (AbbyyOCRProcess subProcess : subProcesses) {
+				List<AbbyyProcess> subProcesses = processSplitter.split(process, splitSize);
+				for (AbbyyProcess subProcess : subProcesses) {
 					pool.execute(subProcess);
 				}
 			} else {
@@ -209,9 +209,9 @@ public class AbbyyServerOCREngine extends AbstractEngine implements OcrEngine {
 	 * 
 	 * @return an instance of a pool/executor
 	 */
-	protected OCRExecuter createPool(int maxThreads) {
+	protected OcrExecutor createPool(int maxThreads) {
 		// TODO: make a field
-		return new OCRExecuter(maxThreads);
+		return new OcrExecutor(maxThreads);
 	}
 	
 	protected void cleanUp() {

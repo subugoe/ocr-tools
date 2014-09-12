@@ -17,15 +17,15 @@ public class ProcessSplitter {
 		mergingObserver = newObserver;
 	}
 		
-	public List<AbbyyOCRProcess> split(AbbyyOCRProcess process, int splitSize) {
+	public List<AbbyyProcess> split(AbbyyProcess process, int splitSize) {
 		mergingObserver.setParentProcess(process);
 		if (process.getNumberOfImages() <= splitSize) {
-			List<AbbyyOCRProcess> sp = new ArrayList<AbbyyOCRProcess>();
+			List<AbbyyProcess> sp = new ArrayList<AbbyyProcess>();
 			sp.add(process);
 			return sp;
 		} else {
-			List<AbbyyOCRProcess> subProcesses = createSubProcesses(process, splitSize);
-			for(AbbyyOCRProcess subProcess : subProcesses){	
+			List<AbbyyProcess> subProcesses = createSubProcesses(process, splitSize);
+			for(AbbyyProcess subProcess : subProcesses){	
 				subProcess.setMerger(mergingObserver);
 				mergingObserver.addSubProcess(subProcess);		
 			}
@@ -34,14 +34,14 @@ public class ProcessSplitter {
 	}
 
 	
-	private List<AbbyyOCRProcess> createSubProcesses(AbbyyOCRProcess process, int splitSize) {
-		List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
+	private List<AbbyyProcess> createSubProcesses(AbbyyProcess process, int splitSize) {
+		List<AbbyyProcess> subProcesses = new ArrayList<AbbyyProcess>();
 
 		List<List<OcrImage>> imageChunks = splitImages(process.getImages(), splitSize);
 		int chunkIndex = 1;
 		int numberOfChunks = imageChunks.size();
 		for(List<OcrImage> chunk : imageChunks){				
-			AbbyyOCRProcess subProcess = process.createSubProcess();
+			AbbyyProcess subProcess = process.createSubProcess();
 
 			for (OcrImage imageFromChunk : chunk) {
 				subProcess.addImage(imageFromChunk.getLocalUri(), imageFromChunk.getFileSize());
@@ -73,7 +73,7 @@ public class ProcessSplitter {
 		return allChunks;		
 	}
 
-	private void addOutputsToSubProcess(AbbyyOCRProcess subProcess, AbbyyOCRProcess process) {
+	private void addOutputsToSubProcess(AbbyyProcess subProcess, AbbyyProcess process) {
 		for (OcrOutput entry : process.getOcrOutputs()) {
 			// TODO: metadata should not be a special case
 			if (entry.getFormat() == OcrFormat.METADATA) {

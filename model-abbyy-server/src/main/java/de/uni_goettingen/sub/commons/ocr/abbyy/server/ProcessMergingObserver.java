@@ -16,20 +16,20 @@ public class ProcessMergingObserver {
 	private final static Logger logger = LoggerFactory.getLogger(ProcessMergingObserver.class);
 	private Object monitor = new Object();
 	private boolean alreadyBeenHere = false;
-	private AbbyyOCRProcess parentProcess;
-	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
+	private AbbyyProcess parentProcess;
+	private List<AbbyyProcess> subProcesses = new ArrayList<AbbyyProcess>();
 
-	public void setParentProcess(AbbyyOCRProcess process) {
+	public void setParentProcess(AbbyyProcess process) {
 		parentProcess = process;
 	}
 
-	public void addSubProcess(AbbyyOCRProcess subProcess) {
+	public void addSubProcess(AbbyyProcess subProcess) {
 		subProcesses.add(subProcess);
 	}
 
 	public void update() {
 		synchronized (monitor) {	   
-			for (AbbyyOCRProcess sub : subProcesses) {
+			for (AbbyyProcess sub : subProcesses) {
 				boolean currentFinished = sub.getIsFinished();
 				if (!currentFinished) {
 					return;
@@ -45,7 +45,7 @@ public class ProcessMergingObserver {
 			}
 			alreadyBeenHere = true;
 			
-			for (AbbyyOCRProcess sub : subProcesses) {
+			for (AbbyyProcess sub : subProcesses) {
 				if(sub.hasFailed()) {
 					logger.error("Could not merge process: " + parentProcess.getName());
 					throw new IllegalStateException("Subprocess failed: " + sub.getName());
@@ -62,7 +62,7 @@ public class ProcessMergingObserver {
 						+ " isn't mergable!");
 			}
 			List<File> filesToMerge = new ArrayList<File>(); 
-			for(AbbyyOCRProcess subProcess : subProcesses) {
+			for(AbbyyProcess subProcess : subProcesses) {
 				File file = new File(subProcess.getOutputUriForFormat(format));
 				filesToMerge.add(file); 
 			}

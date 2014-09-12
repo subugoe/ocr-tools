@@ -22,12 +22,12 @@ import java.util.Comparator;
 
 
 
-public class ItemComparator implements Comparator<AbbyyOCRProcess>, Serializable {
+public class ItemComparator implements Comparator<AbbyyProcess>, Serializable {
 
 	private static final long serialVersionUID = -7384087423486059961L;
 
 	@Override
-	public int compare(AbbyyOCRProcess item1, AbbyyOCRProcess item2) {
+	public int compare(AbbyyProcess item1, AbbyyProcess item2) {
 		int prio = item1.getPriority().compareTo(item2.getPriority());
 		
 		if (prio != 0) {

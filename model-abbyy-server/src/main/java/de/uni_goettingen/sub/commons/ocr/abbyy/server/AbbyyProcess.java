@@ -39,11 +39,11 @@ import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.Pause;
 
-public class AbbyyOCRProcess extends AbstractProcess implements OcrProcess,Serializable,Cloneable,
+public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializable,Cloneable,
 		Runnable {
 
 	private static final long serialVersionUID = -402196937662439454L;
-	private final static Logger logger = LoggerFactory.getLogger(AbbyyOCRProcess.class);
+	private final static Logger logger = LoggerFactory.getLogger(AbbyyProcess.class);
 	protected URI inputDavUri, outputDavUri, errorDavUri, resultXmlDavUri;
 
 	private boolean failed = false;
@@ -190,7 +190,7 @@ public class AbbyyOCRProcess extends AbstractProcess implements OcrProcess,Seria
 
 	@Override
 	public void addImage(URI localUri, long fileSize) {
-		AbbyyOCRImage image = new AbbyyOCRImage();
+		AbbyyImage image = new AbbyyImage();
 		image.setLocalUri(localUri);
 		image.setFileSize(fileSize);
 		String localUriString = localUri.toString();
@@ -219,7 +219,7 @@ public class AbbyyOCRProcess extends AbstractProcess implements OcrProcess,Seria
 	public Long calculateSize() {
 		Long size = 0l;
 		for (OcrImage i : ocrImages) {
-			AbbyyOCRImage aoi = (AbbyyOCRImage) i;
+			AbbyyImage aoi = (AbbyyImage) i;
 			size += aoi.getFileSize();
 		}
 		return size;
@@ -241,7 +241,7 @@ public class AbbyyOCRProcess extends AbstractProcess implements OcrProcess,Seria
 
 	@Override
 	public void addOutput(OcrFormat format) {
-		AbbyyOCROutput aoo = new AbbyyOCROutput();
+		AbbyyOutput aoo = new AbbyyOutput();
 		aoo.setLocalUri(constructLocalUri(format));
 		aoo.setFormat(format);
 		try {
@@ -260,7 +260,7 @@ public class AbbyyOCRProcess extends AbstractProcess implements OcrProcess,Seria
 	}
 
 	private void addResultXmlOutput() {
-		AbbyyOCROutput metadata = new AbbyyOCROutput();
+		AbbyyOutput metadata = new AbbyyOutput();
 		metadata.setLocalUri(new File(outputDir, name + ".xml.result.xml").toURI());
 		try {
 			URI outputResultUri = new URI(resultXmlDavUri.toString() + name + ".xml.result.xml");
@@ -297,14 +297,14 @@ public class AbbyyOCRProcess extends AbstractProcess implements OcrProcess,Seria
 	public List<String> getRemoteImageNames() {
 		List<String> imageNames = new ArrayList<String>();
 		for (OcrImage image : ocrImages) {
-			imageNames.add(((AbbyyOCRImage)image).getRemoteFileName());
+			imageNames.add(((AbbyyImage)image).getRemoteFileName());
 		}
 		return imageNames;
 	}
 	
-	public AbbyyOCRProcess createSubProcess() {
+	public AbbyyProcess createSubProcess() {
 		try {
-			AbbyyOCRProcess subProcess = (AbbyyOCRProcess)super.clone();
+			AbbyyProcess subProcess = (AbbyyProcess)super.clone();
 			subProcess.ocrImages = new ArrayList<OcrImage>();
 			subProcess.ocrOutputs =  new ArrayList<OcrOutput>();
 			subProcess.abbyyTicket = new AbbyyTicket(subProcess);
@@ -312,7 +312,7 @@ public class AbbyyOCRProcess extends AbstractProcess implements OcrProcess,Seria
 			subProcess.abbyyTicket.setRemoteErrorFolder(errorDavUri);
 			return subProcess;
 		} catch (CloneNotSupportedException e) {
-			throw new InternalError("Could not clone " + AbbyyOCRProcess.class);
+			throw new InternalError("Could not clone " + AbbyyProcess.class);
 		}
 	}
 	
@@ -326,8 +326,8 @@ public class AbbyyOCRProcess extends AbstractProcess implements OcrProcess,Seria
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof AbbyyOCRProcess) {
-			AbbyyOCRProcess process = (AbbyyOCRProcess) obj;
+		if (obj instanceof AbbyyProcess) {
+			AbbyyProcess process = (AbbyyProcess) obj;
 			return this.getProcessId().equals(process.getProcessId());
 		}
 		return false;
