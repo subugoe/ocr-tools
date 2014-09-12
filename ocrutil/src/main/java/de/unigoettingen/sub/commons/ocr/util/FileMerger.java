@@ -103,6 +103,8 @@ public class FileMerger {
 					FileMerger.class.getMethod("mergePDFA", fileParams));
 			fileMergers.put(OCRFormat.XML,
 					FileMerger.class.getMethod("mergeAbbyyXML", fileParams));
+			fileMergers.put(OCRFormat.METADATA,
+					FileMerger.class.getMethod("mergeAbbyyXMLResults", fileParams));
 			fileMergers.put(OCRFormat.TXT,
 					FileMerger.class.getMethod("mergeTXT", fileParams));
 			fileMergers.put(OCRFormat.HOCR,

@@ -1,13 +1,8 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +13,8 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 
 public class ProcessMergingObserver {
 
-	private final static Logger logger = LoggerFactory
-			.getLogger(ProcessMergingObserver.class);
-	static Object monitor = new Object();
+	private final static Logger logger = LoggerFactory.getLogger(ProcessMergingObserver.class);
+	private Object monitor = new Object();
 	private boolean alreadyBeenHere = false;
 	private AbbyyOCRProcess parentProcess;
 	private List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
@@ -57,56 +51,30 @@ public class ProcessMergingObserver {
 					throw new IllegalStateException("Subprocess failed: " + sub.getName());
 				}
 			}
-			merge();				 
+			mergeAllFormats();				 
 		}		
 	}
 
-	private void merge() {	
-		File abbyyMergedResult = null;
-		int i = 0;
-		List<File> fileResults = new ArrayList<File>();
-
-		// TODO: metadata should not be a special case
-		Set<OCRFormat> formatsWithoutResultXml = new HashSet<OCRFormat>(subProcesses.get(0).getAllOutputFormats());
-		formatsWithoutResultXml.remove(OCRFormat.METADATA);
-		
-		for (OCRFormat f : formatsWithoutResultXml){
-			if (!FileMerger.isSegmentable(f)) {
-				throw new OCRException("Format " + f.toString()
+	private void mergeAllFormats() {
+		for (OCRFormat format : parentProcess.getAllOutputFormats()) {
+			if (!FileMerger.isSegmentable(format)) {
+				throw new OCRException("Format " + format.toString()
 						+ " isn't mergable!");
 			}
-			List<File> files = new ArrayList<File>(); 
+			List<File> filesToMerge = new ArrayList<File>(); 
 			for(AbbyyOCRProcess subProcess : subProcesses) {
-				File file = new File(subProcess.getOutputUriForFormat(f));
-				files.add(file); 
-				if(i == 0){
-					File fileResult = new File(subProcess.getOutputUriForFormat(OCRFormat.METADATA));
-					fileResults.add(fileResult);			
-				}		
+				File file = new File(subProcess.getOutputUriForFormat(format));
+				filesToMerge.add(file); 
 			}
-			i++;
-			logger.debug("Waiting... for Merge Proccessing (" + parentProcess.getName() + ")");
 			
-			abbyyMergedResult = new File(parentProcess.getOutputUriForFormat(f));
+			File mergedFile = new File(parentProcess.getOutputUriForFormat(format));
+			logger.debug("Trying to merge into " + mergedFile + " (" + parentProcess.getName() + ")");
 			FileMerger.abbyyVersionNumber = "v10";
-			FileMerger.mergeFiles(f, files, abbyyMergedResult);
-			logger.debug(parentProcess.getName() + "." + f.toString().toLowerCase()+ " MERGED (" + parentProcess.getName() + ")");
-			removeSubProcessResults(files);
-					
-		}
-		try {
-			logger.debug("Waiting... for Merge Proccessing (" + parentProcess.getName() + ")");
-			//mergeFiles for Abbyy Result xml.result.xml
-			abbyyMergedResult = new File(parentProcess.getOutputUriForFormat(OCRFormat.METADATA));
-			FileMerger.mergeAbbyyXMLResults(fileResults , abbyyMergedResult);
-			logger.debug(parentProcess.getName() + ".xml.result.xml" + " MERGED (" + parentProcess.getName() + ")");			
-			removeSubProcessResults(fileResults);
+			FileMerger.mergeFiles(format, filesToMerge, mergedFile);
+			logger.debug(mergedFile + " merged successfully (" + parentProcess.getName() + ")");
 			
-		} catch (IOException e) {
-			logger.error("ERROR contructing result xml file (" + parentProcess.getName() + ")", e);
-		} catch (XMLStreamException e) {
-			logger.error("ERROR in mergeAbbyyXML : (" + parentProcess.getName() + ")", e);
-		}		
+			removeSubProcessResults(filesToMerge);
+		}
 	}
 	
 	protected void removeSubProcessResults(List<File> resultFiles){
@@ -114,7 +82,5 @@ public class ProcessMergingObserver {
 			file.delete();
 		}
 	}
-
-
 	
 }
