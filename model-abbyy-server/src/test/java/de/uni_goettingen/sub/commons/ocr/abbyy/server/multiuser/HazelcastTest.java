@@ -21,10 +21,10 @@ import com.hazelcast.core.HazelcastInstance;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.MyServers;
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 
 public class HazelcastTest {
 
@@ -53,7 +53,7 @@ public class HazelcastTest {
 //
 //	@Test
 //	public void test() {
-//		OCREngine engine = MultiUserAbbyyOCREngine.getInstance();
+//		OcrEngine engine = MultiUserAbbyyOCREngine.getInstance();
 //		
 //		File inputDir = new File(LOCAL_INPUT, "oneImageBook");
 //		File outputFile = new File(LOCAL_OUTPUT, "oneImageBook.xml");
@@ -63,24 +63,24 @@ public class HazelcastTest {
 //		assertTrue(outputFile.exists());
 //	}
 //	
-//	private void recognize(OCREngine engine, File inputDir, File outputFile) {
+//	private void recognize(OcrEngine engine, File inputDir, File outputFile) {
 //		AbbyyOCRProcess process = (AbbyyOCRProcess)engine.newOcrProcess();
 //		String jobName = inputDir.getName();
 //		process.setName(jobName);
 //		
-//		List<OCRImage> images = new ArrayList<OCRImage>();
+//		List<OcrImage> images = new ArrayList<OcrImage>();
 //		for (File imageFile : inputDir.listFiles()) {
 //			// could be a dir like eg .svn
 //			if (imageFile.isFile()) {
 //				URI imageUri = imageFile.toURI();
-//				OCRImage image = engine.newOcrImage(imageUri);
+//				OcrImage image = engine.newOcrImage(imageUri);
 //				images.add(image);
 //			}
 //		}
 //		process.setOcrImages(images);
 //		
-//		OCRFormat format = OCRFormat.XML;
-//		OCROutput output = engine.newOcrOutput();
+//		OcrFormat format = OcrFormat.XML;
+//		OcrOutput output = engine.newOcrOutput();
 //		output.setUri(outputFile.toURI());
 //		process.addOutput(format, output);
 //		
@@ -101,7 +101,7 @@ public class HazelcastTest {
 //			@Override
 //			public void run() {
 //					HazelcastInstance h1 = Hazelcast.newHazelcastInstance(null);
-//					OCREngine engine = new MultiUserAbbyyOCREngine(h1);
+//					OcrEngine engine = new MultiUserAbbyyOCREngine(h1);
 //					recognize(engine, inputDir1, outputFile1);
 //			}
 //		};
@@ -112,7 +112,7 @@ public class HazelcastTest {
 //		
 //		// second instance
 //		HazelcastInstance h2 = Hazelcast.newHazelcastInstance(null);
-//		OCREngine engine = new MultiUserAbbyyOCREngine(h2);
+//		OcrEngine engine = new MultiUserAbbyyOCREngine(h2);
 //		recognize(engine, inputDir2, outputFile2);
 //
 //		t.join();

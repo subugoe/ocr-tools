@@ -57,12 +57,12 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCROutput;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyTicket;
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 import de.unigoettingen.sub.commons.util.stream.StreamUtils;
 
 
@@ -70,17 +70,17 @@ public class AbbyyTicketTest {
 	private final static Logger logger = LoggerFactory.getLogger(AbbyyTicketTest.class);
 	public static File TICKET_FILE;
 	public static File LOCAL_TICKET_FILE;
-	public static HashMap<OCRFormat, OCROutput> OUTPUT_DEFINITIONS;
+	public static HashMap<OcrFormat, OcrOutput> OUTPUT_DEFINITIONS;
 
-	private static OCRProcess process = null;
+	private static OcrProcess process = null;
 
 	private static FileOutputStream ticketStream;
-	private static OCRImage ocri = null;
+	private static OcrImage ocri = null;
 
 	private AbbyyTicket abbyyTicket;
 
 	static {
-		process = mock(OCRProcess.class);
+		process = mock(OcrProcess.class);
 		when(process.getLanguages()).thenReturn(new HashSet<Locale>() {
 			private static final long serialVersionUID = -847225577844475697L;
 			{
@@ -102,8 +102,8 @@ public class AbbyyTicketTest {
 		final AbbyyOCROutput aoo = new AbbyyOCROutput();
 		aoo.setLocalUri(resultUri);
 
-		OUTPUT_DEFINITIONS = new HashMap<OCRFormat, OCROutput>();
-		OUTPUT_DEFINITIONS.put(OCRFormat.XML, aoo);
+		OUTPUT_DEFINITIONS = new HashMap<OcrFormat, OcrOutput>();
+		OUTPUT_DEFINITIONS.put(OcrFormat.XML, aoo);
 	}
 
 //	@BeforeClass
@@ -111,9 +111,9 @@ public class AbbyyTicketTest {
 //			MalformedURLException, URISyntaxException {
 //
 //		// Create some mock images
-//		List<OCRImage> imgList = new ArrayList<OCRImage>();
+//		List<OcrImage> imgList = new ArrayList<OcrImage>();
 //		for (int i = 0; i < 10; i++) {
-//			ocri = mock(AbstractOCRImage.class);
+//			ocri = mock(AbstractImage.class);
 //			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
 //			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 //			AbbyyOCRImage aoi = new AbbyyOCRImage(ocri);
@@ -141,7 +141,7 @@ public class AbbyyTicketTest {
 //		assertTrue((AbbyyTicket.config.maxMillisPerFile * process.getOcrImages()
 //				.size()) == 100000);
 //
-//		abbyyTicket.setTextType(OCRTextType.NORMAL);
+//		abbyyTicket.setTextType(OcrTextType.NORMAL);
 //		// Use a stream to check if we to write it directly into a Stream
 //		ticketStream = new FileOutputStream(TICKET_FILE);
 //		abbyyTicket.write(ticketStream, "testTicket");

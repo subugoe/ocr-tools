@@ -20,10 +20,10 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.net.URI;
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractImage;
 
 /**
- * The Class AbbyyOCRImage. Is a representation of an OCRImage suitable for
+ * The Class AbbyyOCRImage. Is a representation of an OcrImage suitable for
  * holding references to remote files as used by the Abbyy Recognition Server.
  * It adds two fields: - remoteFileName, the file name as used on the remote
  * system, usally a relative file name and thus represented as a String. -
@@ -34,7 +34,7 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
  * @author abergna
  * @author cmahnke
  */
-public class AbbyyOCRImage extends AbstractOCRImage {
+public class AbbyyOCRImage extends AbstractImage {
 	/** This represents the filename that should be written to the ticket. */
 	private String remoteFileName;
 

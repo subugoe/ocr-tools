@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Class AbstractOCREngine is a abstract super class for {@link OCREngine}
+ * The Class AbstractEngine is a abstract super class for {@link OcrEngine}
  * implementations. It adds two methods to be able to provide metadata for the
  * different implementations {@link #getName()} and {@link #getVersion()}.
  * 
@@ -30,10 +30,10 @@ import java.util.List;
  * @author abergna
  * @author cmahnke
  */
-public abstract class AbstractOCREngine implements OCREngine {
+public abstract class AbstractEngine implements OcrEngine {
 
-	/** A simple list containing {@link OCRProcess} that will be processed */
-	protected List<OCRProcess> ocrProcess = new ArrayList<OCRProcess>();
+	/** A simple list containing {@link OcrProcess} that will be processed */
+	protected List<OcrProcess> ocrProcess = new ArrayList<OcrProcess>();
 
 	// State variables
 	/** Indicates if the processing of the engine has started. */
@@ -42,9 +42,9 @@ public abstract class AbstractOCREngine implements OCREngine {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OCREngine#getOcrProcess()
+	 * @see de.uni_goettingen.sub.commons.ocr.api.OcrEngine#getOcrProcess()
 	 */
-	public List<OCRProcess> getOcrProcess() {
+	public List<OcrProcess> getOcrProcess() {
 		return ocrProcess;
 	}
 

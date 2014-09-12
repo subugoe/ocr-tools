@@ -30,19 +30,19 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
+public abstract class AbstractProcess implements OcrProcess,Serializable {
 
 	private static final long serialVersionUID = 3302775196071887966L;
-	private final static Logger logger = LoggerFactory.getLogger(AbstractOCRProcess.class);
+	private final static Logger logger = LoggerFactory.getLogger(AbstractProcess.class);
 	protected String name;
 
-	transient protected List<OCRImage> ocrImages = new ArrayList<OCRImage>();
+	transient protected List<OcrImage> ocrImages = new ArrayList<OcrImage>();
 
 	protected Set<Locale> langs = new HashSet<Locale>();
 	protected OCRQuality quality = OCRQuality.FAST;
-	protected OCRTextType textType = OCRTextType.NORMAL;
-	protected OCRPriority priority;
-	transient protected List<OCROutput> ocrOutputs = new ArrayList<OCROutput>();
+	protected OcrTextType textType = OcrTextType.NORMAL;
+	protected OcrPriority priority;
+	transient protected List<OcrOutput> ocrOutputs = new ArrayList<OcrOutput>();
 	protected File outputDir;
 	
 	@Override
@@ -55,7 +55,7 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 		return langs;
 	}
 
-	public List<OCRImage> getImages () {
+	public List<OcrImage> getImages () {
 		return ocrImages;
 	}
 	
@@ -88,7 +88,7 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 	}
 
 	@Override
-	public List<OCROutput> getOcrOutputs() {
+	public List<OcrOutput> getOcrOutputs() {
 		return this.ocrOutputs;
 	}
 
@@ -103,35 +103,35 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 	}
 
 	@Override
-	public OCRTextType getTextType () {
+	public OcrTextType getTextType () {
 		return this.textType;
 	}
 	
 	@Override
-	public void setTextType (OCRTextType t) {
+	public void setTextType (OcrTextType t) {
 		this.textType = t ;
 	}
 	
 	@Override
-	public OCRPriority getPriority() {
+	public OcrPriority getPriority() {
 		return this.priority;
 	}
 
 	@Override
-	public void setPriority(OCRPriority p) {
+	public void setPriority(OcrPriority p) {
 		this.priority = p;
 	}
 
-	public Set<OCRFormat> getAllOutputFormats() {
-		Set<OCRFormat> formats = new HashSet<OCRFormat>();
-		for (OCROutput output : ocrOutputs) {
+	public Set<OcrFormat> getAllOutputFormats() {
+		Set<OcrFormat> formats = new HashSet<OcrFormat>();
+		for (OcrOutput output : ocrOutputs) {
 			formats.add(output.getFormat());
 		}
 		return formats;
 	}
 	
-	public URI getOutputUriForFormat(OCRFormat format) {
-		for (OCROutput output : ocrOutputs) {
+	public URI getOutputUriForFormat(OcrFormat format) {
+		for (OcrOutput output : ocrOutputs) {
 			if (output.getFormat().equals(format)) {
 				return output.getLocalUri();
 			}
@@ -144,7 +144,7 @@ public abstract class AbstractOCRProcess implements OCRProcess,Serializable {
 		outputDir = newDir;
 	}
 	
-	protected URI constructLocalUri(OCRFormat format) {
+	protected URI constructLocalUri(OcrFormat format) {
 		String fileName = name + "." + format.toString().toLowerCase();
 		return new File(outputDir, fileName).toURI();
 	}

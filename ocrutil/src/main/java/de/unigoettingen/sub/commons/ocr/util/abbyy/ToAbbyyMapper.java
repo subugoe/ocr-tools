@@ -4,17 +4,17 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess.OCRQuality;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrPriority;
+import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess.OCRQuality;
 
 public class ToAbbyyMapper {
 
 	private final static Map<Locale, String> LANGUAGE_MAP = new HashMap<Locale, String>();
-	private final static Map<OCRTextType, String> TEXTTYPE_MAP = new HashMap<OCRTextType, String>();
-	private final static Map<OCRFormat, String> FORMAT_MAP = new HashMap<OCRFormat, String>();
-	private final static Map<OCRPriority, String> PRIORITY_MAP = new HashMap<OCRPriority, String>();
+	private final static Map<OcrTextType, String> TEXTTYPE_MAP = new HashMap<OcrTextType, String>();
+	private final static Map<OcrFormat, String> FORMAT_MAP = new HashMap<OcrFormat, String>();
+	private final static Map<OcrPriority, String> PRIORITY_MAP = new HashMap<OcrPriority, String>();
 	private final static Map<OCRQuality, String> QUALITY_MAP = new HashMap<OCRQuality, String>();
 
 	static {
@@ -141,27 +141,27 @@ public class ToAbbyyMapper {
 		LANGUAGE_MAP.put(new Locale("zh"), "Chinese");
 		/*LANGUAGE_MAP.put(new Locale("za"), "Zhuang");	*/
 
-		TEXTTYPE_MAP.put(OCRTextType.NORMAL, "Normal");
-		TEXTTYPE_MAP.put(OCRTextType.TYPEWRITER, "Typewriter");
-		TEXTTYPE_MAP.put(OCRTextType.MATRIX, "Matrix");
-		TEXTTYPE_MAP.put(OCRTextType.OCR_A, "OCR_A");
-		TEXTTYPE_MAP.put(OCRTextType.OCR_B, "OCR_B");
-		TEXTTYPE_MAP.put(OCRTextType.MICR_E13B, "MICR_E13B");
-		TEXTTYPE_MAP.put(OCRTextType.GOTHIC, "Gothic");
+		TEXTTYPE_MAP.put(OcrTextType.NORMAL, "Normal");
+		TEXTTYPE_MAP.put(OcrTextType.TYPEWRITER, "Typewriter");
+		TEXTTYPE_MAP.put(OcrTextType.MATRIX, "Matrix");
+		TEXTTYPE_MAP.put(OcrTextType.OCR_A, "OCR_A");
+		TEXTTYPE_MAP.put(OcrTextType.OCR_B, "OCR_B");
+		TEXTTYPE_MAP.put(OcrTextType.MICR_E13B, "MICR_E13B");
+		TEXTTYPE_MAP.put(OcrTextType.GOTHIC, "Gothic");
 
-		FORMAT_MAP.put(OCRFormat.DOC, "MSWord");
-		FORMAT_MAP.put(OCRFormat.HTML, "HTML");
-		FORMAT_MAP.put(OCRFormat.XHTML, "HTML");
-		FORMAT_MAP.put(OCRFormat.PDF, "PDF");
-		FORMAT_MAP.put(OCRFormat.PDFA, "PDFA");
-		FORMAT_MAP.put(OCRFormat.XML, "XML");
-		FORMAT_MAP.put(OCRFormat.TXT, "Text");
+		FORMAT_MAP.put(OcrFormat.DOC, "MSWord");
+		FORMAT_MAP.put(OcrFormat.HTML, "HTML");
+		FORMAT_MAP.put(OcrFormat.XHTML, "HTML");
+		FORMAT_MAP.put(OcrFormat.PDF, "PDF");
+		FORMAT_MAP.put(OcrFormat.PDFA, "PDFA");
+		FORMAT_MAP.put(OcrFormat.XML, "XML");
+		FORMAT_MAP.put(OcrFormat.TXT, "Text");
 
-		PRIORITY_MAP.put(OCRPriority.HIGH, "High");
-		PRIORITY_MAP.put(OCRPriority.ABOVENORMAL, "AboveNormal");
-		PRIORITY_MAP.put(OCRPriority.NORMAL, "Normal");
-		PRIORITY_MAP.put(OCRPriority.BELOWNORMAL, "BelowNormal");
-		PRIORITY_MAP.put(OCRPriority.LOW, "Low");
+		PRIORITY_MAP.put(OcrPriority.HIGH, "High");
+		PRIORITY_MAP.put(OcrPriority.ABOVENORMAL, "AboveNormal");
+		PRIORITY_MAP.put(OcrPriority.NORMAL, "Normal");
+		PRIORITY_MAP.put(OcrPriority.BELOWNORMAL, "BelowNormal");
+		PRIORITY_MAP.put(OcrPriority.LOW, "Low");
 
 		QUALITY_MAP.put(OCRQuality.BEST, "Thorough");
 		QUALITY_MAP.put(OCRQuality.BALANCED, "Balanced");
@@ -173,15 +173,15 @@ public class ToAbbyyMapper {
 		return LANGUAGE_MAP.get(locale);
 	}
 	
-	public static String getTextType(OCRTextType textType) {
+	public static String getTextType(OcrTextType textType) {
 		return TEXTTYPE_MAP.get(textType);
 	}
 	
-	public static String getOutputFormat(OCRFormat format) {
+	public static String getOutputFormat(OcrFormat format) {
 		return FORMAT_MAP.get(format);
 	}
 
-	public static String getPriority(OCRPriority priority) {
+	public static String getPriority(OcrPriority priority) {
 		return PRIORITY_MAP.get(priority);
 	}
 

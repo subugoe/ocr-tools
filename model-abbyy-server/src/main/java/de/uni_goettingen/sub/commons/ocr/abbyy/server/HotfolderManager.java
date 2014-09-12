@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 import de.unigoettingen.sub.commons.ocr.util.Pause;
 
 public class HotfolderManager {
@@ -38,16 +38,16 @@ public class HotfolderManager {
 		pause = newPause;
 	}
 
-	public void deleteOutputs(List<OCROutput> outputs) throws IOException {
-		for (OCROutput out : outputs) {
+	public void deleteOutputs(List<OcrOutput> outputs) throws IOException {
+		for (OcrOutput out : outputs) {
 			AbbyyOCROutput abbyyOut = (AbbyyOCROutput) out;
 			URI remoteUri = abbyyOut.getRemoteUri();
 			hotfolder.deleteIfExists(remoteUri);
 		}
 	}
 
-	public void deleteImages(List<OCRImage> images) throws IOException {
-		for (OCRImage ocrImage : images) {
+	public void deleteImages(List<OcrImage> images) throws IOException {
+		for (OcrImage ocrImage : images) {
 			AbbyyOCRImage image = (AbbyyOCRImage) ocrImage;
 			URI remoteUri = image.getRemoteUri();
 			hotfolder.deleteIfExists(remoteUri);
@@ -56,8 +56,8 @@ public class HotfolderManager {
 		}
 	}
 
-	public void copyImagesToHotfolder(List<OCRImage> ocrImages) throws IOException {
-		for (OCRImage ocrImage : ocrImages) {
+	public void copyImagesToHotfolder(List<OcrImage> ocrImages) throws IOException {
+		for (OcrImage ocrImage : ocrImages) {
 			AbbyyOCRImage image = (AbbyyOCRImage) ocrImage;
 			URI fromUri = image.getLocalUri();
 			URI toUri = image.getRemoteUri();
@@ -65,8 +65,8 @@ public class HotfolderManager {
 		}
 	}
 
-	public void retrieveResults(List<OCROutput> ocrOutputs) throws IOException {
-		for (OCROutput entry : ocrOutputs) {
+	public void retrieveResults(List<OcrOutput> ocrOutputs) throws IOException {
+		for (OcrOutput entry : ocrOutputs) {
 			AbbyyOCROutput o = (AbbyyOCROutput) entry;
 
 			URI remoteUri = o.getRemoteUri();
@@ -95,7 +95,7 @@ public class HotfolderManager {
 	}
 
 	public void waitForResults(long timeout, long waitInterval,
-			List<OCROutput> outputs, URI errorResultXmlUri) throws TimeoutException, IOException {		
+			List<OcrOutput> outputs, URI errorResultXmlUri) throws TimeoutException, IOException {		
 		long start = System.currentTimeMillis();
 		
 		List<URI> mustBeThereUris = extractFromOutputs(outputs);
@@ -117,9 +117,9 @@ public class HotfolderManager {
 		}
 	}
 
-	private List<URI> extractFromOutputs(List<OCROutput> outputs) {
+	private List<URI> extractFromOutputs(List<OcrOutput> outputs) {
 		List<URI> mustBeThereUris = new ArrayList<URI>();
-		for (OCROutput out : outputs) {
+		for (OcrOutput out : outputs) {
 			final AbbyyOCROutput output = (AbbyyOCROutput) out;
 			URI uri = output.getRemoteUri();
 			mustBeThereUris.add(uri);

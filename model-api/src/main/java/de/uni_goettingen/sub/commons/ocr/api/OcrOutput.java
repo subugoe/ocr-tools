@@ -23,41 +23,35 @@ package de.uni_goettingen.sub.commons.ocr.api;
 import java.net.URI;
 
 /**
- * The Interface OCRImage. This Interface represents the a single image file to
- * be recognized. Images are referenced by URI. {@link Orientation} is an Enum
- * representing different possible orientations of an image. Implementations
- * should extend {@link AbstractOCRImage} to add further methods for example for
- * handling Streams.
+ * The Interface OcrOutput represents the expected results before processing and
+ * references to the results if the processing is done. Implementations should
+ * extend {@link AbstractOutput} to add further methods for example for
+ * handling Streams. It's also possible to add preconfigured params there.
  * 
  * @version 0.9
  * @author abergna
  * @author cmahnke
  */
-public interface OCRImage {
+public interface OcrOutput {
 
 	/**
-	 * Gets the {@link URI} of the image. URI is used to be able to use
-	 * different resolvers to return an {@link java.io.InputStream}.
+	 * Gets the uri where the results should be stored. If {@link #isResult()}
+	 * is true, the result should be at this location.
 	 * 
 	 * @return the uri
 	 */
-	abstract public URI getLocalUri();
+	public URI getLocalUri();
 
 	/**
-	 * Sets the {@link URI} of the image. URI is used to be able to use
-	 * different resolvers to return an {@link java.io.InputStream}.
+	 * Sets the uri for the result. If {@link #isResult()} is true, the result
+	 * should be at this location.
 	 * 
 	 * @param uri
 	 *            the new uri
 	 */
-	abstract public void setLocalUri(URI localUri);
+	public void setLocalUri(URI uri);
 	
-	/**
-	 * Sets the size of file
-	 * @param size 
-	 */
-	public void setFileSize(long fileSize);
+	public void setFormat(OcrFormat format);
+	public OcrFormat getFormat();
 	
-	public long getFileSize();
-
 }

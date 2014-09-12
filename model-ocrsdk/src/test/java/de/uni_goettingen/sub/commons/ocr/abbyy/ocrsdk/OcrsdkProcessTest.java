@@ -15,8 +15,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 
 public class OcrsdkProcessTest {
 
@@ -40,8 +40,8 @@ public class OcrsdkProcessTest {
 		InputStream txtOutput = new ByteArrayInputStream(resultTxt.getBytes());
 		when(clientMock.getResultForFormat("txt")).thenReturn(txtOutput);
 		
-		when(outputXmlMock.getFormat()).thenReturn(OCRFormat.XML);
-		when(outputTxtMock.getFormat()).thenReturn(OCRFormat.TXT);
+		when(outputXmlMock.getFormat()).thenReturn(OcrFormat.XML);
+		when(outputTxtMock.getFormat()).thenReturn(OcrFormat.TXT);
 		
 		process = new OcrsdkProcess("user", "pass");
 		
@@ -55,10 +55,10 @@ public class OcrsdkProcessTest {
 		image.setLocalUri(new File("src/test/resources/Picture_010.tif").toURI());
 		OcrsdkOutput outputXml = new OcrsdkOutput();
 		outputXml.setLocalUri(new File("target/testResult.xml").toURI());
-		outputXml.setFormat(OCRFormat.XML);
+		outputXml.setFormat(OcrFormat.XML);
 		OcrsdkOutput outputTxt = new OcrsdkOutput();
 		outputTxt.setLocalUri(new File("target/testResult.txt").toURI());
-		outputTxt.setFormat(OCRFormat.TXT);
+		outputTxt.setFormat(OcrFormat.TXT);
 		OcrsdkProcess process = new OcrsdkProcess("", "");
 		process.addImage(image.getLocalUri(), image.getFileSize());
 //		process.addOutput(outputXml);
@@ -116,7 +116,7 @@ public class OcrsdkProcessTest {
 	public void forwardsTextType() {
 //		process.addImage(imageMock);
 //		process.addOutput(outputXmlMock);
-		process.setTextType(OCRTextType.GOTHIC);
+		process.setTextType(OcrTextType.GOTHIC);
 		process.start();
 		
 		verify(clientMock, times(1)).addTextType("gothic");

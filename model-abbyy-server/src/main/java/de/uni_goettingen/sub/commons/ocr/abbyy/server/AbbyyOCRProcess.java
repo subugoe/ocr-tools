@@ -30,16 +30,16 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.Pause;
 
-public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Serializable,Cloneable,
+public class AbbyyOCRProcess extends AbstractProcess implements OcrProcess,Serializable,Cloneable,
 		Runnable {
 
 	private static final long serialVersionUID = -402196937662439454L;
@@ -165,7 +165,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		} catch (URISyntaxException e) {
 			logger.error("Error seting tmp URI for ticket (" + getName() + ")", e);
 			failed = true;
-		} catch (OCRException e) {
+		} catch (OcrException e) {
 			logger.error("Error during OCR Process (" + getName() + ")", e);
 			failed = true;
 		} finally {
@@ -218,7 +218,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	 */
 	public Long calculateSize() {
 		Long size = 0l;
-		for (OCRImage i : ocrImages) {
+		for (OcrImage i : ocrImages) {
 			AbbyyOCRImage aoi = (AbbyyOCRImage) i;
 			size += aoi.getFileSize();
 		}
@@ -240,7 +240,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	}
 
 	@Override
-	public void addOutput(OCRFormat format) {
+	public void addOutput(OcrFormat format) {
 		AbbyyOCROutput aoo = new AbbyyOCROutput();
 		aoo.setLocalUri(constructLocalUri(format));
 		aoo.setFormat(format);
@@ -254,7 +254,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 		ocrOutputs.add(aoo);
 		
 		// TODO: metadata should not be a special case
-		if (getOutputUriForFormat(OCRFormat.METADATA) == null) {
+		if (getOutputUriForFormat(OcrFormat.METADATA) == null) {
 			addResultXmlOutput();
 		}
 	}
@@ -267,9 +267,9 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 			metadata.setRemoteUri(outputResultUri);
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs (" + getName() + ")");
-			throw new OCRException(e);
+			throw new OcrException(e);
 		}
-		metadata.setFormat(OCRFormat.METADATA);
+		metadata.setFormat(OcrFormat.METADATA);
 		ocrOutputs.add(metadata);
 	}
 	
@@ -296,7 +296,7 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	
 	public List<String> getRemoteImageNames() {
 		List<String> imageNames = new ArrayList<String>();
-		for (OCRImage image : ocrImages) {
+		for (OcrImage image : ocrImages) {
 			imageNames.add(((AbbyyOCRImage)image).getRemoteFileName());
 		}
 		return imageNames;
@@ -305,8 +305,8 @@ public class AbbyyOCRProcess extends AbstractOCRProcess implements OCRProcess,Se
 	public AbbyyOCRProcess createSubProcess() {
 		try {
 			AbbyyOCRProcess subProcess = (AbbyyOCRProcess)super.clone();
-			subProcess.ocrImages = new ArrayList<OCRImage>();
-			subProcess.ocrOutputs =  new ArrayList<OCROutput>();
+			subProcess.ocrImages = new ArrayList<OcrImage>();
+			subProcess.ocrOutputs =  new ArrayList<OcrOutput>();
 			subProcess.abbyyTicket = new AbbyyTicket(subProcess);
 			subProcess.abbyyTicket.setRemoteInputFolder(inputDavUri);
 			subProcess.abbyyTicket.setRemoteErrorFolder(errorDavUri);

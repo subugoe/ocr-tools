@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 
 public class ProcessSplitter {
 
@@ -37,13 +37,13 @@ public class ProcessSplitter {
 	private List<AbbyyOCRProcess> createSubProcesses(AbbyyOCRProcess process, int splitSize) {
 		List<AbbyyOCRProcess> subProcesses = new ArrayList<AbbyyOCRProcess>();
 
-		List<List<OCRImage>> imageChunks = splitImages(process.getImages(), splitSize);
+		List<List<OcrImage>> imageChunks = splitImages(process.getImages(), splitSize);
 		int chunkIndex = 1;
 		int numberOfChunks = imageChunks.size();
-		for(List<OCRImage> chunk : imageChunks){				
+		for(List<OcrImage> chunk : imageChunks){				
 			AbbyyOCRProcess subProcess = process.createSubProcess();
 
-			for (OCRImage imageFromChunk : chunk) {
+			for (OcrImage imageFromChunk : chunk) {
 				subProcess.addImage(imageFromChunk.getLocalUri(), imageFromChunk.getFileSize());
 			}
 			
@@ -61,12 +61,12 @@ public class ProcessSplitter {
 		return subProcesses;
 	}
 
-	private List<List<OCRImage>> splitImages(List<OCRImage> allImages, int chunkSize){
-		List<List<OCRImage>> allChunks = new ArrayList<List<OCRImage>>();	
+	private List<List<OcrImage>> splitImages(List<OcrImage> allImages, int chunkSize){
+		List<List<OcrImage>> allChunks = new ArrayList<List<OcrImage>>();	
 		
 		for (int from = 0; from < allImages.size(); from += chunkSize) {
 			int to = Math.min(from + chunkSize, allImages.size());
-			List<OCRImage> chunk = new ArrayList<OCRImage>(allImages.subList(from, to));
+			List<OcrImage> chunk = new ArrayList<OcrImage>(allImages.subList(from, to));
 			allChunks.add(chunk);
 		}
 		
@@ -74,12 +74,12 @@ public class ProcessSplitter {
 	}
 
 	private void addOutputsToSubProcess(AbbyyOCRProcess subProcess, AbbyyOCRProcess process) {
-		for (OCROutput entry : process.getOcrOutputs()) {
+		for (OcrOutput entry : process.getOcrOutputs()) {
 			// TODO: metadata should not be a special case
-			if (entry.getFormat() == OCRFormat.METADATA) {
+			if (entry.getFormat() == OcrFormat.METADATA) {
 				continue;
 			}
-			OCRFormat outputFormat = entry.getFormat();
+			OcrFormat outputFormat = entry.getFormat();
 			subProcess.addOutput(outputFormat);
 		}
 	}

@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "inputTextType")
 @XmlEnum
-public enum OCRTextType{
+public enum OcrTextType{
 	
 	/** The Normal type, This value corresponds to common typographic text. */
 	NORMAL("Normal"),
@@ -46,7 +46,7 @@ public enum OCRTextType{
 	
 	 private final String value;
 
-	 OCRTextType(String v) {
+	 OcrTextType(String v) {
 	        value = v;
 	    }
 
@@ -54,8 +54,8 @@ public enum OCRTextType{
 	        return value;
 	    }
 
-	    public static OCRTextType fromValue(String v) {
-	        for (OCRTextType c: OCRTextType.values()) {
+	    public static OcrTextType fromValue(String v) {
+	        for (OcrTextType c: OcrTextType.values()) {
 	            if (c.value.equals(v)) {
 	                return c;
 	            }

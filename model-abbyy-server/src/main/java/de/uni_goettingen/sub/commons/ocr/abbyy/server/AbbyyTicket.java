@@ -47,11 +47,11 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XMLExportSettings;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrPriority;
+import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
 
 //TODO: one Locale might represent multiple langueages: <Language>GermanNewSpelling</Language>
@@ -68,7 +68,7 @@ public class AbbyyTicket {
 	 * A Map containing predefined fragments (read settings) for different
 	 * formats
 	 */
-	private final static Map<OCRFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
+	private final static Map<OcrFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
 
 
 	/** Predefined recognition parameters */
@@ -98,7 +98,7 @@ public class AbbyyTicket {
 		opts.setSaveImplicitNamespaces(namespaces);
 		opts.setUseDefaultNamespace();
 
-		FORMAT_FRAGMENTS = new HashMap<OCRFormat, OutputFileFormatSettings>();
+		FORMAT_FRAGMENTS = new HashMap<OcrFormat, OutputFileFormatSettings>();
 
 		PDFExportSettings pdfSettings = PDFExportSettings.Factory
 				.newInstance(opts);
@@ -108,7 +108,7 @@ public class AbbyyTicket {
 		pdfSettings.setUseImprovedCompression(true);
 		pdfSettings.setExportMode("ImageOnText");
 
-		FORMAT_FRAGMENTS.put(OCRFormat.PDF,
+		FORMAT_FRAGMENTS.put(OcrFormat.PDF,
 				(OutputFileFormatSettings) pdfSettings
 						.changeType(OutputFileFormatSettings.type));
 
@@ -121,7 +121,7 @@ public class AbbyyTicket {
 		pdfaSettings.setUseImprovedCompression(true);
 		pdfaSettings.setExportMode("ImageOnText");
 
-		FORMAT_FRAGMENTS.put(OCRFormat.PDFA,
+		FORMAT_FRAGMENTS.put(OcrFormat.PDFA,
 				(OutputFileFormatSettings) pdfaSettings
 						.changeType(OutputFileFormatSettings.type));
 
@@ -130,18 +130,18 @@ public class AbbyyTicket {
 
 		txtSettings.setEncodingType(encoding);
 
-		FORMAT_FRAGMENTS.put(OCRFormat.TXT,
+		FORMAT_FRAGMENTS.put(OcrFormat.TXT,
 				(OutputFileFormatSettings) txtSettings
 						.changeType(OutputFileFormatSettings.type));
 		
 		MSWordExportSettings docSettings = MSWordExportSettings.Factory
 				.newInstance(opts);
-		FORMAT_FRAGMENTS.put(OCRFormat.DOC,
+		FORMAT_FRAGMENTS.put(OcrFormat.DOC,
 				(OutputFileFormatSettings) docSettings
 						.changeType(OutputFileFormatSettings.type));
 
-		FORMAT_FRAGMENTS.put(OCRFormat.HTML, null);
-		FORMAT_FRAGMENTS.put(OCRFormat.XHTML, null);
+		FORMAT_FRAGMENTS.put(OcrFormat.HTML, null);
+		FORMAT_FRAGMENTS.put(OcrFormat.XHTML, null);
 
 		recognitionSettings = RecognitionParams.Factory.newInstance();
 
@@ -174,7 +174,7 @@ public class AbbyyTicket {
 		// We have to change the type here, or else the server does not accept
 		// the ticket containing the xsi:type attribute.
 		// In effect, the ticket cannot be validated.
-		FORMAT_FRAGMENTS.put(OCRFormat.XML,
+		FORMAT_FRAGMENTS.put(OcrFormat.XML,
 				(OutputFileFormatSettings) xmlSettings
 						.changeType(OutputFileFormatSettings.type));
 
@@ -198,14 +198,14 @@ public class AbbyyTicket {
 		imageProcessingParams.setDeskew(false);
 		ticket.setImageProcessingParams(imageProcessingParams);
 
-		OCRPriority priority = ocrProcess.getPriority();
+		OcrPriority priority = ocrProcess.getPriority();
 		if (priority != null) {
 			ticket.setPriority(ToAbbyyMapper.getPriority(priority));
 		}else {
 			ticket.setPriority("Normal");
 		}
 
-		OCRTextType textType = ocrProcess.getTextType();
+		OcrTextType textType = ocrProcess.getTextType();
 		if (textType != null) {
 			recognitionSettings.setTextTypeArray(new String[] { ToAbbyyMapper.getTextType(textType) });
 		}
@@ -215,7 +215,7 @@ public class AbbyyTicket {
 
 		Set<Locale> langs = ocrProcess.getLanguages();
 		if (langs == null) {
-			throw new OCRException("No language given!");
+			throw new OcrException("No language given!");
 		}
 
 		for (Locale l : langs) {
@@ -231,19 +231,19 @@ public class AbbyyTicket {
 		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
 
 		if (!ocrProcess.canBeStarted()) {
-			throw new OCRException("No export options given!");
+			throw new OcrException("No export options given!");
 		}
 
 		// Removed the array stuff here since the continue statements below made
 		// trouble by adding empty elements to the list.
 		List<OutputFileFormatSettings> settings = new ArrayList<OutputFileFormatSettings>();
 
-		List<OCROutput> output = ocrProcess.getOcrOutputs();
-		for (OCROutput entry : output) {
+		List<OcrOutput> output = ocrProcess.getOcrOutputs();
+		for (OcrOutput entry : output) {
 			// the metadata is generated by default, no need to add it to the
 			// ticket
-			OCRFormat of = entry.getFormat();
-			if (of == OCRFormat.METADATA) {
+			OcrFormat of = entry.getFormat();
+			if (of == OcrFormat.METADATA) {
 				continue;
 			}
 

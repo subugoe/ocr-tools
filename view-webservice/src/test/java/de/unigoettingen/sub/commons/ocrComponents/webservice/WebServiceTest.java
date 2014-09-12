@@ -38,8 +38,8 @@ import javax.xml.ws.Endpoint;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.OcrParameters;
@@ -91,11 +91,11 @@ public class WebServiceTest {
 	private ByUrlRequestType getValidRequest() {
 		ByUrlRequestType request = new ByUrlRequestType();
 		request.setInputUrl("http://localhost/test.tif");
-		request.setOutputFormat(OCRFormat.TXT);
+		request.setOutputFormat(OcrFormat.TXT);
 		RecognitionLanguages langs = new RecognitionLanguages();
 		langs.getRecognitionLanguage().add(RecognitionLanguage.de);
 		request.setOcrlanguages(langs);
-		request.setTextType(OCRTextType.GOTHIC);
+		request.setTextType(OcrTextType.GOTHIC);
 		return request;
 	}
 	

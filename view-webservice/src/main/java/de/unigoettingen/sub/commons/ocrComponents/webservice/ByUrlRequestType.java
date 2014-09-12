@@ -23,10 +23,10 @@ import javax.xml.bind.annotation.XmlSchemaType;
 
 import javax.xml.bind.annotation.XmlType;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrPriority;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ByUrlRequestType", propOrder = { "ocrPriorityType",
@@ -34,11 +34,11 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
 public class ByUrlRequestType {
 
 	@XmlElement(defaultValue = "HIGH")
-	private OCRPriority ocrPriorityType;
+	private OcrPriority ocrPriorityType;
 	@XmlElement(defaultValue = "NORMAL")
-	private OCRTextType textType;
+	private OcrTextType textType;
 	@XmlElement(defaultValue = "TXT")
-	private OCRFormat outputFormat;
+	private OcrFormat outputFormat;
 	private RecognitionLanguages ocrlanguages;
 	@XmlElement(required = true, defaultValue = "http://localhost:9003/test.tif")
 	@XmlSchemaType(name = "anyURI")
@@ -54,7 +54,7 @@ public class ByUrlRequestType {
 	 * 
 	 * @return the input priority type
 	 */
-	public OCRPriority getOcrPriorityType() {
+	public OcrPriority getOcrPriorityType() {
 		return ocrPriorityType;
 	}
 
@@ -64,7 +64,7 @@ public class ByUrlRequestType {
 	 * @param value
 	 *            the new input priority type
 	 */
-	public void setOcrPriorityType(OCRPriority value) {
+	public void setOcrPriorityType(OcrPriority value) {
 		this.ocrPriorityType = value;
 	}
 
@@ -74,7 +74,7 @@ public class ByUrlRequestType {
 	 * @return possible object is {@link InputTextType }
 	 * 
 	 */
-	public OCRTextType getTextType() {
+	public OcrTextType getTextType() {
 		return textType;
 	}
 
@@ -84,7 +84,7 @@ public class ByUrlRequestType {
 	 * @param textTypes
 	 *            the new text types
 	 */
-	public void setTextType(OCRTextType value) {
+	public void setTextType(OcrTextType value) {
 		this.textType = value;
 	}
 
@@ -94,7 +94,7 @@ public class ByUrlRequestType {
 	 * @return possible object is {@link OutputFormatType }
 	 * 
 	 */
-	public OCRFormat getOutputFormat() {
+	public OcrFormat getOutputFormat() {
 		return outputFormat;
 	}
 
@@ -105,7 +105,7 @@ public class ByUrlRequestType {
 	 *            allowed object is {@link OutputFormatType }
 	 * 
 	 */
-	public void setOutputFormat(OCRFormat value) {
+	public void setOutputFormat(OcrFormat value) {
 		this.outputFormat = value;
 	}
 

@@ -32,17 +32,17 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 
-public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OCREngine {
+public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OcrEngine {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyCLIOCREngine.class);
 
-	public static final Map<OCRFormat, String> FORMAT_MAPPING;
-	public static final Map<OCRFormat, List<String>> FORMAT_SETTINGS;
+	public static final Map<OcrFormat, String> FORMAT_MAPPING;
+	public static final Map<OcrFormat, List<String>> FORMAT_SETTINGS;
 	protected static final List<String> engineSettings;
 
 	public static final Integer SEGSIZE = 300;
@@ -66,34 +66,34 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 		engineSettings.add("-ics");
 		engineSettings.add("-skb");
 
-		FORMAT_MAPPING = new HashMap<OCRFormat, String>();
-		FORMAT_MAPPING.put(OCRFormat.DOC, "DOC");
-		FORMAT_MAPPING.put(OCRFormat.HTML, "HTML");
-		FORMAT_MAPPING.put(OCRFormat.XHTML, "HTML");
-		FORMAT_MAPPING.put(OCRFormat.PDF, "PDF");
-		FORMAT_MAPPING.put(OCRFormat.XML, "XML");
-		FORMAT_MAPPING.put(OCRFormat.TXT, "Text");
+		FORMAT_MAPPING = new HashMap<OcrFormat, String>();
+		FORMAT_MAPPING.put(OcrFormat.DOC, "DOC");
+		FORMAT_MAPPING.put(OcrFormat.HTML, "HTML");
+		FORMAT_MAPPING.put(OcrFormat.XHTML, "HTML");
+		FORMAT_MAPPING.put(OcrFormat.PDF, "PDF");
+		FORMAT_MAPPING.put(OcrFormat.XML, "XML");
+		FORMAT_MAPPING.put(OcrFormat.TXT, "Text");
 
-		FORMAT_SETTINGS = new HashMap<OCRFormat, List<String>>();
-		FORMAT_SETTINGS.put(OCRFormat.PDF, new ArrayList<String>());
-		FORMAT_SETTINGS.get(OCRFormat.PDF).add("-pem");
-		FORMAT_SETTINGS.get(OCRFormat.PDF).add("ImageOnText");
-		FORMAT_SETTINGS.get(OCRFormat.PDF).add("-pku");
-		FORMAT_SETTINGS.get(OCRFormat.PDF).add("-pfpf");
-		FORMAT_SETTINGS.get(OCRFormat.PDF).add("Automatic");
-		FORMAT_SETTINGS.get(OCRFormat.PDF).add("-pfpr");
-		FORMAT_SETTINGS.get(OCRFormat.PDF).add("300");
-		FORMAT_SETTINGS.get(OCRFormat.PDF).add("-pfq");
-		FORMAT_SETTINGS.get(OCRFormat.PDF).add("50");
+		FORMAT_SETTINGS = new HashMap<OcrFormat, List<String>>();
+		FORMAT_SETTINGS.put(OcrFormat.PDF, new ArrayList<String>());
+		FORMAT_SETTINGS.get(OcrFormat.PDF).add("-pem");
+		FORMAT_SETTINGS.get(OcrFormat.PDF).add("ImageOnText");
+		FORMAT_SETTINGS.get(OcrFormat.PDF).add("-pku");
+		FORMAT_SETTINGS.get(OcrFormat.PDF).add("-pfpf");
+		FORMAT_SETTINGS.get(OcrFormat.PDF).add("Automatic");
+		FORMAT_SETTINGS.get(OcrFormat.PDF).add("-pfpr");
+		FORMAT_SETTINGS.get(OcrFormat.PDF).add("300");
+		FORMAT_SETTINGS.get(OcrFormat.PDF).add("-pfq");
+		FORMAT_SETTINGS.get(OcrFormat.PDF).add("50");
 
-		FORMAT_SETTINGS.put(OCRFormat.XML, new ArrayList<String>());
-		FORMAT_SETTINGS.get(OCRFormat.XML).add("-xca");
-		FORMAT_SETTINGS.get(OCRFormat.XML).add("-xeca");
+		FORMAT_SETTINGS.put(OcrFormat.XML, new ArrayList<String>());
+		FORMAT_SETTINGS.get(OcrFormat.XML).add("-xca");
+		FORMAT_SETTINGS.get(OcrFormat.XML).add("-xeca");
 
-		FORMAT_SETTINGS.put(OCRFormat.TXT, new ArrayList<String>());
-		FORMAT_SETTINGS.get(OCRFormat.TXT).add("-tpb");
-		FORMAT_SETTINGS.get(OCRFormat.TXT).add("-tet");
-		FORMAT_SETTINGS.get(OCRFormat.TXT).add("UTF8");
+		FORMAT_SETTINGS.put(OcrFormat.TXT, new ArrayList<String>());
+		FORMAT_SETTINGS.get(OcrFormat.TXT).add("-tpb");
+		FORMAT_SETTINGS.get(OcrFormat.TXT).add("-tet");
+		FORMAT_SETTINGS.get(OcrFormat.TXT).add("UTF8");
 
 
 	}
@@ -120,7 +120,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	}
 
 	
-	public Observable recognize (OCRProcess p) throws OCRException {
+	public Observable recognize (OcrProcess p) throws OcrException {
 		AbbyyCLIOCRProcess process = (AbbyyCLIOCRProcess) p;
 
 		if (process.getNumberOfImages() < SEGSIZE) {
@@ -135,14 +135,14 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 			segCount = new Double(Math.floor((double) process.getNumberOfImages() / SEGSIZE)).intValue();
 			logger.info("Number of segments:" + String.valueOf(segCount));
 			List<AbbyyCLIOCRProcess> segments = new ArrayList<AbbyyCLIOCRProcess>();
-			//TODO: This should be connected to OCROutput
-			Map<OCRFormat, ArrayList<String>> outputSegments = new HashMap<OCRFormat, ArrayList<String>>();
+			//TODO: This should be connected to OcrOutput
+			Map<OcrFormat, ArrayList<String>> outputSegments = new HashMap<OcrFormat, ArrayList<String>>();
 
 			for (int i = 0; i <= segCount; i++) {
 				/*
 				//Clone ORCResult here, rewrite the result file based on a pattern (suffix)
-				OCROutput segOutput = new AbbyyOCROutput((AbbyyOCROutput) process.getOcrOutputs());
-				OCRProcess segProcess = new AbbyyCLIOCRProcess(process);
+				OcrOutput segOutput = new AbbyyOCROutput((AbbyyOCROutput) process.getOcrOutputs());
+				OcrProcess segProcess = new AbbyyCLIOCRProcess(process);
 				//TODO: Include just the images for the segment
 				Integer count = 0;
 				if (process.getOcrImages().size() >= i * SEGSIZE + SEGSIZE) {
@@ -152,13 +152,13 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 				}
 				for (int j = i * SEGSIZE; j < count; j++) {
 
-					//TODO: Rewrite the OCROutput to just represent a segment
-					OCROutput oo = new OCROutputParameters(configuration.getInputFiles().get(j));
+					//TODO: Rewrite the OcrOutput to just represent a segment
+					OcrOutput oo = new OCROutputParameters(configuration.getInputFiles().get(j));
 					//OCROutputParameters params = (OCROutputParameters) configuration.getInputFiles().get(j).clone();
-					//Map<OCRFormat, String> segExports = new HashMap<OCRFormat, String>(); 
-					for (OCRFormat outputFormat : process.getOcrOutputs().keySet()) {
+					//Map<OcrFormat, String> segExports = new HashMap<OcrFormat, String>(); 
+					for (OcrFormat outputFormat : process.getOcrOutputs().keySet()) {
 						if (!FileMerger.isSegmentable(outputFormat)) {
-							throw new OCRException("Segmentation for outputformat " + outputFormat.toString() + " not possible");
+							throw new OcrException("Segmentation for outputformat " + outputFormat.toString() + " not possible");
 						}
 						String outFile = oo.getUri().toString();
 						outFile = outFile + "-" + i + "." + FileUtils.getExtension(outFile);
@@ -194,7 +194,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 
 			//delete tmp files
 			if (deleteTmp) {
-				for (Map.Entry<OCRFormat, ArrayList<String>> entry : outputSegments.entrySet()) {
+				for (Map.Entry<OcrFormat, ArrayList<String>> entry : outputSegments.entrySet()) {
 					for (String s : entry.getValue()) {
 						new File(s).delete();
 					}
@@ -228,12 +228,12 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	*/
 
 	@Override
-	public void addOcrProcess (OCRProcess ocrp) {
+	public void addOcrProcess (OcrProcess ocrp) {
 		ocrProcess.add(ocrp);
 	}
 
 	@Override
-	public List<OCRProcess> getOcrProcess () {
+	public List<OcrProcess> getOcrProcess () {
 		return ocrProcess;
 	}
 

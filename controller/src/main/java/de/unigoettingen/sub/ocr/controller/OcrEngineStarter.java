@@ -3,11 +3,11 @@ package de.unigoettingen.sub.ocr.controller;
 import java.io.File;
 import java.util.Locale;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRPriority;
-import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OcrPriority;
+import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
@@ -16,7 +16,7 @@ public class OcrEngineStarter {
 
 	private FactoryProvider factoryProvider = new FactoryProvider();
 	private BeanProvider beanProvider = new BeanProvider();
-	private OCREngine engine;
+	private OcrEngine engine;
 	
 	// for unit tests
 	void setFactoryProvider(FactoryProvider newProvider) {
@@ -34,7 +34,7 @@ public class OcrEngineStarter {
 		FileAccess fileAccess = beanProvider.getFileAccess();
 		File[] allBookFolders = fileAccess.getAllFolders(params.inputFolder, params.inputFormats);
 		for (File bookFolder : allBookFolders) {
-			OCRProcess process = factory.createProcess();
+			OcrProcess process = factory.createProcess();
 			process.setName(bookFolder.getName());
 			process.setOutputDir(new File(params.outputFolder));
 			File[] allPages = fileAccess.getAllImagesFromFolder(bookFolder, params.inputFormats);
@@ -43,15 +43,15 @@ public class OcrEngineStarter {
 			}
 			
 			for (String outFormat : params.outputFormats) {
-				OCRFormat ocrFormat = OCRFormat.valueOf(outFormat);
+				OcrFormat ocrFormat = OcrFormat.valueOf(outFormat);
 				process.addOutput(ocrFormat);
 			}
 			
 			for (String lang : params.inputLanguages) {
 				process.addLanguage(new Locale(lang));
 			}
-			process.setPriority(OCRPriority.NORMAL);
-			process.setTextType(OCRTextType.valueOf(params.inputTextType));
+			process.setPriority(OcrPriority.NORMAL);
+			process.setTextType(OcrTextType.valueOf(params.inputTextType));
 			engine.addOcrProcess(process);
 		}
 		engine.recognize();

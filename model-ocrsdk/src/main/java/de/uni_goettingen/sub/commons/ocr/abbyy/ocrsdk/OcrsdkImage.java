@@ -5,7 +5,7 @@ import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractImage;
 
 /**
  * Representation of an image that is to be recognized by Abbyy OCRSDK service.
@@ -13,7 +13,7 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
  * @author dennis
  *
  */
-public class OcrsdkImage extends AbstractOCRImage {
+public class OcrsdkImage extends AbstractImage {
 	
 	@Override
 	public void setLocalUri(URI localUri) {

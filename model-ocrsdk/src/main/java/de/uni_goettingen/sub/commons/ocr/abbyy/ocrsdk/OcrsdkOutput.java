@@ -9,7 +9,7 @@ import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOutput;
 
 /**
  * Representation of a result output.
@@ -17,7 +17,7 @@ import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
  * @author dennis
  *
  */
-public class OcrsdkOutput extends AbstractOCROutput {
+public class OcrsdkOutput extends AbstractOutput {
 	
 	@Override
 	public void setLocalUri(URI outputUri) {

@@ -45,10 +45,10 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 
 public class AbbyyOCRProcessTest {
 	final static Logger logger = LoggerFactory
@@ -150,7 +150,7 @@ public class AbbyyOCRProcessTest {
 			}
 		}
 
-		OCRFormat format = OCRFormat.TXT;
+		OcrFormat format = OcrFormat.TXT;
 		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
 
 		process.addOutput(format);
@@ -178,10 +178,10 @@ public class AbbyyOCRProcessTest {
 //			URISyntaxException {
 //		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
 //		assertNotNull(ase);
-//		OCRProcess op = ase.newOcrProcess();
-//		List<OCRImage> imgList = new ArrayList<OCRImage>();
+//		OcrProcess op = ase.newOcrProcess();
+//		List<OcrImage> imgList = new ArrayList<OcrImage>();
 //		for (int i = 0; i < 10; i++) {
-//			OCRImage ocri = mock(AbstractOCRImage.class);
+//			OcrImage ocri = mock(AbstractImage.class);
 //			String imageUrl = RESOURCES.toURI().toURL().toString() + i;
 //			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 //			logger.debug("Added url to list: " + imageUrl);
@@ -200,10 +200,10 @@ public class AbbyyOCRProcessTest {
 //		logger.info("This test uses http Urls, this should break wrong usageg of java.io.File.");
 //		AbbyyServerOCREngine ase = new AbbyyServerOCREngine(new Properties());
 //		assertNotNull(ase);
-//		OCRProcess op = ase.newOcrProcess();
-//		List<OCRImage> imgList = new ArrayList<OCRImage>();
+//		OcrProcess op = ase.newOcrProcess();
+//		List<OcrImage> imgList = new ArrayList<OcrImage>();
 //		for (int i = 0; i < 10; i++) {
-//			OCRImage ocri = mock(OCRImage.class);
+//			OcrImage ocri = mock(OcrImage.class);
 //			String imageUrl = "http://127.0.0.1:8080/image-" + i;
 //			when(ocri.getUri()).thenReturn(new URI(imageUrl));
 //			logger.debug("Added url to list: " + imageUrl);

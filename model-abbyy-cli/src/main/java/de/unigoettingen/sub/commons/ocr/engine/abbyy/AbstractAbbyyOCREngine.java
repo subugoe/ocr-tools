@@ -25,11 +25,11 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 
-public abstract class AbstractAbbyyOCREngine extends AbstractOCREngine implements OCREngine {
+public abstract class AbstractAbbyyOCREngine extends AbstractEngine implements OcrEngine {
 	protected AbstractConfiguration config;
 
 	protected static PropertiesConfiguration loadConfig (URL configUrl) {
@@ -37,7 +37,7 @@ public abstract class AbstractAbbyyOCREngine extends AbstractOCREngine implement
 		try {
 			pc.load(configUrl);
 		} catch (ConfigurationException e) {
-			throw new OCRException(e);
+			throw new OcrException(e);
 		}
 		return pc;
 	}

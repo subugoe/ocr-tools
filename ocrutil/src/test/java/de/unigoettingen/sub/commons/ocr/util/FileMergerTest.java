@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 
 import java.io.File;
 import java.net.URI;
@@ -34,7 +34,7 @@ public class FileMergerTest {
 		images.add(f2);
 		images.add(f3);
 		
-		FileMerger.mergeFiles(OCRFormat.HOCR, images, out);
+		FileMerger.mergeFiles(OcrFormat.HOCR, images, out);
 		
 	}
 	

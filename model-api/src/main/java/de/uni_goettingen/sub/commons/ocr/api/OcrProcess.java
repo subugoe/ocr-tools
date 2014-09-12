@@ -26,22 +26,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 
 
 
 //TODO: Look at http://sites.google.com/site/openjdklocale/Home for language and script representation.
 // Or use http://icu-project.org/apiref/icu4j/com/ibm/icu/lang/UScript.html for scripts
 /**
- * The Class OCRProcess represent an {@link OCRProcess}. Implementations should
- * extend {@link AbstractOCRProcess} to add further methods for example for
+ * The Class OcrProcess represent an {@link OcrProcess}. Implementations should
+ * extend {@link AbstractProcess} to add further methods for example for
  * handling Streams. It's also possible to add preconfigured params there.
  * 
  * @version 0.9
  * @author abergna
  * @author cmahnke
  */
-public interface OCRProcess {
+public interface OcrProcess {
 
 	/**
 	 * Gets the languages set for this process as List. These languages will be
@@ -66,9 +66,9 @@ public interface OCRProcess {
 	 * different possible formats. The values contain references to the results.
 	 * 
 	 * @return the ocr output
-	 * @see OCROutput
+	 * @see OcrOutput
 	 */
-	public List<OCROutput> getOcrOutputs();
+	public List<OcrOutput> getOcrOutputs();
 
 	/**
 	 * Adds the output for the given format
@@ -79,13 +79,13 @@ public interface OCRProcess {
 	 *            the output, the output settings for the given format
 	 * 
 	 */
-	public void addOutput(OCRFormat format);
+	public void addOutput(OcrFormat format);
 	
 	/**
-	 * Sets the name of this {@link OCRProcess}. The nmae can be used by
+	 * Sets the name of this {@link OcrProcess}. The nmae can be used by
 	 * implementations to guess the name of the result file (if none is given)
-	 * via {@link OCROutput}. The API doesn't guarantee that these names are
-	 * unique, if you need it to be add a check in your {@link OCREngine}
+	 * via {@link OcrOutput}. The API doesn't guarantee that these names are
+	 * unique, if you need it to be add a check in your {@link OcrEngine}
 	 * implementation.
 	 * 
 	 * @param name
@@ -94,10 +94,10 @@ public interface OCRProcess {
 	public void setName(String name);
 
 	/**
-	 * Gets the nameof this {@link OCRProcess}. The nae can be used by
+	 * Gets the nameof this {@link OcrProcess}. The nae can be used by
 	 * implementations to guess the name of the result file (if none is given)
-	 * via {@link OCROutput}. The API doesn't guarantee that these names are
-	 * unique, if you need it to be add a check in your {@link OCREngine}
+	 * via {@link OcrOutput}. The API doesn't guarantee that these names are
+	 * unique, if you need it to be add a check in your {@link OcrEngine}
 	 * implementation.
 	 * 
 	 * @return the name
@@ -106,7 +106,7 @@ public interface OCRProcess {
 	
 	/**
 	 * Gets the quality that should be produced by an engine while processing
-	 * this process. Engine specific implementations of OCRProcess might throw a
+	 * this process. Engine specific implementations of OcrProcess might throw a
 	 * 
 	 * @return the quality setting thats currently used.
 	 *         {@link java.lang.UnsupportedOperationException} it it's not
@@ -116,7 +116,7 @@ public interface OCRProcess {
 
 	/**
 	 * Sets the quality that should be produced by an engine while processing
-	 * this process. Engine specific implementations of OCRProcess might throw a
+	 * this process. Engine specific implementations of OcrProcess might throw a
 	 * 
 	 * @param q
 	 *            the new ocr quality
@@ -153,7 +153,7 @@ public interface OCRProcess {
 	 * 
 	 * @return the texttyp
 	 */
-	public OCRTextType getTextType();
+	public OcrTextType getTextType();
 
 	/**
 	 * Sets the texttyp. to describe the type of recognized text
@@ -161,7 +161,7 @@ public interface OCRProcess {
 	 * @param t
 	 *            the new texttyp
 	 */
-	public void setTextType(OCRTextType t);
+	public void setTextType(OcrTextType t);
 
 	/**
 	 * The Enum TextTyp. This enum represents 7 states of different
@@ -174,7 +174,7 @@ public interface OCRProcess {
 	 * 
 	 * @return the priority
 	 */
-	public OCRPriority getPriority();
+	public OcrPriority getPriority();
 
 	/**
 	 * Sets the priority. to describe the level of the job.
@@ -182,6 +182,6 @@ public interface OCRProcess {
 	 * @param p
 	 *            the new priority
 	 */
-	public void setPriority(OCRPriority p);
+	public void setPriority(OcrPriority p);
 	
 }

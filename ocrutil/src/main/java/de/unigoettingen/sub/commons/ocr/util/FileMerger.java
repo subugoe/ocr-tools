@@ -55,7 +55,7 @@ import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.SimpleBookmark;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 
 /**
  * The Class FileMerger is a container for several static methods that can be
@@ -69,26 +69,26 @@ public class FileMerger {
 	protected static Logger logger = LoggerFactory.getLogger(FileMerger.class);
 
 	/** This list contains the SEGMENTABLE_FORMATS. */
-	public final static List<OCRFormat> SEGMENTABLE_FORMATS;
+	public final static List<OcrFormat> SEGMENTABLE_FORMATS;
 
 	/** Abbyy version number. */
 	public static String abbyyVersionNumber = "v10";
 	/**
-	 * This list the mapping from {@link OCRFormat} to methods for File based
+	 * This list the mapping from {@link OcrFormat} to methods for File based
 	 * merging.
 	 */
-	private final static Map<OCRFormat, Method> fileMergers;
+	private final static Map<OcrFormat, Method> fileMergers;
 
 	/**
-	 * This list the mapping from {@link OCRFormat} to methods for Stream based
+	 * This list the mapping from {@link OcrFormat} to methods for Stream based
 	 * merging.
 	 */
-	private final static Map<OCRFormat, Method> streamMergers;
+	private final static Map<OcrFormat, Method> streamMergers;
 
 	static {
 
-		fileMergers = new HashMap<OCRFormat, Method>();
-		streamMergers = new HashMap<OCRFormat, Method>();
+		fileMergers = new HashMap<OcrFormat, Method>();
+		streamMergers = new HashMap<OcrFormat, Method>();
 
 		// And now: Some black magic!
 		try {
@@ -97,17 +97,17 @@ public class FileMerger {
 			fileParams[0] = List.class;
 			fileParams[1] = File.class;
 			// This are the methods for handling files
-			fileMergers.put(OCRFormat.PDF,
+			fileMergers.put(OcrFormat.PDF,
 					FileMerger.class.getMethod("mergePDF", fileParams));
-			fileMergers.put(OCRFormat.PDFA,
+			fileMergers.put(OcrFormat.PDFA,
 					FileMerger.class.getMethod("mergePDFA", fileParams));
-			fileMergers.put(OCRFormat.XML,
+			fileMergers.put(OcrFormat.XML,
 					FileMerger.class.getMethod("mergeAbbyyXML", fileParams));
-			fileMergers.put(OCRFormat.METADATA,
+			fileMergers.put(OcrFormat.METADATA,
 					FileMerger.class.getMethod("mergeAbbyyXMLResults", fileParams));
-			fileMergers.put(OCRFormat.TXT,
+			fileMergers.put(OcrFormat.TXT,
 					FileMerger.class.getMethod("mergeTXT", fileParams));
-			fileMergers.put(OCRFormat.HOCR,
+			fileMergers.put(OcrFormat.HOCR,
 					FileMerger.class.getMethod("mergeHOCR", fileParams));
 
 			// These represent the arguments for the methods
@@ -115,22 +115,22 @@ public class FileMerger {
 			streamParams[0] = List.class;
 			streamParams[1] = OutputStream.class;
 			// This are the methods for handling files
-			streamMergers.put(OCRFormat.PDF,
+			streamMergers.put(OcrFormat.PDF,
 					FileMerger.class.getMethod("mergePDF", streamParams));
-			streamMergers.put(OCRFormat.PDFA,
+			streamMergers.put(OcrFormat.PDFA,
 					FileMerger.class.getMethod("mergePDFA", streamParams));
-			streamMergers.put(OCRFormat.XML,
+			streamMergers.put(OcrFormat.XML,
 					FileMerger.class.getMethod("mergeAbbyyXML", streamParams));
-			streamMergers.put(OCRFormat.TXT,
+			streamMergers.put(OcrFormat.TXT,
 					FileMerger.class.getMethod("mergeTXT", streamParams));
-			streamMergers.put(OCRFormat.HOCR,
+			streamMergers.put(OcrFormat.HOCR,
 					FileMerger.class.getMethod("mergeHOCR", streamParams));
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 
 		// Get the public formats from the internal Map
-		SEGMENTABLE_FORMATS = new ArrayList<OCRFormat>();
+		SEGMENTABLE_FORMATS = new ArrayList<OcrFormat>();
 		SEGMENTABLE_FORMATS.addAll(fileMergers.keySet());
 	}
 
@@ -928,13 +928,13 @@ public class FileMerger {
 	}
 
 	/**
-	 * Checks if the given {@link OCRFormat} is segmentable.
+	 * Checks if the given {@link OcrFormat} is segmentable.
 	 * 
 	 * @param f
-	 *            the {@link OCRFormat} to check
-	 * @return true if {@link OCRFormat} can be segmented, false otherwise
+	 *            the {@link OcrFormat} to check
+	 * @return true if {@link OcrFormat} can be segmented, false otherwise
 	 */
-	public static Boolean isSegmentable(OCRFormat f) {
+	public static Boolean isSegmentable(OcrFormat f) {
 		if (SEGMENTABLE_FORMATS.contains(f)) {
 			return true;
 		}
@@ -942,15 +942,15 @@ public class FileMerger {
 	}
 
 	/**
-	 * Checks if all of the given {@link OCRFormat}'s are segmentable.
+	 * Checks if all of the given {@link OcrFormat}'s are segmentable.
 	 * 
 	 * @param sf
-	 *            the Set of {@link OCRFormat}'s to check
-	 * @return true if the whole Set of{@link OCRFormat}'scan be segmented,
+	 *            the Set of {@link OcrFormat}'s to check
+	 * @return true if the whole Set of{@link OcrFormat}'scan be segmented,
 	 *         false otherwise
 	 */
-	public static Boolean isSegmentable(Set<OCRFormat> sf) {
-		for (OCRFormat f : sf) {
+	public static Boolean isSegmentable(Set<OcrFormat> sf) {
+		for (OcrFormat f : sf) {
 			if (!isSegmentable(f)) {
 				return false;
 			}
@@ -963,7 +963,7 @@ public class FileMerger {
 	 * remarks on the different merge implementations.
 	 * 
 	 * @param format
-	 *            the {@link OCRFormat} to merge
+	 *            the {@link OcrFormat} to merge
 	 * @param files
 	 *            the File's to merge
 	 * @param outFile
@@ -974,7 +974,7 @@ public class FileMerger {
 	 * @see #mergePDF(List, File)
 	 * @see #mergeTXT(List, File)
 	 */
-	public static void mergeFiles(OCRFormat format, List<File> files,
+	public static void mergeFiles(OcrFormat format, List<File> files,
 			File outFile) throws MergeException {
 		try {
 			fileMergers.get(format).invoke(null,
@@ -990,7 +990,7 @@ public class FileMerger {
 	 * used methods below for remarks on the different merge implementations.
 	 * 
 	 * @param format
-	 *            the {@link OCRFormat} to merge
+	 *            the {@link OcrFormat} to merge
 	 * @param iss
 	 *            the List of InputStreams
 	 * @param os
@@ -1001,7 +1001,7 @@ public class FileMerger {
 	 * @see #mergePDF(List, OutputStream)
 	 * @see #mergeTXT(List, OutputStream)
 	 */
-	public static void mergeStreams(OCRFormat format, List<InputStream> iss,
+	public static void mergeStreams(OcrFormat format, List<InputStream> iss,
 			OutputStream os) throws MergeException {
 		try {
 			streamMergers.get(format).invoke(null, new Object[] { iss, os });

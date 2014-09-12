@@ -7,8 +7,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 
 public class ProcessMergingObserver {
@@ -56,9 +56,9 @@ public class ProcessMergingObserver {
 	}
 
 	private void mergeAllFormats() {
-		for (OCRFormat format : parentProcess.getAllOutputFormats()) {
+		for (OcrFormat format : parentProcess.getAllOutputFormats()) {
 			if (!FileMerger.isSegmentable(format)) {
-				throw new OCRException("Format " + format.toString()
+				throw new OcrException("Format " + format.toString()
 						+ " isn't mergable!");
 			}
 			List<File> filesToMerge = new ArrayList<File>(); 

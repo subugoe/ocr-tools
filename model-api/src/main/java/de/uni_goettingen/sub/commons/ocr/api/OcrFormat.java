@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * The Enum OCRFormat. The formats which are supported.
+ * The Enum OcrFormat. The formats which are supported.
  * 
  * @version 0.9
  * @author abergna
@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "outputFormatType")
 @XmlEnum
-public enum OCRFormat {
+public enum OcrFormat {
 
 	/** The Format for Text, UTF-8 is assumed. */
 	TXT("TXT"),
@@ -85,7 +85,7 @@ public enum OCRFormat {
 	 * @param format
 	 *            the format
 	 */
-	private OCRFormat(String format) {
+	private OcrFormat(String format) {
 		this.name = format;
 	}
 
@@ -104,12 +104,12 @@ public enum OCRFormat {
 	 *            the format
 	 * @return the oCR format
 	 */
-	public static OCRFormat parseOCRFormat (String format) {
-		return Enum.valueOf(OCRFormat.class, format.toUpperCase());
+	public static OcrFormat parseOCRFormat (String format) {
+		return Enum.valueOf(OcrFormat.class, format.toUpperCase());
 	}
 	
-	public static OCRFormat fromValue(String v) {
-        for (OCRFormat c: OCRFormat.values()) {
+	public static OcrFormat fromValue(String v) {
+        for (OcrFormat c: OcrFormat.values()) {
             if (c.name.equals(v)) {
                 return c;
             }

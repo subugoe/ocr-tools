@@ -7,11 +7,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 
 /**
  * Implementation of an OCR process for the Abbyy OCRSDK online service.
@@ -21,12 +21,12 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRTextType;
  * @author dennis
  *
  */
-public class OcrsdkProcess extends AbstractOCRProcess {
+public class OcrsdkProcess extends AbstractProcess {
 
 	private static final long serialVersionUID = -2328068189131102581L;
 	private Map<Locale, String> languageMapping = new HashMap<Locale, String>();
-	private Map<OCRFormat, String> outputFormatMapping = new HashMap<OCRFormat, String>();
-	private Map<OCRTextType, String> textTypeMapping = new HashMap<OCRTextType, String>();
+	private Map<OcrFormat, String> outputFormatMapping = new HashMap<OcrFormat, String>();
+	private Map<OcrTextType, String> textTypeMapping = new HashMap<OcrTextType, String>();
 
 	private OcrsdkClient client;
 
@@ -39,13 +39,13 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		languageMapping.put(Locale.GERMAN, "German");
 		languageMapping.put(new Locale("ru"), "Russian");
 		languageMapping.put(new Locale("fr"), "French");
-		outputFormatMapping.put(OCRFormat.XML, "xml");
-		outputFormatMapping.put(OCRFormat.TXT, "txt");
-		outputFormatMapping.put(OCRFormat.PDF, "pdfSearchable");
-		outputFormatMapping.put(OCRFormat.PDFA, "pdfa");
+		outputFormatMapping.put(OcrFormat.XML, "xml");
+		outputFormatMapping.put(OcrFormat.TXT, "txt");
+		outputFormatMapping.put(OcrFormat.PDF, "pdfSearchable");
+		outputFormatMapping.put(OcrFormat.PDFA, "pdfa");
 
-		textTypeMapping.put(OCRTextType.NORMAL, "normal");
-		textTypeMapping.put(OCRTextType.GOTHIC, "gothic");
+		textTypeMapping.put(OcrTextType.NORMAL, "normal");
+		textTypeMapping.put(OcrTextType.GOTHIC, "gothic");
 	}
 	
 	public OcrsdkProcess(Properties userProperties) {
@@ -68,7 +68,7 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 	}
 	
 	@Override
-	public void addOutput(OCRFormat format) {
+	public void addOutput(OcrFormat format) {
 		OcrsdkOutput output = new OcrsdkOutput();
 		output.setLocalUri(constructLocalUri(format));
 		output.setFormat(format);
@@ -83,19 +83,19 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		for (Locale language : langs) {
 			client.addLanguage(abbyy(language));
 		}
-		for (OCRFormat format : getAllOutputFormats()) {
+		for (OcrFormat format : getAllOutputFormats()) {
 			client.addExportFormat(abbyy(format));
 		}
 		client.addTextType(abbyy(textType));
 		
-		for(OCRImage image : ocrImages) {
+		for(OcrImage image : ocrImages) {
 			byte[] imageBytes = ((OcrsdkImage)image).getAsBytes();
 			client.submitImage(imageBytes);
 		}
 		client.processDocument();
 		
-		for (OCROutput entry : ocrOutputs) {
-			OCRFormat format = entry.getFormat();
+		for (OcrOutput entry : ocrOutputs) {
+			OcrFormat format = entry.getFormat();
 			InputStream result = client.getResultForFormat(abbyy(format));
 			OcrsdkOutput output = (OcrsdkOutput) entry;
 			output.save(result);
@@ -103,7 +103,7 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		
 	}
 
-	private String abbyy(OCRTextType textType) {
+	private String abbyy(OcrTextType textType) {
 		String abbyyType = textTypeMapping.get(textType);
 		if (abbyyType == null) {
 			throw new IllegalArgumentException("No corresponding mapping defined for text type: " + textType);
@@ -119,7 +119,7 @@ public class OcrsdkProcess extends AbstractOCRProcess {
 		return abbyyLanguage;
 	}
 
-	private String abbyy(OCRFormat format) {
+	private String abbyy(OcrFormat format) {
 		String abbyyOutputFormat = outputFormatMapping.get(format);
 		if (abbyyOutputFormat == null) {
 			throw new IllegalArgumentException("No corresponding mapping defined for output format: " + format);

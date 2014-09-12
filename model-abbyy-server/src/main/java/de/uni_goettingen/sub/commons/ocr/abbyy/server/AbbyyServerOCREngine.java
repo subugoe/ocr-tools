@@ -38,13 +38,13 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 
-public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine {
+public class AbbyyServerOCREngine extends AbstractEngine implements OcrEngine {
 	
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngine.class);
 
@@ -95,7 +95,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	}
 
 	@Override
-	public void addOcrProcess(OCRProcess process) {
+	public void addOcrProcess(OcrProcess process) {
 		AbbyyOCRProcess abbyyProcess = (AbbyyOCRProcess) process;
 		if (abbyyProcess.canBeStarted()) {
 	     	processesQueue.add(abbyyProcess);
@@ -228,7 +228,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	public int getEstimatedDurationInSeconds() {
 		long durationInMillis = 0;
 		
-		for (OCRProcess process : processesQueue) {
+		for (OcrProcess process : processesQueue) {
 			long imagesInProcess = process.getNumberOfImages();
 			durationInMillis += imagesInProcess * Integer.parseInt(fileProps.getProperty("minMillisPerFile"));
 		}
@@ -239,7 +239,7 @@ public class AbbyyServerOCREngine extends AbstractOCREngine implements OCREngine
 	public String getWaitingProcesses() {
 		String names = "";
 		for (Runnable r : pool.getQueue()) {
-			OCRProcess p = (OCRProcess) r;
+			OcrProcess p = (OcrProcess) r;
 			names += p.getName() + " ";
 		}
 		return names;

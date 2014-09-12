@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "ocrPriority")
 @XmlEnum
-public enum OCRPriority {
+public enum OcrPriority {
 	/**High job priority*/
 	HIGH("High"),
 	
@@ -25,7 +25,7 @@ public enum OCRPriority {
 	
 	private final String value;
 
-	OCRPriority(String v) {
+	OcrPriority(String v) {
 		value = v;
 	}
 
@@ -33,8 +33,8 @@ public enum OCRPriority {
 		return value;
 	}
 
-	public static OCRPriority fromValue(String v) {
-		for (OCRPriority c : OCRPriority.values()) {
+	public static OcrPriority fromValue(String v) {
+		for (OcrPriority c : OcrPriority.values()) {
 			if (c.value.equals(v)) {
 				return c;
 			}

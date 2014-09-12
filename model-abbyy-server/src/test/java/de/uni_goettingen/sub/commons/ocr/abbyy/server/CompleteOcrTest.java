@@ -16,15 +16,15 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 
 public class CompleteOcrTest {
 
-	private OCREngine engine = new AbbyyServerOCREngine(new Properties());
+	private OcrEngine engine = new AbbyyServerOCREngine(new Properties());
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -50,20 +50,20 @@ public class CompleteOcrTest {
 //	@Test
 //	public void oneImage() {
 //		
-//		OCRProcess process = engine.newOcrProcess();
+//		OcrProcess process = engine.newOcrProcess();
 //		File inputBook = new File(LOCAL_INPUT, "oneImageBook");
 //		String jobName = inputBook.getName();
 //		process.setName(jobName);
 //		
 //		URI imageUri = new File(inputBook, "00000001.tif").toURI();
-//		OCRImage image = engine.newOcrImage(imageUri);
+//		OcrImage image = engine.newOcrImage(imageUri);
 //		
-//		List<OCRImage> images = new ArrayList<OCRImage>();
+//		List<OcrImage> images = new ArrayList<OcrImage>();
 //		images.add(image);
 //		process.setOcrImages(images);
 //		
-//		OCRFormat format = OCRFormat.TXT;
-//		OCROutput output = engine.newOcrOutput();
+//		OcrFormat format = OcrFormat.TXT;
+//		OcrOutput output = engine.newOcrOutput();
 //		File outputFile = new File(LOCAL_OUTPUT, jobName + ".txt");
 //		output.setUri(outputFile.toURI());
 //		process.addOutput(format, output);

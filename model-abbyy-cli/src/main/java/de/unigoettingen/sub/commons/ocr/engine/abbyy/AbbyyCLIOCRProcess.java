@@ -34,17 +34,17 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OCRException;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractImage;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractProcess;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractOutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
+import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
 
-public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess, Runnable {
+public class AbbyyCLIOCRProcess extends AbstractProcess implements OcrProcess, Runnable {
 
 	/**
 	 * 
@@ -64,15 +64,15 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 
 	@Override
 	public void addImage(URI localUri, long fileSize) {
-		OCRImage image = new AbstractOCRImage() {};
+		OcrImage image = new AbstractImage() {};
 		image.setLocalUri(localUri);
 		image.setFileSize(fileSize);
 		ocrImages.add(image);
 	}
 	
 	@Override
-	public void addOutput(OCRFormat format) {
-		OCROutput output = new AbstractOCROutput() {};
+	public void addOutput(OcrFormat format) {
+		OcrOutput output = new AbstractOutput() {};
 		output.setLocalUri(constructLocalUri(format));
 		output.setFormat(format);
 		ocrOutputs.add(output);
@@ -80,7 +80,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 
 	private List<String> buildInputFileList (String param) throws URISyntaxException {
 		ArrayList<String> arglist = new ArrayList<String>();
-		for (OCRImage image : ocrImages) {
+		for (OcrImage image : ocrImages) {
 			File file = new File(image.getLocalUri());
 			arglist.add(param);
 			arglist.add(file.getAbsolutePath());
@@ -100,7 +100,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		ProcessBuilder pb = new ProcessBuilder();
 		pb.redirectErrorStream(true);
 		if (cmd == null) {
-			throw new OCRException("No commmand set!");
+			throw new OcrException("No commmand set!");
 		}
 		List<String> arglist = new ArrayList<String>();
 		//Command
@@ -119,7 +119,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		for (Locale l : getLanguages()) {
 
 			if (ToAbbyyMapper.getLanguage(l) == null) {
-				throw new OCRException();
+				throw new OcrException();
 			}
 			arglist.add(ToAbbyyMapper.getLanguage(l));
 		}
@@ -131,7 +131,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 		//options | format | file
 		//-xca -xeca | -f XML | -of
 
-		for (OCRFormat ef : getAllOutputFormats()) {
+		for (OcrFormat ef : getAllOutputFormats()) {
 
 			arglist.add("-f");
 			arglist.add(AbbyyCLIOCREngine.FORMAT_MAPPING.get(ef));
@@ -139,7 +139,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 				arglist.addAll(AbbyyCLIOCREngine.FORMAT_SETTINGS.get(ef));
 			}
 			if (AbbyyCLIOCREngine.FORMAT_MAPPING.get(ef) == null) {
-				throw new OCRException();
+				throw new OcrException();
 			}
 
 			arglist.add("-of");
@@ -169,7 +169,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 			pb = buildCmd();
 		} catch (URISyntaxException e1) {
 			logger.error("Can't create process builder, probaly there is a problem with the locations of result files");
-			throw new OCRException("Can't create external process!", e1);
+			throw new OcrException("Can't create external process!", e1);
 		}
 		pb.redirectErrorStream(true);
 		try {
@@ -201,7 +201,7 @@ public class AbbyyCLIOCRProcess extends AbstractOCRProcess implements OCRProcess
 				i++;
 			}
 		} catch (IOException e) {
-			throw new OCRException(e);
+			throw new OcrException(e);
 		}
 	}
 

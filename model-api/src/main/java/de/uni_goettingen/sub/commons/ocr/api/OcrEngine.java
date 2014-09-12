@@ -23,7 +23,7 @@ package de.uni_goettingen.sub.commons.ocr.api;
 import java.util.List;
 
 /**
- * The Interface OCREngine is the main entry point for each engine. It also
+ * The Interface OcrEngine is the main entry point for each engine. It also
  * works as simple factory for engine specific implementations of the API
  * interfaces. Note that this may change before version 1.0 will be published.
  * The return types for the {@link #recognize()} methods isn't also set in stone
@@ -33,16 +33,16 @@ import java.util.List;
  * @author abergna
  * @author cmahnke
  */
-public interface OCREngine {
+public interface OcrEngine {
 
 
 	/**
-	 * Recognize the list of given OCRProcess. Throws an IllegalStateException
+	 * Recognize the list of given OcrProcess. Throws an IllegalStateException
 	 * if no process was added. Does nothing the recognizer is already working.
 	 * The returned {@link java.util.Observable} can be used to track the
 	 * progress of the recognition process.
 	 * 
-	 * @see OCRProcess
+	 * @see OcrProcess
 	 */
 	abstract public void recognize();
 
@@ -53,22 +53,22 @@ public interface OCREngine {
 	 * @param ocrp
 	 *            the ocrp
 	 * @return the observer
-	 * @see OCRProcess
+	 * @see OcrProcess
 	 */
 
-	abstract public void addOcrProcess(OCRProcess ocrp);
+	abstract public void addOcrProcess(OcrProcess ocrp);
 
 	/**
 	 * Adds OCR process.
 	 * 
 	 * @return the OCR process
-	 * @see OCRProcess
+	 * @see OcrProcess
 	 */
-	abstract public List<OCRProcess> getOcrProcess();
+	abstract public List<OcrProcess> getOcrProcess();
 
 
 	/**
-	 * Inits the OCREngine. This an be used to check if the engine is
+	 * Inits the OcrEngine. This an be used to check if the engine is
 	 * operational. Implementations should implement this method to check if an
 	 * Engine is licensed or a server component can be reached. Note the the API
 	 * doesn't prohibit the usage of an engine that failed to initialize. Use it

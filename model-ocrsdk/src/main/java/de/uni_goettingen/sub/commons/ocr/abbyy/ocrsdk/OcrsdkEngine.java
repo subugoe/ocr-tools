@@ -1,8 +1,8 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk;
 
 
-import de.uni_goettingen.sub.commons.ocr.api.AbstractOCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.AbstractEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 
 /**
  * Encapsulates one or more OCR processes that can be started.
@@ -11,27 +11,27 @@ import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
  * @author dennis
  *
  */
-public class OcrsdkEngine extends AbstractOCREngine {
+public class OcrsdkEngine extends AbstractEngine {
 
 	/**
 	 * Starts all processes that have been added before.
 	 */
 	@Override
 	public void recognize() {
-		for (OCRProcess process : ocrProcess) {
+		for (OcrProcess process : ocrProcess) {
 			((OcrsdkProcess)process).start();
 		}
 	}
 
 	@Override
-	public void addOcrProcess(OCRProcess ocrp) {
+	public void addOcrProcess(OcrProcess ocrp) {
 		ocrProcess.add(ocrp);
 	}
 
 	@Override
 	public int getEstimatedDurationInSeconds() {
 		int duration = 0;
-		for (OCRProcess process : ocrProcess) {
+		for (OcrProcess process : ocrProcess) {
 			int imagesInProcess = process.getNumberOfImages();
 			duration += imagesInProcess * 5;
 		}

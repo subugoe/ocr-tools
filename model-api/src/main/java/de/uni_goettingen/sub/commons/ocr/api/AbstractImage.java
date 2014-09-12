@@ -22,15 +22,15 @@ import java.net.URI;
 
 
 /**
- * The Class AbstractOCRImage is a abstract super class for {@link OCRImage}
- * implementations. {@link OCRImage} represents an image as a {@link URI}
+ * The Class AbstractImage is a abstract super class for {@link OcrImage}
+ * implementations. {@link OcrImage} represents an image as a {@link URI}
  * reference and a orientation.
  * 
  * @version 0.9
  * @author abergna
  * @author cmahnke
  */
-public abstract class AbstractOCRImage implements OCRImage {
+public abstract class AbstractImage implements OcrImage {
 
 	protected URI localUri = null;
 

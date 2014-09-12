@@ -2,8 +2,8 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 public interface OcrFactory {
 
-	public OCREngine createEngine();
+	public OcrEngine createEngine();
 	
-	public OCRProcess createProcess();
+	public OcrProcess createProcess();
 		
 }

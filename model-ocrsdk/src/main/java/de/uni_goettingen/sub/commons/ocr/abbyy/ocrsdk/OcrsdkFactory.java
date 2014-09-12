@@ -2,8 +2,8 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.ocrsdk;
 
 import java.util.Properties;
 
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFactoryWithProperties;
 
 public class OcrsdkFactory extends OcrFactoryWithProperties {
@@ -13,12 +13,12 @@ public class OcrsdkFactory extends OcrFactoryWithProperties {
 	}
 
 	@Override
-	public OCREngine createEngine() {
+	public OcrEngine createEngine() {
 		return new OcrsdkEngine();
 	}
 
 	@Override
-	public OCRProcess createProcess() {
+	public OcrProcess createProcess() {
 		return new OcrsdkProcess(userProperties);
 	}
 

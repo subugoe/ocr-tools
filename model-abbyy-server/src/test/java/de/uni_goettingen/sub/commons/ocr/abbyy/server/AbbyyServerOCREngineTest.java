@@ -42,11 +42,11 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRImage;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyOCRProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCREngine;
-import de.uni_goettingen.sub.commons.ocr.api.OCRFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OCRImage;
-import de.uni_goettingen.sub.commons.ocr.api.OCROutput;
-import de.uni_goettingen.sub.commons.ocr.api.OCRProcess;
+import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
+import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 
 public class AbbyyServerOCREngineTest {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyServerOCREngineTest.class);
@@ -80,21 +80,21 @@ public class AbbyyServerOCREngineTest {
 //	@Test
 //	public void newImage() {
 //		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-//		OCRImage image = engine.newOcrImage(null);
+//		OcrImage image = engine.newOcrImage(null);
 //		assertTrue(image instanceof AbbyyOCRImage);
 //	}
 	
 //	@Test
 //	public void newProcess() {
 //		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-//		OCRProcess process = engine.newOcrProcess();
+//		OcrProcess process = engine.newOcrProcess();
 //		assertTrue(process instanceof AbbyyOCRProcess);
 //	}
 //	
 //	@Test
 //	public void newOutput() {
 //		AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-//		OCROutput output = engine.newOcrOutput();
+//		OcrOutput output = engine.newOcrOutput();
 //		assertTrue(output instanceof AbbyyOCROutput);
 //	}
 		
@@ -103,7 +103,7 @@ public class AbbyyServerOCREngineTest {
 //		MyServers.stopDavServer();
 //		try {
 //			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-//			OCRProcess process = engine.newOcrProcess();
+//			OcrProcess process = engine.newOcrProcess();
 //			engine.recognize(process);
 //		} finally {
 //			MyServers.startDavServer();
@@ -113,7 +113,7 @@ public class AbbyyServerOCREngineTest {
 //	@Test(expected=IllegalStateException.class)
 //	public void recognizeEmptyProcess() {
 //			AbbyyServerOCREngine engine = new AbbyyServerOCREngine(new Properties());
-//			OCRProcess process = engine.newOcrProcess();
+//			OcrProcess process = engine.newOcrProcess();
 //			engine.recognize(process);
 //	}
 	
@@ -143,20 +143,20 @@ public class AbbyyServerOCREngineTest {
 //		assertFalse(lock.exists());
 //	}
 //	
-//	private void recognizeOneImage(OCREngine engine) {		
-//		OCRProcess process = engine.newOcrProcess();
+//	private void recognizeOneImage(OcrEngine engine) {		
+//		OcrProcess process = engine.newOcrProcess();
 //		File inputBook = new File(LOCAL_INPUT, "oneImageBook");
 //		String jobName = inputBook.getName();
 //		process.setName(jobName);
 //		
 //		URI imageUri = new File(inputBook, "00000001.tif").toURI();
-//		OCRImage image = engine.newOcrImage(imageUri);
-//		List<OCRImage> images = new ArrayList<OCRImage>();
+//		OcrImage image = engine.newOcrImage(imageUri);
+//		List<OcrImage> images = new ArrayList<OcrImage>();
 //		images.add(image);
 //		process.setOcrImages(images);
 //
-//		OCRFormat format = OCRFormat.TXT;
-//		OCROutput output = engine.newOcrOutput();
+//		OcrFormat format = OcrFormat.TXT;
+//		OcrOutput output = engine.newOcrOutput();
 //		File outputFile = new File(LOCAL_OUTPUT, "oneImageBook.txt");
 //		URI outputUri = outputFile.toURI();
 //		output.setUri(outputUri);
