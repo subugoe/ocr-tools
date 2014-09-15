@@ -7,7 +7,7 @@ import java.util.Map;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
-import de.uni_goettingen.sub.commons.ocr.api.OcrProcess.OCRQuality;
+import de.uni_goettingen.sub.commons.ocr.api.OcrQuality;
 
 public class ToAbbyyMapper {
 
@@ -15,7 +15,7 @@ public class ToAbbyyMapper {
 	private final static Map<OcrTextType, String> TEXTTYPE_MAP = new HashMap<OcrTextType, String>();
 	private final static Map<OcrFormat, String> FORMAT_MAP = new HashMap<OcrFormat, String>();
 	private final static Map<OcrPriority, String> PRIORITY_MAP = new HashMap<OcrPriority, String>();
-	private final static Map<OCRQuality, String> QUALITY_MAP = new HashMap<OCRQuality, String>();
+	private final static Map<OcrQuality, String> QUALITY_MAP = new HashMap<OcrQuality, String>();
 
 	static {
 
@@ -163,9 +163,9 @@ public class ToAbbyyMapper {
 		PRIORITY_MAP.put(OcrPriority.BELOWNORMAL, "BelowNormal");
 		PRIORITY_MAP.put(OcrPriority.LOW, "Low");
 
-		QUALITY_MAP.put(OCRQuality.BEST, "Thorough");
-		QUALITY_MAP.put(OCRQuality.BALANCED, "Balanced");
-		QUALITY_MAP.put(OCRQuality.FAST, "Fast");
+		QUALITY_MAP.put(OcrQuality.BEST, "Thorough");
+		QUALITY_MAP.put(OcrQuality.BALANCED, "Balanced");
+		QUALITY_MAP.put(OcrQuality.FAST, "Fast");
 
 	}
 	
@@ -185,7 +185,7 @@ public class ToAbbyyMapper {
 		return PRIORITY_MAP.get(priority);
 	}
 
-	public static String getQuality(OCRQuality quality) {
+	public static String getQuality(OcrQuality quality) {
 		return QUALITY_MAP.get(quality);
 	}
 	

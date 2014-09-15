@@ -112,7 +112,7 @@ public interface OcrProcess {
 	 *         {@link java.lang.UnsupportedOperationException} it it's not
 	 *         possible to use this setting.
 	 */
-	public OCRQuality getQuality();
+	public OcrQuality getQuality();
 
 	/**
 	 * Sets the quality that should be produced by an engine while processing
@@ -125,28 +125,8 @@ public interface OcrProcess {
 	 *            to change the quality of a running process, calls to this
 	 *            method will be ignored in this case.
 	 */
-	public void setQuality(OCRQuality q);
+	public void setQuality(OcrQuality q);
 
-	/**
-	 * The Enum OCRQuality. This enum represents three states of different
-	 * quality settings: BEST, BALANCED and FAST.
-	 */
-	public enum OCRQuality {
-
-		/** The BEST available quality, usually takes longer to create. */
-		BEST,
-		/**
-		 * The BALANCED quality, this represents an engine specific tradeoff
-		 * between speed and quality.
-		 */
-		BALANCED,
-
-		/**
-		 * The FAST "quality", this should the engine to work as fast as
-		 * possible.
-		 */
-		FAST;
-	}
 
 	/**
 	 * Gets the texttyp. to describe the type of recognized text

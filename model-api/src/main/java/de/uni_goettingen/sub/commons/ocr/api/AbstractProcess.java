@@ -39,7 +39,7 @@ public abstract class AbstractProcess implements OcrProcess,Serializable {
 	transient protected List<OcrImage> ocrImages = new ArrayList<OcrImage>();
 
 	protected Set<Locale> langs = new HashSet<Locale>();
-	protected OCRQuality quality = OCRQuality.FAST;
+	protected OcrQuality quality = OcrQuality.BALANCED;
 	protected OcrTextType textType = OcrTextType.NORMAL;
 	protected OcrPriority priority;
 	transient protected List<OcrOutput> ocrOutputs = new ArrayList<OcrOutput>();
@@ -93,12 +93,12 @@ public abstract class AbstractProcess implements OcrProcess,Serializable {
 	}
 
 	@Override
-	public OCRQuality getQuality () {
+	public OcrQuality getQuality () {
 		return quality;
 	}
 
 	@Override
-	public void setQuality (OCRQuality quality) {
+	public void setQuality (OcrQuality quality) {
 		this.quality = quality;
 	}
 

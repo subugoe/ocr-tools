@@ -7,6 +7,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OcrPriority;
+import de.uni_goettingen.sub.commons.ocr.api.OcrQuality;
 import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
@@ -52,6 +53,7 @@ public class OcrEngineStarter {
 			}
 			process.setPriority(OcrPriority.fromValue(params.priority));
 			process.setTextType(OcrTextType.valueOf(params.inputTextType.toUpperCase()));
+			process.setQuality(OcrQuality.BEST);
 			engine.addOcrProcess(process);
 		}
 		engine.recognize();
