@@ -44,23 +44,14 @@ public enum OcrTextType{
 	 * */
 	GOTHIC("Gothic");
 	
-	 private final String value;
+	private final String value;
 
-	 OcrTextType(String v) {
-	        value = v;
-	    }
+	OcrTextType(String v) {
+		value = v;
+	}
 
-	    public String value() {
-	        return value;
-	    }
-
-	    public static OcrTextType fromValue(String v) {
-	        for (OcrTextType c: OcrTextType.values()) {
-	            if (c.value.equals(v)) {
-	                return c;
-	            }
-	        }
-	        throw new IllegalArgumentException(v);
-	    }
+	public String toString() {
+		return value;
+	}
 	
 }

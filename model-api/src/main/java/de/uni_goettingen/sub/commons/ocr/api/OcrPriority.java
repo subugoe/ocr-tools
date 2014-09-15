@@ -7,38 +7,28 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "ocrPriority")
 @XmlEnum
 public enum OcrPriority {
-	/**High job priority*/
-	HIGH("High"),
+	HIGH("2"),
 	
-	/** Above normal job priority */
-	ABOVENORMAL("AboveNormal"),
+	ABOVENORMAL("1"),
 	
-	/** Normal job priority */
-	NORMAL("Normal"),
+	NORMAL("0"),
 
-	/** Below normal job priority */
-	BELOWNORMAL("BelowNormal"),
+	BELOWNORMAL("-1"),
 	
-	/** Low job priority */
-	LOW("Low");
+	LOW("-2");
 
-	
 	private final String value;
 
 	OcrPriority(String v) {
 		value = v;
 	}
 
-	public String value() {
-		return value;
-	}
-
 	public static OcrPriority fromValue(String v) {
-		for (OcrPriority c : OcrPriority.values()) {
-			if (c.value.equals(v)) {
-				return c;
+		for (OcrPriority prio : OcrPriority.values()) {
+			if (prio.value.equals(v)) {
+				return prio;
 			}
 		}
-		throw new IllegalArgumentException(v);
+		throw new IllegalArgumentException("Undefined priority: " + v);
 	}
 }

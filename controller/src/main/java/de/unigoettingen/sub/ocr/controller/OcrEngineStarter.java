@@ -43,15 +43,15 @@ public class OcrEngineStarter {
 			}
 			
 			for (String outFormat : params.outputFormats) {
-				OcrFormat ocrFormat = OcrFormat.valueOf(outFormat);
+				OcrFormat ocrFormat = OcrFormat.valueOf(outFormat.toUpperCase());
 				process.addOutput(ocrFormat);
 			}
 			
 			for (String lang : params.inputLanguages) {
 				process.addLanguage(new Locale(lang));
 			}
-			process.setPriority(OcrPriority.NORMAL);
-			process.setTextType(OcrTextType.valueOf(params.inputTextType));
+			process.setPriority(OcrPriority.fromValue(params.priority));
+			process.setTextType(OcrTextType.valueOf(params.inputTextType.toUpperCase()));
 			engine.addOcrProcess(process);
 		}
 		engine.recognize();

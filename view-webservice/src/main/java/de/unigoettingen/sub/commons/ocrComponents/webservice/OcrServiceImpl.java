@@ -172,7 +172,7 @@ public class OcrServiceImpl implements OcrService {
 											"OUTFILE substitution variable value: " + resultFile.getAbsolutePath()+ newLine +
 											"LANGUAGES substitution variable value: "+ params.inputLanguages + newLine +
 											"INFILE substitution variable value: "+ imageTempFile.toString()+  newLine +
-											"INTEXTTYPE substitution variable value: "+ request.getTextType().value()+ newLine +
+											"INTEXTTYPE substitution variable value: "+ request.getTextType()+ newLine +
 											"Process finished successfully with code 0."+ "\n" +
 											"Output file has been created successfully.."+ "\n" +
 											"Output Url: " + webserverHostname + resultsDir + "/" + jobName	+ "." + params.outputFormats[0].toLowerCase()+ newLine +

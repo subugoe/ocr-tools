@@ -145,7 +145,7 @@ public abstract class AbstractProcess implements OcrProcess,Serializable {
 	}
 	
 	protected URI constructLocalUri(OcrFormat format) {
-		String fileName = name + "." + format.toString().toLowerCase();
+		String fileName = name + "." + format;
 		return new File(outputDir, fileName).toURI();
 	}
 	

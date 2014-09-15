@@ -245,7 +245,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		aoo.setLocalUri(constructLocalUri(format));
 		aoo.setFormat(format);
 		try {
-			String fileName = name + "." + format.toString().toLowerCase();
+			String fileName = name + "." + format;
 			aoo.setRemoteUri(new URI(outputDavUri.toString() + fileName));
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs (" + getName() + ")");
@@ -260,17 +260,17 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	}
 
 	private void addResultXmlOutput() {
-		AbbyyOutput metadata = new AbbyyOutput();
-		metadata.setLocalUri(new File(outputDir, name + ".xml.result.xml").toURI());
+		AbbyyOutput resultXml = new AbbyyOutput();
+		resultXml.setLocalUri(new File(outputDir, name + ".xml.result.xml").toURI());
 		try {
 			URI outputResultUri = new URI(resultXmlDavUri.toString() + name + ".xml.result.xml");
-			metadata.setRemoteUri(outputResultUri);
+			resultXml.setRemoteUri(outputResultUri);
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs (" + getName() + ")");
 			throw new OcrException(e);
 		}
-		metadata.setFormat(OcrFormat.METADATA);
-		ocrOutputs.add(metadata);
+		resultXml.setFormat(OcrFormat.METADATA);
+		ocrOutputs.add(resultXml);
 	}
 	
 	public void setMerger(ProcessMergingObserver newMerger) {

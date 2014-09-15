@@ -39,81 +39,52 @@ import javax.xml.bind.annotation.XmlType;
 public enum OcrFormat {
 
 	/** The Format for Text, UTF-8 is assumed. */
-	TXT("TXT"),
+	TXT("txt"),
 	/**
 	 * The Format for PDF, note that different Implementations may generate
 	 * different Versions of PDF.
 	 */
-	PDF("PDF"),
+	PDF("pdf"),
 	/** The Format for XML, UTF-8 is assumed. */
-	XML("XML"),
+	XML("xml"),
 	/**
 	 * The Format PDF/a, don't use this without proper validations, there are
 	 * some severe errors in some implementations.
 	 */
-	PDFA("PDFA"),
+	PDFA("pdfa"),
 	/**
 	 * The Format for Microsoft Word Doc files, version 2003 should be assumed -
 	 * try to avoid this.
 	 */
-	DOC("DOC"),
+	DOC("doc"),
 	/**
 	 * The Format for HTML, ISO 8859-1 and HTML 4.01 should be expected - try to
 	 * avoid this.
 	 */
-	HTML("HTML"),
+	HTML("html"),
 	/** The Format for XHTML, UTF-8 is assumed. */
-	XHTML("XHTML"),
+	XHTML("xhtml"),
 	/**
 	 * The Format for hOCR, UTF-8 is assumed, implementations should expect the
 	 * worse, based on HTML 4.01
 	 */
-	HOCR("HOCR"),
+	HOCR("hocr"),
 	/**
 	 * The Format for METADATA can be used as wrapper for engine specific
 	 * metadata, this should be mapped to the right filename and type inside the
 	 * engine implementation.
 	 */
-	METADATA("METADATA");
+	METADATA("metadata");
 
-	/** The name. */
 	private final String name;
 
-	/**
-	 * Instantiates a new OCR format.
-	 * 
-	 * @param format
-	 *            the format
-	 */
 	private OcrFormat(String format) {
 		this.name = format;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Enum#toString()
-	 */
 	@Override
-	public String toString () {
+	public String toString() {
 		return name;
 	}
 
-	/**
-	 * Parses the ocr format.
-	 * 
-	 * @param format
-	 *            the format
-	 * @return the oCR format
-	 */
-	public static OcrFormat parseOCRFormat (String format) {
-		return Enum.valueOf(OcrFormat.class, format.toUpperCase());
-	}
-	
-	public static OcrFormat fromValue(String v) {
-        for (OcrFormat c: OcrFormat.values()) {
-            if (c.name.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
 }

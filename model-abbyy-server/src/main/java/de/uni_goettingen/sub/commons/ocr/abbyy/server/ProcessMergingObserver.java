@@ -58,7 +58,7 @@ public class ProcessMergingObserver {
 	private void mergeAllFormats() {
 		for (OcrFormat format : parentProcess.getAllOutputFormats()) {
 			if (!FileMerger.isSegmentable(format)) {
-				throw new OcrException("Format " + format.toString()
+				throw new OcrException("Format " + format
 						+ " isn't mergable!");
 			}
 			List<File> filesToMerge = new ArrayList<File>(); 
