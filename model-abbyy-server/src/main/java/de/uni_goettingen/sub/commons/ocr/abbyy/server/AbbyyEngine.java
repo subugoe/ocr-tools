@@ -41,6 +41,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvide
 import de.uni_goettingen.sub.commons.ocr.api.AbstractEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
+import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 
@@ -61,15 +62,16 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	protected Properties userProps = new Properties();
 	private Properties fileProps = new Properties();
 	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
-	private FileAccess fileAccess = new FileAccess();
+	private FileAccess fileAccess;
+	private BeanProvider beanProvider = new BeanProvider();
 	private ProcessSplitter processSplitter = new ProcessSplitter();
 	
 	// for unit tests
 	void setHotfolderProvider(HotfolderProvider newProvider) {
 		hotfolderProvider = newProvider;
 	}
-	void setFileAccess(FileAccess newAccess) {
-		fileAccess = newAccess;
+	void setBeanProvider(BeanProvider newProvider) {
+		beanProvider = newProvider;
 	}
 	void setProcessSplitter(ProcessSplitter newSplitter) {
 		processSplitter = newSplitter;
@@ -81,6 +83,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	
 	public void initialize() {
 		String configFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
+		fileAccess = beanProvider.getFileAccess();
 		fileProps = fileAccess.getPropertiesFromFile(configFile);
 		
 		String user = userProps.getProperty("user");

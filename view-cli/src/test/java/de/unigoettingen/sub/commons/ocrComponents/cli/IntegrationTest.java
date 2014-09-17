@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ConcurrentModificationException;
+import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -127,6 +128,7 @@ public class IntegrationTest {
 		when(fileAccessMock.isWritableFolder("/tmp/out")).thenReturn(true);
 		when(fileAccessMock.getAllFolders(anyString(), any(String[].class))).thenReturn(new File[]{new File("/tmp/in")});
 		when(fileAccessMock.getAllImagesFromFolder(any(File.class), any(String[].class))).thenReturn(new File[]{new File("/tmp/in/01.tif")});
+		when(fileAccessMock.getPropertiesFromFile(anyString())).thenReturn(validFileProps());
 	}
 
 	private void prepareHotfolderMockForSuccess() throws IOException, URISyntaxException {
@@ -145,6 +147,13 @@ public class IntegrationTest {
 				"-prio", "2",
 				"-engine", "abbyy",
 				"-props", "user=me,password=pass"};
+	}
+	
+	private Properties validFileProps() {
+		Properties fileProps = new Properties();
+		fileProps.setProperty("serverUrl", "http://localhost:9001/");
+		fileProps.setProperty("maxThreads", "5");
+		return fileProps;
 	}
 
 }
