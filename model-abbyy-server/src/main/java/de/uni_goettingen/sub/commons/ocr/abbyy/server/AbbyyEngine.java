@@ -62,7 +62,6 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	protected Properties userProps = new Properties();
 	private Properties fileProps = new Properties();
 	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
-	private FileAccess fileAccess;
 	private BeanProvider beanProvider = new BeanProvider();
 	private ProcessSplitter processSplitter = new ProcessSplitter();
 	
@@ -83,7 +82,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	
 	public void initialize() {
 		String configFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
-		fileAccess = beanProvider.getFileAccess();
+		FileAccess fileAccess = beanProvider.getFileAccess();
 		fileProps = fileAccess.getPropertiesFromFile(configFile);
 		
 		String user = userProps.getProperty("user");
