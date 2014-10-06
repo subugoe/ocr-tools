@@ -53,7 +53,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 
 	protected Queue<AbbyyProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyProcess>();
 
-	protected URI lockURI;
+	protected URI lockUri;
 	
 	private static Object monitor = new Object();
 	
@@ -125,21 +125,21 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 			boolean overwriteLock = "true".equals(overwrite);
 
 			String serverLockFile = "server.lock";
-			lockURI = new URI(fileProps.getProperty("serverUrl") + serverLockFile);
+			lockUri = new URI(fileProps.getProperty("serverUrl") + serverLockFile);
 			
 			// need to synchronize because of the Web Service
 			synchronized(monitor) {
 				if (overwriteLock) {
 					// the lock is deleted here, but a new one is created later
-					hotfolder.deleteIfExists(lockURI);
+					hotfolder.deleteIfExists(lockUri);
 				}
 				handleLock();
 			}
 			
 		} catch (IOException e1) {
-			logger.error("Error with server lock file " + lockURI, e1);
+			logger.error("Error with server lock file " + lockUri, e1);
 		} catch (URISyntaxException e) {
-			logger.error("Error with server lock file " + lockURI, e);
+			logger.error("Error with server lock file " + lockUri, e);
 		}
 		
 		pool = createPool(Integer.parseInt(fileProps.getProperty("maxThreads")));
@@ -180,10 +180,10 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	 * @throws IOException
 	 */
 	protected void handleLock() throws IOException {
-		boolean lockExists = hotfolder.exists(lockURI);
+		boolean lockExists = hotfolder.exists(lockUri);
 		
 		if (lockExists) {
-			throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockURI);
+			throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockUri);
 		}
 		writeLockFile();
 
@@ -200,7 +200,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		
 		OutputStream tempLock = hotfolder.createTmpFile("lock");
 		IOUtils.write("IP: " + thisIp + "\nID: " + thisId, tempLock);
-		hotfolder.copyTmpFile("lock", lockURI);
+		hotfolder.copyTmpFile("lock", lockUri);
 		hotfolder.deleteTmpFile("lock");
 		
 	}
@@ -218,11 +218,11 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	
 	protected void cleanUp() {
 		try {
-			if (hotfolder.exists(lockURI)) {
-				hotfolder.delete(lockURI);
+			if (hotfolder.exists(lockUri)) {
+				hotfolder.delete(lockUri);
 			}
 		} catch (IOException e) {
-			logger.error("Error while deleting lock file: " + lockURI, e);
+			logger.error("Error while deleting lock file: " + lockUri, e);
 		}
 	}
 	
@@ -236,32 +236,5 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		}
 		return (int) (durationInMillis / 1000);
 	}
-
-	/* start JMX methods */
-	public String getWaitingProcesses() {
-		String names = "";
-		for (Runnable r : pool.getQueue()) {
-			OcrProcess p = (OcrProcess) r;
-			names += p.getName() + " ";
-		}
-		return names;
-	}
-	
-	public int getWaitingProcessesCount() {
-		return pool.getQueue().size();
-	}
-	
-	public int getRunningProcessesCount() {
-		return pool.getActiveCount();
-	}
-	
-	public void removeWaitingProcesses() {
-		pool.getQueue().clear();
-	}
-	
-	public void removeAllProcesses() {
-		pool.shutdownNow();
-	}
-	/* end JMX methods */
 
 }

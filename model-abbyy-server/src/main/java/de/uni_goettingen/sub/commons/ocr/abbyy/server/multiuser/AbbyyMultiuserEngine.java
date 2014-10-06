@@ -49,7 +49,7 @@ public class AbbyyMultiuserEngine extends AbbyyEngine {
 			// the set is used as a hint for incoming instances that 
 			// it is OK to ignore the lock file on the server
 			Set<String> lockSet = hazelcast.getSet("lockSet");
-			boolean lockExists = hotfolder.exists(lockURI);
+			boolean lockExists = hotfolder.exists(lockUri);
 			
 			if (!lockExists) {
 				// no lock file, ie no other processes running, so write it
@@ -62,7 +62,7 @@ public class AbbyyMultiuserEngine extends AbbyyEngine {
 				// there is a lock file, but it is not "registered" in the running cluster
 				// which means another cluster or program instance is running.
 				try {
-					throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockURI);
+					throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockUri);
 				} finally {
 					hazelcast.getLifecycleService().shutdown();
 					isShutdown = true;
@@ -97,10 +97,10 @@ public class AbbyyMultiuserEngine extends AbbyyEngine {
 			if (hazelcast.getCluster().getMembers().size() == 1) {
 				// the current instance is the only one in the cluster, so the
 				// lock file can be deleted.
-				hotfolder.delete(lockURI);
+				hotfolder.delete(lockUri);
 			}
 		} catch (IOException e) {
-			logger.error("Error while deleting lock file: " + lockURI, e);
+			logger.error("Error while deleting lock file: " + lockUri, e);
 		} finally {
 			lock.unlock();
 			hazelcast.getLifecycleService().shutdown();
