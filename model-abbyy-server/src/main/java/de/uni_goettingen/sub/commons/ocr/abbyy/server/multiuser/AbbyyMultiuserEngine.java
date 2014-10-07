@@ -21,15 +21,13 @@ public class AbbyyMultiuserEngine extends AbbyyEngine {
 
 	private HazelcastInstance hazelcast;
 	
-	public AbbyyMultiuserEngine(Properties userProps) {
-		super(userProps);
+	public AbbyyMultiuserEngine() {
 		System.setProperty("hazelcast.logging.type", "log4j");
 		hazelcast = Hazelcast.newHazelcastInstance(null);
 	}
 	
 	// for unit tests
 	protected AbbyyMultiuserEngine(HazelcastInstance haz) {
-		super(new Properties());
 		hazelcast = haz;
 	}
 

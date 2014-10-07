@@ -14,8 +14,8 @@ public class AbbyyFactory extends OcrFactoryWithProperties {
 	
 	@Override
 	public OcrEngine createEngine() {
-		AbbyyEngine engine = new AbbyyEngine(userProperties);
-		engine.initialize();
+		AbbyyEngine engine = new AbbyyEngine();
+		engine.initialize(userProperties);
 		return engine;
 	}
 

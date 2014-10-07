@@ -73,7 +73,7 @@ public class AbbyyServerOCREngineTest {
 	
 	@Test
 	public void getInstance() {
-		AbbyyEngine engine = new AbbyyEngine(new Properties());
+		AbbyyEngine engine = new AbbyyEngine();
 		assertNotNull(engine);
 	}
 	

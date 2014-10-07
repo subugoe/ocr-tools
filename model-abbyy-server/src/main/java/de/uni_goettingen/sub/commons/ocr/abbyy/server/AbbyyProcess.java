@@ -84,13 +84,13 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		String user = userProps.getProperty("user");
 		String password = userProps.getProperty("password");
 		if (user != null) {
-			fileProps.setProperty("username", user);
+			fileProps.setProperty("user", user);
 		}
 		if (password != null) {
 			fileProps.setProperty("password", password);
 		}
 		
-		hotfolderManager = new HotfolderManager(fileProps.getProperty("serverUrl"), fileProps.getProperty("username"), fileProps.getProperty("password"));
+		hotfolderManager = new HotfolderManager(fileProps.getProperty("serverUrl"), fileProps.getProperty("user"), fileProps.getProperty("password"));
 		abbyyTicket = new AbbyyTicket(this);
 
 		processId = java.util.UUID.randomUUID().toString();

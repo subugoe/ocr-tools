@@ -59,8 +59,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	
 	private OcrExecutor pool;
 	
-	protected Properties userProps = new Properties();
-	private Properties fileProps = new Properties();
+	private Properties combinedProps;
 	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	private BeanProvider beanProvider = new BeanProvider();
 	private ProcessSplitter processSplitter = new ProcessSplitter();
@@ -75,25 +74,15 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	void setProcessSplitter(ProcessSplitter newSplitter) {
 		processSplitter = newSplitter;
 	}
-	
-	public AbbyyEngine(Properties initUserProperties) {
-		userProps = initUserProperties;
-	}
-	
-	public void initialize() {
+		
+	public void initialize(Properties userProps) {
 		String configFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
 		FileAccess fileAccess = beanProvider.getFileAccess();
-		fileProps = fileAccess.getPropertiesFromFile(configFile);
+		Properties fileProps = fileAccess.getPropertiesFromFile(configFile);
+
+		combinedProps = PropertiesCombiner.combinePropsPreferringFirst(userProps, fileProps);
 		
-		String user = userProps.getProperty("user");
-		String password = userProps.getProperty("password");
-		if (user != null) {
-			fileProps.setProperty("username", user);
-		}
-		if (password != null) {
-			fileProps.setProperty("password", password);
-		}
-		hotfolder = hotfolderProvider.createHotfolder(fileProps.getProperty("serverUrl"), fileProps.getProperty("username"), fileProps.getProperty("password"));
+		hotfolder = hotfolderProvider.createHotfolder(combinedProps.getProperty("serverUrl"), combinedProps.getProperty("user"), combinedProps.getProperty("password"));
 	}
 
 	@Override
@@ -121,11 +110,11 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		started = true;
 		
 		try {
-			String overwrite = userProps.getProperty("lock.overwrite");
+			String overwrite = combinedProps.getProperty("lock.overwrite");
 			boolean overwriteLock = "true".equals(overwrite);
 
 			String serverLockFile = "server.lock";
-			lockUri = new URI(fileProps.getProperty("serverUrl") + serverLockFile);
+			lockUri = new URI(combinedProps.getProperty("serverUrl") + serverLockFile);
 			
 			// need to synchronize because of the Web Service
 			synchronized(monitor) {
@@ -142,14 +131,14 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 			logger.error("Error with server lock file " + lockUri, e);
 		}
 		
-		pool = createPool(Integer.parseInt(fileProps.getProperty("maxThreads")));
+		pool = createPool(Integer.parseInt(combinedProps.getProperty("maxThreads")));
 		
 		while (!processesQueue.isEmpty()) {
 			AbbyyProcess process = processesQueue.poll();
 			process.setStartedAt(new Date().getTime());
-			boolean split = "true".equals(userProps.getProperty("books.split"));
+			boolean split = "true".equals(combinedProps.getProperty("books.split"));
 			if (split) {
-				int splitSize = Integer.parseInt(fileProps.getProperty("imagesNumberForSubprocess"));
+				int splitSize = Integer.parseInt(combinedProps.getProperty("imagesNumberForSubprocess"));
 				List<AbbyyProcess> subProcesses = processSplitter.split(process, splitSize);
 				for (AbbyyProcess subProcess : subProcesses) {
 					pool.execute(subProcess);
@@ -232,7 +221,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		
 		for (OcrProcess process : processesQueue) {
 			long imagesInProcess = process.getNumberOfImages();
-			durationInMillis += imagesInProcess * Integer.parseInt(fileProps.getProperty("minMillisPerFile"));
+			durationInMillis += imagesInProcess * Integer.parseInt(combinedProps.getProperty("minMillisPerFile"));
 		}
 		return (int) (durationInMillis / 1000);
 	}

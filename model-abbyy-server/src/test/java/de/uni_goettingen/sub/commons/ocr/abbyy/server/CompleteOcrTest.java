@@ -24,7 +24,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 
 public class CompleteOcrTest {
 
-	private OcrEngine engine = new AbbyyEngine(new Properties());
+	private OcrEngine engine = new AbbyyEngine();
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
