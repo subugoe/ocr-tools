@@ -1,7 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
 
-import java.util.concurrent.locks.Lock;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,21 +34,6 @@ public class AbbyyMultiuserEngine extends AbbyyEngine {
 	@Override
 	protected LockFileHandler createLockHandler() {
 		return new HazelcastLockFileHandler(hazelcast);
-	}
-
-	@Override
-	protected void cleanUp() {
-		// we probably must synchronize cluster-wide
-		Lock lock = hazelcast.getLock("monitor");
-		lock.lock();
-
-		try {
-			lockHandler.deleteLock();
-		} finally {
-			lock.unlock();
-			hazelcast.getLifecycleService().shutdown();
-		}
-
 	}
 	
 }

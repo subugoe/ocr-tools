@@ -17,6 +17,7 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvide
 
 public class LockFileHandler {
 
+	private static Object monitor = new Object();
 	private final String serverLockFile = "server.lock";
 	protected Hotfolder hotfolder;
 	protected URI lockUri;
@@ -38,14 +39,17 @@ public class LockFileHandler {
 	}
 
 	public void createOrOverwriteLock(boolean overwriteLock) {
-		try {
-			if (overwriteLock) {
-				// the lock is deleted here, but a new one is created later
-				hotfolder.deleteIfExists(lockUri);
+		// need to synchronize because of the Web Service
+		synchronized(monitor) {
+			try {
+				if (overwriteLock) {
+					// the lock is deleted here, but a new one is created later
+					hotfolder.deleteIfExists(lockUri);
+				}
+				handleLock();
+			} catch (IOException e) {
+				logger.error("Error with server lock file: " + lockUri, e);
 			}
-			handleLock();
-		} catch (IOException e) {
-			logger.error("Error with server lock file: " + lockUri, e);
 		}
 	}
 
@@ -81,14 +85,15 @@ public class LockFileHandler {
 		
 	}
 
-	public void deleteLock() {
-		try {
-			if (hotfolder.exists(lockUri)) {
-				hotfolder.delete(lockUri);
+	public void deleteLockAndCleanUp() {
+		// need to synchronize because of the Web Service
+		synchronized(monitor) {
+			try {
+				hotfolder.deleteIfExists(lockUri);
+			} catch (IOException e) {
+				logger.error("Error while deleting lock file: " + lockUri, e);
 			}
-		} catch (IOException e) {
-			logger.error("Error while deleting lock file: " + lockUri, e);
-		}		
+		}
 	}
 
 }

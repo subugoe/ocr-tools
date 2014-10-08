@@ -71,7 +71,11 @@ public class HazelcastLockFileHandler extends LockFileHandler {
 	}
 
 	@Override
-	public void deleteLock() {
+	public void deleteLockAndCleanUp() {
+		// we probably must synchronize cluster-wide
+		Lock lock = hazelcast.getLock("monitor");
+		lock.lock();
+
 		try {
 			if (hazelcast.getCluster().getMembers().size() == 1) {
 				// the current instance is the only one in the cluster, so the
@@ -80,7 +84,11 @@ public class HazelcastLockFileHandler extends LockFileHandler {
 			}
 		} catch (IOException e) {
 			logger.error("Error while deleting lock file: " + lockUri, e);
+		} finally {
+			lock.unlock();
+			hazelcast.getLifecycleService().shutdown();
 		}
+
 	}
 	
 }

@@ -82,7 +82,7 @@ public class IntegrationTest {
 		opts[17] = "lock.overwrite=true";
 		main.execute(opts);
 		
-		verify(hotfolderMock).deleteIfExists(new URI("http://localhost:9001/server.lock"));
+		verify(hotfolderMock, times(2)).deleteIfExists(new URI("http://localhost:9001/server.lock"));
 	}
 
 	@Test

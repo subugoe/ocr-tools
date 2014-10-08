@@ -37,18 +37,16 @@ import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	
-	final static Logger logger = LoggerFactory.getLogger(AbbyyEngine.class);
+	private final static Logger logger = LoggerFactory.getLogger(AbbyyEngine.class);
 
-	protected Queue<AbbyyProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyProcess>();
-	
-	private static Object monitor = new Object();
-	
+	private Queue<AbbyyProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyProcess>();
+		
 	private OcrExecutor pool;
 	
 	private Properties combinedProps;
 	private BeanProvider beanProvider = new BeanProvider();
 	private ProcessSplitter processSplitter = new ProcessSplitter();
-	protected LockFileHandler lockHandler;
+	private LockFileHandler lockHandler;
 	
 	// for unit tests
 	void setBeanProvider(BeanProvider newProvider) {
@@ -57,6 +55,12 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	void setProcessSplitter(ProcessSplitter newSplitter) {
 		processSplitter = newSplitter;
 	}
+	protected OcrExecutor createPool(int maxThreads) {
+		return new OcrExecutor(maxThreads);
+	}	
+	protected LockFileHandler createLockHandler() {
+		return new LockFileHandler();
+	}
 		
 	public void initialize(Properties userProps) {
 		String configFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
@@ -64,9 +68,6 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		Properties fileProps = fileAccess.getPropertiesFromFile(configFile);
 
 		combinedProps = PropertiesCombiner.combinePropsPreferringFirst(userProps, fileProps);
-		
-		lockHandler = createLockHandler();
-		lockHandler.setConnectionData(combinedProps.getProperty("serverUrl"), combinedProps.getProperty("user"), combinedProps.getProperty("password"));
 	}
 
 	@Override
@@ -87,19 +88,17 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 			logger.warn("Cannot start recognition, there are no processes.");
 			return;
 		}
-		startRecognition();
+		performRecognition();
 	}
 
-	private void startRecognition() {
+	private void performRecognition() {
 		started = true;
 		
 		String overwrite = combinedProps.getProperty("lock.overwrite");
 		boolean overwriteLock = "true".equals(overwrite);
-
-		// need to synchronize because of the Web Service
-		synchronized(monitor) {
-			lockHandler.createOrOverwriteLock(overwriteLock);
-		}
+		lockHandler = createLockHandler();
+		lockHandler.setConnectionData(combinedProps.getProperty("serverUrl"), combinedProps.getProperty("user"), combinedProps.getProperty("password"));
+		lockHandler.createOrOverwriteLock(overwriteLock);
 			
 		pool = createPool(Integer.parseInt(combinedProps.getProperty("maxThreads")));
 		
@@ -125,30 +124,9 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 			logger.error("Got a problem with thread pool: ", e);
 		}
 		
-		// need to synchronize because of the Web Service
-		synchronized(monitor) {
-			cleanUp();
-		}
+		lockHandler.deleteLockAndCleanUp();
+
 		started = false;
-	}
-		
-	/**
-	 * Factory method for an executor. Subclasses can override this method to
-	 * return their own implementation.
-	 * 
-	 * @return an instance of a pool/executor
-	 */
-	protected OcrExecutor createPool(int maxThreads) {
-		// TODO: make a field
-		return new OcrExecutor(maxThreads);
-	}
-	
-	protected LockFileHandler createLockHandler() {
-		return new LockFileHandler();
-	}
-	
-	protected void cleanUp() {
-		lockHandler.deleteLock();
 	}
 	
 	@Override
