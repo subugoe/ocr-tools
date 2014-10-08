@@ -18,13 +18,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -32,12 +25,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderProvider;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
@@ -49,25 +39,18 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	
 	final static Logger logger = LoggerFactory.getLogger(AbbyyEngine.class);
 
-	protected Hotfolder hotfolder;
-
 	protected Queue<AbbyyProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyProcess>();
-
-	protected URI lockUri;
 	
 	private static Object monitor = new Object();
 	
 	private OcrExecutor pool;
 	
 	private Properties combinedProps;
-	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	private BeanProvider beanProvider = new BeanProvider();
 	private ProcessSplitter processSplitter = new ProcessSplitter();
+	protected LockFileHandler lockHandler;
 	
 	// for unit tests
-	void setHotfolderProvider(HotfolderProvider newProvider) {
-		hotfolderProvider = newProvider;
-	}
 	void setBeanProvider(BeanProvider newProvider) {
 		beanProvider = newProvider;
 	}
@@ -82,7 +65,8 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 
 		combinedProps = PropertiesCombiner.combinePropsPreferringFirst(userProps, fileProps);
 		
-		hotfolder = hotfolderProvider.createHotfolder(combinedProps.getProperty("serverUrl"), combinedProps.getProperty("user"), combinedProps.getProperty("password"));
+		lockHandler = createLockHandler();
+		lockHandler.setConnectionData(combinedProps.getProperty("serverUrl"), combinedProps.getProperty("user"), combinedProps.getProperty("password"));
 	}
 
 	@Override
@@ -109,28 +93,14 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	private void startRecognition() {
 		started = true;
 		
-		try {
-			String overwrite = combinedProps.getProperty("lock.overwrite");
-			boolean overwriteLock = "true".equals(overwrite);
+		String overwrite = combinedProps.getProperty("lock.overwrite");
+		boolean overwriteLock = "true".equals(overwrite);
 
-			String serverLockFile = "server.lock";
-			lockUri = new URI(combinedProps.getProperty("serverUrl") + serverLockFile);
-			
-			// need to synchronize because of the Web Service
-			synchronized(monitor) {
-				if (overwriteLock) {
-					// the lock is deleted here, but a new one is created later
-					hotfolder.deleteIfExists(lockUri);
-				}
-				handleLock();
-			}
-			
-		} catch (IOException e1) {
-			logger.error("Error with server lock file " + lockUri, e1);
-		} catch (URISyntaxException e) {
-			logger.error("Error with server lock file " + lockUri, e);
+		// need to synchronize because of the Web Service
+		synchronized(monitor) {
+			lockHandler.createOrOverwriteLock(overwriteLock);
 		}
-		
+			
 		pool = createPool(Integer.parseInt(combinedProps.getProperty("maxThreads")));
 		
 		while (!processesQueue.isEmpty()) {
@@ -161,39 +131,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		}
 		started = false;
 	}
-	
-	/**
-	 * Controls the program flow depending on the state of the server lock.
-	 * Can be overridden by subclasses to implement a different state management.
-	 * 
-	 * @throws IOException
-	 */
-	protected void handleLock() throws IOException {
-		boolean lockExists = hotfolder.exists(lockUri);
 		
-		if (lockExists) {
-			throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockUri);
-		}
-		writeLockFile();
-
-	}
-	
-	/**
-	 * Creates a lock file containing the IP address and an ID of the current JVM process.
-	 * 
-	 * @throws IOException
-	 */
-	protected void writeLockFile() throws IOException {
-		String thisIp = InetAddress.getLocalHost().getHostAddress();
-		String thisId = ManagementFactory.getRuntimeMXBean().getName();
-		
-		OutputStream tempLock = hotfolder.createTmpFile("lock");
-		IOUtils.write("IP: " + thisIp + "\nID: " + thisId, tempLock);
-		hotfolder.copyTmpFile("lock", lockUri);
-		hotfolder.deleteTmpFile("lock");
-		
-	}
-	
 	/**
 	 * Factory method for an executor. Subclasses can override this method to
 	 * return their own implementation.
@@ -205,14 +143,12 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		return new OcrExecutor(maxThreads);
 	}
 	
+	protected LockFileHandler createLockHandler() {
+		return new LockFileHandler();
+	}
+	
 	protected void cleanUp() {
-		try {
-			if (hotfolder.exists(lockUri)) {
-				hotfolder.delete(lockUri);
-			}
-		} catch (IOException e) {
-			logger.error("Error while deleting lock file: " + lockUri, e);
-		}
+		lockHandler.deleteLock();
 	}
 	
 	@Override
