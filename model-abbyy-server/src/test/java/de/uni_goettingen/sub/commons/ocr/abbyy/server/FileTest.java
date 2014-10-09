@@ -20,7 +20,7 @@ public class FileTest {
 		FileAccess manager = new FileAccess();
 		Properties props = manager.getPropertiesFromFile("gbv-fraktur.properties");
 		
-		assertEquals("input", props.getProperty("input"));
+		assertEquals("input", props.getProperty("inputFolder"));
 	}
 
 }

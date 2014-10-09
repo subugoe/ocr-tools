@@ -100,14 +100,14 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		lockHandler.setConnectionData(combinedProps.getProperty("serverUrl"), combinedProps.getProperty("user"), combinedProps.getProperty("password"));
 		lockHandler.createOrOverwriteLock(overwriteLock);
 			
-		pool = createPool(Integer.parseInt(combinedProps.getProperty("maxThreads")));
+		pool = createPool(Integer.parseInt(combinedProps.getProperty("maxParallelProcesses")));
 		
 		while (!processesQueue.isEmpty()) {
 			AbbyyProcess process = processesQueue.poll();
 			process.setStartedAt(new Date().getTime());
 			boolean split = "true".equals(combinedProps.getProperty("books.split"));
 			if (split) {
-				int splitSize = Integer.parseInt(combinedProps.getProperty("imagesNumberForSubprocess"));
+				int splitSize = Integer.parseInt(combinedProps.getProperty("maxImagesInSubprocess"));
 				List<AbbyyProcess> subProcesses = processSplitter.split(process, splitSize);
 				for (AbbyyProcess subProcess : subProcesses) {
 					pool.execute(subProcess);

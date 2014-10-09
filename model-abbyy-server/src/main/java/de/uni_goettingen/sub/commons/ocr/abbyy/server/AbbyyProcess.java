@@ -98,9 +98,9 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		
 		try {
 			URI serverUri = new URI(fileProps.getProperty("serverUrl"));
-			inputDavUri = new URI(serverUri + fileProps.getProperty("input") + "/");
-			outputDavUri = new URI(serverUri + fileProps.getProperty("output") + "/");
-			errorDavUri = new URI(serverUri + fileProps.getProperty("error") + "/");
+			inputDavUri = new URI(serverUri + fileProps.getProperty("inputFolder") + "/");
+			outputDavUri = new URI(serverUri + fileProps.getProperty("outputFolder") + "/");
+			errorDavUri = new URI(serverUri + fileProps.getProperty("errorFolder") + "/");
 			resultXmlDavUri = new URI(serverUri + fileProps.getProperty("resultXmlFolder") + "/");
 
 			abbyyTicket.setRemoteInputFolder(inputDavUri);
@@ -235,7 +235,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	 * 
 	 */
 	public void checkHotfolderState() throws IOException, IllegalStateException {
-		long maxSize = Long.parseLong(fileProps.getProperty("maxSize"));
+		long maxSize = Long.parseLong(fileProps.getProperty("maxServerSpace"));
 		hotfolderManager.checkIfEnoughSpace(maxSize, inputDavUri, outputDavUri, errorDavUri);
 	}
 

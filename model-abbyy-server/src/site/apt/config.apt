@@ -11,12 +11,12 @@ resources/AbbyyServerOCREngine.properties
   - serverUrl, username, password: Verbindungsdaten zum WebDAV-Server, auf dem sich die Hotfolder 
     von Abbyy befinden
     
-  - input, output, error: Hotfolder die von Abbyy gelesen (input), bzw. beschrieben (output, error) werden
+  - inputFolder, outputFolder, errorFolder: Hotfolder die von Abbyy gelesen (input), bzw. beschrieben (output, error) werden
   
-  - imagesNumberForSubprocess: maximale Anzahl von Bildern pro Prozess. Gilt nur, wenn Multiuser-Betrieb 
-    und Dateisegmentierung eingeschaltet sind.
+  - maxImagesInSubprocess: maximale Anzahl von Bildern pro Prozess. Gilt nur, wenn  
+     Dateisegmentierung eingeschaltet ist.
     
-  - maxThreads: maximale Anzahl von parallel laufenden Prozessen. Achtung: Bei Dateisegmentierung 
+  - maxParallelProcesses: maximale Anzahl von parallel laufenden Prozessen. Achtung: Bei Dateisegmentierung 
     könnte bereits ein Prozess alle Slots belegen, wenn er in entsprechend viele Teil-Prozesse segmentiert 
     wird.
     
@@ -29,7 +29,7 @@ Auswahl der Hotfolder-Implementierung
 resources/contextAbbyy.xml
 +-----------+
 
-  Um eine Klasse auszuwählen, muss hier der Wert vom "class"-Attribut geändeert werden:
+  Um eine Klasse auszuwählen, muss hier der Wert vom "class"-Attribut geändert werden:
    
 +----------------+
   Für WebDAV:

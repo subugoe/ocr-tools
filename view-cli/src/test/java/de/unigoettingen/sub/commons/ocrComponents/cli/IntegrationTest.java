@@ -152,7 +152,7 @@ public class IntegrationTest {
 	private Properties validFileProps() {
 		Properties fileProps = new Properties();
 		fileProps.setProperty("serverUrl", "http://localhost:9001/");
-		fileProps.setProperty("maxThreads", "5");
+		fileProps.setProperty("maxParallelProcesses", "5");
 		return fileProps;
 	}
 
