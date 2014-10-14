@@ -61,11 +61,11 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	private transient Pause pause = new Pause();
 
 	// for unit tests
-	void setAbbyyTicket(AbbyyTicket newTicket) {
-		abbyyTicket = newTicket;
+	HotfolderManager createHotfolderManager() {
+		return new HotfolderManager(props.getProperty("serverUrl"), props.getProperty("user"), props.getProperty("password"));
 	}
-	void setHotfolderManager(HotfolderManager newManager) {
-		hotfolderManager = newManager;
+	AbbyyTicket createAbbyyTicket() {
+		return new AbbyyTicket(this);
 	}
 	void setPause(Pause newPause) {
 		pause = newPause;
@@ -73,8 +73,8 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		
 	public void initialize(Properties initProps) {
 		props = initProps;
-		hotfolderManager = new HotfolderManager(props.getProperty("serverUrl"), props.getProperty("user"), props.getProperty("password"));
-		abbyyTicket = new AbbyyTicket(this);
+		hotfolderManager = createHotfolderManager();
+		abbyyTicket = createAbbyyTicket();
 
 		processId = java.util.UUID.randomUUID().toString();
 		windowsPathForServer = props.getProperty("serverOutputLocation");
