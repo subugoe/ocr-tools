@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import de.uni_goettingen.sub.commons.ocr.api.AbstractEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
-import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
-import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 
 public class AbbyyEngine extends AbstractEngine implements OcrEngine {
@@ -40,18 +38,13 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	private final static Logger logger = LoggerFactory.getLogger(AbbyyEngine.class);
 
 	private Queue<AbbyyProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyProcess>();
-		
+	private Properties props;
+
 	private OcrExecutor pool;
-	
-	private Properties combinedProps;
-	private BeanProvider beanProvider = new BeanProvider();
 	private ProcessSplitter processSplitter = new ProcessSplitter();
 	private LockFileHandler lockHandler;
 	
 	// for unit tests
-	void setBeanProvider(BeanProvider newProvider) {
-		beanProvider = newProvider;
-	}
 	void setProcessSplitter(ProcessSplitter newSplitter) {
 		processSplitter = newSplitter;
 	}
@@ -62,12 +55,8 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		return new LockFileHandler();
 	}
 		
-	public void initialize(Properties userProps) {
-		String configFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
-		FileAccess fileAccess = beanProvider.getFileAccess();
-		Properties fileProps = fileAccess.getPropertiesFromFile(configFile);
-
-		combinedProps = PropertiesCombiner.combinePropsPreferringFirst(userProps, fileProps);
+	public void initialize(Properties initProps) {
+		props = initProps;
 	}
 
 	@Override
@@ -94,20 +83,20 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	private void performRecognition() {
 		started = true;
 		
-		String overwrite = combinedProps.getProperty("lock.overwrite");
+		String overwrite = props.getProperty("lock.overwrite");
 		boolean overwriteLock = "true".equals(overwrite);
 		lockHandler = createLockHandler();
-		lockHandler.setConnectionData(combinedProps.getProperty("serverUrl"), combinedProps.getProperty("user"), combinedProps.getProperty("password"));
+		lockHandler.setConnectionData(props.getProperty("serverUrl"), props.getProperty("user"), props.getProperty("password"));
 		lockHandler.createOrOverwriteLock(overwriteLock);
 			
-		pool = createPool(Integer.parseInt(combinedProps.getProperty("maxParallelProcesses")));
+		pool = createPool(Integer.parseInt(props.getProperty("maxParallelProcesses")));
 		
 		while (!processesQueue.isEmpty()) {
 			AbbyyProcess process = processesQueue.poll();
 			process.setStartedAt(new Date().getTime());
-			boolean split = "true".equals(combinedProps.getProperty("books.split"));
+			boolean split = "true".equals(props.getProperty("books.split"));
 			if (split) {
-				int splitSize = Integer.parseInt(combinedProps.getProperty("maxImagesInSubprocess"));
+				int splitSize = Integer.parseInt(props.getProperty("maxImagesInSubprocess"));
 				List<AbbyyProcess> subProcesses = processSplitter.split(process, splitSize);
 				for (AbbyyProcess subProcess : subProcesses) {
 					pool.execute(subProcess);
@@ -135,7 +124,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		
 		for (OcrProcess process : processesQueue) {
 			long imagesInProcess = process.getNumberOfImages();
-			durationInMillis += imagesInProcess * Integer.parseInt(combinedProps.getProperty("minMillisPerFile"));
+			durationInMillis += imagesInProcess * Integer.parseInt(props.getProperty("minMillisPerFile"));
 		}
 		return (int) (durationInMillis / 1000);
 	}

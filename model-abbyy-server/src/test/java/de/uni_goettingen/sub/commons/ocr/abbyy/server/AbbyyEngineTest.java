@@ -10,14 +10,9 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
-import de.unigoettingen.sub.commons.ocr.util.FileAccess;
-
 public class AbbyyEngineTest {
 
 	private AbbyyEngine engineSut;
-	private BeanProvider beanProviderMock = mock(BeanProvider.class);
-	private FileAccess fileAccessMock = mock(FileAccess.class);
 	private OcrExecutor executorMock = mock(OcrExecutor.class);
 	private LockFileHandler lockHandlerMock = mock(LockFileHandler.class);
 	private ProcessSplitter splitterMock = mock(ProcessSplitter.class);
@@ -28,32 +23,13 @@ public class AbbyyEngineTest {
 		engineSut = spy(engineSutNoSpy);
 		doReturn(executorMock).when(engineSut).createPool(anyInt());
 		doReturn(lockHandlerMock).when(engineSut).createLockHandler();
-		when(beanProviderMock.getFileAccess()).thenReturn(fileAccessMock);
-		when(fileAccessMock.getPropertiesFromFile(anyString())).thenReturn(validFileProps());
-		engineSut.setBeanProvider(beanProviderMock);
 		engineSut.setProcessSplitter(splitterMock);
 		
 	}
 
 	@Test
-	public void shouldReadFileProperties() {
-		engineSut.initialize(validUserProps());
-		
-		verify(fileAccessMock).getPropertiesFromFile("test.properties");
-	}
-
-	@Test
-	public void shouldReadPropertiesFromDefaultFile() {
-		Properties userProps = validUserProps();
-		userProps.remove("abbyy.config");
-		engineSut.initialize(userProps);
-		
-		verify(fileAccessMock).getPropertiesFromFile("gbv-antiqua.properties");
-	}
-	
-	@Test
 	public void shouldNotStartWithEmptyQueue() {
-		engineSut.initialize(validUserProps());
+		engineSut.initialize(validProps());
 		engineSut.recognize();
 		
 		verify(executorMock, never()).execute(any(Runnable.class));
@@ -61,7 +37,7 @@ public class AbbyyEngineTest {
 
 	@Test
 	public void shouldNotStartNonStartableProcess() {
-		engineSut.initialize(validUserProps());
+		engineSut.initialize(validProps());
 		AbbyyProcess processMock = mock(AbbyyProcess.class);
 		when(processMock.canBeStarted()).thenReturn(false);
 		engineSut.addOcrProcess(processMock);
@@ -72,7 +48,7 @@ public class AbbyyEngineTest {
 
 	@Test
 	public void shouldExecuteOneProcess() {
-		engineSut.initialize(validUserProps());
+		engineSut.initialize(validProps());
 		AbbyyProcess processMock = validProcessMock();
 		engineSut.addOcrProcess(processMock);
 		engineSut.recognize();
@@ -85,7 +61,7 @@ public class AbbyyEngineTest {
 
 	@Test
 	public void shouldExecuteTwoProcesses() {
-		engineSut.initialize(validUserProps());
+		engineSut.initialize(validProps());
 		AbbyyProcess processMock1 = validProcessMock();
 		engineSut.addOcrProcess(processMock1);
 		AbbyyProcess processMock2 = validProcessMock();
@@ -98,9 +74,9 @@ public class AbbyyEngineTest {
 
 	@Test
 	public void shouldOverwriteLockFile() {
-		Properties userProps = validUserProps();
-		userProps.setProperty("lock.overwrite", "true");
-		engineSut.initialize(userProps);
+		Properties props = validProps();
+		props.setProperty("lock.overwrite", "true");
+		engineSut.initialize(props);
 		AbbyyProcess processMock = validProcessMock();
 		engineSut.addOcrProcess(processMock);
 		engineSut.recognize();
@@ -110,9 +86,9 @@ public class AbbyyEngineTest {
 
 	@Test
 	public void shouldSplitIntoThree() {
-		Properties userProps = validUserProps();
-		userProps.setProperty("books.split", "true");
-		engineSut.initialize(userProps);
+		Properties props = validProps();
+		props.setProperty("books.split", "true");
+		engineSut.initialize(props);
 		AbbyyProcess processMock = validProcessMock();
 		engineSut.addOcrProcess(processMock);
 		when(splitterMock.split(processMock, 2)).thenReturn(threeSubProcesses());
@@ -128,7 +104,7 @@ public class AbbyyEngineTest {
 	
 	@Test
 	public void shouldEstimateBasedOnMillisPerFile() {
-		engineSut.initialize(validUserProps());
+		engineSut.initialize(validProps());
 		AbbyyProcess processMock = validProcessMock();
 		when(processMock.getNumberOfImages()).thenReturn(4);
 		engineSut.addOcrProcess(processMock);
@@ -144,21 +120,18 @@ public class AbbyyEngineTest {
 		return subProcesses;
 	}
 
-	private Properties validUserProps() {
-		Properties userProps = new Properties();
-		userProps.setProperty("abbyy.config", "test.properties");
-		return userProps;
-	}
-
-	private Properties validFileProps() {
-		Properties fileProps = new Properties();
-		fileProps.setProperty("serverUrl", "http://test.com");
-		fileProps.setProperty("user", "u");
-		fileProps.setProperty("password", "p");
-		fileProps.setProperty("maxParallelProcesses", "5");
-		fileProps.setProperty("maxImagesInSubprocess", "2");
-		fileProps.setProperty("minMillisPerFile", "2000");
-		return fileProps;
+	private Properties validProps() {
+		Properties props = new Properties();
+		// user properties
+		props.setProperty("abbyy.config", "test.properties");
+		// file properties
+		props.setProperty("serverUrl", "http://test.com");
+		props.setProperty("user", "u");
+		props.setProperty("password", "p");
+		props.setProperty("maxParallelProcesses", "5");
+		props.setProperty("maxImagesInSubprocess", "2");
+		props.setProperty("minMillisPerFile", "2000");
+		return props;
 	}
 
 	private AbbyyProcess validProcessMock() {
