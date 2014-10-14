@@ -83,7 +83,7 @@ public class AbbyyOCRProcessTest {
 //		assertNotNull(aop);
 //	}
 
-	@Test
+	//@Test
 	public void executeWithOneImage() throws InterruptedException, IOException {
 		String jobName = "oneImageBook";
 		runProcessInThread(jobName, false);
@@ -92,7 +92,7 @@ public class AbbyyOCRProcessTest {
 		assertTrue(outputFile.exists());
 	}
 
-	@Test
+	//@Test
 	public void executeWithManyImages() throws InterruptedException, IOException {
 		String jobName = "threeImagesBook";
 		runProcessInThread(jobName, false);
@@ -101,7 +101,7 @@ public class AbbyyOCRProcessTest {
 		assertTrue(outputFile.exists());
 	}
 
-	@Test
+	//@Test
 	public void executeWithSplitting() throws InterruptedException, IOException {
 		String jobName = "threeImagesBook";
 		runProcessInThread(jobName, true);
@@ -110,7 +110,7 @@ public class AbbyyOCRProcessTest {
 		assertTrue(outputFile.exists());
 	}
 
-	@Test
+	//@Test
 	public void equality() {
 		AbbyyProcess a1 = new AbbyyProcess();
 		a1.initialize(new Properties());
@@ -120,7 +120,7 @@ public class AbbyyOCRProcessTest {
 		assertFalse(a1.hashCode() == a2.hashCode());
 	}
 	
-	@Test
+	//@Test
 	public void calculateSize() {
 		AbbyyProcess process = new AbbyyProcess();
 		process.initialize(new Properties());

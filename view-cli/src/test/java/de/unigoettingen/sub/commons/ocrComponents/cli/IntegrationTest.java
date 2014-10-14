@@ -152,7 +152,13 @@ public class IntegrationTest {
 	private Properties validFileProps() {
 		Properties fileProps = new Properties();
 		fileProps.setProperty("serverUrl", "http://localhost:9001/");
+		fileProps.setProperty("outputFolder", "output");
+		fileProps.setProperty("resultXmlFolder", "output");
 		fileProps.setProperty("maxParallelProcesses", "5");
+		fileProps.setProperty("maxServerSpace", "1000000000");
+		fileProps.setProperty("minMillisPerFile", "10");
+		fileProps.setProperty("maxMillisPerFile", "1000");
+		fileProps.setProperty("checkInterval", "1");
 		return fileProps;
 	}
 

@@ -31,7 +31,7 @@ public class AbbyyFactory extends OcrFactoryWithProperties {
 	@Override
 	public OcrProcess createProcess() {
 		AbbyyProcess process = new AbbyyProcess();
-		process.initialize(userProperties);
+		process.initialize(getCombinedProps(userProperties));
 		return process;
 	}
 	

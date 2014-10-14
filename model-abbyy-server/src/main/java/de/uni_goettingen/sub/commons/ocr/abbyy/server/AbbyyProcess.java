@@ -36,7 +36,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
 import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
-import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.Pause;
 
 public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializable,Cloneable,
@@ -56,8 +55,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	private String processId;
 
 	transient private AbbyyTicket abbyyTicket;
-	transient private FileAccess fileAccess = new FileAccess();
-	private Properties fileProps;
+	private Properties props;
 	transient private HotfolderManager hotfolderManager;
 	private String windowsPathForServer;
 	private transient Pause pause = new Pause();
@@ -66,9 +64,6 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	void setAbbyyTicket(AbbyyTicket newTicket) {
 		abbyyTicket = newTicket;
 	}
-	void setFileAccess(FileAccess newAccess) {
-		fileAccess = newAccess;
-	}
 	void setHotfolderManager(HotfolderManager newManager) {
 		hotfolderManager = newManager;
 	}
@@ -76,32 +71,20 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		pause = newPause;
 	}
 		
-	public void initialize(Properties userProps) {
-
-		String propertiesFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
-		fileProps = fileAccess.getPropertiesFromFile(propertiesFile);
-
-		String user = userProps.getProperty("user");
-		String password = userProps.getProperty("password");
-		if (user != null) {
-			fileProps.setProperty("user", user);
-		}
-		if (password != null) {
-			fileProps.setProperty("password", password);
-		}
-		
-		hotfolderManager = new HotfolderManager(fileProps.getProperty("serverUrl"), fileProps.getProperty("user"), fileProps.getProperty("password"));
+	public void initialize(Properties initProps) {
+		props = initProps;
+		hotfolderManager = new HotfolderManager(props.getProperty("serverUrl"), props.getProperty("user"), props.getProperty("password"));
 		abbyyTicket = new AbbyyTicket(this);
 
 		processId = java.util.UUID.randomUUID().toString();
-		windowsPathForServer = fileProps.getProperty("serverOutputLocation");
+		windowsPathForServer = props.getProperty("serverOutputLocation");
 		
 		try {
-			URI serverUri = new URI(fileProps.getProperty("serverUrl"));
-			inputDavUri = new URI(serverUri + fileProps.getProperty("inputFolder") + "/");
-			outputDavUri = new URI(serverUri + fileProps.getProperty("outputFolder") + "/");
-			errorDavUri = new URI(serverUri + fileProps.getProperty("errorFolder") + "/");
-			resultXmlDavUri = new URI(serverUri + fileProps.getProperty("resultXmlFolder") + "/");
+			URI serverUri = new URI(props.getProperty("serverUrl"));
+			inputDavUri = new URI(serverUri + props.getProperty("inputFolder") + "/");
+			outputDavUri = new URI(serverUri + props.getProperty("outputFolder") + "/");
+			errorDavUri = new URI(serverUri + props.getProperty("errorFolder") + "/");
+			resultXmlDavUri = new URI(serverUri + props.getProperty("resultXmlFolder") + "/");
 
 			abbyyTicket.setRemoteInputFolder(inputDavUri);
 			abbyyTicket.setRemoteErrorFolder(errorDavUri);
@@ -119,7 +102,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	public void run() {
 		long startTime = System.currentTimeMillis();
 
-		long maxMillis = Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
+		long maxMillis = Long.parseLong(props.getProperty("maxMillisPerFile"));
 		abbyyTicket.setProcessTimeout((long) ocrImages.size() * maxMillis);
 
 		
@@ -134,8 +117,8 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			logger.info("Copying images to server. (" + getName() + ")");
 			hotfolderManager.copyImagesToHotfolder(ocrImages);
 
-			long minWait = ocrImages.size() * Long.parseLong(fileProps.getProperty("minMillisPerFile"));
-			long maxWait = ocrImages.size() * Long.parseLong(fileProps.getProperty("maxMillisPerFile"));
+			long minWait = ocrImages.size() * Long.parseLong(props.getProperty("minMillisPerFile"));
+			long maxWait = ocrImages.size() * Long.parseLong(props.getProperty("maxMillisPerFile"));
 			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes) (" + getName() + ")");
 			
 			pause.forMilliseconds(minWait);
@@ -147,7 +130,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			logger.info("Waking up, waiting another "
 					+ restTime + " milli seconds for results (" + restTime/1000/60 + " minutes) (" + getName() + ")");
 			
-			long waitInterval = ocrImages.size() * Long.parseLong(fileProps.getProperty("checkInterval"));
+			long waitInterval = ocrImages.size() * Long.parseLong(props.getProperty("checkInterval"));
 			hotfolderManager.waitForResults(restTime, waitInterval, ocrOutputs, errorResultXmlUri);
 			
 			hotfolderManager.retrieveResults(ocrOutputs);
@@ -235,7 +218,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	 * 
 	 */
 	public void checkHotfolderState() throws IOException, IllegalStateException {
-		long maxSize = Long.parseLong(fileProps.getProperty("maxServerSpace"));
+		long maxSize = Long.parseLong(props.getProperty("maxServerSpace"));
 		hotfolderManager.checkIfEnoughSpace(maxSize, inputDavUri, outputDavUri, errorDavUri);
 	}
 
