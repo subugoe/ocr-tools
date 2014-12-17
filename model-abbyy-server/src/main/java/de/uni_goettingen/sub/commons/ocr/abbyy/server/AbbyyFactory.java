@@ -24,25 +24,25 @@ public class AbbyyFactory extends OcrFactoryWithProperties {
 	@Override
 	public OcrEngine createEngine() {
 		AbbyyEngine engine = new AbbyyEngine();
-		engine.initialize(getCombinedProps(userProperties));
+		engine.initialize(getCombinedProps());
 		return engine;
 	}
 
 	@Override
 	public OcrProcess createProcess() {
 		AbbyyProcess process = new AbbyyProcess();
-		process.initialize(getCombinedProps(userProperties));
+		process.initialize(getCombinedProps());
 		return process;
 	}
 	
-	protected Properties getCombinedProps(Properties userProps) {
-		String configFile = userProps.getProperty("abbyy.config", "gbv-antiqua.properties");
+	protected Properties getCombinedProps() {
+		String configFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
 		FileAccess fileAccess = beanProvider.getFileAccess();
 		Properties fileProps = fileAccess.getPropertiesFromFile(configFile);
 
 		Properties combinedProps = new Properties(fileProps);
-		for (String userKey : userProps.stringPropertyNames()) {
-			combinedProps.setProperty(userKey, userProps.getProperty(userKey));
+		for (String userKey : userProperties.stringPropertyNames()) {
+			combinedProps.setProperty(userKey, userProperties.getProperty(userKey));
 		}
 		return combinedProps;
 	}

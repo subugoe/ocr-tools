@@ -14,7 +14,7 @@ public class AbbyyMultiuserFactory  extends AbbyyFactory {
 	@Override
 	public OcrEngine createEngine() {
 		AbbyyMultiuserEngine engine = new AbbyyMultiuserEngine();
-		engine.initialize(getCombinedProps(userProperties));
+		engine.initialize(getCombinedProps());
 		return engine;
 	}
 
