@@ -21,32 +21,10 @@ package de.uni_goettingen.sub.commons.ocr.api;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The Class AbstractEngine is a abstract super class for {@link OcrEngine}
- * implementations. It adds two methods to be able to provide metadata for the
- * different implementations {@link #getName()} and {@link #getVersion()}.
- * 
- * @version 0.9
- * @author abergna
- * @author cmahnke
- */
 public abstract class AbstractEngine implements OcrEngine {
 
-	/** A simple list containing {@link OcrProcess} that will be processed */
-	protected List<OcrProcess> ocrProcess = new ArrayList<OcrProcess>();
+	protected List<OcrProcess> ocrProcesses = new ArrayList<OcrProcess>();
 
-	// State variables
-	/** Indicates if the processing of the engine has started. */
 	protected Boolean started = false;
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.api.OcrEngine#getOcrProcess()
-	 */
-	public List<OcrProcess> getOcrProcess() {
-		return ocrProcess;
-	}
-
 
 }

@@ -18,20 +18,20 @@ public class OcrsdkEngine extends AbstractEngine {
 	 */
 	@Override
 	public void recognize() {
-		for (OcrProcess process : ocrProcess) {
+		for (OcrProcess process : ocrProcesses) {
 			((OcrsdkProcess)process).start();
 		}
 	}
 
 	@Override
 	public void addOcrProcess(OcrProcess ocrp) {
-		ocrProcess.add(ocrp);
+		ocrProcesses.add(ocrp);
 	}
 
 	@Override
 	public int getEstimatedDurationInSeconds() {
 		int duration = 0;
-		for (OcrProcess process : ocrProcess) {
+		for (OcrProcess process : ocrProcesses) {
 			int imagesInProcess = process.getNumberOfImages();
 			duration += imagesInProcess * 5;
 		}

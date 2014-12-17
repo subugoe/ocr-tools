@@ -16,7 +16,7 @@ public class TesseractOCREngine extends AbstractEngine implements OcrEngine {
 	 */
 	@Override
 	public void addOcrProcess(OcrProcess process) {
-		ocrProcess.add(process);
+		ocrProcesses.add(process);
 	}
 
 	/* (non-Javadoc)
@@ -25,7 +25,7 @@ public class TesseractOCREngine extends AbstractEngine implements OcrEngine {
 	@Override
 	public void recognize() {
 
-		for (OcrProcess process : ocrProcess) {
+		for (OcrProcess process : ocrProcesses) {
 			((TesseractOCRProcess) process).start();
 		}
 
@@ -34,7 +34,7 @@ public class TesseractOCREngine extends AbstractEngine implements OcrEngine {
 	@Override
 	public int getEstimatedDurationInSeconds() {
 		int duration = 0;
-		for (OcrProcess process : ocrProcess) {
+		for (OcrProcess process : ocrProcesses) {
 			int imagesInProcess = process.getNumberOfImages();
 			duration += imagesInProcess * 5;
 		}

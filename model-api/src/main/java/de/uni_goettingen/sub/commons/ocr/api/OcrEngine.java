@@ -20,8 +20,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
-import java.util.List;
-
 /**
  * The Interface OcrEngine is the main entry point for each engine. It also
  * works as simple factory for engine specific implementations of the API
@@ -57,15 +55,6 @@ public interface OcrEngine {
 	 */
 
 	abstract public void addOcrProcess(OcrProcess ocrp);
-
-	/**
-	 * Adds OCR process.
-	 * 
-	 * @return the OCR process
-	 * @see OcrProcess
-	 */
-	abstract public List<OcrProcess> getOcrProcess();
-
 
 	/**
 	 * Inits the OcrEngine. This an be used to check if the engine is

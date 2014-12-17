@@ -229,12 +229,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 
 	@Override
 	public void addOcrProcess (OcrProcess ocrp) {
-		ocrProcess.add(ocrp);
-	}
-
-	@Override
-	public List<OcrProcess> getOcrProcess () {
-		return ocrProcess;
+		ocrProcesses.add(ocrp);
 	}
 
 	protected class SegmentedFinereaderCLIOCRProcess implements Runnable {
@@ -267,7 +262,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 
 	@Override
 	public void recognize () {
-		recognize(ocrProcess.get(0));
+		recognize(ocrProcesses.get(0));
 	}
 
 
