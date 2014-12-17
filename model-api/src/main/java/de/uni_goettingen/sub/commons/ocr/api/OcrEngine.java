@@ -20,53 +20,11 @@ package de.uni_goettingen.sub.commons.ocr.api;
  * limitations under the License.
  */
 
-/**
- * The Interface OcrEngine is the main entry point for each engine. It also
- * works as simple factory for engine specific implementations of the API
- * interfaces. Note that this may change before version 1.0 will be published.
- * The return types for the {@link #recognize()} methods isn't also set in stone
- * yet since {@link java.util.Observable} isn't optimal.
- * 
- * @version 0.9
- * @author abergna
- * @author cmahnke
- */
 public interface OcrEngine {
 
+	public void addOcrProcess(OcrProcess process);
 
-	/**
-	 * Recognize the list of given OcrProcess. Throws an IllegalStateException
-	 * if no process was added. Does nothing the recognizer is already working.
-	 * The returned {@link java.util.Observable} can be used to track the
-	 * progress of the recognition process.
-	 * 
-	 * @see OcrProcess
-	 */
-	abstract public void recognize();
+	public void recognize();
 
-	/**
-	 * Adds a OCR process. The returned {@link java.util.Observable} can be used
-	 * to track the progress of the recognition process.
-	 * 
-	 * @param ocrp
-	 *            the ocrp
-	 * @return the observer
-	 * @see OcrProcess
-	 */
-
-	abstract public void addOcrProcess(OcrProcess ocrp);
-
-	/**
-	 * Inits the OcrEngine. This an be used to check if the engine is
-	 * operational. Implementations should implement this method to check if an
-	 * Engine is licensed or a server component can be reached. Note the the API
-	 * doesn't prohibit the usage of an engine that failed to initialize. Use it
-	 * on your own risk. If the engine was already initialized this also returns
-	 * true.
-	 * 
-	 * @return true if the engine could be initialized, false otherwise
-	 */
-	//abstract public Boolean init();
-
-	abstract public int getEstimatedDurationInSeconds();
+	public int getEstimatedDurationInSeconds();
 }
