@@ -35,6 +35,7 @@ public class AbbyyFactory extends OcrFactoryWithProperties {
 		return process;
 	}
 	
+	// TODO: check for all necessary file props and normalize serverUrl to /
 	protected Properties getCombinedProps() {
 		String configFile = userProperties.getProperty("abbyy.config", "gbv-antiqua.properties");
 		FileAccess fileAccess = beanProvider.getFileAccess();

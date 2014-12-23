@@ -89,7 +89,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			abbyyTicket.setRemoteInputFolder(inputDavUri);
 			abbyyTicket.setRemoteErrorFolder(errorDavUri);
 		} catch (URISyntaxException e) {
-			logger.error("Can't setup server uris (" + getName() + ")", e);
+			logger.error("Can't setup server uris (" + getName() + ")");
 			throw new IllegalArgumentException(e);
 		}
 	}
