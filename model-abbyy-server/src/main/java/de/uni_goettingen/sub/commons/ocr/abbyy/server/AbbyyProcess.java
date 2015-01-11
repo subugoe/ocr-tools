@@ -139,14 +139,13 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			logger.info("OCR Output file has been created successfully after " + (endTime - startTime) + " milliseconds (" + getName() + ")");
 					
 		} catch (TimeoutException e) {
-			logger.error("Got an timeout while waiting for results (" + getName() + ")", e);
+			logger.error("Got a timeout while waiting for results (" + getName() + ")", e);
 			failed = true;
-			
 		} catch (IOException e) {
-			failed = true;
 			logger.error("Error writing files or ticket (" + getName() + ")", e);
+			failed = true;
 		} catch (URISyntaxException e) {
-			logger.error("Error seting tmp URI for ticket (" + getName() + ")", e);
+			logger.error("Error converting URI (" + getName() + ")", e);
 			failed = true;
 		} catch (OcrException e) {
 			logger.error("Error during OCR Process (" + getName() + ")", e);
