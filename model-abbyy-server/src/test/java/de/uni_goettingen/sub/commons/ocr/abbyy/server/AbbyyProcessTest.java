@@ -6,14 +6,14 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import de.unigoettingen.sub.commons.ocr.util.Pause;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
+import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
+import de.unigoettingen.sub.commons.ocr.util.Pause;
 
 public class AbbyyProcessTest {
 
@@ -54,8 +54,8 @@ public class AbbyyProcessTest {
 
 		processSut.run();
 		
-		verify(hotManagerMock).copyImagesToHotfolder(any(List.class));
-		verify(hotManagerMock).retrieveResults(any(List.class));
+		verify(hotManagerMock).copyImagesToHotfolder(anyListOf(OcrImage.class));
+		verify(hotManagerMock).retrieveResults(anyListOf(OcrOutput.class));
 		verify(mergerMock).update();
 		
 		assertTrue("Process should finish", processSut.getIsFinished());
@@ -63,17 +63,17 @@ public class AbbyyProcessTest {
 	
 	@Test
 	public void shouldFailWithTimeout() throws TimeoutException, IOException {
-		doThrow(TimeoutException.class).when(hotManagerMock).waitForResults(anyLong(), anyLong(), any(List.class), any(URI.class));
+		doThrow(TimeoutException.class).when(hotManagerMock).waitForResults(anyLong(), anyLong(), anyListOf(OcrOutput.class), any(URI.class));
 		processSut.initialize(validProps());
 		processSut.run();
 		
-		verify(hotManagerMock, never()).retrieveResults(any(List.class));
+		verify(hotManagerMock, never()).retrieveResults(anyListOf(OcrOutput.class));
 		assertTrue("Process must fail", processSut.hasFailed());
 	}
 
 	@Test
 	public void shouldFailWithIO() throws IOException {
-		doThrow(IOException.class).when(hotManagerMock).retrieveResults(any(List.class));
+		doThrow(IOException.class).when(hotManagerMock).retrieveResults(anyListOf(OcrOutput.class));
 		processSut.initialize(validProps());
 		processSut.run();
 		
