@@ -3,6 +3,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,6 +12,7 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
 import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 import de.unigoettingen.sub.commons.ocr.util.Pause;
@@ -28,7 +30,7 @@ public class AbbyyProcessTest {
 	public void beforeEachTest() throws Exception {
 		AbbyyProcess processSutNoSpy = new AbbyyProcess();
 		processSut = spy(processSutNoSpy);
-		doReturn(ticketMock).when(processSut).createAbbyyTicket();
+		doReturn(ticketMock).when(processSut).createAbbyyTicket(any(AbbyyProcess.class));
 		doReturn(hotManagerMock).when(processSut).createHotfolderManager();
 		processSut.setPause(pauseMock);
 		processSut.setMerger(mergerMock);
@@ -58,7 +60,7 @@ public class AbbyyProcessTest {
 		verify(hotManagerMock).retrieveResults(anyListOf(OcrOutput.class));
 		verify(mergerMock).update();
 		
-		assertTrue("Process should finish", processSut.getIsFinished());
+		assertTrue("Process should finish", processSut.hasFinished());
 	}
 	
 	@Test
@@ -87,6 +89,90 @@ public class AbbyyProcessTest {
 		processSut.run();
 		
 		assertTrue("Process must fail", processSut.hasFailed());
+	}
+	
+	@Test
+	public void shouldAddOneImage() throws URISyntaxException {
+		processSut.initialize(validProps());
+		assertEquals("Collection size before", 0, processSut.getRemoteImageNames().size());
+		processSut.addImage(new URI("file://test.tif"));
+		
+		assertEquals("Collection size after", 1, processSut.getRemoteImageNames().size());
+	}
+	
+	@Test
+	public void shouldNameImageCorrectly() throws URISyntaxException {
+		processSut.initialize(validProps());
+		processSut.setName("myProcess");
+		processSut.addImage(new URI("file://test.tif"));
+		
+		String imageName = processSut.getRemoteImageNames().get(0);
+		assertEquals("Image name", "myProcess-test.tif", imageName);
+		
+	}
+	
+	@Test
+	public void shouldAddOutputsAndResultXml() {
+		processSut.initialize(validProps());
+		processSut.addOutput(OcrFormat.TXT);
+		
+		assertEquals("Number of outputs", 2, processSut.getAllOutputFormats().size());
+
+		processSut.addOutput(OcrFormat.XML);
+		
+		assertEquals("Second number of outputs", 3, processSut.getAllOutputFormats().size());
+	}
+	
+	@Test
+	public void shouldMakeACopyWithEmptyImages() throws URISyntaxException {
+		processSut.initialize(validProps());
+		processSut.addImage(new URI("file://test.tif"));
+		
+		AbbyyProcess copy = processSut.createSubProcess();
+		
+		assertEquals("Images must be empty", 0, copy.getImages().size());
+	}
+	
+	@Test
+	public void shouldBeEqualWithSameProcessId() {
+		AbbyyProcess firstProcess = new AbbyyProcess();
+		AbbyyProcess secondProcess = new AbbyyProcess();
+		firstProcess.setProcessId("id1");
+		secondProcess.setProcessId("id2");
+		
+		assertFalse("Must not be equal", firstProcess.equals(secondProcess));
+		
+		firstProcess.setProcessId("id1");
+		secondProcess.setProcessId("id1");
+		
+		assertTrue("Must be equal", firstProcess.equals(secondProcess));
+		
+	}
+	
+	@Test
+	public void shouldBeStartableWithImagesAndOutputs() throws URISyntaxException {
+		processSut.initialize(validProps());
+		assertFalse("Not startable yet", processSut.canBeStarted());
+		
+		processSut.addOutput(OcrFormat.XML);
+		assertFalse("Still not startable", processSut.canBeStarted());
+		
+		processSut.addImage(new URI("file://test.tif"));
+		assertTrue("Now must be startable", processSut.canBeStarted());
+	}
+	
+	@Test
+	public void shouldGetCorrectOutputUri() throws URISyntaxException {
+		processSut.initialize(validProps());
+		processSut.setOutputDir(new File("/tmp"));
+		processSut.setName("result");
+		
+		URI nullUri = processSut.getOutputUriForFormat(OcrFormat.XML);
+		assertNull(nullUri);
+		
+		processSut.addOutput(OcrFormat.XML);
+		URI xmlUri = processSut.getOutputUriForFormat(OcrFormat.XML);
+		assertEquals(new URI("file:/tmp/result.xml"), xmlUri);
 	}
 	
 	private Properties validProps() {

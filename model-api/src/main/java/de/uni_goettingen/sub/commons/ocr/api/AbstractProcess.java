@@ -46,16 +46,16 @@ public abstract class AbstractProcess implements OcrProcess,Serializable {
 	protected File outputDir;
 	
 	@Override
-	public void addLanguage (Locale locale) {
+	public void addLanguage(Locale locale) {
 		langs.add(locale);
 	}
 
 	@Override
-	public Set<Locale> getLanguages () {
+	public Set<Locale> getLanguages() {
 		return langs;
 	}
 
-	public List<OcrImage> getImages () {
+	public List<OcrImage> getImages() {
 		return ocrImages;
 	}
 	
@@ -93,22 +93,22 @@ public abstract class AbstractProcess implements OcrProcess,Serializable {
 	}
 
 	@Override
-	public OcrQuality getQuality () {
+	public OcrQuality getQuality() {
 		return quality;
 	}
 
 	@Override
-	public void setQuality (OcrQuality quality) {
+	public void setQuality(OcrQuality quality) {
 		this.quality = quality;
 	}
 
 	@Override
-	public OcrTextType getTextType () {
+	public OcrTextType getTextType() {
 		return this.textType;
 	}
 	
 	@Override
-	public void setTextType (OcrTextType t) {
+	public void setTextType(OcrTextType t) {
 		this.textType = t ;
 	}
 	

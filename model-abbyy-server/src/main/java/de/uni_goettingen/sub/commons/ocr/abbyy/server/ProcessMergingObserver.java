@@ -30,7 +30,7 @@ public class ProcessMergingObserver {
 	public void update() {
 		synchronized (monitor) {	   
 			for (AbbyyProcess sub : subProcesses) {
-				boolean currentFinished = sub.getIsFinished();
+				boolean currentFinished = sub.hasFinished();
 				if (!currentFinished) {
 					return;
 				}

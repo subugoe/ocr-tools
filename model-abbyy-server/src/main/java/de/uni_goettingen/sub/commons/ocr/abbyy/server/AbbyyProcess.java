@@ -35,7 +35,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
 import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 import de.unigoettingen.sub.commons.ocr.util.Pause;
 
 public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializable,Cloneable,
@@ -64,8 +63,8 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	HotfolderManager createHotfolderManager() {
 		return new HotfolderManager(props.getProperty("serverUrl"), props.getProperty("user"), props.getProperty("password"));
 	}
-	AbbyyTicket createAbbyyTicket() {
-		return new AbbyyTicket(this);
+	AbbyyTicket createAbbyyTicket(AbbyyProcess correspondingProcess) {
+		return new AbbyyTicket(correspondingProcess);
 	}
 	void setPause(Pause newPause) {
 		pause = newPause;
@@ -74,7 +73,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	public void initialize(Properties initProps) {
 		props = initProps;
 		hotfolderManager = createHotfolderManager();
-		abbyyTicket = createAbbyyTicket();
+		abbyyTicket = createAbbyyTicket(this);
 
 		processId = java.util.UUID.randomUUID().toString();
 		windowsPathForServer = props.getProperty("serverOutputLocation");
@@ -147,9 +146,6 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		} catch (URISyntaxException e) {
 			logger.error("Error converting URI (" + getName() + ")", e);
 			failed = true;
-		} catch (OcrException e) {
-			logger.error("Error during OCR Process (" + getName() + ")", e);
-			failed = true;
 		} finally {
 			try {	
 				hotfolderManager.deleteImages(ocrImages);
@@ -157,7 +153,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 				//hotfolder.deleteIfExists(errorResultUri);
 				hotfolderManager.deleteTicket(abbyyTicket);
 				if(processMerger != null) {
-					setIsFinished();
+					finished = true;
 					processMerger.update();
 				}		
 				logger.info("Process finished  (" + getName() + ")");
@@ -219,7 +215,6 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		}
 		ocrOutputs.add(aoo);
 		
-		// TODO: metadata should not be a special case
 		if (getOutputUriForFormat(OcrFormat.METADATA) == null) {
 			addResultXmlOutput();
 		}
@@ -233,7 +228,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			resultXml.setRemoteUri(outputResultUri);
 		} catch (URISyntaxException e) {
 			logger.error("Error while setting up URIs (" + getName() + ")");
-			throw new OcrException(e);
+			throw new IllegalArgumentException(e);
 		}
 		resultXml.setFormat(OcrFormat.METADATA);
 		ocrOutputs.add(resultXml);
@@ -250,14 +245,9 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	public void setProcessId(String processId) {
 		this.processId = processId;
 	}
-
 	
-	public boolean getIsFinished() {
+	public boolean hasFinished() {
 		return finished;
-	}
-
-	public void setIsFinished() {
-		this.finished = true;
 	}
 	
 	public List<String> getRemoteImageNames() {
@@ -273,7 +263,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			AbbyyProcess subProcess = (AbbyyProcess)super.clone();
 			subProcess.ocrImages = new ArrayList<OcrImage>();
 			subProcess.ocrOutputs =  new ArrayList<OcrOutput>();
-			subProcess.abbyyTicket = new AbbyyTicket(subProcess);
+			subProcess.abbyyTicket = createAbbyyTicket(subProcess);
 			subProcess.abbyyTicket.setRemoteInputFolder(inputDavUri);
 			subProcess.abbyyTicket.setRemoteErrorFolder(errorDavUri);
 			return subProcess;
