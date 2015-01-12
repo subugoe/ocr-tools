@@ -46,13 +46,4 @@ public abstract class AbstractImage implements OcrImage {
 		this.localUri = newUri;
 	}
 
-	public long getFileSize() {
-		return fileSize;
-	}
-
-	@Override
-	public void setFileSize(long size) {
-		this.fileSize = size;
-	}
-
 }

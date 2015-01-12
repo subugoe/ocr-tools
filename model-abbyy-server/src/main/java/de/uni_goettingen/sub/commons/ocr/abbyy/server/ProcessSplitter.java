@@ -44,7 +44,7 @@ public class ProcessSplitter {
 			AbbyyProcess subProcess = process.createSubProcess();
 
 			for (OcrImage imageFromChunk : chunk) {
-				subProcess.addImage(imageFromChunk.getLocalUri(), imageFromChunk.getFileSize());
+				subProcess.addImage(imageFromChunk.getLocalUri());
 			}
 			
 			String subProcessName = process.getName() + "_" + chunkIndex + "of" + numberOfChunks;

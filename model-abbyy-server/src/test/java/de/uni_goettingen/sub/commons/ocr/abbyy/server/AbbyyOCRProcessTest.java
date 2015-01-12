@@ -119,18 +119,7 @@ public class AbbyyOCRProcessTest {
 		assertFalse(a1.equals(a2));
 		assertFalse(a1.hashCode() == a2.hashCode());
 	}
-	
-	//@Test
-	public void calculateSize() {
-		AbbyyProcess process = new AbbyyProcess();
-		process.initialize(new Properties());
-
-		process.addImage(new File("/test1").toURI(), 1L);
-		process.addImage(new File("/test2").toURI(), 2L);
-		long totalSize = process.calculateSize();
-		assertEquals(3L, totalSize);
-	}
-	
+		
 	public void runProcessInThread(String jobName, boolean split) throws IOException, InterruptedException {
 		AbbyyProcess process = new AbbyyProcess();
 		Properties props = new Properties();
@@ -146,7 +135,7 @@ public class AbbyyOCRProcessTest {
 		for (File imageFile : imageFiles) {
 			// could be the .svn directory
 			if(imageFile.isFile()) {
-				process.addImage(imageFile.toURI(), 1L);
+				process.addImage(imageFile.toURI());
 			}
 		}
 

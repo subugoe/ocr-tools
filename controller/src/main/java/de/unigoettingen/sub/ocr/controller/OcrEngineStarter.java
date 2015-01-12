@@ -40,7 +40,7 @@ public class OcrEngineStarter {
 			process.setOutputDir(new File(params.outputFolder));
 			File[] allPages = fileAccess.getAllImagesFromFolder(bookFolder, params.inputFormats);
 			for (File page : allPages) {
-				process.addImage(page.toURI(), page.length());
+				process.addImage(page.toURI());
 			}
 			
 			for (String outFormat : params.outputFormats) {

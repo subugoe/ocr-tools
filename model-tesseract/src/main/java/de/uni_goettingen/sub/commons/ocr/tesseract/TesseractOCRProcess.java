@@ -81,10 +81,9 @@ public class TesseractOCRProcess extends AbstractProcess implements
 	}
 
 	@Override
-	public void addImage(URI localUri, long fileSize) {
+	public void addImage(URI localUri) {
 		OcrImage image = new AbstractImage() {};
 		image.setLocalUri(localUri);
-		image.setFileSize(fileSize);
 		ocrImages.add(image);
 	}
 

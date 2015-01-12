@@ -63,10 +63,9 @@ public class AbbyyCLIOCRProcess extends AbstractProcess implements OcrProcess, R
 	private Integer progress;
 
 	@Override
-	public void addImage(URI localUri, long fileSize) {
+	public void addImage(URI localUri) {
 		OcrImage image = new AbstractImage() {};
 		image.setLocalUri(localUri);
-		image.setFileSize(fileSize);
 		ocrImages.add(image);
 	}
 	

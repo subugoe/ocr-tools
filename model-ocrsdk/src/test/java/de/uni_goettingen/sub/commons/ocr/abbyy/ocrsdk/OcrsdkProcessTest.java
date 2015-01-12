@@ -60,7 +60,7 @@ public class OcrsdkProcessTest {
 		outputTxt.setLocalUri(new File("target/testResult.txt").toURI());
 		outputTxt.setFormat(OcrFormat.TXT);
 		OcrsdkProcess process = new OcrsdkProcess("", "");
-		process.addImage(image.getLocalUri(), image.getFileSize());
+		process.addImage(image.getLocalUri());
 //		process.addOutput(outputXml);
 //		process.addOutput(outputTxt);
 		process.addLanguage(Locale.ENGLISH);

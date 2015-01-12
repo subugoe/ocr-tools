@@ -171,10 +171,9 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	}
 
 	@Override
-	public void addImage(URI localUri, long fileSize) {
+	public void addImage(URI localUri) {
 		AbbyyImage image = new AbbyyImage();
 		image.setLocalUri(localUri);
-		image.setFileSize(fileSize);
 		String localUriString = localUri.toString();
 		String remoteFileName = name + "-" + localUriString.substring(
 						localUriString.lastIndexOf("/") + 1,
@@ -192,21 +191,6 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		ocrImages.add(image);
 	}
 	
-	
-	/**
-	 * Calculate size of the OCRImages representing this process
-	 * 
-	 * @return the long, size of all files
-	 */
-	public Long calculateSize() {
-		Long size = 0l;
-		for (OcrImage i : ocrImages) {
-			AbbyyImage aoi = (AbbyyImage) i;
-			size += aoi.getFileSize();
-		}
-		return size;
-	}
-
 	public boolean hasFailed() {
 		return failed;
 	}

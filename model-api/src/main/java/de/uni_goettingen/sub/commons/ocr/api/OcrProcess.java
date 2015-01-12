@@ -55,7 +55,7 @@ public interface OcrProcess {
 
 	public void addLanguage(Locale lang);
 		
-	public void addImage(URI localUri, long fileSize);
+	public void addImage(URI localUri);
 
 	public int getNumberOfImages();
 	

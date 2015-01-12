@@ -52,12 +52,4 @@ public interface OcrImage {
 	 */
 	abstract public void setLocalUri(URI localUri);
 	
-	/**
-	 * Sets the size of file
-	 * @param size 
-	 */
-	public void setFileSize(long fileSize);
-	
-	public long getFileSize();
-
 }

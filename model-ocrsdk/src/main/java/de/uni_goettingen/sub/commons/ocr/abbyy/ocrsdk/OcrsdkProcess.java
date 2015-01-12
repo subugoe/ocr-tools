@@ -60,10 +60,9 @@ public class OcrsdkProcess extends AbstractProcess {
 	}
 	
 	@Override
-	public void addImage(URI localUri, long fileSize) {
+	public void addImage(URI localUri) {
 		OcrsdkImage image = new OcrsdkImage();
 		image.setLocalUri(localUri);
-		image.setFileSize(fileSize);
 		ocrImages.add(image);
 	}
 	
