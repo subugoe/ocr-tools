@@ -82,7 +82,7 @@ public class HotfolderManager {
 		
 		synchronized (monitor) {
 			OutputStream os = hotfolder.createTmpFile(ticketFileName);
-			abbyyTicket.write(os, name);
+			abbyyTicket.write(os);
 			os.close();
 		}
 		

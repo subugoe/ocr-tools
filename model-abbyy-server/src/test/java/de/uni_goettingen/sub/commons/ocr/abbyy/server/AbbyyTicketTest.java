@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -31,17 +32,13 @@ public class AbbyyTicketTest {
 		when(processMock.getPriority()).thenReturn(OcrPriority.NORMAL);
 		when(processMock.getTextType()).thenReturn(OcrTextType.NORMAL);
 		
-		Set<Locale> langs = new HashSet<Locale>();
-		langs.add(Locale.GERMAN);
-		when(processMock.getLanguages()).thenReturn(langs);
+		when(processMock.getLanguages()).thenReturn(new HashSet<Locale>(Arrays.asList(Locale.GERMAN, Locale.ENGLISH)));
 		
 		when(processMock.getQuality()).thenReturn(OcrQuality.BEST);
 		when(processMock.canBeStarted()).thenReturn(true);
-		
-		AbbyyOutput output = new AbbyyOutput();
-		output.setFormat(OcrFormat.XML);
-		output.setRemoteUri(new URI("http://test/result.xml"));
-		when(processMock.getOcrOutputs()).thenReturn(Arrays.asList((OcrOutput)output));
+				
+		when(processMock.getAllOutputFormats()).thenReturn(Collections.singleton(OcrFormat.XML));
+		when(processMock.getOutputUriForFormat(OcrFormat.XML)).thenReturn(new URI("file:/test/result.xml"));
 		
 		when(processMock.getWindowsPathForServer()).thenReturn("c://temp");
 		
@@ -51,7 +48,7 @@ public class AbbyyTicketTest {
 	@Test
 	public void test() throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ticketSut.write(baos, "id");
+		ticketSut.write(baos);
 		
 		System.out.println(baos.toString());
 	}

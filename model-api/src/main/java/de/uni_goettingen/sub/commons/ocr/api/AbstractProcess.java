@@ -88,11 +88,6 @@ public abstract class AbstractProcess implements OcrProcess,Serializable {
 	}
 
 	@Override
-	public List<OcrOutput> getOcrOutputs() {
-		return this.ocrOutputs;
-	}
-
-	@Override
 	public OcrQuality getQuality() {
 		return quality;
 	}

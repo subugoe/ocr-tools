@@ -62,15 +62,6 @@ public interface OcrProcess {
 	public void setOutputDir(File outputDir);
 
 	/**
-	 * Gets the ocr output as a Map. The keys of this map represent the
-	 * different possible formats. The values contain references to the results.
-	 * 
-	 * @return the ocr output
-	 * @see OcrOutput
-	 */
-	public List<OcrOutput> getOcrOutputs();
-
-	/**
 	 * Adds the output for the given format
 	 * 
 	 * @param format

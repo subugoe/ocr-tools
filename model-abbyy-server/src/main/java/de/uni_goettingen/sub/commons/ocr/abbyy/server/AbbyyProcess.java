@@ -203,6 +203,14 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 
 	@Override
 	public void addOutput(OcrFormat format) {
+//		if (format == OcrFormat.METADATA && resultXmlNotThere()) {
+//			addResultXmlOutput();
+//			return;
+//		}
+		if (resultXmlNotThere()) {
+			addResultXmlOutput();
+		}
+		
 		AbbyyOutput aoo = new AbbyyOutput();
 		aoo.setLocalUri(constructLocalUri(format));
 		aoo.setFormat(format);
@@ -214,10 +222,10 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			throw new IllegalArgumentException(e);
 		}
 		ocrOutputs.add(aoo);
-		
-		if (getOutputUriForFormat(OcrFormat.METADATA) == null) {
-			addResultXmlOutput();
-		}
+	}
+	
+	private boolean resultXmlNotThere() {
+		return getOutputUriForFormat(OcrFormat.METADATA) == null;
 	}
 
 	private void addResultXmlOutput() {
@@ -292,6 +300,10 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	@Override
 	public int hashCode() {
 		return this.getProcessId().hashCode();
+	}
+	public String getRemoteOutputFileName(OcrFormat outputFormat) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -74,12 +74,11 @@ public class ProcessSplitter {
 	}
 
 	private void addOutputsToSubProcess(AbbyyProcess subProcess, AbbyyProcess process) {
-		for (OcrOutput entry : process.getOcrOutputs()) {
+		for (OcrFormat outputFormat : process.getAllOutputFormats()) {
 			// TODO: metadata should not be a special case
-			if (entry.getFormat() == OcrFormat.METADATA) {
+			if (outputFormat == OcrFormat.METADATA) {
 				continue;
 			}
-			OcrFormat outputFormat = entry.getFormat();
 			subProcess.addOutput(outputFormat);
 		}
 	}
