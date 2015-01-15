@@ -203,10 +203,12 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 
 	@Override
 	public void addOutput(OcrFormat format) {
-//		if (format == OcrFormat.METADATA && resultXmlNotThere()) {
-//			addResultXmlOutput();
-//			return;
-//		}
+		if (format == OcrFormat.METADATA) {
+			if (resultXmlNotThere()) {
+				addResultXmlOutput();
+			}
+			return;
+		}
 		if (resultXmlNotThere()) {
 			addResultXmlOutput();
 		}
@@ -300,10 +302,6 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	@Override
 	public int hashCode() {
 		return this.getProcessId().hashCode();
-	}
-	public String getRemoteOutputFileName(OcrFormat outputFormat) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

@@ -75,10 +75,6 @@ public class ProcessSplitter {
 
 	private void addOutputsToSubProcess(AbbyyProcess subProcess, AbbyyProcess process) {
 		for (OcrFormat outputFormat : process.getAllOutputFormats()) {
-			// TODO: metadata should not be a special case
-			if (outputFormat == OcrFormat.METADATA) {
-				continue;
-			}
 			subProcess.addOutput(outputFormat);
 		}
 	}
