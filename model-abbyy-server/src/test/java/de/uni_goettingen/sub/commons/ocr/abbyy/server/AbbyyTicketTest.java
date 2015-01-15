@@ -2,6 +2,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
@@ -46,11 +48,13 @@ public class AbbyyTicketTest {
 	}
 
 	@Test
-	public void test() throws IOException {
+	public void test() throws IOException, SAXException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ticketSut.write(baos);
 		
 		System.out.println(baos.toString());
+		
+		assertXMLEqual("<bla/>", "<bla />");
 	}
 
 
