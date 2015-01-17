@@ -48,13 +48,10 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument;
 import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 import de.uni_goettingen.sub.commons.ocr.api.OcrPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
-
-//TODO: one Locale might represent multiple langueages: <Language>GermanNewSpelling</Language>
 
 
 public class AbbyyTicket {
