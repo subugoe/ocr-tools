@@ -50,7 +50,6 @@ import com.abbyy.recognitionServer10Xml.xmlTicketV1.XmlTicketDocument.XmlTicket;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrPriority;
 import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
 
 
@@ -211,7 +210,7 @@ public class AbbyyTicket {
 
 		Set<Locale> langs = ocrProcess.getLanguages();
 		if (langs == null) {
-			throw new OcrException("No language given!");
+			throw new IllegalStateException("No language given!");
 		}
 
 		for (Locale l : langs) {
@@ -227,7 +226,7 @@ public class AbbyyTicket {
 		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
 
 		if (!ocrProcess.canBeStarted()) {
-			throw new OcrException("No export options given!");
+			throw new IllegalStateException("No export options given!");
 		}
 
 		List<OutputFileFormatSettings> settings = new ArrayList<OutputFileFormatSettings>();

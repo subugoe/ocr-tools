@@ -22,11 +22,8 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 import java.io.File;
 import java.net.URI;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 
 
 

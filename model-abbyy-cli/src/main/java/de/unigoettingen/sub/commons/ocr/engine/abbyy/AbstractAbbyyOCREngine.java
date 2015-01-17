@@ -27,7 +27,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 
 import de.uni_goettingen.sub.commons.ocr.api.AbstractEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 
 public abstract class AbstractAbbyyOCREngine extends AbstractEngine implements OcrEngine {
 	protected AbstractConfiguration config;
@@ -37,7 +36,7 @@ public abstract class AbstractAbbyyOCREngine extends AbstractEngine implements O
 		try {
 			pc.load(configUrl);
 		} catch (ConfigurationException e) {
-			throw new OcrException(e);
+			throw new IllegalStateException(e);
 		}
 		return pc;
 	}

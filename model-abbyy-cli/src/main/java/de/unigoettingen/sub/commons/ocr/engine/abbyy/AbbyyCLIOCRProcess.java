@@ -41,7 +41,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
 import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 import de.unigoettingen.sub.commons.ocr.util.abbyy.ToAbbyyMapper;
 
 public class AbbyyCLIOCRProcess extends AbstractProcess implements OcrProcess, Runnable {
@@ -99,7 +98,7 @@ public class AbbyyCLIOCRProcess extends AbstractProcess implements OcrProcess, R
 		ProcessBuilder pb = new ProcessBuilder();
 		pb.redirectErrorStream(true);
 		if (cmd == null) {
-			throw new OcrException("No commmand set!");
+			throw new IllegalStateException("No commmand set!");
 		}
 		List<String> arglist = new ArrayList<String>();
 		//Command
@@ -118,7 +117,7 @@ public class AbbyyCLIOCRProcess extends AbstractProcess implements OcrProcess, R
 		for (Locale l : getLanguages()) {
 
 			if (ToAbbyyMapper.getLanguage(l) == null) {
-				throw new OcrException();
+				throw new IllegalStateException();
 			}
 			arglist.add(ToAbbyyMapper.getLanguage(l));
 		}
@@ -138,7 +137,7 @@ public class AbbyyCLIOCRProcess extends AbstractProcess implements OcrProcess, R
 				arglist.addAll(AbbyyCLIOCREngine.FORMAT_SETTINGS.get(ef));
 			}
 			if (AbbyyCLIOCREngine.FORMAT_MAPPING.get(ef) == null) {
-				throw new OcrException();
+				throw new IllegalStateException();
 			}
 
 			arglist.add("-of");
@@ -168,7 +167,7 @@ public class AbbyyCLIOCRProcess extends AbstractProcess implements OcrProcess, R
 			pb = buildCmd();
 		} catch (URISyntaxException e1) {
 			logger.error("Can't create process builder, probaly there is a problem with the locations of result files");
-			throw new OcrException("Can't create external process!", e1);
+			throw new IllegalStateException("Can't create external process!", e1);
 		}
 		pb.redirectErrorStream(true);
 		try {
@@ -200,7 +199,7 @@ public class AbbyyCLIOCRProcess extends AbstractProcess implements OcrProcess, R
 				i++;
 			}
 		} catch (IOException e) {
-			throw new OcrException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 

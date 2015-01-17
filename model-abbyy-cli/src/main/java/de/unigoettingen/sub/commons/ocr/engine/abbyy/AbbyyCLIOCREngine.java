@@ -34,9 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrEngine;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
-import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
-import de.uni_goettingen.sub.commons.ocr.api.exceptions.OcrException;
 
 public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements OcrEngine {
 	final static Logger logger = LoggerFactory.getLogger(AbbyyCLIOCREngine.class);
@@ -120,7 +118,7 @@ public final class AbbyyCLIOCREngine extends AbstractAbbyyOCREngine implements O
 	}
 
 	
-	public Observable recognize (OcrProcess p) throws OcrException {
+	public Observable recognize (OcrProcess p) {
 		AbbyyCLIOCRProcess process = (AbbyyCLIOCRProcess) p;
 
 		if (process.getNumberOfImages() < SEGSIZE) {
