@@ -62,7 +62,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	@Override
 	public void addOcrProcess(OcrProcess process) {
 		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
-		if (abbyyProcess.canBeStarted()) {
+		if (abbyyProcess.hasImagesAndOutputs()) {
 	     	processesQueue.add(abbyyProcess);
 		}
 	}

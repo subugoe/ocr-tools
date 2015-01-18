@@ -39,7 +39,7 @@ public class AbbyyEngineTest {
 	public void shouldNotStartNonStartableProcess() {
 		engineSut.initialize(validProps());
 		AbbyyProcess processMock = mock(AbbyyProcess.class);
-		when(processMock.canBeStarted()).thenReturn(false);
+		when(processMock.hasImagesAndOutputs()).thenReturn(false);
 		engineSut.addOcrProcess(processMock);
 		engineSut.recognize();
 		
@@ -136,7 +136,7 @@ public class AbbyyEngineTest {
 
 	private AbbyyProcess validProcessMock() {
 		AbbyyProcess processMock = mock(AbbyyProcess.class);
-		when(processMock.canBeStarted()).thenReturn(true);
+		when(processMock.hasImagesAndOutputs()).thenReturn(true);
 		return processMock;
 	}
 	

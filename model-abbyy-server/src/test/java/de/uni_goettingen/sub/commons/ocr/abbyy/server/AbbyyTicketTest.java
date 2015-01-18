@@ -36,7 +36,7 @@ public class AbbyyTicketTest {
 		when(processMock.getLanguages()).thenReturn(new HashSet<Locale>(Arrays.asList(Locale.GERMAN, Locale.ENGLISH)));
 		
 		when(processMock.getQuality()).thenReturn(OcrQuality.BEST);
-		when(processMock.canBeStarted()).thenReturn(true);
+		when(processMock.hasImagesAndOutputs()).thenReturn(true);
 				
 		when(processMock.getAllOutputFormats()).thenReturn(Collections.singleton(OcrFormat.XML));
 		when(processMock.getOutputUriForFormat(OcrFormat.XML)).thenReturn(new URI("file:/test/result.xml"));
@@ -110,7 +110,7 @@ public class AbbyyTicketTest {
 		ticketSut.write(baos);
 		
 		String xml = baos.toString();
-		//System.out.println(xml);
+		System.out.println(xml);
 		return xml;
 	}
 

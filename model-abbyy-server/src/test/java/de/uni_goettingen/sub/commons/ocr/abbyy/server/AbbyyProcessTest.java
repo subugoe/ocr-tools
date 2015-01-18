@@ -152,13 +152,13 @@ public class AbbyyProcessTest {
 	@Test
 	public void shouldBeStartableWithImagesAndOutputs() throws URISyntaxException {
 		processSut.initialize(validProps());
-		assertFalse("Not startable yet", processSut.canBeStarted());
+		assertFalse("Not startable yet", processSut.hasImagesAndOutputs());
 		
 		processSut.addOutput(OcrFormat.XML);
-		assertFalse("Still not startable", processSut.canBeStarted());
+		assertFalse("Still not startable", processSut.hasImagesAndOutputs());
 		
 		processSut.addImage(new URI("file://test.tif"));
-		assertTrue("Now must be startable", processSut.canBeStarted());
+		assertTrue("Now must be startable", processSut.hasImagesAndOutputs());
 	}
 	
 	@Test

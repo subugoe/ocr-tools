@@ -64,7 +64,7 @@ public abstract class AbstractProcess implements OcrProcess,Serializable {
 		return ocrImages.size();
 	}
 	
-	public boolean canBeStarted() {
+	public boolean hasImagesAndOutputs() {
 		if (ocrOutputs == null || ocrOutputs.isEmpty()) {
 			logger.warn("The OCR process has no outputs: " + name);
 			return false;

@@ -65,19 +65,10 @@ public class AbbyyTicket {
 	 * formats
 	 */
 	private final static Map<OcrFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
-
-
-	/** Predefined recognition parameters */
-	protected static RecognitionParams recognitionSettings;
-
-	/** Predefined image processing parameters */
-	protected final static ImageProcessingParams imageProcessingSettings;
-
 	
-	protected static String encoding = "UTF8";
+	private static String encoding = "UTF8";
 
-	/** The timeout for the process */
-	protected Long processTimeout = null;
+	private Long processTimeout = null;
 
 	private static XmlOptions opts = new XmlOptions();
 	private AbbyyProcess ocrProcess;
@@ -138,12 +129,7 @@ public class AbbyyTicket {
 
 		FORMAT_FRAGMENTS.put(OcrFormat.HTML, null);
 		FORMAT_FRAGMENTS.put(OcrFormat.XHTML, null);
-
-		recognitionSettings = RecognitionParams.Factory.newInstance();
-
 		
-		imageProcessingSettings = ImageProcessingParams.Factory.newInstance();
-
 	}
 
 	public AbbyyTicket(AbbyyProcess initProcess) {
@@ -152,17 +138,18 @@ public class AbbyyTicket {
 
 	public synchronized void write(final OutputStream out) throws IOException {
 
-		// Sanity checks
 		if (out == null) {
-			logger.error("OutputStream and / or configuration is not set! (" + ocrProcess.getName() + ")");
-			throw new IllegalStateException();
+			logger.error("OutputStream is not set! (" + ocrProcess.getName() + ")");
+			throw new IllegalStateException("OutputStream is not set!");
 		}		
+		if (!ocrProcess.hasImagesAndOutputs()) {
+			logger.error("No images or outputs given! (" + ocrProcess.getName() + ")");
+			throw new IllegalStateException("No images or outputs given!");
+		}
 		
-		XMLExportSettings xmlSettings = XMLExportSettings.Factory
-				.newInstance(opts);
+		XMLExportSettings xmlSettings = XMLExportSettings.Factory.newInstance(opts);
 
 		// coordinates for each character in output abbyy xml
-		// default is false. Might be reset later if the parameter is set
 		xmlSettings.setWriteCharactersFormatting(true);
 		xmlSettings.setWriteCharAttributes(true);
 
@@ -181,18 +168,6 @@ public class AbbyyTicket {
 		if (processTimeout != null) {
 			ticket.setOCRTimeout(BigInteger.valueOf(processTimeout));
 		}
-
-		for (String imageFileName : ocrProcess.getRemoteImageNames()) {
-			InputFile inputFile = ticket.addNewInputFile();
-			inputFile.setName(imageFileName);
-		}
-		
-		// Use predefined variables here
-		ImageProcessingParams imageProcessingParams = (ImageProcessingParams) imageProcessingSettings
-				.copy();
-		imageProcessingParams.setDeskew(false);
-		ticket.setImageProcessingParams(imageProcessingParams);
-
 		OcrPriority priority = ocrProcess.getPriority();
 		if (priority != null) {
 			ticket.setPriority(ToAbbyyMapper.getPriority(priority));
@@ -200,45 +175,39 @@ public class AbbyyTicket {
 			ticket.setPriority("Normal");
 		}
 
-		OcrTextType textType = ocrProcess.getTextType();
-		if (textType != null) {
-			recognitionSettings.setTextTypeArray(new String[] { ToAbbyyMapper.getTextType(textType) });
+		for (String imageFileName : ocrProcess.getRemoteImageNames()) {
+			InputFile inputFile = ticket.addNewInputFile();
+			inputFile.setName(imageFileName);
 		}
-		// Use predefined variables here
-		RecognitionParams recognitionParams = (RecognitionParams) recognitionSettings
-				.copy();
+		
+		ImageProcessingParams imageProcessingParams = ticket.addNewImageProcessingParams();
+		imageProcessingParams.setDeskew(false);
 
-		Set<Locale> langs = ocrProcess.getLanguages();
-		if (langs == null) {
-			throw new IllegalStateException("No language given!");
-		}
-
-		for (Locale l : langs) {
-			recognitionParams.addLanguage(ToAbbyyMapper.getLanguage(l));
-
-		}
+		RecognitionParams recognitionParams = ticket.addNewRecognitionParams();
 
 		recognitionParams.setRecognitionQuality(ToAbbyyMapper.getQuality(ocrProcess.getQuality()));
 
-		ticket.setRecognitionParams(recognitionParams);
-		ExportParams exportParams = ticket.addNewExportParams();
-			
-		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
-
-		if (!ocrProcess.canBeStarted()) {
-			throw new IllegalStateException("No export options given!");
+		OcrTextType textType = ocrProcess.getTextType();
+		if (textType != null) {
+			recognitionParams.addTextType(ToAbbyyMapper.getTextType(textType));
 		}
 
-		List<OutputFileFormatSettings> settings = new ArrayList<OutputFileFormatSettings>();
+		Set<Locale> langs = ocrProcess.getLanguages();
+		for (Locale l : langs) {
+			recognitionParams.addLanguage(ToAbbyyMapper.getLanguage(l));
+		}
 
-		
+
+		ExportParams exportParams = ticket.addNewExportParams();
+		exportParams.setDocumentSeparationMethod("MergeIntoSingleFile");
+
+		int i = 0;
 		for (OcrFormat outputFormat : ocrProcess.getAllOutputFormats()) {
 			if (outputFormat == OcrFormat.METADATA) {
 				continue;
 			}
 
 			OutputFileFormatSettings exportFormat = FORMAT_FRAGMENTS.get(outputFormat);
-			// The server can't handle this
 			if (exportFormat == null) {
 				logger.warn("The server can't handle the format "
 						+ outputFormat.toString() + ", ignoring it. (" + ocrProcess.getName() + ")");
@@ -253,30 +222,20 @@ public class AbbyyTicket {
 				
 			exportFormat.setOutputLocation(ocrProcess.getWindowsPathForServer());
 			
-			settings.add(exportFormat);
+			exportParams.addNewExportFormat();
+			exportParams.setExportFormatArray(i, exportFormat);
+			i++;
 		}
 		
-		for (int j = 0; j < settings.size(); j++) {
-			exportParams.addNewExportFormat();
-			exportParams.setExportFormatArray(j, settings.get(j));
-		}
-
 		// goes into the global temp directory
 		ticketDoc.save(out, opts);
 
 	}
 
-	/**
-	 * @return the processTimeout
-	 */
 	public Long getProcessTimeout() {
 		return processTimeout;
 	}
 
-	/**
-	 * @param processTimeout
-	 *            the processTimeout to set
-	 */
 	public void setProcessTimeout(Long oCRTimeOut) {
 		this.processTimeout = oCRTimeOut;
 	}
