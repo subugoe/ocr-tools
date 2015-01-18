@@ -23,9 +23,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -171,7 +169,7 @@ public class AbbyyTicket {
 		OcrPriority priority = ocrProcess.getPriority();
 		if (priority != null) {
 			ticket.setPriority(ToAbbyyMapper.getPriority(priority));
-		}else {
+		} else {
 			ticket.setPriority("Normal");
 		}
 
@@ -236,8 +234,8 @@ public class AbbyyTicket {
 		return processTimeout;
 	}
 
-	public void setProcessTimeout(Long oCRTimeOut) {
-		this.processTimeout = oCRTimeOut;
+	public void setProcessTimeout(Long newTimeout) {
+		processTimeout = newTimeout;
 	}
 
 	public void setRemoteInputFolder(URI newFolder) {
