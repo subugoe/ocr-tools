@@ -83,7 +83,8 @@ public class HotfolderManager {
 		synchronized (monitor) {
 			OutputStream os = hotfolder.createTmpFile(ticketFileName);
 			abbyyTicket.write(os);
-			os.close();
+			if (os != null)
+				os.close();
 		}
 		
 		//TODO: remove
@@ -129,13 +130,12 @@ public class HotfolderManager {
 	
 	private void checkIfError(long start, long timeout, URI errorResultXmlUri) throws TimeoutException, IOException {
 		if (System.currentTimeMillis() > start + timeout) {
-			
-			logger.error("Waited too long - fail ");
-			throw new TimeoutException();
+			logger.error("Waited too long for results.");
+			throw new TimeoutException("Waited too long for results.");
 		}
 		if (hotfolder.exists(errorResultXmlUri)) {
 			logger.error("Server reported an error in file: " + errorResultXmlUri);
-			throw new TimeoutException();
+			throw new TimeoutException("Server reported an error in file: " + errorResultXmlUri);
 		}
 	}
 	
