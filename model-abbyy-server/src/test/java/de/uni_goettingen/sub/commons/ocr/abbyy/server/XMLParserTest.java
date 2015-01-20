@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.stream.XMLStreamException;
@@ -14,6 +15,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static de.uni_goettingen.sub.commons.ocr.abbyy.server.PathConstants.*;
 
 public class XMLParserTest {
@@ -35,10 +37,10 @@ public class XMLParserTest {
 	}
 
 	@Test
-	public void test() throws FileNotFoundException, XMLStreamException {
+	public void test() throws IOException {
 		XmlParser parser = new XmlParser();
 		InputStream is = new FileInputStream(new File(LOCAL_INPUT, "error.xml.result.xml"));
-		String error = parser.xmlresultErrorparse(is, "someId");
+		String error = parser.readErrorFromResultXml(is, "someId");
 		assertTrue(error.contains("Frensch"));
 	}
 

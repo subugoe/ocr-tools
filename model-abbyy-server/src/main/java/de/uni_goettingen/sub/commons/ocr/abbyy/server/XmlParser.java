@@ -18,6 +18,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.stream.XMLInputFactory;
@@ -43,14 +44,15 @@ public class XmlParser {
 	 *            the name of Process
 	 * @throws XMLStreamException
 	 *             the xML stream exception
+	 * @throws IOException 
 	 */
-	protected String xmlresultErrorparse(InputStream is, String identifier)
-			throws XMLStreamException {
+	public String readErrorFromResultXml(InputStream is, String identifier)
+			throws IOException {
 		String error = null;
 		// final InputStream osmHamburgInStream = new FileInputStream(file);
 		XMLInputFactory factory = XMLInputFactory.newInstance();
-		XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(is);
 		try {
+			XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(is);
 			while (xmlStreamReader.hasNext()) {
 				int event = xmlStreamReader.next();
 				if (event == XMLStreamConstants.START_ELEMENT) {
@@ -61,10 +63,11 @@ public class XmlParser {
 					}
 				}
 			}
-		} finally {
 			xmlStreamReader.close();
+		} catch (XMLStreamException e) {
+			throw new IOException(e);
 		}
-		logger.error("Band Name " + identifier + " Error Reports: " + error);
-		return ("Band Name " + identifier + " Error Reports: " + error);
+		logger.error("Book: " + identifier + ", Error: " + error);
+		return error;
 	}
 }

@@ -1,6 +1,5 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -84,6 +83,59 @@ public class HotfolderManagerTest {
 		managerSut.waitForResults(10, 1, outputsToWaitFor, new URI("http://test/error.xml.result.xml"));
 		
 		verify(pauseMock, never()).forMilliseconds(anyLong());
+	}
+	
+	@Test
+	public void shouldWaitOneIterationForEachFile() throws URISyntaxException, IOException, TimeoutException {
+		List<OcrOutput> outputsToWaitFor = validOutputs();
+		when(hotfolderMock.exists(new URI("http://test/out.xml"))).thenReturn(false, true);
+		when(hotfolderMock.exists(new URI("http://test/out.txt"))).thenReturn(false, true);
+		when(hotfolderMock.exists(new URI("http://test/error.xml.result.xml"))).thenReturn(false);
+		
+		managerSut.waitForResults(10, 1, outputsToWaitFor, new URI("http://test/error.xml.result.xml"));
+		
+		verify(pauseMock, times(2)).forMilliseconds(1);
+	}
+	
+	@Test(expected=TimeoutException.class)
+	public void shouldProvokeTimeout() throws URISyntaxException, IOException, TimeoutException {
+		List<OcrOutput> outputsToWaitFor = validOutputs();
+		when(hotfolderMock.exists(new URI("http://test/out.xml"))).thenReturn(false);
+		
+		managerSut.waitForResults(1, 1, outputsToWaitFor, new URI("http://test/error.xml.result.xml"));
+	}
+	
+	@Test(expected=IOException.class)
+	public void shouldFindErrorFile() throws URISyntaxException, IOException, TimeoutException {
+		List<OcrOutput> outputsToWaitFor = validOutputs();
+		when(hotfolderMock.exists(new URI("http://test/error.xml.result.xml"))).thenReturn(true);
+		
+		managerSut.waitForResults(1, 1, outputsToWaitFor, new URI("http://test/error.xml.result.xml"));
+	}
+	
+	@Test
+	public void shouldAcceptMaxSizeOfAllFiles() throws IOException, URISyntaxException {
+		when(hotfolderMock.getTotalSize(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
+		
+		managerSut.checkIfEnoughSpace(6, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public void shouldHaveTooLittleSpace() throws IOException, URISyntaxException {
+		when(hotfolderMock.getTotalSize(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
+		
+		managerSut.checkIfEnoughSpace(5, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
+	}
+	
+	@Test
+	public void shouldReadErrorFromResultXml() throws IOException, URISyntaxException {
+		XmlParser parserMock = mock(XmlParser.class);
+		managerSut.setXmlParser(parserMock);
+		when(hotfolderMock.exists(any(URI.class))).thenReturn(true);
+		
+		managerSut.readFromErrorFile(new URI("http://error.xml.result.xml"), "testBook");
+		
+		verify(parserMock).readErrorFromResultXml(null, "testBook");
 	}
 	
 	private List<OcrImage> validImages() throws URISyntaxException {

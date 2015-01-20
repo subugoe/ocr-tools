@@ -8,8 +8,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +23,7 @@ public class HotfolderManager {
 	static Object monitor = new Object();
 	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
 	private Pause pause = new Pause();
+	private XmlParser xmlParser = new XmlParser();
 
 	public HotfolderManager(String serverUrl, String user, String password) {
 		hotfolder = hotfolderProvider.createHotfolder(serverUrl, user, password);
@@ -36,6 +35,9 @@ public class HotfolderManager {
 	}
 	void setPause(Pause newPause) {
 		pause = newPause;
+	}
+	void setXmlParser(XmlParser newParser) {
+		xmlParser = newParser;
 	}
 
 	public void deleteOutputs(List<OcrOutput> outputs) throws IOException {
@@ -135,7 +137,7 @@ public class HotfolderManager {
 		}
 		if (hotfolder.exists(errorResultXmlUri)) {
 			logger.error("Server reported an error in file: " + errorResultXmlUri);
-			throw new TimeoutException("Server reported an error in file: " + errorResultXmlUri);
+			throw new IOException("Server reported an OCR error in file: " + errorResultXmlUri);
 		}
 	}
 	
@@ -147,7 +149,7 @@ public class HotfolderManager {
 
 	public void checkIfEnoughSpace(long maxSize, URI inputFolder,
 			URI outputFolder, URI errorFolder) throws IOException {
-		if (maxSize != 0) {
+		if (maxSize > 0) {
 
 			long totalFileSize = hotfolder.getTotalSize(inputFolder) 
 					+ hotfolder.getTotalSize(outputFolder) 
@@ -155,10 +157,10 @@ public class HotfolderManager {
 
 			logger.debug("TotalFileSize = " + totalFileSize);
 			if (totalFileSize > maxSize) {
-				logger.error("Size of files is too much files. Max size of all files is "
+				logger.error("Size of files is too high. Max size of all files is "
 						+ maxSize
 						+ ". Size of files on server: "
-						+ totalFileSize + ".\nExit program.");
+						+ totalFileSize + ".");
 				throw new IllegalStateException("Max size of files exceeded");
 			}
 		} else {
@@ -171,15 +173,13 @@ public class HotfolderManager {
 		hotfolder.deleteIfExists(abbyyTicket.getRemoteErrorUri());
 	}
 
-	//TODO: remove?
-	public String readFromErrorFile(URI errorResultUri, String processName) throws IOException, XMLStreamException {
+	// TODO: use this
+	public String readFromErrorFile(URI errorResultUri, String processName) throws IOException {
 		String errorDescription = "";
-		logger.debug("Trying to parse file" + errorResultUri + " (" + processName + ")");
+		logger.debug("Trying to parse file " + errorResultUri + " (" + processName + ")");
 		if (hotfolder.exists(errorResultUri)) {
-			XmlParser xmlParser = new XmlParser();
-			logger.debug("Trying to parse EXISTS file" + errorResultUri + " (" + processName + ")");
 			InputStream is = hotfolder.openInputStream(errorResultUri);
-			errorDescription = xmlParser.xmlresultErrorparse(is, processName);
+			errorDescription = xmlParser.readErrorFromResultXml(is, processName);
 			//hotfolder.deleteIfExists(errorResultUri);
 		}
 		return errorDescription;
