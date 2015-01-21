@@ -75,7 +75,7 @@ public class AbbyyProcessTest {
 
 	@Test
 	public void shouldFailWithIO() throws IOException {
-		doThrow(IOException.class).when(hotManagerMock).retrieveResults(anyListOf(OcrOutput.class));
+		doThrow(new IOException("IO problem")).when(hotManagerMock).retrieveResults(anyListOf(OcrOutput.class));
 		processSut.initialize(validProps());
 		processSut.run();
 		

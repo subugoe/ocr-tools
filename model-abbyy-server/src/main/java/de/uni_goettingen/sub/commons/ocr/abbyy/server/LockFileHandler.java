@@ -29,7 +29,7 @@ public class LockFileHandler {
 		hotfolderProvider = newProvider;
 	}
 
-	public void setConnectionData(String serverUrl, String user, String password) {
+	public void initConnection(String serverUrl, String user, String password) {
 		hotfolder = hotfolderProvider.createHotfolder(serverUrl, user, password);
 		try {
 			lockUri = new URI(serverUrl + serverLockFile);

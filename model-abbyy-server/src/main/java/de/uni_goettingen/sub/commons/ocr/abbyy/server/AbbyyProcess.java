@@ -104,8 +104,11 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		long maxMillis = Long.parseLong(props.getProperty("maxMillisPerFile"));
 		abbyyTicket.setProcessTimeout((long) ocrImages.size() * maxMillis);
 
+		String resultXmlFileName = name + ".xml.result.xml";
+		URI errorResultXmlUri = null;
 		
 		try {			
+			errorResultXmlUri = new URI(errorDavUri.toString() + resultXmlFileName);
 			logger.info("Cleaning Server (" + getName() + ")");
 			hotfolderManager.deleteOutputs(ocrOutputs);
 			hotfolderManager.deleteImages(ocrImages);
@@ -121,9 +124,6 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes) (" + getName() + ")");
 			
 			pause.forMilliseconds(minWait);
-
-			String resultXmlFileName = name + ".xml.result.xml";
-			URI errorResultXmlUri = new URI(errorDavUri.toString() + resultXmlFileName);
 				
 			long restTime = maxWait - minWait;
 			logger.info("Waking up, waiting another "
@@ -141,13 +141,17 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			logger.error("Got a timeout while waiting for results (" + getName() + ")", e);
 			failed = true;
 		} catch (IOException e) {
-			logger.error("Error writing files or ticket (" + getName() + ")", e);
+			if (e.getMessage().startsWith("Server reported an OCR error in file")) {
+				logger.error(hotfolderManager.readFromErrorFile(errorResultXmlUri, getName()));
+			} else {
+				logger.error("Error writing files or ticket (" + getName() + ")", e);
+			}
 			failed = true;
 		} catch (URISyntaxException e) {
 			logger.error("Error converting URI (" + getName() + ")", e);
 			failed = true;
 		} finally {
-			try {	
+			try {
 				hotfolderManager.deleteImages(ocrImages);
 				hotfolderManager.deleteOutputs(ocrOutputs);
 				//hotfolder.deleteIfExists(errorResultUri);

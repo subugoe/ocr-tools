@@ -86,7 +86,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		String overwrite = props.getProperty("lock.overwrite");
 		boolean overwriteLock = "true".equals(overwrite);
 		lockHandler = createLockHandler();
-		lockHandler.setConnectionData(props.getProperty("serverUrl"), props.getProperty("user"), props.getProperty("password"));
+		lockHandler.initConnection(props.getProperty("serverUrl"), props.getProperty("user"), props.getProperty("password"));
 		lockHandler.createOrOverwriteLock(overwriteLock);
 			
 		pool = createPool(Integer.parseInt(props.getProperty("maxParallelProcesses")));

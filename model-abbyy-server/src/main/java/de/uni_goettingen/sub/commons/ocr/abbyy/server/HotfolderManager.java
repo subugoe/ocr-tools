@@ -136,7 +136,7 @@ public class HotfolderManager {
 			throw new TimeoutException("Waited too long for results.");
 		}
 		if (hotfolder.exists(errorResultXmlUri)) {
-			logger.error("Server reported an error in file: " + errorResultXmlUri);
+			logger.error("Server reported an OCR error in file: " + errorResultXmlUri);
 			throw new IOException("Server reported an OCR error in file: " + errorResultXmlUri);
 		}
 	}
@@ -173,14 +173,17 @@ public class HotfolderManager {
 		hotfolder.deleteIfExists(abbyyTicket.getRemoteErrorUri());
 	}
 
-	// TODO: use this
-	public String readFromErrorFile(URI errorResultUri, String processName) throws IOException {
+	public String readFromErrorFile(URI errorResultUri, String processName) {
 		String errorDescription = "";
 		logger.debug("Trying to parse file " + errorResultUri + " (" + processName + ")");
-		if (hotfolder.exists(errorResultUri)) {
-			InputStream is = hotfolder.openInputStream(errorResultUri);
-			errorDescription = xmlParser.readErrorFromResultXml(is, processName);
-			//hotfolder.deleteIfExists(errorResultUri);
+		try {
+			if (hotfolder.exists(errorResultUri)) {
+				InputStream is = hotfolder.openInputStream(errorResultUri);
+				errorDescription = xmlParser.readErrorFromResultXml(is, processName);
+				//hotfolder.deleteIfExists(errorResultUri);
+			}
+		} catch (IOException e) {
+			logger.warn("Could not read the error from file " + errorResultUri);
 		}
 		return errorDescription;
 	}

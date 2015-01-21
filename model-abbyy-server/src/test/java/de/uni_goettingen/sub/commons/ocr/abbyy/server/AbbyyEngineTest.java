@@ -53,7 +53,7 @@ public class AbbyyEngineTest {
 		engineSut.addOcrProcess(processMock);
 		engineSut.recognize();
 		
-		verify(lockHandlerMock).setConnectionData("http://test.com", "u", "p");
+		verify(lockHandlerMock).initConnection("http://test.com", "u", "p");
 		verify(lockHandlerMock).createOrOverwriteLock(false);
 		verify(engineSut).createPool(5);
 		verify(executorMock).execute(processMock);
