@@ -39,7 +39,7 @@ public class LockFileHandler {
 	}
 
 	public void createOrOverwriteLock(boolean overwriteLock) {
-		// need to synchronize because of the Web Service
+		// need to synchronize on static object because of the Web Service
 		synchronized(monitor) {
 			try {
 				if (overwriteLock) {

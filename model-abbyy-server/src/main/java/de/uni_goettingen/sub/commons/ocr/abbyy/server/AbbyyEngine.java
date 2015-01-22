@@ -69,9 +69,12 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	
 	@Override
 	public void recognize() {
+		// This is not about multi-threading, it is just to prevent a second call of the method in the same thread
 		if (started) {
 			logger.warn("Recognition is already running and cannot be started a second time.");
 			return;
+		} else {
+			started = true;
 		}
 		if (processesQueue.isEmpty()) {
 			logger.warn("Cannot start recognition, there are no processes.");
@@ -81,7 +84,6 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	}
 
 	private void performRecognition() {
-		started = true;
 		
 		String overwrite = props.getProperty("lock.overwrite");
 		boolean overwriteLock = "true".equals(overwrite);
