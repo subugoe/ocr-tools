@@ -80,11 +80,35 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	}
 	
 	public void configureConnection(String serverUrl, String username, String password) {
+		URL url;
 		try {
-			client = initConnection(serverUrl, username, password);
-		} catch (IOException e) {
-			log.error("Got an IOException while initilizing Jackrabbit Hotfolder implementation", e);
+			url = new URL(serverUrl);
+		} catch (MalformedURLException e) {
+			throw new IllegalStateException("no valid host given: "
+					+ e.toString());
 		}
+
+		HostConfiguration hostConfig = new HostConfiguration();
+		hostConfig.setHost(url.getHost(), url.getDefaultPort(),
+				url.getProtocol());
+
+		HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+		HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+		int maxHostConnections = 10;
+
+		params.setMaxConnectionsPerHost(hostConfig, maxHostConnections);
+		params.setStaleCheckingEnabled(true);
+		params.setSoTimeout(10000);
+		connectionManager.setParams(params);
+		client = new HttpClient(connectionManager);
+		System.err.println(client.getHttpConnectionManager().getParams().getParameter("http.connection-manager.max-per-host"));
+		if (username != null || password != null) {
+			Credentials creds = new UsernamePasswordCredentials(username,
+					password);
+			client.getParams().setAuthenticationPreemptive(true);
+			client.getState().setCredentials(AuthScope.ANY, creds);
+		}
+		client.setHostConfiguration(hostConfig);
 	}
 
 	/*
@@ -253,44 +277,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		}
 	}
 	
-	private static HttpClient initConnection(String webdavURL,
-			String webdavUsername, String webdavPassword)
-			throws IOException {
-		if (webdavURL == null) {
-			throw new IllegalStateException("no host given");
-		}
-
-		URL url;
-		try {
-			url = new URL(webdavURL);
-		} catch (MalformedURLException e) {
-			throw new IllegalStateException("no valid host given: "
-					+ e.toString());
-		}
-
-		HostConfiguration hostConfig = new HostConfiguration();
-		hostConfig.setHost(url.getHost(), url.getDefaultPort(),
-				url.getProtocol());
-
-		HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-		HttpConnectionManagerParams params = new HttpConnectionManagerParams();
-		int maxHostConnections = 10;
-
-		params.setMaxConnectionsPerHost(hostConfig, maxHostConnections);
-		params.setStaleCheckingEnabled(true);
-		params.setSoTimeout(10000);
-		connectionManager.setParams(params);
-		HttpClient client = new HttpClient(connectionManager);
-		if (webdavUsername != null || webdavPassword != null) {
-			Credentials creds = new UsernamePasswordCredentials(webdavUsername,
-					webdavPassword);
-			client.getParams().setAuthenticationPreemptive(true);
-			client.getState().setCredentials(AuthScope.ANY, creds);
-		}
-		client.setHostConfiguration(hostConfig);
-		return client;
-	}
-
 	private void getWebdavFile(URI uri, File localFile) throws IOException {
 		GetMethod method = new GetMethod(uri.toString());
 		InputStream is = null;

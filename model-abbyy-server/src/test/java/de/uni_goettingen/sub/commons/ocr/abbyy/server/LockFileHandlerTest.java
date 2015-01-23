@@ -67,27 +67,4 @@ public class LockFileHandlerTest {
 		verify(hotfolderMock).deleteIfExists(lockUri);
 	}
 	
-	@Test
-	public void threads() {
-		
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				System.out.println("1");				
-			}
-			
-		}).start();
-		
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				System.out.println("2");				
-			}
-			
-		}).start();
-		
-	}
-
 }
