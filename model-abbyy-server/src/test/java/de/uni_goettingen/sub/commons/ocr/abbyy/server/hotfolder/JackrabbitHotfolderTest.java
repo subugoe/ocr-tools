@@ -96,14 +96,6 @@ public class JackrabbitHotfolderTest {
 	}
 
 	@Test
-	public void testCopyFileLocal() throws IOException {
-		URI from = new File(LOCAL_INPUT, "xmlExport.xml").toURI();
-		URI to = new File(MISC, "xmlExport.xml").toURI();
-		hotfolder.copyFile(from, to);
-		assertTrue(new File(MISC, "xmlExport.xml").exists());
-	}
-
-	@Test
 	public void testCopyFileFromLocalToServer() throws Exception {
 		File sourceFile = new File(LOCAL_INPUT, "xmlExport.xml");
 		URI from = sourceFile.toURI();

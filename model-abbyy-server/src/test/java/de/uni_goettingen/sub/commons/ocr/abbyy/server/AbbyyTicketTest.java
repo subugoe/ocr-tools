@@ -110,7 +110,7 @@ public class AbbyyTicketTest {
 		ticketSut.write(baos);
 		
 		String xml = baos.toString();
-		System.out.println(xml);
+		//System.out.println(xml);
 		return xml;
 	}
 

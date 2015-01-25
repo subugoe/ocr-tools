@@ -70,9 +70,13 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	private static final long serialVersionUID = 1L;
 
 	private final static Logger log = LoggerFactory.getLogger(JackrabbitHotfolder.class);
-	private long mkColWait = 300l;
-	transient protected HttpClient client;
+	private HttpClient client;
 
+	// for unit tests
+	void setHttpClient(HttpClient newClient) {
+		client = newClient;
+	}
+	
 	JackrabbitHotfolder(String serverUrl, String username, String password) {
 		configureConnection(serverUrl, username, password);
 	}
@@ -120,8 +124,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	 */
 	@Override
 	public void copyFile(URI from, URI to) throws IOException {
-		// We have two methods that must be called here, one for local to remote
-		// and the other way arround
 		if (isLocal(from) && !isLocal(to)) {
 			// This should be an upload
 			put(to.toString(), new File(from));
@@ -129,12 +131,11 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 			// TODO: retry several times
 			getWebdavFile(from, new File(to));
 		} else if (isLocal(from) && isLocal(to)) {
-			// Just copy local files
-			FileUtils.copyDirectory(new File(from), new File(to));
+			log.error("Copy from local URI to local URI isn't implemented!");
+			throw new NotImplementedException("Copy from local URI to local URI isn't implemented!");
 		} else {
 			log.error("Copy from WebDAV URI to WebDAV URI isn't implemented!");
-			throw new NotImplementedException(
-					"Copy from WebDAV URI to WebDAV URI isn't implemented!");
+			throw new NotImplementedException("Copy from WebDAV URI to WebDAV URI isn't implemented!");
 		}
 	}
 
@@ -183,11 +184,11 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		// until the directory is created
 		// The problem doesn't occur in debug mode since the main thread is
 		// slower there
-		// You get a 403 if you try to PUT something in an non existing
+		// You get a 403 if you try to PUT something in a non existing
 		// COLection
 		while (true) {
 			try {
-				Thread.sleep(mkColWait);
+				Thread.sleep(300);
 			} catch (InterruptedException e) {
 				log.error("The current Thread was interupted", e);
 			}
@@ -244,7 +245,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		return status;
 	}
 
-	private static void executeMethod(HttpClient client, DavMethod method) 
+	private void executeMethod(HttpClient client, DavMethod method) 
 	throws URIException {
 		Integer responseCode = 0;
 		
