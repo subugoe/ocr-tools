@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -55,6 +56,7 @@ public class FileAccess {
 	private List<File> getImagesFromFolder(File folder, String[] imageTypes) {
 		List<File> images = new ArrayList<File>();
 		File[] files = folder.listFiles();
+		Arrays.sort(files);
 		for (File file : files) {
 			for (String format : imageTypes) {
 				if (hasFormat(file, format)) {
