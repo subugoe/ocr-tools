@@ -99,6 +99,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 			boolean split = "true".equals(props.getProperty("books.split"));
 			if (split) {
 				int splitSize = Integer.parseInt(props.getProperty("maxImagesInSubprocess"));
+				// TODO we probably need one splitter for each process
 				List<AbbyyProcess> subProcesses = processSplitter.split(process, splitSize);
 				for (AbbyyProcess subProcess : subProcesses) {
 					pool.execute(subProcess);

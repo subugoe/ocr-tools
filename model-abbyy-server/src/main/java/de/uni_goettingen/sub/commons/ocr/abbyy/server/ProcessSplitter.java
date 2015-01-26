@@ -18,12 +18,12 @@ public class ProcessSplitter {
 	}
 		
 	public List<AbbyyProcess> split(AbbyyProcess process, int splitSize) {
-		mergingObserver.setParentProcess(process);
 		if (process.getNumberOfImages() <= splitSize) {
 			List<AbbyyProcess> sp = new ArrayList<AbbyyProcess>();
 			sp.add(process);
 			return sp;
 		} else {
+			mergingObserver.setParentProcess(process);
 			List<AbbyyProcess> subProcesses = createSubProcesses(process, splitSize);
 			for(AbbyyProcess subProcess : subProcesses){	
 				subProcess.setMerger(mergingObserver);
