@@ -62,7 +62,6 @@ import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.util.file.FileUtils;
 
 public class JackrabbitHotfolder extends ServerHotfolder implements
 		Hotfolder, Serializable {
@@ -139,6 +138,18 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		}
 	}
 
+	private void put(String uri, File file) throws HttpException, IOException {
+		if (!file.exists()) {
+			log.error("File " + file + " doesn't exist.");
+			throw new IllegalArgumentException("File " + file
+					+ " doesn't exist.");
+		}
+		PutMethod put = new PutMethod(uri);
+		String mimeType = URLConnection.guessContentTypeFromName(file.getPath());
+		put.setRequestEntity(new FileRequestEntity(file, mimeType));
+		executeMethod(put);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -149,7 +160,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	@Override
 	public void delete(URI uri) throws IOException {
 		DavMethod delete = new DeleteMethod(uri.toString());
-		executeMethod(client, delete);
+		executeMethod(delete);
 		log.debug("Deleted " + uri);
 	}
 
@@ -178,7 +189,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	@Override
 	public void mkDir(URI uri) throws IOException {
 		DavMethod mkCol = new MkColMethod(uri.toString());
-		executeMethod(client, mkCol);
+		executeMethod(mkCol);
 
 		// Since we use the multithreaded Connection manager we have to wait
 		// until the directory is created
@@ -201,19 +212,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 				throw new IllegalStateException("Got HTTP Code " + status);
 			}
 		}
-	}
-
-	private void put(String uri, File file) throws HttpException, IOException {
-		if (!file.exists()) {
-			log.error("File " + file + " doesn't exist.");
-			throw new IllegalArgumentException("File " + file
-					+ " doesn't exist.");
-		}
-		PutMethod put = new PutMethod(uri);
-		String fileName = file.getPath();
-		String mimeType = URLConnection.guessContentTypeFromName(fileName);
-		put.setRequestEntity(new FileRequestEntity(file, mimeType));
-		executeMethod(client, put);
 	}
 
 	private Integer head(URI uri) {
@@ -245,7 +243,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		return status;
 	}
 
-	private void executeMethod(HttpClient client, DavMethod method) 
+	private void executeMethod(DavMethod method) 
 	throws URIException {
 		Integer responseCode = 0;
 		
@@ -419,7 +417,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	private MultiStatus propFind(URI uri) throws IOException, DavException {
 		DavMethod probFind = new PropFindMethod(uri.toString(),
 				DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
-		executeMethod(client, probFind);
+		executeMethod(probFind);
 		// TODO: Check if this really works since the connection is already
 		// closed if executed by the static methos
 		return probFind.getResponseBodyAsMultiStatus();
