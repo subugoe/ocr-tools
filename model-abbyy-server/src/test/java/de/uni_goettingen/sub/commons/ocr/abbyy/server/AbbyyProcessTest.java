@@ -11,6 +11,8 @@ import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
@@ -52,6 +54,15 @@ public class AbbyyProcessTest {
 
 	@Test
 	public void shouldRunOcr() throws IOException {
+		Answer<Object> withOneSecondDelay = new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Exception {
+				Thread.sleep(1000);
+				return null;
+			}
+		};
+		//doAnswer(withOneSecondDelay).when(pauseMock).forMilliseconds(anyLong());
+		
 		processSut.initialize(validProps());
 
 		processSut.run();
