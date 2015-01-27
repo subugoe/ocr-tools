@@ -62,6 +62,8 @@ import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.ocr.util.Pause;
+
 
 public class JackrabbitHotfolder extends ServerHotfolder implements
 		Hotfolder, Serializable {
@@ -70,18 +72,16 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 
 	private final static Logger log = LoggerFactory.getLogger(JackrabbitHotfolder.class);
 	private HttpClient client;
+	private Pause pause = new Pause();
 
 	// for unit tests
 	void setHttpClient(HttpClient newClient) {
 		client = newClient;
 	}
-	
-	JackrabbitHotfolder(String serverUrl, String username, String password) {
-		configureConnection(serverUrl, username, password);
+	void setPause(Pause newPause) {
+		pause = newPause;
 	}
-	public JackrabbitHotfolder() {
-	}
-	
+		
 	public void configureConnection(String serverUrl, String username, String password) {
 		URL url;
 		try {
@@ -104,7 +104,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		params.setSoTimeout(10000);
 		connectionManager.setParams(params);
 		client = new HttpClient(connectionManager);
-		System.err.println(client.getHttpConnectionManager().getParams().getParameter("http.connection-manager.max-per-host"));
 		if (username != null || password != null) {
 			Credentials creds = new UsernamePasswordCredentials(username,
 					password);
@@ -198,11 +197,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		// You get a 403 if you try to PUT something in a non existing
 		// COLection
 		while (true) {
-			try {
-				Thread.sleep(300);
-			} catch (InterruptedException e) {
-				log.error("The current Thread was interupted", e);
-			}
+			pause.forMilliseconds(300);
 			Integer status = head(uri);
 			if (status == HttpStatus.SC_OK) {
 				break;
@@ -230,11 +225,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 						throw new IllegalStateException("Error connecting to server. URL is " + uri, e);
 					}
 					log.warn("Problem connecting to server. Retry number " + i + "... URL is " + uri);
-					try{
-						Thread.sleep(10000);
-					} catch (InterruptedException e1) {
-						log.error("interrupted while sleeping");
-					}
+					pause.forMilliseconds(10000);
 				}
 			}
 		} finally {
@@ -264,11 +255,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 						throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), e);
 					}
 					log.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI());
-					try{
-						Thread.sleep(10000);
-					} catch (InterruptedException e1) {
-						log.error("interrupted while sleeping");
-					}
+					pause.forMilliseconds(10000);
 				}
 			}
 		} finally {

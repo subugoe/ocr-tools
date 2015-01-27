@@ -46,12 +46,13 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfol
  * @author abergna
  */
 public class JackrabbitHotfolderTest {
-	private static Hotfolder hotfolder;
+	private static JackrabbitHotfolder hotfolder;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
 		MyServers.startDavServer();
-		hotfolder = new JackrabbitHotfolder("http://localhost:9001/", "", "");
+		hotfolder = new JackrabbitHotfolder();
+		hotfolder.configureConnection("http://localhost:9001/", "", "");
 	}
 
 	@Test
