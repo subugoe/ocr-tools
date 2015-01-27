@@ -54,9 +54,9 @@ public class AbbyyProcessTest {
 
 	@Test
 	public void shouldRunOcr() throws IOException {
-		Answer<Object> withOneSecondDelay = new Answer<Object>() {
+		Answer<Void> withOneSecondDelay = new Answer<Void>() {
 			@Override
-			public Object answer(InvocationOnMock invocation) throws Exception {
+			public Void answer(InvocationOnMock invocation) throws Exception {
 				Thread.sleep(1000);
 				return null;
 			}
