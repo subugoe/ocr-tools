@@ -6,7 +6,6 @@ import java.util.List;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
-import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 
 public class ProcessSplitter {
 

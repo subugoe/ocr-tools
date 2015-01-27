@@ -23,8 +23,7 @@ public class AbbyyEngineTest {
 		engineSut = spy(engineSutNoSpy);
 		doReturn(executorMock).when(engineSut).createPool(anyInt());
 		doReturn(lockHandlerMock).when(engineSut).createLockHandler();
-		engineSut.setProcessSplitter(splitterMock);
-		
+		doReturn(splitterMock).when(engineSut).createProcessSplitter();
 	}
 
 	@Test

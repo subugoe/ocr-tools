@@ -39,14 +39,10 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 
 	private Queue<AbbyyProcess> processesQueue = new ConcurrentLinkedQueue<AbbyyProcess>();
 	private Properties props;
-
-	private OcrExecutor pool;
-	private ProcessSplitter processSplitter = new ProcessSplitter();
-	private LockFileHandler lockHandler;
 	
 	// for unit tests
-	void setProcessSplitter(ProcessSplitter newSplitter) {
-		processSplitter = newSplitter;
+	ProcessSplitter createProcessSplitter() {
+		return new ProcessSplitter();
 	}
 	protected OcrExecutor createPool(int maxThreads) {
 		return new OcrExecutor(maxThreads);
@@ -87,11 +83,11 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		
 		String overwrite = props.getProperty("lock.overwrite");
 		boolean overwriteLock = "true".equals(overwrite);
-		lockHandler = createLockHandler();
+		LockFileHandler lockHandler = createLockHandler();
 		lockHandler.initConnection(props.getProperty("serverUrl"), props.getProperty("user"), props.getProperty("password"));
 		lockHandler.createOrOverwriteLock(overwriteLock);
 			
-		pool = createPool(Integer.parseInt(props.getProperty("maxParallelProcesses")));
+		OcrExecutor pool = createPool(Integer.parseInt(props.getProperty("maxParallelProcesses")));
 		
 		while (!processesQueue.isEmpty()) {
 			AbbyyProcess process = processesQueue.poll();
@@ -99,7 +95,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 			boolean split = "true".equals(props.getProperty("books.split"));
 			if (split) {
 				int splitSize = Integer.parseInt(props.getProperty("maxImagesInSubprocess"));
-				// TODO we probably need one splitter for each process
+				ProcessSplitter processSplitter = createProcessSplitter();
 				List<AbbyyProcess> subProcesses = processSplitter.split(process, splitSize);
 				for (AbbyyProcess subProcess : subProcesses) {
 					pool.execute(subProcess);
