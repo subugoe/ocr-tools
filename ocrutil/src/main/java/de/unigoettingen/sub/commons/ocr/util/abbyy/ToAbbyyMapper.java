@@ -18,7 +18,7 @@ public class ToAbbyyMapper {
 	private final static Map<OcrQuality, String> QUALITY_MAP = new HashMap<OcrQuality, String>();
 
 	static {
-
+		// TODO link finden
 		// See http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt 
 		/**Technical contents of ISO 639:1988 (E/F)
 		 * "Code for the representation of names of languages".

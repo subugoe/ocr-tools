@@ -234,8 +234,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		return status;
 	}
 
-	private void executeMethod(DavMethod method) 
-	throws URIException {
+	private void executeMethod(DavMethod method) throws URIException {
 		Integer responseCode = 0;
 		
 		int timesToTry = 10;
