@@ -138,7 +138,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	}
 
 	private void put(String uri, File file) throws HttpException, IOException {
-		if (!file.exists()) {
+		if (!fileAccess.fileExists(file)) {
 			log.error("File " + file + " doesn't exist.");
 			throw new IllegalArgumentException("File " + file
 					+ " doesn't exist.");

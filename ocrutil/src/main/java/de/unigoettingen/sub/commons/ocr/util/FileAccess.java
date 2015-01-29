@@ -3,8 +3,10 @@ package de.unigoettingen.sub.commons.ocr.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,15 +90,12 @@ public class FileAccess {
 		return props;
 	}
 	
-	InputStream inputStreamFromFile(File file) {
-		InputStream is = null;
-		try {
-			is = new FileInputStream(file);
-		} catch (FileNotFoundException e) {
-			// TODO: logger or throw
-			System.err.println("Could not load file:" + file);
-		}
-		return is;
+	InputStream inputStreamFromFile(File file) throws FileNotFoundException {
+		return new FileInputStream(file);
+	}
+	
+	public OutputStream outputStreamToFile(File file) throws FileNotFoundException {
+		return new FileOutputStream(file);
 	}
 
 	public void copyUrlToFile(String urlString, File file) throws IOException {
@@ -125,6 +124,10 @@ public class FileAccess {
 
 	public String readFileToString(File file) throws IOException {
 		return FileUtils.readFileToString(file);
+	}
+
+	public File createTempFile(String name) throws IOException {
+		return File.createTempFile(name, null);
 	}
 
 }

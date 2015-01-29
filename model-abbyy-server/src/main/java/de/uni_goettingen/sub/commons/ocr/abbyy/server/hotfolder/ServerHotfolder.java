@@ -19,12 +19,13 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
  */
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 
 /**
  * The class is a base class for other implementations of
@@ -35,16 +36,41 @@ import java.util.Map;
  */
 public abstract class ServerHotfolder implements Hotfolder {
 
-	// Simple Implementation of tempfile based on a local file.
 	protected Map<String, File> tmpfiles = new HashMap<String, File>();
+	protected FileAccess fileAccess = new FileAccess();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#deleteIfExists
-	 * (java.net.URI)
-	 */
+	// for unit tests
+	protected void setFileAccess(FileAccess newAccess) {
+		fileAccess = newAccess;
+	}
+
+	abstract public void configureConnection(String serverUrl, String username, String password);
+
+	@Override
+	public OutputStream createTmpFile(String name) throws IOException {
+		File tmpFile = fileAccess.createTempFile(name);
+		tmpfiles.put(name, tmpFile);
+		return fileAccess.outputStreamToFile(tmpFile);
+	}
+
+	@Override
+	public Boolean copyTmpFile(String tmpFile, URI to) throws IOException {
+		if (tmpfiles.containsKey(tmpFile)) {
+			copyFile(tmpfiles.get(tmpFile).toURI(), to);
+		} else {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void deleteTmpFile(String name) throws IOException {
+		if (tmpfiles.containsKey(name)) {
+			fileAccess.deleteFile(tmpfiles.get(name));
+			tmpfiles.remove(name);
+		}
+	}
+
 	@Override
 	public void deleteIfExists(URI uri) throws IOException {
 		if (exists(uri)) {
@@ -52,13 +78,6 @@ public abstract class ServerHotfolder implements Hotfolder {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#getTotalSize
-	 * (java.net.URI)
-	 */
 	@Override
 	public Long getTotalSize(URI uri) throws IOException {
 		if (!isDirectory(uri)) {
@@ -78,52 +97,5 @@ public abstract class ServerHotfolder implements Hotfolder {
 	protected Boolean isLocal(URI uri) {
 		return uri.getScheme().equals("file");
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyTmpFile(
-	 * java.lang.String, java.net.URI)
-	 */
-	@Override
-	public Boolean copyTmpFile(String tmpFile, URI to) throws IOException {
-		if (tmpfiles.containsKey(tmpFile)) {
-			copyFile(tmpfiles.get(tmpFile).toURI(), to);
-		} else {
-			return false;
-		}
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder#
-	 * deleteTmpFile(java.lang.String)
-	 */
-	@Override
-	public void deleteTmpFile(String name) throws IOException {
-		if (tmpfiles.containsKey(name)) {
-			tmpfiles.get(name).delete();
-			tmpfiles.remove(name);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#createTmpFile
-	 * (java.lang.String)
-	 */
-	@Override
-	public OutputStream createTmpFile(String name) throws IOException {
-		File tmpFile = File.createTempFile(name, null);
-		tmpfiles.put(name, tmpFile);
-		return new FileOutputStream(tmpFile);
-	}
-
-	abstract public void configureConnection(String serverUrl, String username, String password);
 	
 }
