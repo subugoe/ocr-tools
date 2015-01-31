@@ -36,6 +36,7 @@ import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
@@ -51,7 +52,6 @@ import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.MultiStatus;
 import org.apache.jackrabbit.webdav.MultiStatusResponse;
-import org.apache.jackrabbit.webdav.client.methods.DavMethod;
 import org.apache.jackrabbit.webdav.client.methods.DeleteMethod;
 import org.apache.jackrabbit.webdav.client.methods.MkColMethod;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
@@ -115,11 +115,10 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	@Override
 	public void copyFile(URI from, URI to) throws IOException {
 		if (isLocal(from) && !isLocal(to)) {
-			// This should be an upload
 			putOnServer(new File(from), to.toString());
 		} else if (!isLocal(from) && isLocal(to)) {
 			// TODO: retry several times
-			getWebdavFile(from, new File(to));
+			getFromServer(from.toString(), new File(to));
 		} else if (isLocal(from) && isLocal(to)) {
 			log.error("Copy from local URI to local URI isn't implemented!");
 			throw new NotImplementedException("Copy from local URI to local URI isn't implemented!");
@@ -141,9 +140,9 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		execute(putMethod);
 	}
 
-	private void execute(DavMethod method) throws URIException {
+	private InputStream execute(HttpMethod method) throws URIException {
+		InputStream responseStream = null;
 		int responseCode = 0;
-		
 		int timesToTry = 10;
 		try {
 			for (int i = 1; i <= timesToTry; i++) {
@@ -154,6 +153,8 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 						throw new IOException("Got illegal response code " + responseCode);
 					}
 					// method was executed correctly, stop retrying
+					responseStream = method.getResponseBodyAsStream();
+					System.out.println(responseStream);
 					break;
 				} catch (IOException e) {
 					if (i == timesToTry) {
@@ -165,13 +166,42 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 				}
 			}
 		} finally {
+			if (responseStream == null) {
+				method.releaseConnection();
+			}
+		}
+		return responseStream;
+	}
+	
+	private void getFromServer(String sourceUri, File targetFile) throws IOException {
+		GetMethod method = new GetMethod(sourceUri);
+		InputStream is = null;
+		// Provide custom retry handler is necessary
+		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
+				new DefaultHttpMethodRetryHandler(3, false));
+		try {
+			// Execute the method.
+			Integer statusCode = client.executeMethod(method);
+
+			if (statusCode != HttpStatus.SC_OK) {
+				log.error("Method failed: " + method.getStatusLine());
+			}
+			is = method.getResponseBodyAsStream();
+			org.apache.commons.io.FileUtils
+					.copyInputStreamToFile(is, targetFile);
+
+		} catch (IOException e) {
+			log.error("Fatal transport error: ", e);
+		} finally {
+			// Release the connection.
+			is.close();
 			method.releaseConnection();
 		}
 	}
-	
+
 	@Override
 	public void delete(URI uri) throws IOException {
-		DavMethod delete = new DeleteMethod(uri.toString());
+		DeleteMethod delete = new DeleteMethod(uri.toString());
 		execute(delete);
 		log.debug("Deleted " + uri);
 	}
@@ -193,7 +223,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	 */
 	@Override
 	public void mkDir(URI uri) throws IOException {
-		DavMethod mkCol = new MkColMethod(uri.toString());
+		MkColMethod mkCol = new MkColMethod(uri.toString());
 		execute(mkCol);
 
 		// Since we use the multithreaded Connection manager we have to wait
@@ -238,32 +268,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 			head.releaseConnection();
 		}
 		return status;
-	}
-
-	private void getWebdavFile(URI uri, File localFile) throws IOException {
-		GetMethod method = new GetMethod(uri.toString());
-		InputStream is = null;
-		// Provide custom retry handler is necessary
-		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
-				new DefaultHttpMethodRetryHandler(3, false));
-		try {
-			// Execute the method.
-			Integer statusCode = client.executeMethod(method);
-
-			if (statusCode != HttpStatus.SC_OK) {
-				log.error("Method failed: " + method.getStatusLine());
-			}
-			is = method.getResponseBodyAsStream();
-			org.apache.commons.io.FileUtils
-					.copyInputStreamToFile(is, localFile);
-
-		} catch (IOException e) {
-			log.error("Fatal transport error: ", e);
-		} finally {
-			// Release the connection.
-			is.close();
-			method.releaseConnection();
-		}
 	}
 
 	@Override
@@ -379,7 +383,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	 */
 
 	private MultiStatus propFind(URI uri) throws IOException, DavException {
-		DavMethod probFind = new PropFindMethod(uri.toString(),
+		PropFindMethod probFind = new PropFindMethod(uri.toString(),
 				DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
 		execute(probFind);
 		// TODO: Check if this really works since the connection is already
