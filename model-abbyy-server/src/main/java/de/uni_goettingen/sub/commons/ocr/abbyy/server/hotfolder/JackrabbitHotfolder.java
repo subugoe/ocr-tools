@@ -36,7 +36,6 @@ import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
@@ -113,18 +112,11 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		client.setHostConfiguration(hostConfig);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java
-	 * .lang.String, java.lang.String)
-	 */
 	@Override
 	public void copyFile(URI from, URI to) throws IOException {
 		if (isLocal(from) && !isLocal(to)) {
 			// This should be an upload
-			put(to.toString(), new File(from));
+			putOnServer(new File(from), to.toString());
 		} else if (!isLocal(from) && isLocal(to)) {
 			// TODO: retry several times
 			getWebdavFile(from, new File(to));
@@ -137,39 +129,53 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		}
 	}
 
-	private void put(String uri, File file) throws HttpException, IOException {
-		if (!fileAccess.fileExists(file)) {
-			log.error("File " + file + " doesn't exist.");
-			throw new IllegalArgumentException("File " + file
+	private void putOnServer(File sourceFile, String targetUri) throws IOException {
+		if (!fileAccess.fileExists(sourceFile)) {
+			log.error("File " + sourceFile + " doesn't exist.");
+			throw new IllegalArgumentException("File " + sourceFile
 					+ " doesn't exist.");
 		}
-		PutMethod put = new PutMethod(uri);
-		String mimeType = URLConnection.guessContentTypeFromName(file.getPath());
-		put.setRequestEntity(new FileRequestEntity(file, mimeType));
-		executeMethod(put);
+		PutMethod putMethod = new PutMethod(targetUri);
+		String mimeType = URLConnection.guessContentTypeFromName(sourceFile.getPath());
+		putMethod.setRequestEntity(new FileRequestEntity(sourceFile, mimeType));
+		execute(putMethod);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#delete(java.
-	 * net.URI)
-	 */
+	private void execute(DavMethod method) throws URIException {
+		int responseCode = 0;
+		
+		int timesToTry = 10;
+		try {
+			for (int i = 1; i <= timesToTry; i++) {
+				try {
+					responseCode = client.executeMethod(method);
+					log.trace("Response code in executeMethod: " + responseCode);
+					if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
+						throw new IOException("Got illegal response code " + responseCode);
+					}
+					// method was executed correctly, stop retrying
+					break;
+				} catch (IOException e) {
+					if (i == timesToTry) {
+						log.error("Error connecting to server. URL is " + method.getURI(), e);
+						throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), e);
+					}
+					log.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI());
+					pause.forMilliseconds(10000);
+				}
+			}
+		} finally {
+			method.releaseConnection();
+		}
+	}
+	
 	@Override
 	public void delete(URI uri) throws IOException {
 		DavMethod delete = new DeleteMethod(uri.toString());
-		executeMethod(delete);
+		execute(delete);
 		log.debug("Deleted " + uri);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#exists(java.
-	 * net.URI)
-	 */
 	@Override
 	public Boolean exists(URI uri) throws IOException {
 		if (head(uri) == HttpStatus.SC_OK) {
@@ -188,7 +194,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	@Override
 	public void mkDir(URI uri) throws IOException {
 		DavMethod mkCol = new MkColMethod(uri.toString());
-		executeMethod(mkCol);
+		execute(mkCol);
 
 		// Since we use the multithreaded Connection manager we have to wait
 		// until the directory is created
@@ -234,34 +240,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		return status;
 	}
 
-	private void executeMethod(DavMethod method) throws URIException {
-		Integer responseCode = 0;
-		
-		int timesToTry = 10;
-		try {
-			for (int i = 1; i <= timesToTry; i++) {
-				try {
-					responseCode = client.executeMethod(method);
-					log.trace("Response code in executeMethod: " + responseCode);
-					if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
-						throw new IOException("Got illegal response code " + responseCode);
-					}
-					// method was executed correctly, stop retrying
-					break;
-				} catch (IOException e) {
-					if (i == timesToTry) {
-						log.error("Error connecting to server. URL is " + method.getURI(), e);
-						throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), e);
-					}
-					log.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI());
-					pause.forMilliseconds(10000);
-				}
-			}
-		} finally {
-			method.releaseConnection();
-		}
-	}
-	
 	private void getWebdavFile(URI uri, File localFile) throws IOException {
 		GetMethod method = new GetMethod(uri.toString());
 		InputStream is = null;
@@ -403,7 +381,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	private MultiStatus propFind(URI uri) throws IOException, DavException {
 		DavMethod probFind = new PropFindMethod(uri.toString(),
 				DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
-		executeMethod(probFind);
+		execute(probFind);
 		// TODO: Check if this really works since the connection is already
 		// closed if executed by the static methos
 		return probFind.getResponseBodyAsMultiStatus();

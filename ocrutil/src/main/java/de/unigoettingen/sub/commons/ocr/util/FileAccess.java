@@ -94,7 +94,7 @@ public class FileAccess {
 		return new FileInputStream(file);
 	}
 	
-	public OutputStream outputStreamToFile(File file) throws FileNotFoundException {
+	public OutputStream outputStreamIntoFile(File file) throws FileNotFoundException {
 		return new FileOutputStream(file);
 	}
 

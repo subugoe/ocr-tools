@@ -50,7 +50,7 @@ public abstract class ServerHotfolder implements Hotfolder {
 	public OutputStream createTmpFile(String name) throws IOException {
 		File tmpFile = fileAccess.createTempFile(name);
 		tmpfiles.put(name, tmpFile);
-		return fileAccess.outputStreamToFile(tmpFile);
+		return fileAccess.outputStreamIntoFile(tmpFile);
 	}
 
 	@Override
