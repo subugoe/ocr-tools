@@ -5,11 +5,13 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.jackrabbit.webdav.client.methods.PutMethod;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +43,14 @@ public class JackrabbitHotfolderTest {
 		jackrabbitSut.copyFile(new URI("file:/test.jpg"), new URI("http://localhost/test.jpg"));
 		
 		verify(httpClientMock).executeMethod(any(PutMethod.class));
+	}
+
+	@Test
+	public void shouldCopyFromServerToLocal() throws IOException, URISyntaxException {
+		jackrabbitSut.copyFile(new URI("http://localhost/test.jpg"), new URI("file:/test.jpg"));
+		
+		verify(httpClientMock).executeMethod(any(GetMethod.class));
+		verify(fileAccessMock).copyStreamToFile(any(InputStream.class), any(File.class));
 	}
 
 }

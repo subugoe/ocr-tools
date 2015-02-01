@@ -82,7 +82,7 @@ public class FileAccess {
 		Properties props = new Properties();
 		try {
 			File f = new File(getClass().getResource("/" + file).getFile());
-			props.load(inputStreamFromFile(f));
+			props.load(inputStreamForFile(f));
 		} catch (IOException e) {
 			// TODO: logger or throw
 			System.err.println("Could not load file:" + file);
@@ -90,17 +90,21 @@ public class FileAccess {
 		return props;
 	}
 	
-	InputStream inputStreamFromFile(File file) throws FileNotFoundException {
+	InputStream inputStreamForFile(File file) throws FileNotFoundException {
 		return new FileInputStream(file);
 	}
 	
-	public OutputStream outputStreamIntoFile(File file) throws FileNotFoundException {
+	public OutputStream outputStreamForFile(File file) throws FileNotFoundException {
 		return new FileOutputStream(file);
 	}
 
 	public void copyUrlToFile(String urlString, File file) throws IOException {
 		URL inputUrl = new URL(urlString);
 		FileUtils.copyURLToFile(inputUrl, file);
+	}
+	
+	public void copyStreamToFile(InputStream sourceStream, File targetFile) throws IOException {
+		FileUtils.copyInputStreamToFile(sourceStream, targetFile);
 	}
 
 	public void deleteFile(File file) throws IOException {

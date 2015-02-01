@@ -117,7 +117,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		if (isLocal(from) && !isLocal(to)) {
 			putOnServer(new File(from), to.toString());
 		} else if (!isLocal(from) && isLocal(to)) {
-			// TODO: retry several times
 			getFromServer(from.toString(), new File(to));
 		} else if (isLocal(from) && isLocal(to)) {
 			log.error("Copy from local URI to local URI isn't implemented!");
@@ -174,28 +173,16 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	}
 	
 	private void getFromServer(String sourceUri, File targetFile) throws IOException {
-		GetMethod method = new GetMethod(sourceUri);
-		InputStream is = null;
-		// Provide custom retry handler is necessary
-		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
-				new DefaultHttpMethodRetryHandler(3, false));
+		GetMethod getMethod = new GetMethod(sourceUri);
+		InputStream responseStream = null;
 		try {
-			// Execute the method.
-			Integer statusCode = client.executeMethod(method);
-
-			if (statusCode != HttpStatus.SC_OK) {
-				log.error("Method failed: " + method.getStatusLine());
-			}
-			is = method.getResponseBodyAsStream();
-			org.apache.commons.io.FileUtils
-					.copyInputStreamToFile(is, targetFile);
-
-		} catch (IOException e) {
-			log.error("Fatal transport error: ", e);
+			responseStream = execute(getMethod);
+			fileAccess.copyStreamToFile(responseStream, targetFile);
 		} finally {
-			// Release the connection.
-			is.close();
-			method.releaseConnection();
+			if (responseStream != null) {
+				responseStream.close();
+			}
+			getMethod.releaseConnection();
 		}
 	}
 
