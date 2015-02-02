@@ -87,17 +87,28 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyFile(java.net.URI, java.net.URI)
 	 */
+//	@Override
+//	public void copyFile (URI from, URI to) throws IOException {
+//		FileObject src = fsManager.resolveFile(from.toString());
+//		FileObject dest = fsManager.resolveFile(to.toString());
+//		if (dest.exists()) {
+//			//TODO: There is an error in here.
+//			throw new IOException("Remote file already exists!");
+//		}
+//		//localFile.copyFrom(remoteFile, new AllFileSelector());
+//		dest.copyFrom(src, Selectors.SELECT_ALL);
+//	}
+	
 	@Override
-	public void copyFile (URI from, URI to) throws IOException {
-		FileObject src = fsManager.resolveFile(from.toString());
-		FileObject dest = fsManager.resolveFile(to.toString());
-		if (dest.exists()) {
-			//TODO: There is an error in here.
-			throw new IOException("Remote file allready exists!");
-		}
-		//localFile.copyFrom(remoteFile, new AllFileSelector());
-		dest.copyFrom(src, Selectors.SELECT_ALL);
+	public void upload(URI fromLocal, URI toRemote) throws IOException {
+		
 	}
+	
+	@Override
+	public void download(URI fromRemote, URI toLocal) throws IOException {
+		
+	}
+
 
 	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#delete(java.net.URI)
@@ -188,12 +199,12 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 			logger.error(ticketTmpStore + tmpFile + "doesn't exist!");
 			return false;
 		}
-		try {
-			copyFile(new URI(ticketTmpStore + tmpFile), to);
-		} catch (URISyntaxException e) {
-			logger.error("Couldn't create URI for temporary file", e);
-			return false;
-		}
+//		try {
+//			copyFile(new URI(ticketTmpStore + tmpFile), to);
+//		} catch (URISyntaxException e) {
+//			logger.error("Couldn't create URI for temporary file", e);
+//			return false;
+//		}
 		return true;
 	}
 

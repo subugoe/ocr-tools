@@ -45,22 +45,22 @@ public class HotfolderManagerTest {
 	}
 
 	@Test
-	public void shouldCopyImages() throws URISyntaxException, IOException {
+	public void shouldUploadImages() throws URISyntaxException, IOException {
 		List<OcrImage> imagesToCopy = validImages();
 		managerSut.copyImagesToHotfolder(imagesToCopy);
 		
-		verify(hotfolderMock).copyFile(new URI("file:/01.tif"), new URI("http://test/01.tif"));
-		verify(hotfolderMock).copyFile(new URI("file:/02.tif"), new URI("http://test/02.tif"));
+		verify(hotfolderMock).upload(new URI("file:/01.tif"), new URI("http://test/01.tif"));
+		verify(hotfolderMock).upload(new URI("file:/02.tif"), new URI("http://test/02.tif"));
 	}
 
 	@Test
-	public void shouldMoveResultOutputs() throws URISyntaxException, IOException {
+	public void shouldDownloadResultOutputs() throws URISyntaxException, IOException {
 		List<OcrOutput> outputsToMove = validOutputs();
 		managerSut.retrieveResults(outputsToMove);
 		
-		verify(hotfolderMock).copyFile(new URI("http://test/out.xml"), new URI("file:/out.xml"));
+		verify(hotfolderMock).download(new URI("http://test/out.xml"), new URI("file:/out.xml"));
 		verify(hotfolderMock).deleteIfExists(new URI("http://test/out.xml"));
-		verify(hotfolderMock).copyFile(new URI("http://test/out.txt"), new URI("file:/out.txt"));
+		verify(hotfolderMock).download(new URI("http://test/out.txt"), new URI("file:/out.txt"));
 		verify(hotfolderMock).deleteIfExists(new URI("http://test/out.txt"));
 	}
 

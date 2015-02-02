@@ -40,14 +40,14 @@ public class JackrabbitHotfolderTest {
 	
 	@Test
 	public void shouldCopyLocalToRemote() throws IOException, URISyntaxException {
-		jackrabbitSut.copyFile(new URI("file:/test.jpg"), new URI("http://localhost/test.jpg"));
+		jackrabbitSut.upload(new URI("file:/test.jpg"), new URI("http://localhost/test.jpg"));
 		
 		verify(httpClientMock).executeMethod(any(PutMethod.class));
 	}
 
 	@Test
 	public void shouldCopyFromServerToLocal() throws IOException, URISyntaxException {
-		jackrabbitSut.copyFile(new URI("http://localhost/test.jpg"), new URI("file:/test.jpg"));
+		jackrabbitSut.download(new URI("http://localhost/test.jpg"), new URI("file:/test.jpg"));
 		
 		verify(httpClientMock).executeMethod(any(GetMethod.class));
 		verify(fileAccessMock).copyStreamToFile(any(InputStream.class), any(File.class));

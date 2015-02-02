@@ -79,21 +79,8 @@ public class JackrabbitHotfolderTestOld {
 		test.close();
 		URI from = new URI(DAV_ADDRESS + "test.txt");
 		URI to = new File(DAV_FOLDER, "test.txt").toURI();
-		hotfolder.copyFile(from, to);
+		hotfolder.download(from, to);
 		assertTrue(new File(DAV_FOLDER, "test.txt").exists());
-	}
-
-	@Ignore
-	// the tested method is not implemented yet
-	@Test
-	public void testCopyFileFromServerToServer() throws Exception {
-		PrintWriter test = new PrintWriter(DAV_FOLDER + "/test_s2s.txt");
-		test.println("copy from server to server");
-		test.close();
-		URI from = new URI(DAV_ADDRESS + "test_s2s.txt");
-		URI to = new URI(DAV_ADDRESS + "test_s2s_copy.txt");
-		hotfolder.copyFile(from, to);
-		assertTrue(new File(DAV_FOLDER, "test_s2s_copy.txt").exists());
 	}
 
 	@Test
@@ -101,7 +88,7 @@ public class JackrabbitHotfolderTestOld {
 		File sourceFile = new File(LOCAL_INPUT, "xmlExport.xml");
 		URI from = sourceFile.toURI();
 		URI to = new URI(DAV_ADDRESS + "xmlExport.xml");
-		hotfolder.copyFile(from, to);
+		hotfolder.upload(from, to);
 
 		assertTrue(new File(DAV_FOLDER, "xmlExport.xml").exists());
 	}

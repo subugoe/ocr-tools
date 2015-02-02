@@ -56,7 +56,7 @@ public abstract class ServerHotfolder implements Hotfolder {
 	@Override
 	public Boolean copyTmpFile(String tmpFile, URI to) throws IOException {
 		if (tmpfiles.containsKey(tmpFile)) {
-			copyFile(tmpfiles.get(tmpFile).toURI(), to);
+			upload(tmpfiles.get(tmpFile).toURI(), to);
 		} else {
 			return false;
 		}
@@ -92,10 +92,6 @@ public abstract class ServerHotfolder implements Hotfolder {
 			}
 		}
 		return size;
-	}
-
-	protected Boolean isLocal(URI uri) {
-		return uri.getScheme().equals("file");
 	}
 	
 }

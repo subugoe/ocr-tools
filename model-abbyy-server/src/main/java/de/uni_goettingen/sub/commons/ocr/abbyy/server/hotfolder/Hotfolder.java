@@ -34,14 +34,10 @@ import java.util.List;
  */
 public interface Hotfolder {
 
-	/**
-	 * Copies a file from one location to another.
-	 * 
-	 * @throws IOException
-	 *             Implementers should raise an IOException if the file already exists.
-	 */
-	public abstract void copyFile(URI from, URI to) throws IOException;
-
+	public void upload(URI fromLocal, URI toRemote) throws IOException;
+	
+	public void download(URI fromRemote, URI toLocal) throws IOException;
+	
 	/**
 	 * Deletes a resource.
 	 * 

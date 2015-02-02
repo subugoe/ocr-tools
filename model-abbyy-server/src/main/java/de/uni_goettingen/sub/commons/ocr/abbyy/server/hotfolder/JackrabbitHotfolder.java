@@ -113,21 +113,9 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	}
 
 	@Override
-	public void copyFile(URI from, URI to) throws IOException {
-		if (isLocal(from) && !isLocal(to)) {
-			putOnServer(new File(from), to.toString());
-		} else if (!isLocal(from) && isLocal(to)) {
-			getFromServer(from.toString(), new File(to));
-		} else if (isLocal(from) && isLocal(to)) {
-			log.error("Copy from local URI to local URI isn't implemented!");
-			throw new NotImplementedException("Copy from local URI to local URI isn't implemented!");
-		} else {
-			log.error("Copy from WebDAV URI to WebDAV URI isn't implemented!");
-			throw new NotImplementedException("Copy from WebDAV URI to WebDAV URI isn't implemented!");
-		}
-	}
-
-	private void putOnServer(File sourceFile, String targetUri) throws IOException {
+	public void upload(URI fromLocal, URI toRemote) throws IOException {
+		File sourceFile = new File(fromLocal);
+		String targetUri = toRemote.toString();
 		if (!fileAccess.fileExists(sourceFile)) {
 			log.error("File " + sourceFile + " doesn't exist.");
 			throw new IllegalArgumentException("File " + sourceFile
@@ -138,7 +126,24 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		putMethod.setRequestEntity(new FileRequestEntity(sourceFile, mimeType));
 		execute(putMethod);
 	}
-
+	
+	@Override
+	public void download(URI fromRemote, URI toLocal) throws IOException {
+		String sourceUri = fromRemote.toString();
+		File targetFile = new File(toLocal);
+		GetMethod getMethod = new GetMethod(sourceUri);
+		InputStream responseStream = null;
+		try {
+			responseStream = execute(getMethod);
+			fileAccess.copyStreamToFile(responseStream, targetFile);
+		} finally {
+			if (responseStream != null) {
+				responseStream.close();
+			}
+			getMethod.releaseConnection();
+		}
+	}
+	
 	private InputStream execute(HttpMethod method) throws URIException {
 		InputStream responseStream = null;
 		int responseCode = 0;
@@ -172,20 +177,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		return responseStream;
 	}
 	
-	private void getFromServer(String sourceUri, File targetFile) throws IOException {
-		GetMethod getMethod = new GetMethod(sourceUri);
-		InputStream responseStream = null;
-		try {
-			responseStream = execute(getMethod);
-			fileAccess.copyStreamToFile(responseStream, targetFile);
-		} finally {
-			if (responseStream != null) {
-				responseStream.close();
-			}
-			getMethod.releaseConnection();
-		}
-	}
-
 	@Override
 	public void delete(URI uri) throws IOException {
 		DeleteMethod delete = new DeleteMethod(uri.toString());

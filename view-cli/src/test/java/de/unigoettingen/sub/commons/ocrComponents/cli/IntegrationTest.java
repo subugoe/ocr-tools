@@ -105,7 +105,7 @@ public class IntegrationTest {
 		
 		String outString = new String(baos.toByteArray());
 		assertThat(outString, containsString("Finished OCR."));
-		verify(hotfolderMock, atLeastOnce()).copyFile(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
+		verify(hotfolderMock, atLeastOnce()).download(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
 	}
 	
 	// TODO: works in production, but not in test
@@ -120,7 +120,7 @@ public class IntegrationTest {
 		
 		String outString = new String(baos.toByteArray());
 		assertThat(outString, isEmptyString());
-		verify(hotfolderMock, atLeastOnce()).copyFile(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
+		verify(hotfolderMock, atLeastOnce()).download(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
 	}
 
 	private void prepareFileAccessMockForSuccess() {

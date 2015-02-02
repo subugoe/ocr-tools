@@ -16,58 +16,49 @@ public class HotfolderMockProvider extends ServerHotfolder {
 	}
 	
 	@Override
-	public void copyFile(URI from, URI to) throws IOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void delete(URI uri) throws IOException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mkDir(URI uri) throws IOException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public Boolean exists(URI uri) throws IOException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Long getSize(URI uri) throws IOException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Boolean isDirectory(URI uri) throws IOException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<URI> listURIs(URI uri) throws IOException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public InputStream openInputStream(URI uri) throws IOException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void configureConnection(String serverUrl, String username,
 			String password) {
-		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public void upload(URI fromLocal, URI toRemote) throws IOException {
+	}
+
+	@Override
+	public void download(URI fromRemote, URI toLocal) throws IOException {
 	}
 
 }

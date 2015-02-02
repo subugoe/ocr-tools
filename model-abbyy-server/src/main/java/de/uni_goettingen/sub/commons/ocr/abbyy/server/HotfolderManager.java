@@ -63,7 +63,7 @@ public class HotfolderManager {
 			AbbyyImage image = (AbbyyImage) ocrImage;
 			URI fromUri = image.getLocalUri();
 			URI toUri = image.getRemoteUri();
-			hotfolder.copyFile(fromUri, toUri);
+			hotfolder.upload(fromUri, toUri);
 		}
 	}
 
@@ -73,7 +73,7 @@ public class HotfolderManager {
 
 			URI remoteUri = o.getRemoteUri();
 			URI localUri = o.getLocalUri();
-			hotfolder.copyFile(remoteUri, localUri);
+			hotfolder.download(remoteUri, localUri);
 			hotfolder.deleteIfExists(remoteUri);
 		}
 	}
