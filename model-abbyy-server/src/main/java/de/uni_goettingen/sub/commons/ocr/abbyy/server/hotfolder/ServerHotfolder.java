@@ -54,13 +54,12 @@ public abstract class ServerHotfolder implements Hotfolder {
 	}
 
 	@Override
-	public Boolean copyTmpFile(String tmpFile, URI to) throws IOException {
+	public void copyTmpFile(String tmpFile, URI to) throws IOException {
 		if (tmpfiles.containsKey(tmpFile)) {
 			upload(tmpfiles.get(tmpFile).toURI(), to);
 		} else {
-			return false;
+			throw new IOException("Temp file does not exist.");
 		}
-		return true;
 	}
 
 	@Override

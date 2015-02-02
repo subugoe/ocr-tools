@@ -90,10 +90,8 @@ public interface Hotfolder {
 	 * 
 	 * @param to
 	 *            the URI to copy the file to
-	 * @return true if the file was copied, false if the file wasn't created
-	 *         beforehand or it can't be copied
 	 */
-	public abstract Boolean copyTmpFile(String tmpFile, URI to)
+	public abstract void copyTmpFile(String tmpFile, URI to)
 			throws IOException;
 
 	/**

@@ -153,7 +153,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 				try {
 					responseCode = client.executeMethod(method);
 					log.trace("Response code in executeMethod: " + responseCode);
-					if (responseCode >= HttpStatus.SC_UNAUTHORIZED) {
+					if (responseCode >= HttpStatus.SC_MOVED_PERMANENTLY) {
 						throw new IOException("Got illegal response code " + responseCode);
 					}
 					// method was executed correctly, stop retrying
@@ -179,50 +179,24 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	
 	@Override
 	public void delete(URI uri) throws IOException {
-		DeleteMethod delete = new DeleteMethod(uri.toString());
-		execute(delete);
-		log.debug("Deleted " + uri);
+		execute(new DeleteMethod(uri.toString()));
 	}
 
 	@Override
 	public Boolean exists(URI uri) throws IOException {
-		if (head(uri) == HttpStatus.SC_OK) {
-			return true;
-		}
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#mkDir(java.net
-	 * .URI)
-	 */
-	@Override
-	public void mkDir(URI uri) throws IOException {
-		MkColMethod mkCol = new MkColMethod(uri.toString());
-		execute(mkCol);
-
-		// Since we use the multithreaded Connection manager we have to wait
-		// until the directory is created
-		// The problem doesn't occur in debug mode since the main thread is
-		// slower there
-		// You get a 403 if you try to PUT something in a non existing
-		// COLection
-		while (true) {
-			pause.forMilliseconds(300);
-			Integer status = head(uri);
-			if (status == HttpStatus.SC_OK) {
-				break;
+		HeadMethod headMethod = new HeadMethod(uri.toString());
+		try {
+			headMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(10, false));
+			int responseCode = client.executeMethod(headMethod);
+			if (responseCode == HttpStatus.SC_OK) {
+				return true;
 			}
-			if (status == HttpStatus.SC_FORBIDDEN) {
-				log.error("Got HTTP Code " + status + " for " + uri.toString());
-				throw new IllegalStateException("Got HTTP Code " + status);
-			}
+			return false;
+		} finally {
+			headMethod.releaseConnection();
 		}
 	}
-
+	
 	private Integer head(URI uri) {
 		HeadMethod head = new HeadMethod(uri.toString());
 		Integer status = 0;
@@ -246,6 +220,30 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 			head.releaseConnection();
 		}
 		return status;
+	}
+
+	@Override
+	public void mkDir(URI uri) throws IOException {
+		MkColMethod mkCol = new MkColMethod(uri.toString());
+		execute(mkCol);
+
+		// Since we use the multithreaded Connection manager we have to wait
+		// until the directory is created
+		// The problem doesn't occur in debug mode since the main thread is
+		// slower there
+		// You get a 403 if you try to PUT something in a non existing
+		// COLection
+		while (true) {
+			pause.forMilliseconds(300);
+			Integer status = head(uri);
+			if (status == HttpStatus.SC_OK) {
+				break;
+			}
+			if (status == HttpStatus.SC_FORBIDDEN) {
+				log.error("Got HTTP Code " + status + " for " + uri.toString());
+				throw new IllegalStateException("Got HTTP Code " + status);
+			}
+		}
 	}
 
 	@Override

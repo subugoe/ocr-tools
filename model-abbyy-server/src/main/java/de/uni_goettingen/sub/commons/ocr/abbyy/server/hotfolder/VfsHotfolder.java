@@ -194,10 +194,9 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#copyTmpFile(java.lang.String, java.net.URI)
 	 */
 	@Override
-	public Boolean copyTmpFile (String tmpFile, URI to) throws IOException {
+	public void copyTmpFile (String tmpFile, URI to) throws IOException {
 		if (!fsManager.resolveFile(ticketTmpStore + tmpFile).exists()) {
 			logger.error(ticketTmpStore + tmpFile + "doesn't exist!");
-			return false;
 		}
 //		try {
 //			copyFile(new URI(ticketTmpStore + tmpFile), to);
@@ -205,7 +204,6 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 //			logger.error("Couldn't create URI for temporary file", e);
 //			return false;
 //		}
-		return true;
 	}
 
 	
