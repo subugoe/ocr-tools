@@ -20,12 +20,8 @@ public class HotfolderMockProvider extends ServerHotfolder {
 	}
 
 	@Override
-	public void mkDir(URI uri) throws IOException {
-	}
-
-	@Override
-	public Boolean exists(URI uri) throws IOException {
-		return null;
+	public boolean exists(URI uri) throws IOException {
+		return false;
 	}
 
 	@Override

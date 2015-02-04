@@ -56,15 +56,6 @@ public class JackrabbitHotfolderTestOld {
 	}
 
 	@Test
-	public void testMkDir() throws IOException, URISyntaxException {
-		hotfolder.mkDir(new URI(DAV_ADDRESS + "testMkDir"));
-		List<File> subFolders = Arrays.asList(DAV_FOLDER.listFiles());
-
-		assertTrue(subFolders.toString().contains("testMkDir"));
-		new File(DAV_FOLDER, "testMkDir").delete();
-	}
-
-	@Test
 	public void testExists() throws Exception {
 		new File(DAV_FOLDER, "testExists").mkdir();
 

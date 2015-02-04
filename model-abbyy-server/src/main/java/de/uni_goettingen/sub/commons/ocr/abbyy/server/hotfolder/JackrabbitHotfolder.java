@@ -53,7 +53,6 @@ import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.MultiStatus;
 import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.DeleteMethod;
-import org.apache.jackrabbit.webdav.client.methods.MkColMethod;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 import org.apache.jackrabbit.webdav.client.methods.PutMethod;
 import org.apache.jackrabbit.webdav.property.DavPropertyName;
@@ -183,7 +182,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	}
 
 	@Override
-	public Boolean exists(URI uri) throws IOException {
+	public boolean exists(URI uri) throws IOException {
 		HeadMethod headMethod = new HeadMethod(uri.toString());
 		try {
 			headMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(10, false));
@@ -197,55 +196,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		}
 	}
 	
-	private Integer head(URI uri) {
-		HeadMethod head = new HeadMethod(uri.toString());
-		Integer status = 0;
-		
-		int timesToTry = 10;
-		try {
-			for (int i = 1; i <= timesToTry; i++) {
-				try {
-					status = client.executeMethod(head);
-					break;
-				} catch (IOException e) {
-					if (i == timesToTry) {
-						log.error("Error connecting to server. URL is " + uri, e);
-						throw new IllegalStateException("Error connecting to server. URL is " + uri, e);
-					}
-					log.warn("Problem connecting to server. Retry number " + i + "... URL is " + uri);
-					pause.forMilliseconds(10000);
-				}
-			}
-		} finally {
-			head.releaseConnection();
-		}
-		return status;
-	}
-
-	@Override
-	public void mkDir(URI uri) throws IOException {
-		MkColMethod mkCol = new MkColMethod(uri.toString());
-		execute(mkCol);
-
-		// Since we use the multithreaded Connection manager we have to wait
-		// until the directory is created
-		// The problem doesn't occur in debug mode since the main thread is
-		// slower there
-		// You get a 403 if you try to PUT something in a non existing
-		// COLection
-		while (true) {
-			pause.forMilliseconds(300);
-			Integer status = head(uri);
-			if (status == HttpStatus.SC_OK) {
-				break;
-			}
-			if (status == HttpStatus.SC_FORBIDDEN) {
-				log.error("Got HTTP Code " + status + " for " + uri.toString());
-				throw new IllegalStateException("Got HTTP Code " + status);
-			}
-		}
-	}
-
 	@Override
 	public Long getTotalSize(URI uri) throws IOException {
 		Long size = 0l;

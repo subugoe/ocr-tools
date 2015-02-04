@@ -58,16 +58,6 @@ public class VfsHotfolderTest {
 	}
 
 	@Test
-	public void testMkDir() throws MalformedURLException, IOException {
-		File testDir = new File(MISC, "newFolder");
-		URI testDirUri = testDir.toURI();
-		logger.debug("Checking if " + testDirUri
-				+ " can be created.");
-		apacheVFSHotfolderImpl.mkDir(testDirUri);
-		assertTrue(testDir.exists());
-	}
-
-	@Test
 	public void checkSize() throws IOException, URISyntaxException {
 		logger.debug("Checking size of " + testImageUri.toString());
 		Long size = apacheVFSHotfolderImpl.getTotalSize(testImageUri);

@@ -119,19 +119,10 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 	}
 
 	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#mkDir(java.net.URI)
-	 */
-	@Override
-	public void mkDir (URI uri) throws FileSystemException {
-		fsManager.resolveFile(uri.toString()).createFolder();
-		logger.debug("Directory " + uri.toString() + " created");
-	}
-
-	/* (non-Javadoc)
 	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#exists(java.net.URI)
 	 */
 	@Override
-	public Boolean exists (URI uri) throws FileSystemException {
+	public boolean exists (URI uri) throws FileSystemException {
 		FileObject fo = fsManager.resolveFile(uri.toString());
 		return fo.exists();
 	}

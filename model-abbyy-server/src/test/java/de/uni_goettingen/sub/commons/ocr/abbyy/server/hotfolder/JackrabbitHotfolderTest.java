@@ -10,8 +10,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.jackrabbit.webdav.client.methods.DeleteMethod;
 import org.apache.jackrabbit.webdav.client.methods.PutMethod;
 import org.junit.Before;
@@ -61,6 +63,18 @@ public class JackrabbitHotfolderTest {
 		verify(httpClientMock).executeMethod(any(DeleteMethod.class));
 	}
 	
-	
+	@Test
+	public void shouldExist() throws HttpException, IOException, URISyntaxException {
+		when(httpClientMock.executeMethod(any(HeadMethod.class))).thenReturn(200);
+		
+		assertTrue("URI must exist", jackrabbitSut.exists(new URI("http://localhost/test.tif")));
+	}
+
+	@Test
+	public void shouldNotExist() throws HttpException, IOException, URISyntaxException {
+		when(httpClientMock.executeMethod(any(HeadMethod.class))).thenReturn(404);
+		
+		assertFalse("URI must not exist", jackrabbitSut.exists(new URI("http://localhost/test.tif")));
+	}
 
 }

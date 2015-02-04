@@ -51,16 +51,10 @@ public interface Hotfolder {
 	public abstract void deleteIfExists(URI uri) throws IOException;
 
 	/**
-	 * Creates a directory or collection at the specified URI.
-	 * 
-	 */
-	public abstract void mkDir(URI uri) throws IOException;
-
-	/**
 	 * Checks if a resource at the specified URI exists
 	 * 
 	 */
-	public abstract Boolean exists(URI uri) throws IOException;
+	public abstract boolean exists(URI uri) throws IOException;
 
 	/**
 	 * Creates a temporary file and returns the {@link java.io.OutputStream}
