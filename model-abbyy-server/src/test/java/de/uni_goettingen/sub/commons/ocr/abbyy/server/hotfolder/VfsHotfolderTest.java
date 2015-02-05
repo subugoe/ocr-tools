@@ -60,7 +60,7 @@ public class VfsHotfolderTest {
 	@Test
 	public void checkSize() throws IOException, URISyntaxException {
 		logger.debug("Checking size of " + testImageUri.toString());
-		Long size = apacheVFSHotfolderImpl.getTotalSize(testImageUri);
+		Long size = apacheVFSHotfolderImpl.getUsedSpace(testImageUri);
 		logger.debug("Size is " + size.toString());
 		assertTrue(IMAGE_SIZE.equals(size));
 	}
@@ -89,13 +89,6 @@ public class VfsHotfolderTest {
 		assertFalse(testFile.exists());
 	}
 	
-	@Test
-	public void listURIs() throws IOException {
-		URI folder = LOCAL_INPUT.toURI();
-		List<URI> children = apacheVFSHotfolderImpl.listURIs(folder);
-		assertTrue(children.toString().contains("oneImageBook"));
-	}
-	
 	//@Test
 	public void tempFile() throws IOException {
 		OutputStream os = apacheVFSHotfolderImpl.createTmpFile("tempfile");
@@ -111,7 +104,7 @@ public class VfsHotfolderTest {
 	@Test
 	public void openInputStream() throws IOException {
 		URI uri = new File(LOCAL_INPUT, "xmlExport.xml").toURI();
-		InputStream is = apacheVFSHotfolderImpl.openInputStream(uri);
+		byte[] is = apacheVFSHotfolderImpl.getResponse(uri);
 		assertNotNull(is);
 	}
 }

@@ -1,5 +1,6 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -151,9 +152,9 @@ public class HotfolderManager {
 			URI outputFolder, URI errorFolder) throws IOException {
 		if (maxSize > 0) {
 
-			long totalFileSize = hotfolder.getTotalSize(inputFolder) 
-					+ hotfolder.getTotalSize(outputFolder) 
-					+ hotfolder.getTotalSize(errorFolder);
+			long totalFileSize = hotfolder.getUsedSpace(inputFolder) 
+					+ hotfolder.getUsedSpace(outputFolder) 
+					+ hotfolder.getUsedSpace(errorFolder);
 
 			logger.debug("TotalFileSize = " + totalFileSize);
 			if (totalFileSize > maxSize) {
@@ -178,7 +179,7 @@ public class HotfolderManager {
 		logger.debug("Trying to parse file " + errorResultUri + " (" + processName + ")");
 		try {
 			if (hotfolder.exists(errorResultUri)) {
-				InputStream is = hotfolder.openInputStream(errorResultUri);
+				InputStream is = new ByteArrayInputStream(hotfolder.getResponse(errorResultUri));
 				errorDescription = xmlParser.readErrorFromResultXml(is, processName);
 				//hotfolder.deleteIfExists(errorResultUri);
 			}

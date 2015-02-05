@@ -91,22 +91,9 @@ public class JackrabbitHotfolderTestOld {
 		test.println("test");
 		test.close();
 
-		Long fileSize = hotfolder.getTotalSize(new URI(DAV_ADDRESS
+		Long fileSize = hotfolder.getUsedSpace(new URI(DAV_ADDRESS
 				+ "testSize.txt"));
 		assertEquals(new Long(5), fileSize);
-	}
-
-	@Test
-	public void listURIs() throws IOException, URISyntaxException {
-		new File(DAV_FOLDER, "testFile").createNewFile();
-		List<URI> uris = hotfolder.listURIs(new URI(DAV_ADDRESS + "testFile"));
-		assertEquals(1, uris.size());
-		
-		File testDir = new File(DAV_FOLDER, "testDir");
-		testDir.mkdir();
-		new File(testDir, "someFile").createNewFile();
-		uris = hotfolder.listURIs(new URI(DAV_ADDRESS + "testDir"));
-		assertEquals(2, uris.size());
 	}
 
 	@Test
@@ -114,10 +101,9 @@ public class JackrabbitHotfolderTestOld {
 		File source = new File(LOCAL_INPUT, "xmlExport.xml");
 		File target = new File(DAV_FOLDER, "inputStream.xml");
 		FileUtils.copyFile(source, target);
-		InputStream isResult = hotfolder.openInputStream(new URI(DAV_ADDRESS
+		byte[] isResult = hotfolder.getResponse(new URI(DAV_ADDRESS
 				+ "inputStream.xml"));
 		assertTrue(isResult != null);
-		isResult.close();
 	}
 
 	@Test

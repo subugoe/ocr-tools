@@ -1,9 +1,7 @@
 package de.unigoettingen.sub.commons.ocrComponents.cli.testutil;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.util.List;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
 
@@ -25,22 +23,7 @@ public class HotfolderMockProvider extends ServerHotfolder {
 	}
 
 	@Override
-	public Long getSize(URI uri) throws IOException {
-		return null;
-	}
-
-	@Override
-	public Boolean isDirectory(URI uri) throws IOException {
-		return null;
-	}
-
-	@Override
-	public List<URI> listURIs(URI uri) throws IOException {
-		return null;
-	}
-
-	@Override
-	public InputStream openInputStream(URI uri) throws IOException {
+	public byte[] getResponse(URI uri) throws IOException {
 		return null;
 	}
 
@@ -55,6 +38,11 @@ public class HotfolderMockProvider extends ServerHotfolder {
 
 	@Override
 	public void download(URI fromRemote, URI toLocal) throws IOException {
+	}
+
+	@Override
+	public long getUsedSpace(URI uri) throws IOException {
+		return 0;
 	}
 
 }

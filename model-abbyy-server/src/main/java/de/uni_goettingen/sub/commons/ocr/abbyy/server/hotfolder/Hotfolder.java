@@ -21,10 +21,8 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
  */
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.List;
 
 /**
  * The interface is used to access any file system like backend. This
@@ -94,37 +92,9 @@ public interface Hotfolder {
 	 * if they exists.
 	 * 
 	 */
-	public abstract Long getTotalSize(URI uri) throws IOException;
+	public abstract long getUsedSpace(URI uri) throws IOException;
 
-	/**
-	 * Gets the size of a given URI. If the URI represents a collection or
-	 * directory the size should be returned as 0.
-	 * 
-	 */
-	public abstract Long getSize(URI uri) throws IOException;
-
-	/**
-	 * Checks if the URI represents directory or resource collection.
-	 * 
-	 */
-	public abstract Boolean isDirectory(URI uri) throws IOException;
-
-	/**
-	 * List the URIs that are children of the given URI. In other terms, this
-	 * can be used to generate a directory listing. This should return a empty
-	 * List (not null) if the URI doesn't represent a directory.
-	 * 
-	 * @param uri
-	 *            the URI to list it's contents
-	 */
-	public abstract List<URI> listURIs(URI uri) throws IOException;
-
-	/**
-	 * Open an {@link java.io.InputStream} for the given URI to read files based
-	 * on stream.
-	 * 
-	 */
-	public abstract InputStream openInputStream(URI uri) throws IOException;
+	public abstract byte[] getResponse(URI uri) throws IOException;
 
 
 }

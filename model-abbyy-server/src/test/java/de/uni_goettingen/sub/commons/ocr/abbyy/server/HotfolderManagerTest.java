@@ -11,6 +11,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.lowagie.text.pdf.codec.Base64.InputStream;
+
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.Hotfolder;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
 import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
@@ -115,14 +117,14 @@ public class HotfolderManagerTest {
 	
 	@Test
 	public void shouldAcceptMaxSizeOfAllFiles() throws IOException, URISyntaxException {
-		when(hotfolderMock.getTotalSize(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
+		when(hotfolderMock.getUsedSpace(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
 		
 		managerSut.checkIfEnoughSpace(6, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
 	}
 	
 	@Test(expected=IllegalStateException.class)
 	public void shouldHaveTooLittleSpace() throws IOException, URISyntaxException {
-		when(hotfolderMock.getTotalSize(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
+		when(hotfolderMock.getUsedSpace(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
 		
 		managerSut.checkIfEnoughSpace(5, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
 	}
@@ -132,10 +134,11 @@ public class HotfolderManagerTest {
 		XmlParser parserMock = mock(XmlParser.class);
 		managerSut.setXmlParser(parserMock);
 		when(hotfolderMock.exists(any(URI.class))).thenReturn(true);
+		when(hotfolderMock.getResponse(any(URI.class))).thenReturn(new byte[]{});
 		
 		managerSut.readFromErrorFile(new URI("http://error.xml.result.xml"), "testBook");
 		
-		verify(parserMock).readErrorFromResultXml(null, "testBook");
+		verify(parserMock).readErrorFromResultXml(any(InputStream.class), eq("testBook"));
 	}
 	
 	private List<OcrImage> validImages() throws URISyntaxException {

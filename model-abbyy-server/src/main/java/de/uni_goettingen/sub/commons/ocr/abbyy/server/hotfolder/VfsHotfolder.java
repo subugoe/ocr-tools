@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -127,8 +128,7 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 		return fo.exists();
 	}
 
-	@Override
-	public List<URI> listURIs (URI uri) throws IOException {
+	private List<URI> listURIs (URI uri) throws IOException {
 		List<URI> uriList = new ArrayList<URI>();
 		if (isDirectory(uri)) {
 			FileObject directory = fsManager.resolveFile(uri.toString());
@@ -151,11 +151,7 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 		return uriList;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#isDirectory(java.net.URI)
-	 */
-	@Override
-	public Boolean isDirectory (URI uri) throws IOException {
+	private Boolean isDirectory(URI uri) throws IOException {
 		if (fsManager.resolveFile(uri.toString()).getType() == FileType.FOLDER) {
 			return true;
 		}
@@ -207,20 +203,29 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#openInputStream(java.net.URI)
-	 */
 	@Override
-	public InputStream openInputStream (URI uri) throws IOException {
+	public byte[] getResponse(URI uri) throws IOException {
 		FileObject uriFile = fsManager.resolveFile(uri.toString());
-		return uriFile.getContent().getInputStream();
+		return IOUtils.toByteArray(uriFile.getContent().getInputStream());
 	}
 
-	/* (non-Javadoc)
-	 * @see de.uni_goettingen.sub.commons.ocr.abbyy.server.Hotfolder#getSize(java.net.URI)
-	 */
 	@Override
-	public Long getSize (URI uri) throws IOException {
+	public long getUsedSpace(URI uri) throws IOException {
+		if (!isDirectory(uri)) {
+			return getFileSize(uri);
+		}
+		Long size = 0l;
+		for (URI u : listURIs(uri)) {
+			if (isDirectory(uri)) {
+				size += getUsedSpace(u);
+			} else {
+				size += getFileSize(uri);
+			}
+		}
+		return size;
+	}
+
+	private Long getFileSize (URI uri) throws IOException {
 		FileObject uriFile = fsManager.resolveFile(uri.toString());
 		if (uriFile.getType() != FileType.FOLDER) {
 			return uriFile.getContent().getSize();

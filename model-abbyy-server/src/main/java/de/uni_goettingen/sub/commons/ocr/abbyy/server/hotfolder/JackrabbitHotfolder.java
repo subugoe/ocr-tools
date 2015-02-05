@@ -24,12 +24,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
@@ -47,7 +43,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.MultiStatus;
@@ -156,8 +152,10 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 						throw new IOException("Got illegal response code " + responseCode);
 					}
 					// method was executed correctly, stop retrying
+//					System.err.println(method.getClass());
+//						System.err.println(method.getResponseBodyAsString());
 					responseStream = method.getResponseBodyAsStream();
-					System.out.println(responseStream);
+					//System.out.println(responseStream);
 					break;
 				} catch (IOException e) {
 					if (i == timesToTry) {
@@ -197,149 +195,38 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	}
 	
 	@Override
-	public Long getTotalSize(URI uri) throws IOException {
-		Long size = 0l;
-	//	for (URI u : listURIs(uri)) {
-			MultiStatus multiStatus;
-			try {
-				multiStatus = propFind(uri);
-			} catch (DavException e) {
-				throw new IOException("Could not execute MultiStatus method", e);
-			}
-			List<MultiStatusResponse> responses = Arrays.asList(multiStatus
-					.getResponses());
-			for (MultiStatusResponse response : responses) {
+	public long getUsedSpace(URI uri) throws IOException {
+		long size = 0;
+		try {
+			PropFindMethod propFindMethod = new PropFindMethod(uri.toString(),
+					DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
+			execute(propFindMethod);		
+			MultiStatus multiStatus = propFindMethod.getResponseBodyAsMultiStatus();
+			for (MultiStatusResponse response : multiStatus.getResponses()) {
 				DavPropertySet props = response.getProperties(200);
 				if (props.contains(DavPropertyName.GETCONTENTLENGTH)
-						&& props.get(DavPropertyName.GETCONTENTLENGTH)
-								.getValue() != null) {
+						&& props.get(DavPropertyName.GETCONTENTLENGTH).getValue() != null) {
 					size += Long.parseLong((String) props.get(
 							DavPropertyName.GETCONTENTLENGTH).getValue());
 				}
 			}
-	//	}
+		} catch (DavException e) {
+			throw new IOException("Could not execute MultiStatus method", e);
+		}
 		return size;
 	}
 
 	@Override
-	// TODO: Finish this
-	public Boolean isDirectory(URI uri) throws IOException {
-//		MultiStatus multiStatus;
-//		try {
-//			multiStatus = propFind(uri);
-//		} catch (DavException e) {
-//			throw new IOException("Could not execute MultiStatus method", e);
-//		}
-		/*
-		 * multiStatus.g
-		 * 
-		 * List<MultiStatusResponse> responses =
-		 * Arrays.asList(multiStatus.getResponses()); if (responses.get(0).)
-		 * throw new NotImplementedException();
-		 */
-		// return null;
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public List<URI> listURIs(URI uri) throws IOException {
-		List<URI> uriList = new ArrayList<URI>();
-		MultiStatus multiStatus;
+	public byte[] getResponse(URI uri) throws IOException {
+		GetMethod getMethod = new GetMethod(uri.toString());
+		InputStream responseStream = null;
 		try {
-			multiStatus = propFind(uri);
-		} catch (DavException e) {
-			throw new IOException("Could not execute MultiStatus method", e);
+			responseStream = execute(getMethod);
+		} finally {
+			responseStream.close();
+			getMethod.releaseConnection();
 		}
-		List<MultiStatusResponse> responses = Arrays.asList(multiStatus
-				.getResponses());
-		for (MultiStatusResponse response : responses) {
-			String path = response.getHref();
-			try {
-				uriList.add(new URI(path));
-			} catch (URISyntaxException e) {
-				log.error("Error while coverting URI " + path);
-				throw new IllegalStateException(e);
-			}
-		}
-		return uriList;
-	}
-
-	/*
-	 * protected void copyServerFiles(Map<String, String> copyFiles) throws
-	 * InterruptedException { //This is a bit odd, the Server returns 200 for a
-	 * head but the files ared really there already, so wait we a bit. //This is
-	 * probably the reason why the remote cleanup fails as well
-	 * Thread.sleep(checkInterval); for (String from : copyFiles.keySet()) {
-	 * OCRStreamHandler handler; // getOCRResults(from, "",
-	 * copyFiles.get(from)); GetMethod get = null; try { get = new
-	 * GetMethod(from); get.setFollowRedirects(true);
-	 * this.client.executeMethod(get); InputStream in =
-	 * get.getResponseBodyAsStream();
-	 * 
-	 * handler = new SaveFileStreamHandler(new File(copyFiles.get(from)), in);
-	 * 
-	 * 
-	 * handler.handle(); logger.info("Trying to handle " + from + " to output "
-	 * + copyFiles.get(from)); delete(from); logger.debug("Deleted " + from);
-	 * 
-	 * } catch (HttpException e) {
-	 * logger.error("HttpException: Failed to get file: " + from + " to " +
-	 * copyFiles.get(from), e); } catch (IOException e) {
-	 * logger.error("IOException: Failed to get file: " + from + " to " +
-	 * copyFiles.get(from), e); } finally { get.releaseConnection(); }
-	 * 
-	 * 
-	 * } }
-	 */
-
-	/*
-	 * protected Map<String, Long> getRemoteSizes(String uri) throws
-	 * HttpException, IOException, DavException { Map<String, Long> infoMap =
-	 * new LinkedHashMap<String, Long>(); MultiStatus multiStatus =
-	 * propFind(uri); List<MultiStatusResponse> responses =
-	 * Arrays.asList(multiStatus.getResponses());
-	 * 
-	 * for (MultiStatusResponse response : responses) { String path =
-	 * response.getHref(); DavPropertySet props = response.getProperties(200);
-	 * if (props.contains(DavPropertyName.GETCONTENTLENGTH) &&
-	 * props.get(DavPropertyName.GETCONTENTLENGTH).getValue() != null) {
-	 * infoMap.put(path, Long.parseLong((String)
-	 * props.get(DavPropertyName.GETCONTENTLENGTH).getValue())); } else {
-	 * infoMap.put(path, null); } } return infoMap; }
-	 */
-
-	private MultiStatus propFind(URI uri) throws IOException, DavException {
-		PropFindMethod probFind = new PropFindMethod(uri.toString(),
-				DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
-		execute(probFind);
-		// TODO: Check if this really works since the connection is already
-		// closed if executed by the static methos
-		return probFind.getResponseBodyAsMultiStatus();
-	}
-
-	@Override
-	public InputStream openInputStream(URI uri) throws IOException {
-		GetMethod method = new GetMethod(uri.toString());
-
-		// Provide custom retry handler is necessary
-		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
-				new DefaultHttpMethodRetryHandler(3, false));
-
-		Integer statusCode = client.executeMethod(method);
-
-		if (statusCode != HttpStatus.SC_OK) {
-			log.error("Method failed: " + method.getStatusLine());
-			throw new IOException(method.getStatusLine().toString());
-		}
-		return method.getResponseBodyAsStream();
-
-	}
-
-	@Override
-	public Long getSize(URI uri) throws IOException {
-		
-		throw new NotImplementedException();
-		// return null;
+		return IOUtils.toByteArray(responseStream);
 	}
 
 }

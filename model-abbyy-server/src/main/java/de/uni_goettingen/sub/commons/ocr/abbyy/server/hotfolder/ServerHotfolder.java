@@ -77,20 +77,4 @@ public abstract class ServerHotfolder implements Hotfolder {
 		}
 	}
 
-	@Override
-	public Long getTotalSize(URI uri) throws IOException {
-		if (!isDirectory(uri)) {
-			return getSize(uri);
-		}
-		Long size = 0l;
-		for (URI u : listURIs(uri)) {
-			if (isDirectory(uri)) {
-				size += getTotalSize(u);
-			} else {
-				size += getSize(uri);
-			}
-		}
-		return size;
-	}
-	
 }
