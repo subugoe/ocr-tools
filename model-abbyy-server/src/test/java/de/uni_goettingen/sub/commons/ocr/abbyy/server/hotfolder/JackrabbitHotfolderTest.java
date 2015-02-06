@@ -14,7 +14,11 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.MultiStatus;
+import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.DeleteMethod;
+import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 import org.apache.jackrabbit.webdav.client.methods.PutMethod;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,6 +79,27 @@ public class JackrabbitHotfolderTest {
 		when(httpClientMock.executeMethod(any(HeadMethod.class))).thenReturn(404);
 		
 		assertFalse("URI must not exist", jackrabbitSut.exists(new URI("http://localhost/test.tif")));
+	}
+	
+	@Test
+	public void shouldAskForUsedSpace() throws IOException, URISyntaxException, DavException {
+		JackrabbitHotfolder jackrabbitSpy = spy(jackrabbitSut);
+		MultiStatus multiMock = mock(MultiStatus.class);
+		when(multiMock.getResponses()).thenReturn(new MultiStatusResponse[]{});
+		doReturn(multiMock).when(jackrabbitSpy).getMultiStatus(any(PropFindMethod.class));
+		
+		long spaceInBytes = jackrabbitSpy.getUsedSpace(new URI("http://localhost/input"));
+		
+		assertEquals(0, spaceInBytes);
+		verify(httpClientMock).executeMethod(any(PropFindMethod.class));
+	}
+
+	@Test(expected=IOException.class)
+	public void shouldFailToGetUsedSpace() throws IOException, URISyntaxException, DavException {
+		JackrabbitHotfolder jackrabbitSpy = spy(jackrabbitSut);
+		doThrow(new DavException(0)).when(jackrabbitSpy).getMultiStatus(any(PropFindMethod.class));
+		
+		jackrabbitSpy.getUsedSpace(new URI("http://localhost/input"));
 	}
 
 }

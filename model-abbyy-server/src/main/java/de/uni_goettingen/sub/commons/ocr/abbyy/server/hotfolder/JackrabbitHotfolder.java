@@ -201,7 +201,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 			PropFindMethod propFindMethod = new PropFindMethod(uri.toString(),
 					DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
 			execute(propFindMethod);		
-			MultiStatus multiStatus = propFindMethod.getResponseBodyAsMultiStatus();
+			MultiStatus multiStatus = getMultiStatus(propFindMethod);
 			for (MultiStatusResponse response : multiStatus.getResponses()) {
 				DavPropertySet props = response.getProperties(200);
 				if (props.contains(DavPropertyName.GETCONTENTLENGTH)
@@ -216,6 +216,11 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		return size;
 	}
 
+	// for unit tests
+	MultiStatus getMultiStatus(PropFindMethod method) throws IOException, DavException {
+		return method.getResponseBodyAsMultiStatus();
+	}
+	
 	@Override
 	public byte[] getResponse(URI uri) throws IOException {
 		GetMethod getMethod = new GetMethod(uri.toString());
