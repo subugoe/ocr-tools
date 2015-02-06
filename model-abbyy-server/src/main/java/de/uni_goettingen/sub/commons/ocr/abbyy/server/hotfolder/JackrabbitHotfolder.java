@@ -18,6 +18,7 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 
  */
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -152,10 +153,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 						throw new IOException("Got illegal response code " + responseCode);
 					}
 					// method was executed correctly, stop retrying
-//					System.err.println(method.getClass());
-//						System.err.println(method.getResponseBodyAsString());
 					responseStream = method.getResponseBodyAsStream();
-					//System.out.println(responseStream);
 					break;
 				} catch (IOException e) {
 					if (i == timesToTry) {
@@ -168,6 +166,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 			}
 		} finally {
 			if (responseStream == null) {
+				responseStream = new ByteArrayInputStream(new byte[]{});
 				method.releaseConnection();
 			}
 		}
@@ -227,11 +226,12 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		InputStream responseStream = null;
 		try {
 			responseStream = execute(getMethod);
+			byte[] responseBytes = IOUtils.toByteArray(responseStream);
+			return responseBytes;
 		} finally {
 			responseStream.close();
 			getMethod.releaseConnection();
 		}
-		return IOUtils.toByteArray(responseStream);
 	}
 
 }

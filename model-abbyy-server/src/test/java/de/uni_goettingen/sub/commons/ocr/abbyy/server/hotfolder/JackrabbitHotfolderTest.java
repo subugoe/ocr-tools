@@ -101,5 +101,12 @@ public class JackrabbitHotfolderTest {
 		
 		jackrabbitSpy.getUsedSpace(new URI("http://localhost/input"));
 	}
+	
+	@Test
+	public void should() throws IOException, URISyntaxException {
+		jackrabbitSut.getResponse(new URI("http://localhost/test.xml"));
+		
+		verify(httpClientMock).executeMethod(any(GetMethod.class));
+	}
 
 }
