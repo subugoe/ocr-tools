@@ -1,0 +1,73 @@
+<XmlResult Id="{B27C31F2-3177-4647-AFDD-921A47D3A5E2}"
+	IsFailed="false" Priority="Normal" OCRTimeout="8000"
+	Date="28.09.2010 17:20:56.393000">
+	<Subfolder>.</Subfolder>
+	<SeparationText></SeparationText>
+	<UserProperty></UserProperty>
+	<Name>Test.xml</Name>
+	<UserName>unknown</UserName>
+	<InputFile Name="{B8145070-AE8D-41B4-A33C-25BB25972B2E}_Test-00000001.tif"
+		Id="{B8145070-AE8D-41B4-A33C-25BB25972B2E}" Password=""
+		FileModificationTime="28.09.2010 17:20:55.441596">
+		<Warning>Page 1: Increase scanning brightness to make image lighter.
+		</Warning>
+		<Warning>Page 1: Check the recognition language.</Warning>
+		<OutputDocuments>
+			<FileName>Test.xml</FileName>
+			<FormatSettings Id="{72C61562-3B23-493E-9818-E8F190EAB694}"
+				OutputFileFormat="XML" KeepLastModifiedDate="false" OutputFlowType="SharedFolder"
+				WriteCharAttributes="true" WriteExtendedCharAttributes="false"
+				WriteCharactersFormatting="true" WriteNonDeskewedCoordinates="false">
+				<OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+				<NamingRule>PPN31311157X_0102.xml</NamingRule>
+			</FormatSettings>
+		</OutputDocuments>
+		<OutputDocuments>
+			<FileName>PPN31311157X_0102.txt</FileName>
+			<FormatSettings Id="{98CE4177-BE16-448C-9286-05C71A35B3D9}"
+				OutputFileFormat="Text" KeepLastModifiedDate="false" OutputFlowType="SharedFolder"
+				CodePageType="ANSI" CodePage="NULL_CODE_PAGE" EncodingType="UTF8"
+				UsePageBreakCharacters="false" InsertEmptyLineBetweenParagraphs="false"
+				KeepLineBreaks="false">
+				<OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+				<NamingRule>PPN31311157X_0102.txt</NamingRule>
+			</FormatSettings>
+		</OutputDocuments>
+		<Statistics TotalCharacters="719" UncertainCharacters="101"
+			PagesArea="1" />
+		<DocumentSummary />
+	</InputFile>
+	<ImageProcessingParams Deskew="false"
+		RemoveGarbage="true" RemoveTexture="true" SplitDualPages="false"
+		ConvertToBWFormat="false" RotationType="Automatic" />
+	<RecognitionParams RecognitionQuality="Thorough"
+		LookForBarcodes="false" VerificationMode="NoVerification"
+		RecognitionMode="FullPage">
+		<TextType>Normal</TextType>
+		<Language>German</Language>
+		<UserPatternsFile></UserPatternsFile>
+		<UserDictionaryFile></UserDictionaryFile>
+	</RecognitionParams>
+	<ExportParams DocumentSeparationMethod="MergeIntoSingleFile"
+		DeleteBarcodePages="false" DeleteBlankPages="false" AssemblyTimeout="120"
+		XMLResultPublishingMethod="XMLResultToFolder" JobsOrderMethod="ArrivalTime">
+		<ExportFormat Id="{98CE4177-BE16-448C-9286-05C71A35B3D9}"
+			OutputFileFormat="Text" KeepLastModifiedDate="false" OutputFlowType="SharedFolder"
+			CodePageType="ANSI" CodePage="NULL_CODE_PAGE" EncodingType="UTF8"
+			UsePageBreakCharacters="false" InsertEmptyLineBetweenParagraphs="false"
+			KeepLineBreaks="false">
+			<OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+			<NamingRule>PPN31311157X_0102.txt</NamingRule>
+		</ExportFormat>
+		<ExportFormat Id="{72C61562-3B23-493E-9818-E8F190EAB694}"
+			OutputFileFormat="XML" KeepLastModifiedDate="false" OutputFlowType="SharedFolder"
+			WriteCharAttributes="true" WriteExtendedCharAttributes="false"
+			WriteCharactersFormatting="true" WriteNonDeskewedCoordinates="false">
+			<OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+			<NamingRule>PPN31311157X_0102.xml</NamingRule>
+		</ExportFormat>
+		<XMLResultLocation>D:\Recognition\GDZ\output</XMLResultLocation>
+	</ExportParams>
+	<Statistics TotalCharacters="719" UncertainCharacters="101"
+		PagesArea="1" />
+</XmlResult>

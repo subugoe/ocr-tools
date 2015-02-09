@@ -31,32 +31,20 @@ import org.slf4j.LoggerFactory;
 
 public class XmlParser {
 
-	/** The Constant logger. */
-	public final static Logger logger = LoggerFactory
+	private final static Logger logger = LoggerFactory
 			.getLogger(XmlParser.class);
 
-	/**
-	 * parse Xml result in error folder and get Error description.
-	 * 
-	 * @param is
-	 *            the xml result in Error folder
-	 * @param identifier
-	 *            the name of Process
-	 * @throws XMLStreamException
-	 *             the xML stream exception
-	 * @throws IOException 
-	 */
-	public String readErrorFromResultXml(InputStream is, String identifier)
+	public String readErrorFromResultXml(InputStream errorResultXml, String bookIdentifier)
 			throws IOException {
 		String error = null;
-		// final InputStream osmHamburgInStream = new FileInputStream(file);
+		
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		try {
-			XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(is);
+			XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(errorResultXml);
 			while (xmlStreamReader.hasNext()) {
 				int event = xmlStreamReader.next();
 				if (event == XMLStreamConstants.START_ELEMENT) {
-					// Error description
+					
 					if (xmlStreamReader.getName().toString().equals("Error")) {
 						error = xmlStreamReader.getElementText();
 						break;
@@ -67,7 +55,7 @@ public class XmlParser {
 		} catch (XMLStreamException e) {
 			throw new IOException(e);
 		}
-		logger.error("Book: " + identifier + ", Error: " + error);
+		logger.error("Book: " + bookIdentifier + ", Error: " + error);
 		return error;
 	}
 }

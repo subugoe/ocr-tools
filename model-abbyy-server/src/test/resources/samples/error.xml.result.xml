@@ -1,0 +1,65 @@
+<XmlResult Id="{38B4BB3C-93A4-42E3-9DE4-88DAD2A2788F}"
+	IsFailed="true" Priority="Normal" OCRTimeout="8000"
+	Date="03.08.2010 12:15:09.909000">
+	<Subfolder>.</Subfolder>
+	<SeparationText></SeparationText>
+	<UserProperty></UserProperty>
+	<Name>PPN129323640_0010.xml</Name>
+	<UserName>unknown</UserName>
+	<InputFile
+		Name="{4ABD897B-E836-4948-BE1F-B894B1BDEDE6}_PPN129323640_0010-00000001.tif"
+		Id="{4ABD897B-E836-4948-BE1F-B894B1BDEDE6}" Password=""
+		FileModificationTime="03.08.2010 12:15:08.146643">
+		<Error>Recognition language 'Frensch' no longer exists.</Error>
+		<DocumentSummary />
+	</InputFile>
+	<InputFile
+		Name="{5260PPN129323640_00101-480D-4B3C-A3C4-6D40B4CB789B}_PPN129323640_0010-00000002.tif"
+		Id="{5260PPN129323640_00101-480D-4B3C-A3C4-6D40B4CB789B}" Password=""
+		FileModificationTime="03.08.2010 12:15:07.179424">
+		<DocumentSummary />
+	</InputFile>
+	<InputFile
+		Name="{DBFFFD6A-2E94-4249-968F-6B48B398F673}_PPN129323640_0010-00000003.tif"
+		Id="{DBFFFD6A-2E94-4249-968F-6B48B398F673}" Password=""
+		FileModificationTime="03.08.2010 12:15:07.195025">
+		<DocumentSummary />
+	</InputFile>
+	<InputFile
+		Name="{651E22A6-C1DB-4707-86F6-AE81E88BA8EE}_PPN129323640_0010-00000004.tif"
+		Id="{651E22A6-C1DB-4707-86F6-AE81E88BA8EE}" Password=""
+		FileModificationTime="03.08.2010 12:15:08.115442">
+		<DocumentSummary />
+	</InputFile>
+	<ImageProcessingParams Deskew="false"
+		RemoveGarbage="true" RemoveTexture="true" SplitDualPages="false"
+		ConvertToBWFormat="false" RotationType="Automatic" />
+	<RecognitionParams RecognitionQuality="Thorough"
+		LookForBarcodes="false" VerificationMode="NoVerification"
+		RecognitionMode="FullPage">
+		<TextType>Normal</TextType>
+		<Language>Frensch</Language>
+		<UserPatternsFile></UserPatternsFile>
+		<UserDictionaryFile></UserDictionaryFile>
+	</RecognitionParams>
+	<ExportParams DocumentSeparationMethod="MergeIntoSingleFile"
+		DeleteBarcodePages="false" DeleteBlankPages="false" AssemblyTimeout="120"
+		XMLResultPublishingMethod="XMLResultToFolder" JobsOrderMethod="ArrivalTime">
+		<ExportFormat Id="{9685950C-10DC-4DF4-9A2A-2AF80FBAD265}"
+			OutputFileFormat="Text" KeepLastModifiedDate="false" OutputFlowType="SharedFolder"
+			CodePageType="ANSI" CodePage="NULL_CODE_PAGE" EncodingType="UTF8"
+			UsePageBreakCharacters="false" InsertEmptyLineBetweenParagraphs="false"
+			KeepLineBreaks="false">
+			<OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+			<NamingRule>PPN129323640_0010.txt</NamingRule>
+		</ExportFormat>
+		<ExportFormat Id="{127347FD-ACDC-481F-A101-7A4EFC7E7EA2}"
+			OutputFileFormat="XML" KeepLastModifiedDate="false" OutputFlowType="SharedFolder"
+			WriteCharAttributes="true" WriteExtendedCharAttributes="false"
+			WriteCharactersFormatting="true" WriteNonDeskewedCoordinates="false">
+			<OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
+			<NamingRule>PPN129323640_0010.xml</NamingRule>
+		</ExportFormat>
+		<XMLResultLocation>D:\Recognition\GDZ\output</XMLResultLocation>
+	</ExportParams>
+</XmlResult>
