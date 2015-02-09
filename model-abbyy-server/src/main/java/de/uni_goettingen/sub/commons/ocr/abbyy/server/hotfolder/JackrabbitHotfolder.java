@@ -133,9 +133,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 			responseStream = execute(getMethod);
 			fileAccess.copyStreamToFile(responseStream, targetFile);
 		} finally {
-			if (responseStream != null) {
-				responseStream.close();
-			}
+			responseStream.close();
 			getMethod.releaseConnection();
 		}
 	}
@@ -157,7 +155,7 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 					break;
 				} catch (IOException e) {
 					if (i == timesToTry) {
-						log.error("Error connecting to server. URL is " + method.getURI(), e);
+						log.error("Error connecting to server. URL is " + method.getURI());
 						throw new IllegalStateException("Error connecting to server. URL is " + method.getURI(), e);
 					}
 					log.warn("Problem connecting to server. Retry number " + i + "... URL is " + method.getURI());

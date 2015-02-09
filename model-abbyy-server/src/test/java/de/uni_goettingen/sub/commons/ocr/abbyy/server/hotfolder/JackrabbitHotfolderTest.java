@@ -51,6 +51,29 @@ public class JackrabbitHotfolderTest {
 		
 		verify(httpClientMock).executeMethod(any(PutMethod.class));
 	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldFailWithNotExistingFile() throws IOException, URISyntaxException {
+		when(fileAccessMock.fileExists(any(File.class))).thenReturn(false);
+		
+		jackrabbitSut.upload(new URI("file:/test.jpg"), new URI("http://localhost/test.jpg"));
+	}
+
+	@Test(expected=IllegalStateException.class)
+	public void shouldFailWhenIllegalStatusCode() throws IOException, URISyntaxException {
+		when(httpClientMock.executeMethod(any(HttpMethod.class))).thenReturn(403);
+		
+		jackrabbitSut.upload(new URI("file:/test.jpg"), new URI("http://localhost/test.jpg"));
+	}
+
+	@Test
+	public void shouldIgnoreOneIllegalStatusCode() throws IOException, URISyntaxException {
+		when(httpClientMock.executeMethod(any(HttpMethod.class))).thenReturn(403, 200);
+		
+		jackrabbitSut.upload(new URI("file:/test.jpg"), new URI("http://localhost/test.jpg"));
+		
+		verify(httpClientMock, times(2)).executeMethod(any(PutMethod.class));
+	}
 
 	@Test
 	public void shouldDownloadToLocal() throws IOException, URISyntaxException {
@@ -68,15 +91,15 @@ public class JackrabbitHotfolderTest {
 	}
 	
 	@Test
-	public void shouldExist() throws HttpException, IOException, URISyntaxException {
+	public void uriShouldExist() throws HttpException, IOException, URISyntaxException {
 		when(httpClientMock.executeMethod(any(HeadMethod.class))).thenReturn(200);
 		
 		assertTrue("URI must exist", jackrabbitSut.exists(new URI("http://localhost/test.tif")));
 	}
 
 	@Test
-	public void shouldNotExist() throws HttpException, IOException, URISyntaxException {
-		when(httpClientMock.executeMethod(any(HeadMethod.class))).thenReturn(404);
+	public void uriShouldNotExist() throws HttpException, IOException, URISyntaxException {
+		when(httpClientMock.executeMethod(any(HeadMethod.class))).thenReturn(401);
 		
 		assertFalse("URI must not exist", jackrabbitSut.exists(new URI("http://localhost/test.tif")));
 	}
@@ -103,10 +126,12 @@ public class JackrabbitHotfolderTest {
 	}
 	
 	@Test
-	public void should() throws IOException, URISyntaxException {
-		jackrabbitSut.getResponse(new URI("http://localhost/test.xml"));
+	public void shouldTryToGetResponse() throws IOException, URISyntaxException {
+		byte[] response = jackrabbitSut.getResponse(new URI("http://localhost/test.xml"));
 		
 		verify(httpClientMock).executeMethod(any(GetMethod.class));
+		assertFalse("Response may not be null", response == null);
+		assertTrue("Response should be empty", response.length == 0);
 	}
 
 }
