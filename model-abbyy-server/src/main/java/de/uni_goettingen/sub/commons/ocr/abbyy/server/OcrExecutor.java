@@ -38,83 +38,35 @@ import org.slf4j.LoggerFactory;
  * Two of the Templatemethods are used in connection with the implementation of
  * an activity by a Pool-Thread.
  * 
- * @version 0.9
- * @author abergna
- * @author cmahnke
  */
 public class OcrExecutor extends ThreadPoolExecutor implements Executor {
-	public final static Logger logger = LoggerFactory
-			.getLogger(OcrExecutor.class);
+	private final static Logger logger = LoggerFactory.getLogger(OcrExecutor.class);
 
 
-	/** paused the execution if true */
 	private Boolean isPaused = false;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.concurrent.locks.ReentrantLock.html#ReentrantLock()
-	 */
 	private ReentrantLock pauseLock = new ReentrantLock();
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.concurrent.locks.ReentrantLock.html#newCondition()
-	 */
 	private Condition unpaused = pauseLock.newCondition();
 
-	/**
-	 * Instantiates a new oCR executer.Creates a new ThreadPoolExecutor with the
-	 * given initial parameters and default thread factory and handler.
-	 * 
-	 * @param maxThreads
-	 *            the max threads
-	 * @param hotfolder
-	 *            is used to access any file system like backend. This can be
-	 *            used to integrate external systems like Grid storage or WebDAV
-	 *            based hotfolders.
-	 * 
-	 *            maxThreads - the number of threads to keep in the pool, even
-	 *            if they are idle maxThreads - the maximum number of threads to
-	 *            allow in the pool. keepAliveTime - when the number of threads
-	 *            is greater than the core, this is the maximum time that excess
-	 *            idle threads will wait for new tasks before terminating.
-	 *            TimeUnit.MILLISECONDS - the time unit for the keepAliveTime
-	 *            argument. workQueue - the queue to use for holding tasks
-	 *            before they are executed. This queue will hold only the
-	 *            Runnable tasks submitted by the execute method.
-	 */
 	public OcrExecutor(Integer maxThreads) {
 		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * java.util.concurrent.ThreadPoolExecutor#beforeExecute(java.lang.Thread,
-	 * java.lang.Runnable)
-	 */
 	@Override
-	protected void beforeExecute(Thread t, Runnable r) {
-		super.beforeExecute(t, r);
-		if (r instanceof AbbyyProcess) {
-			AbbyyProcess abbyyOCRProcess = (AbbyyProcess) r;
-			try {
-				abbyyOCRProcess.checkHotfolderState();
-			} catch (IllegalStateException e1) {
-				logger.warn("wait because :", e1);
-				//pause();
-			} catch (IOException e1) {
-				logger.error("Could not execute MultiStatus method (" + abbyyOCRProcess.getName() + ")", e1);
-			}
-
-			waitIfPaused(t);
-
-		} else {
-			throw new IllegalStateException("Not a AbbyyProcess object");
+	protected void beforeExecute(Thread t, Runnable process) {
+		super.beforeExecute(t, process);
+		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
+		try {
+			abbyyProcess.checkHotfolderState();
+		} catch (IllegalStateException e1) {
+			logger.warn("wait because :", e1);
+			//pause();
+		} catch (IOException e1) {
+			logger.error("Could not execute MultiStatus method (" + abbyyProcess.getName() + ")", e1);
 		}
+
+		waitIfPaused(t);
 
 	}
 
@@ -132,37 +84,21 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 
 	}
 
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * java.util.concurrent.ThreadPoolExecutor#afterExecute(java.lang.Runnable,
-	 * java.lang.Throwable)
-	 */
 	@Override
-	protected void afterExecute(Runnable r, Throwable e) {
-		super.afterExecute(r, e);
-		if (r instanceof AbbyyProcess) {
-			AbbyyProcess abbyyOCRProcess = (AbbyyProcess) r;
+	protected void afterExecute(Runnable process, Throwable e) {
+		super.afterExecute(process, e);
+		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
 
-			try {
-				abbyyOCRProcess.checkHotfolderState();
-			} catch (IllegalStateException e1) {
-				logger.warn("(" + abbyyOCRProcess.getName() + ") wait because :", e1);
-				//pause();
-			} catch (IOException e1) {
-				logger.error("Could not execute MultiStatus method (" + abbyyOCRProcess.getName() + ")", e1);
-			}
-
-		} else {
-			throw new IllegalStateException("Not a AbbyyProcess object");
+		try {
+			abbyyProcess.checkHotfolderState();
+		} catch (IllegalStateException e1) {
+			logger.warn("(" + abbyyProcess.getName() + ") wait because :", e1);
+			//pause();
+		} catch (IOException e1) {
+			logger.error("Could not execute MultiStatus method (" + abbyyProcess.getName() + ")", e1);
 		}
 	}
 
-	/**
-	 * this method pauses the execution.
-	 */
 	protected void pause() {
 		pauseLock.lock();
 		try {
@@ -172,9 +108,6 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 		}
 	}
 
-	/**
-	 * This Method resumes the execution of the executor.
-	 */
 	protected void resume() {
 		pauseLock.lock();
 		try {

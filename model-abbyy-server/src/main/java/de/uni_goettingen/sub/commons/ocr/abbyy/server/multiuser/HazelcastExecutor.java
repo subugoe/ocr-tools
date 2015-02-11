@@ -3,6 +3,9 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.EntryListener;
 import com.hazelcast.core.HazelcastInstance;
@@ -16,6 +19,8 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.OcrExecutor;
 
 public class HazelcastExecutor extends OcrExecutor implements ItemListener, EntryListener{
 
+	private final static Logger logger = LoggerFactory.getLogger(HazelcastExecutor.class);
+	
 	protected int maxProcesses;
 	protected Comparator<AbbyyProcess> order;
 
