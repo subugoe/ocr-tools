@@ -81,19 +81,14 @@ public class FileAccess {
 	public Properties getPropertiesFromFile(String file) {
 		Properties props = new Properties();
 		try {
-			File f = new File(getClass().getResource("/" + file).getFile());
-			props.load(inputStreamForFile(f));
+			props.load(getClass().getResourceAsStream("/" + file));
 		} catch (IOException e) {
 			// TODO: logger or throw
 			System.err.println("Could not load file:" + file);
 		}
 		return props;
 	}
-	
-	InputStream inputStreamForFile(File file) throws FileNotFoundException {
-		return new FileInputStream(file);
-	}
-	
+		
 	public OutputStream outputStreamForFile(File file) throws FileNotFoundException {
 		return new FileOutputStream(file);
 	}

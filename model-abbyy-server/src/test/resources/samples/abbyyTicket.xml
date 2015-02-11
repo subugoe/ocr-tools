@@ -18,6 +18,7 @@
   </RecognitionParams>
   <ExportParams DocumentSeparationMethod="MergeIntoSingleFile">
     <ExportFormat WriteCharactersFormatting="false" WriteCharAttributes="false" OutputFlowType="SharedFolder" OutputFileFormat="XML">
+      <NamingRule>result.xml</NamingRule>
       <OutputLocation>D:\Recognition\GDZ\output</OutputLocation>
     </ExportFormat>
   </ExportParams>
