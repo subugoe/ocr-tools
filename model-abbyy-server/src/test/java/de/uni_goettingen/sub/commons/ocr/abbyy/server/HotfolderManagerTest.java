@@ -1,5 +1,6 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -119,14 +120,16 @@ public class HotfolderManagerTest {
 	public void shouldAcceptMaxSizeOfAllFiles() throws IOException, URISyntaxException {
 		when(hotfolderMock.getUsedSpace(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
 		
-		managerSut.checkIfEnoughSpace(6, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
+		boolean noSpace = managerSut.noSpaceAvailable(7, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
+		assertFalse("There should be enough space.", noSpace);
 	}
 	
-	@Test(expected=IllegalStateException.class)
+	@Test
 	public void shouldHaveTooLittleSpace() throws IOException, URISyntaxException {
 		when(hotfolderMock.getUsedSpace(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
 		
-		managerSut.checkIfEnoughSpace(5, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
+		boolean noSpace = managerSut.noSpaceAvailable(5, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
+		assertTrue("There should be too little space", noSpace);
 	}
 	
 	@Test

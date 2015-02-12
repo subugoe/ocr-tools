@@ -48,8 +48,8 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 	private ReentrantLock pauseLock = new ReentrantLock();
 	private Condition unpaused = pauseLock.newCondition();
 
-	public OcrExecutor(Integer maxThreads) {
-		super(maxThreads, maxThreads, 0L, TimeUnit.MILLISECONDS,
+	public OcrExecutor(Integer maxParallelThreads) {
+		super(maxParallelThreads, maxParallelThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
 	}
 
@@ -58,9 +58,9 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 		super.beforeExecute(t, process);
 		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
 		try {
-			abbyyProcess.checkHotfolderState();
+			abbyyProcess.noSpaceForExecution();
 		} catch (IllegalStateException e1) {
-			logger.warn("wait because :", e1);
+			logger.warn("wait because: " + t.getId(), e1);
 			//pause();
 		} catch (IOException e1) {
 			logger.error("Could not execute MultiStatus method (" + abbyyProcess.getName() + ")", e1);
@@ -73,8 +73,11 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 	protected void waitIfPaused(Thread t) {
 		pauseLock.lock();
 		try {
+			System.out.println("before wait: " + t.getId() + isPaused);
 			while (isPaused) {
-				unpaused.await();
+				System.out.println("in wait: " + t.getId());
+				unpaused.await(100, TimeUnit.MILLISECONDS);
+				//resume();
 			}
 		} catch (InterruptedException ie) {
 			t.interrupt();
@@ -90,7 +93,7 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
 
 		try {
-			abbyyProcess.checkHotfolderState();
+			abbyyProcess.noSpaceForExecution();
 		} catch (IllegalStateException e1) {
 			logger.warn("(" + abbyyProcess.getName() + ") wait because :", e1);
 			//pause();

@@ -44,8 +44,8 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	ProcessSplitter createProcessSplitter() {
 		return new ProcessSplitter();
 	}
-	protected OcrExecutor createPool(int maxThreads) {
-		return new OcrExecutor(maxThreads);
+	protected OcrExecutor createPool(int maxParallelThreads) {
+		return new OcrExecutor(maxParallelThreads);
 	}	
 	protected LockFileHandler createLockHandler() {
 		return new LockFileHandler();

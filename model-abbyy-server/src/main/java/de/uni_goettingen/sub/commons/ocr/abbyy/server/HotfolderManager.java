@@ -148,25 +148,23 @@ public class HotfolderManager {
 		pause.forMilliseconds(waitInterval);
 	}
 
-	public void checkIfEnoughSpace(long maxSize, URI inputFolder,
-			URI outputFolder, URI errorFolder) throws IOException {
-		if (maxSize > 0) {
+	public boolean noSpaceAvailable(long maxSpace, URI inputFolder,
+		URI outputFolder, URI errorFolder) throws IOException {
+		long totalFileSize = hotfolder.getUsedSpace(inputFolder) 
+				+ hotfolder.getUsedSpace(outputFolder) 
+				+ hotfolder.getUsedSpace(errorFolder);
 
-			long totalFileSize = hotfolder.getUsedSpace(inputFolder) 
-					+ hotfolder.getUsedSpace(outputFolder) 
-					+ hotfolder.getUsedSpace(errorFolder);
-
-			logger.debug("TotalFileSize = " + totalFileSize);
-			if (totalFileSize > maxSize) {
-				logger.error("Size of files is too high. Max size of all files is "
-						+ maxSize
-						+ ". Size of files on server: "
-						+ totalFileSize + ".");
-				throw new IllegalStateException("Max size of files exceeded");
-			}
+		logger.debug("TotalFileSize = " + totalFileSize);
+		if (totalFileSize >= maxSpace) {
+			logger.warn("Size of files is too high. Allowed space for all files is "
+					+ maxSpace
+					+ ". Size of files in hotfolder: "
+					+ totalFileSize + ".");
+			return true;
 		} else {
-			logger.warn("Server state checking is disabled.");
+			return false;
 		}
+		
 	}
 
 	public void deleteTicket(AbbyyTicket abbyyTicket) throws IOException, URISyntaxException {
