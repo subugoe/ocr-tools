@@ -20,7 +20,7 @@ public class OcrExecutorTest {
 
 	@Test
 	public void should() throws IOException, InterruptedException {
-		doThrow(new IllegalStateException("first")).when(processMock).noSpaceForExecution();
+		doThrow(new IllegalStateException("first")).when(processMock).hasEnoughSpaceForExecution();
 		
 		executorSut.execute(processMock);
 

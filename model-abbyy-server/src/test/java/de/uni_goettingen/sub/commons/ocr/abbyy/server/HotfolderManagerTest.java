@@ -120,16 +120,16 @@ public class HotfolderManagerTest {
 	public void shouldAcceptMaxSizeOfAllFiles() throws IOException, URISyntaxException {
 		when(hotfolderMock.getUsedSpace(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
 		
-		boolean noSpace = managerSut.noSpaceAvailable(7, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
-		assertFalse("There should be enough space.", noSpace);
+		boolean enoughSpace = managerSut.enoughSpaceAvailable(7, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
+		assertTrue("There should be enough space.", enoughSpace);
 	}
 	
 	@Test
 	public void shouldHaveTooLittleSpace() throws IOException, URISyntaxException {
 		when(hotfolderMock.getUsedSpace(any(URI.class))).thenReturn(1L).thenReturn(2L).thenReturn(3L);
 		
-		boolean noSpace = managerSut.noSpaceAvailable(5, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
-		assertTrue("There should be too little space", noSpace);
+		boolean enoughSpace = managerSut.enoughSpaceAvailable(5, new URI("http://test/in"), new URI("http://test/out"), new URI("http://test/error"));
+		assertFalse("There should be too little space", enoughSpace);
 	}
 	
 	@Test

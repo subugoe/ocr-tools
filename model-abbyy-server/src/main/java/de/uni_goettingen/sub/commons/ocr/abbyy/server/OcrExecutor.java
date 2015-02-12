@@ -58,7 +58,7 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 		super.beforeExecute(t, process);
 		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
 		try {
-			abbyyProcess.noSpaceForExecution();
+			abbyyProcess.hasEnoughSpaceForExecution();
 		} catch (IllegalStateException e1) {
 			logger.warn("wait because: " + t.getId(), e1);
 			//pause();
@@ -93,7 +93,7 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
 
 		try {
-			abbyyProcess.noSpaceForExecution();
+			abbyyProcess.hasEnoughSpaceForExecution();
 		} catch (IllegalStateException e1) {
 			logger.warn("(" + abbyyProcess.getName() + ") wait because :", e1);
 			//pause();

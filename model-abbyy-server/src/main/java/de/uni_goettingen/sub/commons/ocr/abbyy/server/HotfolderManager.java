@@ -148,7 +148,7 @@ public class HotfolderManager {
 		pause.forMilliseconds(waitInterval);
 	}
 
-	public boolean noSpaceAvailable(long maxSpace, URI inputFolder,
+	public boolean enoughSpaceAvailable(long maxSpace, URI inputFolder,
 		URI outputFolder, URI errorFolder) throws IOException {
 		long totalFileSize = hotfolder.getUsedSpace(inputFolder) 
 				+ hotfolder.getUsedSpace(outputFolder) 
@@ -160,9 +160,9 @@ public class HotfolderManager {
 					+ maxSpace
 					+ ". Size of files in hotfolder: "
 					+ totalFileSize + ".");
-			return true;
-		} else {
 			return false;
+		} else {
+			return true;
 		}
 		
 	}
