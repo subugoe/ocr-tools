@@ -66,15 +66,13 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 		waitLock.lock();
 		try {
 			while(!abbyyProcess.hasEnoughSpaceForExecution()) {
-				System.out.println("waiting in " + t.getId());
 				thereIsMoreSpace.await(waitingTimeInMillis, TimeUnit.MILLISECONDS);
 			}
-			System.out.println("signaling in " + t.getId());
 			thereIsMoreSpace.signalAll();
 		} catch (IOException e1) {
-			logger.error("Could not execute MultiStatus method (" + abbyyProcess.getName() + ")", e1);
+			logger.error("Could not determine free space in hotfolder (" + abbyyProcess.getName() + ")", e1);
 		} catch (InterruptedException e) {
-			throw new IllegalStateException("Waiting thread was interrupted: " + abbyyProcess.getName());
+			logger.error("Waiting thread was interrupted: " + abbyyProcess.getName(), e);
 		} finally {
 			waitLock.unlock();
 		}
@@ -90,7 +88,6 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 		} finally {
 			waitLock.unlock();
 		}
-		System.err.println("finished");
 	}
 
 	protected void waitIfPaused(Thread t) {
