@@ -42,9 +42,6 @@ import org.slf4j.LoggerFactory;
 public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 	private final static Logger logger = LoggerFactory.getLogger(OcrExecutor.class);
 
-
-	private Boolean isPaused = false;
-
 	private ReentrantLock waitLock = new ReentrantLock();
 	private Condition thereIsMoreSpace = waitLock.newCondition();
 	private long waitingTimeInMillis = 1000 * 60 * 30;
@@ -84,42 +81,6 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 		super.afterExecute(process, e);
 		waitLock.lock();
 		try {
-			thereIsMoreSpace.signalAll();
-		} finally {
-			waitLock.unlock();
-		}
-	}
-
-	protected void waitIfPaused(Thread t) {
-		waitLock.lock();
-		try {
-			System.out.println("before wait: " + t.getId() + isPaused);
-			while (isPaused) {
-				System.out.println("in wait: " + t.getId());
-				thereIsMoreSpace.await(100, TimeUnit.MILLISECONDS);
-				//resume();
-			}
-		} catch (InterruptedException ie) {
-			t.interrupt();
-		} finally {
-			waitLock.unlock();
-		}
-
-	}
-
-	protected void pause() {
-		waitLock.lock();
-		try {
-			isPaused = true;
-		} finally {
-			waitLock.unlock();
-		}
-	}
-
-	protected void resume() {
-		waitLock.lock();
-		try {
-			isPaused = false;
 			thereIsMoreSpace.signalAll();
 		} finally {
 			waitLock.unlock();
