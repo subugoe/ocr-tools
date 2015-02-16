@@ -120,7 +120,11 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		PutMethod putMethod = new PutMethod(targetUri);
 		String mimeType = URLConnection.guessContentTypeFromName(sourceFile.getPath());
 		putMethod.setRequestEntity(new FileRequestEntity(sourceFile, mimeType));
-		execute(putMethod);
+		try {
+			execute(putMethod);
+		} finally {
+			putMethod.releaseConnection();
+		}
 	}
 	
 	@Override
@@ -165,7 +169,6 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 		} finally {
 			if (responseStream == null) {
 				responseStream = new ByteArrayInputStream(new byte[]{});
-				method.releaseConnection();
 			}
 		}
 		return responseStream;
@@ -173,7 +176,12 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	
 	@Override
 	public void delete(URI uri) throws IOException {
-		execute(new DeleteMethod(uri.toString()));
+		DeleteMethod delMethod = new DeleteMethod(uri.toString());
+		try {
+			execute(delMethod);
+		} finally {
+			delMethod.releaseConnection();
+		}
 	}
 
 	@Override
@@ -194,9 +202,9 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 	@Override
 	public long getUsedSpace(URI uri) throws IOException {
 		long size = 0;
+		PropFindMethod propFindMethod = new PropFindMethod(uri.toString(),
+				DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
 		try {
-			PropFindMethod propFindMethod = new PropFindMethod(uri.toString(),
-					DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
 			execute(propFindMethod);		
 			MultiStatus multiStatus = getMultiStatus(propFindMethod);
 			for (MultiStatusResponse response : multiStatus.getResponses()) {
@@ -209,6 +217,8 @@ public class JackrabbitHotfolder extends ServerHotfolder implements
 			}
 		} catch (DavException e) {
 			throw new IOException("Could not execute MultiStatus method", e);
+		} finally {
+			propFindMethod.releaseConnection();
 		}
 		return size;
 	}
