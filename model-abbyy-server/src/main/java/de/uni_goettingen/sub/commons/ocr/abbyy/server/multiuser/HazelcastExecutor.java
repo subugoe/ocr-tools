@@ -5,22 +5,17 @@ import java.util.PriorityQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hazelcast.core.EntryEvent;
-import com.hazelcast.core.EntryListener;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ICondition;
 import com.hazelcast.core.ILock;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.ISet;
-import com.hazelcast.core.ItemEvent;
-import com.hazelcast.core.ItemListener;
-import com.hazelcast.core.MapEvent;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ItemComparator;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.OcrExecutor;
 
-public class HazelcastExecutor extends OcrExecutor implements ItemListener, EntryListener{
+public class HazelcastExecutor extends OcrExecutor {
 
 	private final static Logger logger = LoggerFactory.getLogger(HazelcastExecutor.class);
 	
@@ -42,10 +37,7 @@ public class HazelcastExecutor extends OcrExecutor implements ItemListener, Entr
 		queuedProcessesSorted = new PriorityQueue<AbbyyProcess>(100, new ItemComparator());
 
 		queuedProcesses = hazelcast.getMap("queued");
-		queuedProcesses.addEntryListener(this, true);
-
 		runningProcesses = hazelcast.getSet("running");
-		runningProcesses.addItemListener(this, true);
 	}
 
 	@Override
@@ -61,6 +53,7 @@ public class HazelcastExecutor extends OcrExecutor implements ItemListener, Entr
 			}
 			queuedProcesses.remove(abbyyProcess.getProcessId());
 			runningProcesses.add(abbyyProcess.getProcessId());
+			mightBeAllowedToExecute.signalAll();
 		} catch (InterruptedException e) {
 			logger.error("Waiting thread was interrupted: " + abbyyProcess.getName(), e);
 		} finally {
@@ -86,65 +79,10 @@ public class HazelcastExecutor extends OcrExecutor implements ItemListener, Entr
 		clusterLock.lock();
 		try {
 			runningProcesses.remove(abbyyProcess.getProcessId());
-		} finally {
-			clusterLock.unlock();
-		}
-	}
-
-	// if an item is removed from a Hazelcast set
-	@Override
-	public void itemRemoved(ItemEvent arg0) {
-		logger.debug("Hazelcast Set item removed: " + arg0);
-		signalAllWaiting();
-	}
-
-	private void signalAllWaiting() {
-		clusterLock.lock();
-		try {
 			mightBeAllowedToExecute.signalAll();
 		} finally {
 			clusterLock.unlock();
 		}
 	}
-	
-	@Override
-	public void itemAdded(ItemEvent arg0) {
-		// don't care
-
-	}
-
-	@Override
-	public void entryRemoved(EntryEvent arg0) {
-		logger.debug("Hazelcast Map entry removed: " + arg0.getKey());
-		signalAllWaiting();
-		
-	}
-
-	@Override
-	public void entryAdded(EntryEvent arg0) {
-		// don't care
-	}
-
-	@Override
-	public void entryEvicted(EntryEvent arg0) {
-		// don't care
-	}
-
-
-	@Override
-	public void entryUpdated(EntryEvent arg0) {
-		// don't care
-	}
-
-	@Override
-	public void mapCleared(MapEvent arg0) {
-		// don't care
-	}
-
-	@Override
-	public void mapEvicted(MapEvent arg0) {
-		// don't care
-	}
-
 	
 }
