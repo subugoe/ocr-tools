@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 	ProcessSplitter createProcessSplitter() {
 		return new ProcessSplitter();
 	}
-	protected OcrExecutor createPool(int maxParallelThreads) {
+	protected ThreadPoolExecutor createPool(int maxParallelThreads) {
 		return new OcrExecutor(maxParallelThreads);
 	}	
 	protected LockFileHandler createLockHandler() {
@@ -87,7 +88,7 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		lockHandler.initConnection(props.getProperty("serverUrl"), props.getProperty("user"), props.getProperty("password"));
 		lockHandler.createOrOverwriteLock(overwriteLock);
 			
-		OcrExecutor pool = createPool(Integer.parseInt(props.getProperty("maxParallelProcesses")));
+		ThreadPoolExecutor pool = createPool(Integer.parseInt(props.getProperty("maxParallelProcesses")));
 		
 		while (!processesQueue.isEmpty()) {
 			AbbyyProcess process = processesQueue.poll();

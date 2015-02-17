@@ -1,6 +1,12 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
 
+import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,14 +14,11 @@ import org.slf4j.LoggerFactory;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ICondition;
 import com.hazelcast.core.ILock;
-import com.hazelcast.core.IMap;
-import com.hazelcast.core.ISet;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ItemComparator;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.OcrExecutor;
 
-public class HazelcastExecutor extends OcrExecutor {
+public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 
 	private final static Logger logger = LoggerFactory.getLogger(HazelcastExecutor.class);
 	
@@ -23,14 +26,21 @@ public class HazelcastExecutor extends OcrExecutor {
 
 	private PriorityQueue<AbbyyProcess> queuedProcessesSorted;
 
-	private IMap<String, AbbyyProcess> queuedProcesses;
-	private ISet<String> runningProcesses;
+	private Map<String, AbbyyProcess> queuedProcesses;
+	private Set<String> runningProcesses;
 
 	private ILock clusterLock;
 	private ICondition mightBeAllowedToExecute;
+	private long waitingTimeInMillis = 1000 * 60 * 30;
+
+	// for unit tests
+	void setWaitingTime(long newTime) {
+		waitingTimeInMillis = newTime;
+	}
 	
-	public HazelcastExecutor(Integer maxParallelThreads, HazelcastInstance hazelcast) {
-		super(maxParallelThreads);
+	public HazelcastExecutor(int maxParallelThreads, HazelcastInstance hazelcast) {
+		super(maxParallelThreads, maxParallelThreads, 0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>());
 		clusterLock = hazelcast.getLock("clusterLock");
 		mightBeAllowedToExecute = clusterLock.newCondition("clusterCondition");
 		maxProcesses = maxParallelThreads;
@@ -49,7 +59,7 @@ public class HazelcastExecutor extends OcrExecutor {
 		try {
 			queuedProcesses.put(abbyyProcess.getProcessId(), abbyyProcess);
 			while (!allowedToExecute(abbyyProcess)) {
-				mightBeAllowedToExecute.await();
+				mightBeAllowedToExecute.await(waitingTimeInMillis, TimeUnit.MILLISECONDS);
 			}
 			queuedProcesses.remove(abbyyProcess.getProcessId());
 			runningProcesses.add(abbyyProcess.getProcessId());
@@ -69,7 +79,7 @@ public class HazelcastExecutor extends OcrExecutor {
 		AbbyyProcess head = queuedProcessesSorted.poll();
 		boolean currentIsHead = head.equals(abbyyProcess);
 
-		return thereAreFreeSlots && currentIsHead;
+		return thereAreFreeSlots && currentIsHead && abbyyProcess.hasEnoughSpaceForExecution();
 	}
 
 	@Override

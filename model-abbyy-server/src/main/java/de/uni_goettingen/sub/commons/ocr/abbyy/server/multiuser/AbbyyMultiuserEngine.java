@@ -1,5 +1,7 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +10,6 @@ import com.hazelcast.core.HazelcastInstance;
 
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyEngine;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.LockFileHandler;
-import de.uni_goettingen.sub.commons.ocr.abbyy.server.OcrExecutor;
 
 public class AbbyyMultiuserEngine extends AbbyyEngine {
 	final static Logger logger = LoggerFactory
@@ -27,7 +28,7 @@ public class AbbyyMultiuserEngine extends AbbyyEngine {
 	}
 
 	@Override
-	protected OcrExecutor createPool(int maxThreads) {
+	protected ThreadPoolExecutor createPool(int maxThreads) {
 		return new HazelcastExecutor(maxThreads, hazelcast);
 	}
 	

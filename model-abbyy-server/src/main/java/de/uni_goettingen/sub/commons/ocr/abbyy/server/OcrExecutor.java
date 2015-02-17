@@ -18,7 +18,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
-import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -51,7 +50,7 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 		waitingTimeInMillis = newTime;
 	}
 	
-	public OcrExecutor(Integer maxParallelThreads) {
+	public OcrExecutor(int maxParallelThreads) {
 		super(maxParallelThreads, maxParallelThreads, 0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>());
 	}
@@ -66,8 +65,6 @@ public class OcrExecutor extends ThreadPoolExecutor implements Executor {
 				thereIsMoreSpace.await(waitingTimeInMillis, TimeUnit.MILLISECONDS);
 			}
 			thereIsMoreSpace.signalAll();
-		} catch (IOException e1) {
-			logger.error("Could not determine free space in hotfolder (" + abbyyProcess.getName() + ")", e1);
 		} catch (InterruptedException e) {
 			logger.error("Waiting thread was interrupted: " + abbyyProcess.getName(), e);
 		} finally {

@@ -200,9 +200,16 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	 * whole system.
 	 * 
 	 */
-	public boolean hasEnoughSpaceForExecution() throws IOException, IllegalStateException {
+	public boolean hasEnoughSpaceForExecution() {
 		long maxSpaceInHotfolder = Long.parseLong(props.getProperty("maxServerSpace"));
-		return hotfolderManager.enoughSpaceAvailable(maxSpaceInHotfolder, inputDavUri, outputDavUri, errorDavUri);
+		boolean enoughSpace = false;
+		try {
+			enoughSpace = hotfolderManager.enoughSpaceAvailable(maxSpaceInHotfolder, inputDavUri, outputDavUri, errorDavUri);
+		} catch (IOException e) {
+			logger.error("Could not determine free space in hotfolder (" + getName() + ")", e);
+			return false;
+		}
+		return enoughSpace;	
 	}
 
 	@Override
