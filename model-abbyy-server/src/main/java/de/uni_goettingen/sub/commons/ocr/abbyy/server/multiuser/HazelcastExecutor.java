@@ -25,9 +25,16 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 	
 	private int maxProcesses;
 
+	// This is where all the started processes of the whole cluster reside. They are all at least 
+	// in the beforeExecute() method. Their number can be up to maxProcesses*nodesInCluster.
+	private Map<String, AbbyyProcess> queuedProcesses;
+	
+	// This is used to temporarily sort the processes by their priority to find out which one 
+	// is allowed to leave beforeExecute() next.
 	private PriorityQueue<AbbyyProcess> queuedProcessesSorted;
 
-	private Map<String, AbbyyProcess> queuedProcesses;
+	// Here are all the processes that made it through beforeExecute() and are actively running.
+	// Their maximum number cluster-wide is maxProcesses.
 	private Set<String> runningProcesses;
 
 	private Lock clusterLock;
@@ -53,7 +60,6 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 		queuedProcessesSorted = new PriorityQueue<AbbyyProcess>(100, new ItemComparator());
 
 		queuedProcesses = hazelcast.getMap("queued");
-		// do we really need this? As soon as beforeExecute() runs, there should be a slot
 		runningProcesses = hazelcast.getSet("running");
 	}
 
