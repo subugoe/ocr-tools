@@ -71,6 +71,7 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 
 		clusterLock.lock();
 		try {
+			// maybe set the time here?
 			queuedProcesses.put(abbyyProcess.getProcessId(), abbyyProcess);
 			while (!allowedToExecute(abbyyProcess)) {
 				mightBeAllowedToExecute.await(waitingTimeInMillis, TimeUnit.MILLISECONDS);
