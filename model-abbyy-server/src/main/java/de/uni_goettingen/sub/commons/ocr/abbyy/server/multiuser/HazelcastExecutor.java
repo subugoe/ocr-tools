@@ -42,20 +42,26 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 	private long waitingTimeInMillis = 1000 * 60 * 10;
 
 	// for unit tests
+	void setLock(Lock newLock) {
+		clusterLock = newLock;
+	}
+	void setCondition(Condition newCondition) {
+		mightBeAllowedToExecute = newCondition;
+	}
+	void setQueuedProcesses(Map<String, AbbyyProcess> newQueued) {
+		queuedProcesses = newQueued;
+	}
+	void setRunningProcesses(Set<String> newRunning) {
+		runningProcesses = newRunning;
+	}
 	void setWaitingTime(long newTime) {
 		waitingTimeInMillis = newTime;
-	}
-	Condition createCondition() {
-		if (mightBeAllowedToExecute != null) {
-			return mightBeAllowedToExecute;
-		} else {
-			return ((ILock)clusterLock).newCondition("clusterCondition");
-		}
 	}
 	
 	public HazelcastExecutor(int maxParallelThreads, HazelcastInstance hazelcast) {
 		super(maxParallelThreads, maxParallelThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		clusterLock = hazelcast.getLock("clusterLock");
+		mightBeAllowedToExecute = ((ILock)clusterLock).newCondition("clusterCondition");
 		maxProcesses = maxParallelThreads;
 		queuedProcessesSorted = new PriorityQueue<AbbyyProcess>(100, new ItemComparator());
 
@@ -67,7 +73,6 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 	protected void beforeExecute(Thread t, Runnable process) {
 		super.beforeExecute(t, process);
 		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
-		mightBeAllowedToExecute = createCondition();
 
 		clusterLock.lock();
 		try {
@@ -91,6 +96,7 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 		boolean thereAreFreeSlots = runningProcesses.size() < maxProcesses;
 		queuedProcessesSorted.clear();
 		queuedProcessesSorted.addAll(queuedProcesses.values());
+		System.out.println(abbyyProcess.getProcessId() + ": " + queuedProcessesSorted);
 		AbbyyProcess head = queuedProcessesSorted.poll();
 		boolean currentIsHead = head.equals(abbyyProcess);
 
@@ -103,6 +109,7 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
 		clusterLock.lock();
 		try {
+			System.out.println(abbyyProcess.getProcessId() + " finished");
 			runningProcesses.remove(abbyyProcess.getProcessId());
 			mightBeAllowedToExecute.signalAll();
 		} finally {
