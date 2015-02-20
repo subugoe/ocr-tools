@@ -79,7 +79,10 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 			// maybe set the time here?
 			queuedProcesses.put(abbyyProcess.getProcessId(), abbyyProcess);
 			while (!allowedToExecute(abbyyProcess)) {
+				// if we don't remove, the highest in priority will block all the following ones
+				queuedProcesses.remove(abbyyProcess.getProcessId());
 				mightBeAllowedToExecute.await(waitingTimeInMillis, TimeUnit.MILLISECONDS);
+				queuedProcesses.put(abbyyProcess.getProcessId(), abbyyProcess);
 			}
 			queuedProcesses.remove(abbyyProcess.getProcessId());
 			runningProcesses.add(abbyyProcess.getProcessId());
