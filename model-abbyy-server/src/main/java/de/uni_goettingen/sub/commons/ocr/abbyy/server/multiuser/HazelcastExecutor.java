@@ -40,6 +40,7 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 	private Lock clusterLock;
 	private Condition mightBeAllowedToExecute;
 	private long waitingTimeInMillis = 1000 * 60 * 10;
+	private long startedExecutingAt = Long.MAX_VALUE;
 
 	// for unit tests
 	void setLock(Lock newLock) {
@@ -56,6 +57,9 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 	}
 	void setWaitingTime(long newTime) {
 		waitingTimeInMillis = newTime;
+	}
+	long getStartedLastProcessAt() {
+		return startedExecutingAt;
 	}
 	
 	public HazelcastExecutor(int maxParallelThreads, HazelcastInstance hazelcast) {
@@ -79,10 +83,7 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 			// maybe set the time here?
 			queuedProcesses.put(abbyyProcess.getProcessId(), abbyyProcess);
 			while (!allowedToExecute(abbyyProcess)) {
-				// if we don't remove, the highest in priority will block all the following ones
-				queuedProcesses.remove(abbyyProcess.getProcessId());
 				mightBeAllowedToExecute.await(waitingTimeInMillis, TimeUnit.MILLISECONDS);
-				queuedProcesses.put(abbyyProcess.getProcessId(), abbyyProcess);
 			}
 			queuedProcesses.remove(abbyyProcess.getProcessId());
 			runningProcesses.add(abbyyProcess.getProcessId());
@@ -92,7 +93,7 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 		} finally {
 			clusterLock.unlock();
 		}
-		
+		startedExecutingAt = System.nanoTime();
 	}
 	
 	private boolean allowedToExecute(AbbyyProcess abbyyProcess) {

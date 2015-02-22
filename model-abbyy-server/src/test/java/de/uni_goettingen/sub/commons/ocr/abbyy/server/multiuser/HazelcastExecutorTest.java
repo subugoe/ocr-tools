@@ -5,6 +5,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -23,12 +25,19 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrPriority;
 
 public class HazelcastExecutorTest {
 	
-	private HazelcastExecutor executorSut;
-	private AbbyyProcess processMock1 = mock(AbbyyProcess.class);
-	private AbbyyProcess processMock2 = mock(AbbyyProcess.class);
+	private HazelcastExecutor executorSutA;
+	private AbbyyProcess processMockA1 = mock(AbbyyProcess.class);
+	private AbbyyProcess processMockA2 = mock(AbbyyProcess.class);
+	private HazelcastExecutor executorSutB;
+	private AbbyyProcess processMockB1 = mock(AbbyyProcess.class);
+	private AbbyyProcess processMockB2 = mock(AbbyyProcess.class);
+	private HazelcastExecutor executorSutC;
+	private AbbyyProcess processMockC1 = mock(AbbyyProcess.class);
 	private HazelcastInstance hazelMock = mock(HazelcastInstance.class);
 	private Lock lock = new ReentrantLock();
 	private Condition conditionForExecution = lock.newCondition();
+	private Map<String, AbbyyProcess> queuedProcesses = new HashMap<String, AbbyyProcess>();
+	private Set<String> runningProcesses = new HashSet<String>();
 	
 	private final static boolean ENOUGH_SPACE = true;
 	private final static boolean NOT_ENOUGH_SPACE = false;
@@ -45,78 +54,140 @@ public class HazelcastExecutorTest {
 	@Before
 	public void beforeEachTest() throws Exception {
 		when(hazelMock.getLock(anyString())).thenReturn(mock(ILock.class));
-		executorSut = new HazelcastExecutor(2, hazelMock);
-		executorSut.setLock(lock);
-		executorSut.setCondition(conditionForExecution);
-		executorSut.setQueuedProcesses(new HashMap<String, AbbyyProcess>());
-		executorSut.setRunningProcesses(new HashSet<String>());
-				
 		
+		executorSutA = initSut(2);
+		executorSutB = initSut(2);
+		executorSutC = initSut(2);
 	}
 
+	private HazelcastExecutor initSut(int poolSize) {
+		HazelcastExecutor executor = new HazelcastExecutor(poolSize, hazelMock);
+		executor.setLock(lock);
+		executor.setCondition(conditionForExecution);
+		executor.setQueuedProcesses(queuedProcesses);
+		executor.setRunningProcesses(runningProcesses);
+		return executor;
+	}
+	
 	@Test
 	public void shouldExecuteOne() throws InterruptedException {
-		configureProcessMock(processMock1, "book1", OcrPriority.NORMAL, 1L, ENOUGH_SPACE);
+		configureProcessMock(processMockA1, "book1", OcrPriority.NORMAL, 1L, ENOUGH_SPACE);
 
-		executorSut.execute(processMock1);
-		shutdownExecutor();
+		executorSutA.execute(processMockA1);
+		shutdownExecutors();
 		
-		verify(processMock1).run();
+		verify(processMockA1).run();
 	}
 
 	@Test
 	public void shouldExecuteTwo() throws InterruptedException {
-//		doAnswer(withShortPause).when(processMock1).run();
-//		doAnswer(withShortPause).when(processMock2).run();
-		configureProcessMock(processMock1, "book1", OcrPriority.NORMAL, 1L, ENOUGH_SPACE);
-		configureProcessMock(processMock2, "book2", OcrPriority.NORMAL, 2L, ENOUGH_SPACE);
+		configureProcessMock(processMockA1, "book1", OcrPriority.NORMAL, 1L, ENOUGH_SPACE);
+		configureProcessMock(processMockA2, "book2", OcrPriority.NORMAL, 2L, ENOUGH_SPACE);
 		
-		executorSut.execute(processMock1);
-		executorSut.execute(processMock2);
-		shutdownExecutor();
+		executorSutA.execute(processMockA1);
+		executorSutA.execute(processMockA2);
+		shutdownExecutors();
 		
-		verify(processMock1).run();
-		verify(processMock2).run();
+		verify(processMockA1).run();
+		verify(processMockA2).run();
 	}
 	
 	@Test
 	public void shouldWakeUpByItself() throws InterruptedException {
-		configureProcessMock(processMock1, "book1", OcrPriority.NORMAL, 1L, NOT_ENOUGH_SPACE, ENOUGH_SPACE);
+		configureProcessMock(processMockA1, "book1", OcrPriority.NORMAL, 1L, NOT_ENOUGH_SPACE, ENOUGH_SPACE);
 		
-		executorSut.setWaitingTime(10);
-		executorSut.execute(processMock1);
-		shutdownExecutor();
+		executorSutA.setWaitingTime(10);
+		executorSutA.execute(processMockA1);
+		shutdownExecutors();
 		
-		verify(processMock1).run();
+		verify(processMockA1).run();
 	}
 	
 	@Test
 	public void shouldNeverWakeUp() throws InterruptedException {
-		configureProcessMock(processMock1, "book1", OcrPriority.NORMAL, 1L, NOT_ENOUGH_SPACE);
+		configureProcessMock(processMockA1, "book1", OcrPriority.NORMAL, 1L, NOT_ENOUGH_SPACE);
 		
-		executorSut.setWaitingTime(10);
-		executorSut.execute(processMock1);
-		shutdownExecutor();
+		executorSutA.setWaitingTime(10);
+		executorSutA.execute(processMockA1);
+		shutdownExecutors();
 		
-		verify(processMock1, never()).run();
+		verify(processMockA1, never()).run();
 	}
 	
 	@Test
 	public void secondShouldFreeFirst() throws InterruptedException {
-		configureProcessMock(processMock1, "book1", OcrPriority.NORMAL, 1L, NOT_ENOUGH_SPACE, ENOUGH_SPACE);
-		configureProcessMock(processMock2, "book2", OcrPriority.NORMAL, 2L, ENOUGH_SPACE);
+		configureProcessMock(processMockA1, "book1", OcrPriority.NORMAL, 1L, NOT_ENOUGH_SPACE, ENOUGH_SPACE);
+		configureProcessMock(processMockA2, "book2", OcrPriority.ABOVENORMAL, 2L, ENOUGH_SPACE);
 		
-		executorSut.setWaitingTime(VERY_LONG);
-		executorSut.execute(processMock1);
+		executorSutA.setWaitingTime(VERY_LONG);
+		executorSutA.execute(processMockA1);
 		Thread.sleep(10);
-		executorSut.execute(processMock2);
-		shutdownExecutor();
+		executorSutA.execute(processMockA2);
+		shutdownExecutors();
 		
-		verify(processMock1).run();
-		verify(processMock2).run();
+		verify(processMockA1).run();
+		verify(processMockA2).run();
 	}
 	
+	@Test
+	public void shouldRunOneInEachExecutor() throws InterruptedException {
+		configureProcessMock(processMockA1, "bookA", OcrPriority.NORMAL, 1L, ENOUGH_SPACE);
+		configureProcessMock(processMockB1, "bookB", OcrPriority.NORMAL, 2L, ENOUGH_SPACE);
+		
+		executorSutA.execute(processMockA1);
+		executorSutB.execute(processMockB1);
+		shutdownExecutors();
+		
+		verify(processMockA1).run();
+		verify(processMockB1).run();
+	}
+	
+	@Test
+	public void shouldRunTwoInEachExecutor() throws InterruptedException {
+		configureProcessMock(processMockA1, "bookA1", OcrPriority.NORMAL, 1L, ENOUGH_SPACE);
+		configureProcessMock(processMockA2, "bookA2", OcrPriority.NORMAL, 2L, ENOUGH_SPACE);
+		configureProcessMock(processMockB1, "bookB1", OcrPriority.NORMAL, 3L, ENOUGH_SPACE);
+		configureProcessMock(processMockB2, "bookB2", OcrPriority.NORMAL, 4L, ENOUGH_SPACE);
+		
+		executorSutA.execute(processMockA1);
+		executorSutA.execute(processMockA2);
+		executorSutB.execute(processMockB1);
+		executorSutB.execute(processMockB2);
+		shutdownExecutors();
+		
+		verify(processMockA1).run();
+		verify(processMockA2).run();
+		verify(processMockB1).run();
+		verify(processMockB2).run();
+	}
+	
+	@Test
+	public void shouldPreferHigherPriority() throws InterruptedException {
+		executorSutA = initSut(1);
+		executorSutB = initSut(1);
+		executorSutC = initSut(1);
+		
+		configureProcessMock(processMockA1, "bookA1", OcrPriority.NORMAL, 1L, ENOUGH_SPACE);
+		doAnswer(withShortPause).when(processMockA1).run();
+		configureProcessMock(processMockB1, "bookB1", OcrPriority.NORMAL, 4L, ENOUGH_SPACE);
+		configureProcessMock(processMockC1, "bookC1", OcrPriority.ABOVENORMAL, 5L, ENOUGH_SPACE);
+		
+		executorSutA.execute(processMockA1);
+		executorSutB.execute(processMockB1);
+		Thread.sleep(5);
+		executorSutC.execute(processMockC1);
+		shutdownExecutors();
+		
+		verify(processMockA1).run();
+		verify(processMockB1).run();
+		verify(processMockC1).run();
+		
+		boolean lastWasPrioritized = executorSutC.getStartedLastProcessAt() < executorSutB.getStartedLastProcessAt();
+		assertTrue("The last process should move up the queue", lastWasPrioritized);
+	}
 
+	// one slot, second sooner time
+	
 	private void configureProcessMock(AbbyyProcess processMock, String processId, 
 			OcrPriority prio, long startedAtMillis, boolean... hasEnoughSpace) {
 		when(processMock.getProcessId()).thenReturn(processId);
@@ -129,9 +200,13 @@ public class HazelcastExecutorTest {
 		}
 	}
 	
-	private void shutdownExecutor() throws InterruptedException {
-		executorSut.shutdown();
-		executorSut.awaitTermination(50, TimeUnit.MILLISECONDS);
+	private void shutdownExecutors() throws InterruptedException {
+		executorSutA.shutdown();
+		executorSutA.awaitTermination(50, TimeUnit.MILLISECONDS);
+		executorSutB.shutdown();
+		executorSutB.awaitTermination(50, TimeUnit.MILLISECONDS);
+		executorSutC.shutdown();
+		executorSutC.awaitTermination(50, TimeUnit.MILLISECONDS);
 	}
 
 }
