@@ -173,8 +173,9 @@ public class HazelcastExecutorTest {
 		configureProcessMock(processMockC1, "bookC1", OcrPriority.ABOVENORMAL, 5L, ENOUGH_SPACE);
 		
 		executorSutA.execute(processMockA1);
+		Thread.sleep(3);
 		executorSutB.execute(processMockB1);
-		Thread.sleep(5);
+		Thread.sleep(3);
 		executorSutC.execute(processMockC1);
 		shutdownExecutors();
 		
@@ -186,8 +187,31 @@ public class HazelcastExecutorTest {
 		assertTrue("The last process should move up the queue", lastWasPrioritized);
 	}
 
-	// one slot, second sooner time
-	
+	@Test
+	public void shouldPreferSmallerTimestamp() throws InterruptedException {
+		executorSutA = initSut(1);
+		executorSutB = initSut(1);
+		executorSutC = initSut(1);
+		
+		configureProcessMock(processMockA1, "bookA1", OcrPriority.NORMAL, 1L, ENOUGH_SPACE);
+		doAnswer(withShortPause).when(processMockA1).run();
+		configureProcessMock(processMockB1, "bookB1", OcrPriority.NORMAL, 4L, ENOUGH_SPACE);
+		configureProcessMock(processMockC1, "bookC1", OcrPriority.NORMAL, 5L, ENOUGH_SPACE);
+		
+		executorSutA.execute(processMockA1);
+		Thread.sleep(3);
+		executorSutC.execute(processMockC1);
+		executorSutB.execute(processMockB1);
+		shutdownExecutors();
+		
+		verify(processMockA1).run();
+		verify(processMockB1).run();
+		verify(processMockC1).run();
+
+		boolean orderedByTimestamp = executorSutB.getStartedLastProcessAt() < executorSutC.getStartedLastProcessAt();
+		assertTrue("The processes should have been ordered by timestamp", orderedByTimestamp);
+	}
+
 	private void configureProcessMock(AbbyyProcess processMock, String processId, 
 			OcrPriority prio, long startedAtMillis, boolean... hasEnoughSpace) {
 		when(processMock.getProcessId()).thenReturn(processId);

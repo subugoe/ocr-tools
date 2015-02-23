@@ -19,6 +19,30 @@ import com.hazelcast.core.ILock;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyProcess;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.ItemComparator;
 
+/**
+ * This executor uses Hazelcast to implement coordination of abbyy processes across several JVMs
+ * or even different hosts. It includes a kind of waiting queue for abbyy processes. In general,
+ * processes with a higher priority and a lower timestamp are preferred and the executor will try
+ * to start them before the other ones. 
+ * 
+ * When there are only two concurrent users, the priority
+ * will not make any difference and the execution time will just be split fifty-fifty between the
+ * users.
+ * 
+ * When there are three or more users and one of them has a higher priority, he will get fifty
+ * percent of the time, and all the others will split the rest. This way, one high-priority 
+ * user cannot block all the others. However, if there are two or more higher-priority users,
+ * they will consume all the execution time (splitting it evenly), so that the lower priority
+ * ones will have to wait.
+ * 
+ * Processes with the same priority are sorted by their timestamp. The timestamp is set right
+ * here in the executor just before the run() method of each process, and not at the time of
+ * creating the processes. Otherwise, two long-running batches of processes would alternate 
+ * in their execution and never let a third one come through to be executed.
+ * 
+ * @author dennis
+ *
+ */
 public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 
 	private final static Logger logger = LoggerFactory.getLogger(HazelcastExecutor.class);
@@ -77,10 +101,10 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 	protected void beforeExecute(Thread t, Runnable process) {
 		super.beforeExecute(t, process);
 		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
-
+		abbyyProcess.setStartedAt(System.currentTimeMillis());
+		
 		clusterLock.lock();
 		try {
-			// maybe set the time here?
 			queuedProcesses.put(abbyyProcess.getProcessId(), abbyyProcess);
 			while (!allowedToExecute(abbyyProcess)) {
 				mightBeAllowedToExecute.await(waitingTimeInMillis, TimeUnit.MILLISECONDS);
@@ -100,7 +124,6 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 		boolean thereAreFreeSlots = runningProcesses.size() < maxProcesses;
 		queuedProcessesSorted.clear();
 		queuedProcessesSorted.addAll(queuedProcesses.values());
-		System.out.println(abbyyProcess.getProcessId() + ": " + queuedProcessesSorted);
 		AbbyyProcess head = queuedProcessesSorted.poll();
 		boolean currentIsHead = head.equals(abbyyProcess);
 
@@ -113,7 +136,6 @@ public class HazelcastExecutor extends ThreadPoolExecutor implements Executor {
 		AbbyyProcess abbyyProcess = (AbbyyProcess) process;
 		clusterLock.lock();
 		try {
-			System.out.println(abbyyProcess.getProcessId() + " finished");
 			runningProcesses.remove(abbyyProcess.getProcessId());
 			mightBeAllowedToExecute.signalAll();
 		} finally {

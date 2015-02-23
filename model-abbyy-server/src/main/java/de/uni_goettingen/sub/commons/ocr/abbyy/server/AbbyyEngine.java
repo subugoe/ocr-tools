@@ -92,7 +92,6 @@ public class AbbyyEngine extends AbstractEngine implements OcrEngine {
 		
 		while (!processesQueue.isEmpty()) {
 			AbbyyProcess process = processesQueue.poll();
-			process.setStartedAt(new Date().getTime());
 			boolean split = "true".equals(props.getProperty("books.split"));
 			if (split) {
 				int splitSize = Integer.parseInt(props.getProperty("maxImagesInSubprocess"));

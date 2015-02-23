@@ -1,7 +1,6 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
@@ -52,7 +51,6 @@ public class ProcessSplitter {
 			
 			addOutputsToSubProcess(subProcess, process);
 			
-			subProcess.setStartedAt(new Date().getTime());
 			subProcesses.add(subProcess);
 			
 			chunkIndex++;
