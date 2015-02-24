@@ -54,15 +54,6 @@ public class AbbyyProcessTest {
 
 	@Test
 	public void shouldRunOcr() throws IOException {
-		Answer<Void> withOneSecondDelay = new Answer<Void>() {
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Exception {
-				Thread.sleep(1000);
-				return null;
-			}
-		};
-		//doAnswer(withOneSecondDelay).when(pauseMock).forMilliseconds(anyLong());
-		
 		processSut.initialize(validProps());
 
 		processSut.run();

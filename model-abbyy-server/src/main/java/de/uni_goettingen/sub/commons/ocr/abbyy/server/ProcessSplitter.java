@@ -16,6 +16,9 @@ public class ProcessSplitter {
 	}
 		
 	public List<AbbyyProcess> split(AbbyyProcess process, int splitSize) {
+		if (process.getNumberOfImages() == 0) {
+			throw new IllegalArgumentException("Cannot split the process, it has no images: " + process.getName());
+		}
 		if (process.getNumberOfImages() <= splitSize) {
 			List<AbbyyProcess> sp = new ArrayList<AbbyyProcess>();
 			sp.add(process);

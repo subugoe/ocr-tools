@@ -25,20 +25,17 @@ import de.uni_goettingen.sub.commons.ocr.abbyy.server.ItemComparator;
  * processes with a higher priority and a lower timestamp are preferred and the executor will try
  * to start them before the other ones. 
  * 
- * When there are only two concurrent users, the priority
- * will not make any difference and the execution time will just be split fifty-fifty between the
- * users.
- * 
- * When there are three or more users and one of them has a higher priority, he will get fifty
- * percent of the time, and all the others will split the rest. This way, one high-priority 
+ * When there are several users and one of them has a higher priority, he will use all but one
+ * execution slots (their number is defined by maxParallelThreads). This way, one high-priority 
  * user cannot block all the others. However, if there are two or more higher-priority users,
- * they will consume all the execution time (splitting it evenly), so that the lower priority
- * ones will have to wait.
+ * they will consume all the execution time, so that the ones with lower priority
+ * will have to wait.
  * 
  * Processes with the same priority are sorted by their timestamp. The timestamp is set right
  * here in the executor just before the run() method of each process, and not at the time of
  * creating the processes. Otherwise, two long-running batches of processes would alternate 
- * in their execution and never let a third one come through to be executed.
+ * in their execution and never let a third one come through to be executed. In effect, this
+ * is the behavior of a simple FIFO queue.
  * 
  * @author dennis
  *
