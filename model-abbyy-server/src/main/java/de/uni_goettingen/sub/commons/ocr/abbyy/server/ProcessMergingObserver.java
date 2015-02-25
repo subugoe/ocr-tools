@@ -1,6 +1,9 @@
 package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
-import de.unigoettingen.sub.commons.ocr.util.FileMerger;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
+import de.unigoettingen.sub.commons.ocr.util.merge.Merger;
+import de.unigoettingen.sub.commons.ocr.util.merge.MergerProvider;
 
 public class ProcessMergingObserver {
 
@@ -17,6 +22,16 @@ public class ProcessMergingObserver {
 	private boolean alreadyBeenHere = false;
 	private AbbyyProcess parentProcess;
 	private List<AbbyyProcess> subProcesses = new ArrayList<AbbyyProcess>();
+	private MergerProvider mergerProvider = new MergerProvider();
+	private FileAccess fileAccess = new FileAccess();
+	
+	// for unit tests
+	void setMergerProvider(MergerProvider newProvider) {
+		mergerProvider = newProvider;
+	}
+	void serFileAccess(FileAccess newAccess) {
+		fileAccess = newAccess;
+	}
 
 	public void setParentProcess(AbbyyProcess process) {
 		parentProcess = process;
@@ -55,30 +70,35 @@ public class ProcessMergingObserver {
 	}
 
 	private void mergeAllFormats() {
-		for (OcrFormat format : parentProcess.getAllOutputFormats()) {
-			if (!FileMerger.isSegmentable(format)) {
-				throw new RuntimeException("Format " + format
-						+ " isn't mergable!");
+		try {
+			for (OcrFormat format : parentProcess.getAllOutputFormats()) {
+				Merger merger = mergerProvider.createMerger(format);
+	
+				List<File> filesToMerge = new ArrayList<File>(); 
+				List<InputStream> streamsToMerge = new ArrayList<InputStream>(); 
+				for(AbbyyProcess subProcess : subProcesses) {
+					File file = new File(subProcess.getOutputUriForFormat(format));
+					filesToMerge.add(file);
+					InputStream is = fileAccess.inputStreamForFile(file);
+					streamsToMerge.add(is); 
+				}
+				
+				File mergedFile = new File(parentProcess.getOutputUriForFormat(format));
+				OutputStream mergedStream = fileAccess.outputStreamForFile(mergedFile);
+				logger.debug("Trying to merge into " + mergedFile + " (" + parentProcess.getName() + ")");
+				merger.merge(streamsToMerge, mergedStream);
+				logger.debug(mergedFile + " merged successfully (" + parentProcess.getName() + ")");
+				
+				removeSubProcessResults(filesToMerge);
 			}
-			List<File> filesToMerge = new ArrayList<File>(); 
-			for(AbbyyProcess subProcess : subProcesses) {
-				File file = new File(subProcess.getOutputUriForFormat(format));
-				filesToMerge.add(file); 
-			}
-			
-			File mergedFile = new File(parentProcess.getOutputUriForFormat(format));
-			logger.debug("Trying to merge into " + mergedFile + " (" + parentProcess.getName() + ")");
-			FileMerger.abbyyVersionNumber = "v10";
-			FileMerger.mergeFiles(format, filesToMerge, mergedFile);
-			logger.debug(mergedFile + " merged successfully (" + parentProcess.getName() + ")");
-			
-			removeSubProcessResults(filesToMerge);
+		} catch (IOException e) {
+			logger.error("Failed to merge all files correctly.(" + parentProcess.getName() + ")", e);
 		}
 	}
 	
-	protected void removeSubProcessResults(List<File> resultFiles){
+	protected void removeSubProcessResults(List<File> resultFiles) throws IOException{
 		for(File file : resultFiles) {
-			file.delete();
+			fileAccess.deleteFile(file);
 		}
 	}
 	

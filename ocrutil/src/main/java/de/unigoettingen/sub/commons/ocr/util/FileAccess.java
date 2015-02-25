@@ -93,6 +93,10 @@ public class FileAccess {
 		return new FileOutputStream(file);
 	}
 
+	public InputStream inputStreamForFile(File file) throws FileNotFoundException {
+		return new FileInputStream(file);
+	}
+
 	public void copyUrlToFile(String urlString, File file) throws IOException {
 		URL inputUrl = new URL(urlString);
 		FileUtils.copyURLToFile(inputUrl, file);

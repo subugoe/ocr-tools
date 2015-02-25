@@ -258,14 +258,14 @@ public class FileMerger {
 	 * Merge Abbyy XML Streams for Version 10. This operates directly on Streams and should be
 	 * suitable for processing over WebDAV for example
 	 * 
-	 * @param iss
+	 * @param inputs
 	 *            the List of InputStreams
-	 * @param os
+	 * @param output
 	 *            the OutputStram to write to.
 	 * @throws XMLStreamException
 	 *             the xML stream exception
 	 */
-	public static void mergeABByyXMLv10(List<InputStream> iss, OutputStream os)
+	public static void mergeABByyXMLv10(List<InputStream> inputs, OutputStream output)
 			throws XMLStreamException {
 		Set<String> ignoredElements = new HashSet<String>();
 		ignoredElements.add("documentData");
@@ -278,12 +278,12 @@ public class FileMerger {
 		ignoredElements.add("paragraphStyle");
 		
 
-		Integer pageCount = iss.size();
+		Integer pageCount = inputs.size();
 		// Output
 		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
 		// outFactory.setProperty("javax.xml.stream.isPrefixDefaulting",Boolean.TRUE);
 
-		XMLStreamWriter writer = outFactory.createXMLStreamWriter(os);
+		XMLStreamWriter writer = outFactory.createXMLStreamWriter(output);
 
 		Integer f = 0;
 		HashMap<String, String> nsPrefixes = new HashMap<String, String>();
@@ -292,10 +292,10 @@ public class FileMerger {
 		Boolean headerWriten = false;
 		String rootTag = "document";
 
-		while (f < iss.size()) {
+		while (f < inputs.size()) {
 
 			// Input
-			InputStream in = iss.get(f);
+			InputStream in = inputs.get(f);
 			XMLInputFactory inFactory = XMLInputFactory.newInstance();
 			XMLStreamReader parser = inFactory.createXMLStreamReader(in);
 
@@ -381,7 +381,7 @@ public class FileMerger {
 					}
 				} else if (event == XMLStreamConstants.END_DOCUMENT) {
 					// writer.writeEndElement();
-					if (f == iss.size() - 1) {
+					if (f == inputs.size() - 1) {
 						writer.writeEndDocument();
 					}
 					break;
@@ -404,22 +404,22 @@ public class FileMerger {
 	 * Merge Abbyy XMLResult(Abbyy Reports) Streams.  This operates directly on Streams and should be
 	 * suitable for processing over WebDAV for example
 	 * 
-	 * @param iss
+	 * @param inputs
 	 *            the List of InputStreams
-	 * @param os
+	 * @param output
 	 *            the OutputStram to write to.
 	 * @throws XMLStreamException
 	 *             the xML stream exception
 	 */
-	public static void mergeAbbyyXMLResults(List<InputStream> iss,
-			OutputStream os) throws XMLStreamException {
+	public static void mergeAbbyyXMLResults(List<InputStream> inputs,
+			OutputStream output) throws XMLStreamException {
 
-		Integer pageCount = iss.size();
+		Integer pageCount = inputs.size();
 		// Output
 		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
 		// outFactory.setProperty("javax.xml.stream.isPrefixDefaulting",Boolean.TRUE);
 
-		XMLStreamWriter writer = outFactory.createXMLStreamWriter(os, "UTF-8");
+		XMLStreamWriter writer = outFactory.createXMLStreamWriter(output, "UTF-8");
 
 		Integer f = 0;
 		HashMap<String, String> nsPrefixes = new HashMap<String, String>();
@@ -428,10 +428,10 @@ public class FileMerger {
 		Boolean headerWriten = false;
 		String rootTag = "XmlResult";
 
-		while (f < iss.size()) {
+		while (f < inputs.size()) {
 
 			// Input
-			InputStream in = iss.get(f);
+			InputStream in = inputs.get(f);
 			XMLInputFactory inFactory = XMLInputFactory.newInstance();
 			XMLStreamReader parser = inFactory.createXMLStreamReader(in);
 
@@ -509,7 +509,7 @@ public class FileMerger {
 						}
 				} else if (event == XMLStreamConstants.END_DOCUMENT) {
 					// writer.writeEndElement();
-					if (f == iss.size() - 1) {
+					if (f == inputs.size() - 1) {
 						writer.writeEndDocument();
 					}
 					break;
@@ -602,9 +602,9 @@ public class FileMerger {
 	 * suitable for processing over WebDAV for example. The iText library is
 	 * used to perform this task.
 	 * 
-	 * @param iss
+	 * @param inputs
 	 *            the List of InputStreams
-	 * @param os
+	 * @param output
 	 *            the OutputStram to write to.
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
@@ -612,7 +612,7 @@ public class FileMerger {
 	 *             the document exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static void mergePDF(List<InputStream> iss, OutputStream os)
+	public static void mergePDF(List<InputStream> inputs, OutputStream output)
 			throws IOException, DocumentException {
 		// Stolen from itext (com.lowagie.tools.concat_pdf)
 
@@ -621,9 +621,9 @@ public class FileMerger {
 		int f = 0;
 		Document document = null;
 		PdfCopy writer = null;
-		while (f < iss.size()) {
+		while (f < inputs.size()) {
 			// we create a reader for a certain document
-			PdfReader reader = new PdfReader(iss.get(f));
+			PdfReader reader = new PdfReader(inputs.get(f));
 			reader.consolidateNamedDestinations();
 			// we retrieve the total number of pages
 			int n = reader.getNumberOfPages();
@@ -642,7 +642,7 @@ public class FileMerger {
 				// step 1: creation of a document-object
 				document = new Document(reader.getPageSizeWithRotation(1));
 				// step 2: we create a writer that listens to the document
-				writer = new PdfCopy(document, os);
+				writer = new PdfCopy(document, output);
 				// step 3: we open the document
 				document.open();
 			}
@@ -704,24 +704,24 @@ public class FileMerger {
 	 * isn't platform independent, the line ending different on each. Look at
 	 * the property "line.separator". the page break is encoded as ASCII DEC 12.
 	 * 
-	 * @param iss
+	 * @param inputs
 	 *            the List of InputStreams
-	 * @param os
+	 * @param output
 	 *            the OutputStram to write to.
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static void mergeTXT(List<InputStream> iss, OutputStream os)
+	public static void mergeTXT(List<InputStream> inputs, OutputStream output)
 			throws IOException {
-		OutputStreamWriter osw = new OutputStreamWriter(os);
+		OutputStreamWriter osw = new OutputStreamWriter(output);
 		// Ascii page break dec 12, hex 0c
 		char pb = (char) 12;
 		// Use the platform dependent separator here
 		String seperator = System.getProperty("line.separator");
 
 		int f = 0;
-		while (f < iss.size()) {
-			InputStreamReader isr = new InputStreamReader(iss.get(f), "UTF-8");
+		while (f < inputs.size()) {
+			InputStreamReader isr = new InputStreamReader(inputs.get(f), "UTF-8");
 			BufferedReader br = new BufferedReader(isr);
 			String line;
 			while ((line = br.readLine()) != null) {
@@ -761,8 +761,8 @@ public class FileMerger {
 		mergeTXT(iss, os);
 	}
 
-	public static void mergeHOCR(List<InputStream> hocrStreams,
-			OutputStream resultStream) throws IOException, XMLStreamException {
+	public static void mergeHOCR(List<InputStream> inputs,
+			OutputStream output) throws IOException, XMLStreamException {
 
 		int fileCounter = 1;
 
@@ -773,12 +773,12 @@ public class FileMerger {
 		Map<String, String> nsPrefixes = new HashMap<String, String>();
 
 		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
-		XMLStreamWriter writer = outFactory.createXMLStreamWriter(resultStream);
+		XMLStreamWriter writer = outFactory.createXMLStreamWriter(output);
 
 		XMLInputFactory inFactory = XMLInputFactory.newInstance();
 		inFactory.setProperty("javax.xml.stream.supportDTD", Boolean.FALSE);
 
-		for (InputStream html : hocrStreams) {
+		for (InputStream html : inputs) {
 			InputStream xhtml = tidy(html);
 			XMLStreamReader parser = inFactory.createXMLStreamReader(xhtml);
 
@@ -871,9 +871,9 @@ public class FileMerger {
 				} else if (event == XMLStreamConstants.END_ELEMENT) {
 					String elementName = parser.getLocalName();
 					boolean isLastHtml = elementName.equals("html")
-							&& fileCounter == hocrStreams.size();
+							&& fileCounter == inputs.size();
 					boolean isLastBody = elementName.equals("body")
-							&& fileCounter == hocrStreams.size();
+							&& fileCounter == inputs.size();
 					boolean ignoreMode = fileCounter > 1 && insideHead
 							|| elementName.equals("html")
 							|| elementName.equals("body");
@@ -884,7 +884,7 @@ public class FileMerger {
 						insideHead = false;
 					}
 				} else if (event == XMLStreamConstants.END_DOCUMENT) {
-					if (fileCounter == hocrStreams.size()) {
+					if (fileCounter == inputs.size()) {
 						writer.writeEndDocument();
 					}
 				}
