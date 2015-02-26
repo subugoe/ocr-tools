@@ -29,7 +29,7 @@ public class ProcessMergingObserver {
 	void setMergerProvider(MergerProvider newProvider) {
 		mergerProvider = newProvider;
 	}
-	void serFileAccess(FileAccess newAccess) {
+	void setFileAccess(FileAccess newAccess) {
 		fileAccess = newAccess;
 	}
 
@@ -74,32 +74,46 @@ public class ProcessMergingObserver {
 			for (OcrFormat format : parentProcess.getAllOutputFormats()) {
 				Merger merger = mergerProvider.createMerger(format);
 	
-				List<File> filesToMerge = new ArrayList<File>(); 
-				List<InputStream> streamsToMerge = new ArrayList<InputStream>(); 
-				for(AbbyyProcess subProcess : subProcesses) {
-					File file = new File(subProcess.getOutputUriForFormat(format));
-					filesToMerge.add(file);
-					InputStream is = fileAccess.inputStreamForFile(file);
-					streamsToMerge.add(is); 
+				OutputStream mergedStream = null;
+				List<InputStream> streamsToMerge = new ArrayList<InputStream>();
+				try {
+					List<File> filesToMerge = new ArrayList<File>(); 
+					for(AbbyyProcess subProcess : subProcesses) {
+						File file = new File(subProcess.getOutputUriForFormat(format));
+						filesToMerge.add(file);
+						InputStream is = fileAccess.inputStreamForFile(file);
+						streamsToMerge.add(is); 
+					}
+					
+					File mergedFile = new File(parentProcess.getOutputUriForFormat(format));
+					mergedStream = fileAccess.outputStreamForFile(mergedFile);
+					logger.debug("Trying to merge into " + mergedFile + " (" + parentProcess.getName() + ")");
+					merger.merge(streamsToMerge, mergedStream);
+					logger.debug(mergedFile + " merged successfully (" + parentProcess.getName() + ")");
+					
+					removeSubProcessResults(filesToMerge);
+				} finally {
+					closeStreams(streamsToMerge, mergedStream);
 				}
-				
-				File mergedFile = new File(parentProcess.getOutputUriForFormat(format));
-				OutputStream mergedStream = fileAccess.outputStreamForFile(mergedFile);
-				logger.debug("Trying to merge into " + mergedFile + " (" + parentProcess.getName() + ")");
-				merger.merge(streamsToMerge, mergedStream);
-				logger.debug(mergedFile + " merged successfully (" + parentProcess.getName() + ")");
-				
-				removeSubProcessResults(filesToMerge);
 			}
 		} catch (IOException e) {
-			logger.error("Failed to merge all files correctly.(" + parentProcess.getName() + ")", e);
+			logger.error("Failed to merge all files correctly. (" + parentProcess.getName() + ")", e);
 		}
 	}
 	
-	protected void removeSubProcessResults(List<File> resultFiles) throws IOException{
+	private void removeSubProcessResults(List<File> resultFiles) throws IOException{
 		for(File file : resultFiles) {
 			fileAccess.deleteFile(file);
 		}
 	}
-	
+
+	private void closeStreams(List<InputStream> streamsToMerge, OutputStream mergedStream) throws IOException {
+			for (InputStream is : streamsToMerge) {
+				if (is != null)
+					is.close();
+			}
+			if (mergedStream != null)
+				mergedStream.close();
+	}
+
 }
