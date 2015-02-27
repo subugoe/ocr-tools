@@ -11,8 +11,6 @@ import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
@@ -60,9 +58,9 @@ public class AbbyyProcessTest {
 		
 		verify(hotManagerMock).copyImagesToHotfolder(anyListOf(OcrImage.class));
 		verify(hotManagerMock).retrieveResults(anyListOf(OcrOutput.class));
-		verify(mergerMock).update();
+		verify(mergerMock).update(any(AbbyyProcess.class));
 		
-		assertTrue("Process should finish", processSut.hasFinished());
+		assertFalse("Process should not fail", processSut.hasFailed());
 	}
 	
 	@Test

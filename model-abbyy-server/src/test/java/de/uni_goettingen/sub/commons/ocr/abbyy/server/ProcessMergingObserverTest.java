@@ -49,7 +49,7 @@ public class ProcessMergingObserverTest {
 		when(subProcessMock1.hasFinished()).thenReturn(false);
 		when(subProcessMock2.hasFinished()).thenReturn(false);
 		
-		observerSut.update();
+		observerSut.update(subProcessMock2);
 		
 		verifyZeroInteractions(parentProcessMock, mergerMock, fileAccessMock);
 	}
@@ -59,7 +59,7 @@ public class ProcessMergingObserverTest {
 		when(subProcessMock1.hasFinished()).thenReturn(false);
 		when(subProcessMock2.hasFinished()).thenReturn(true);
 		
-		observerSut.update();
+		observerSut.update(subProcessMock2);
 		
 		verifyZeroInteractions(parentProcessMock, mergerMock, fileAccessMock);
 	}
@@ -68,7 +68,7 @@ public class ProcessMergingObserverTest {
 	public void shouldBreakUpWhenOneFails() {
 		when(subProcessMock1.hasFailed()).thenReturn(true);
 		
-		observerSut.update();
+		observerSut.update(subProcessMock1);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -81,7 +81,7 @@ public class ProcessMergingObserverTest {
 		when(subProcessMock2.getOutputUriForFormat(OcrFormat.TXT)).thenReturn(new URI("file:/part2.txt"));
 		when(parentProcessMock.getOutputUriForFormat(OcrFormat.TXT)).thenReturn(new URI("file:/result.txt"));
 		
-		observerSut.update();
+		observerSut.update(subProcessMock2);
 		
 		verify(mergerMock).merge(any(List.class), any(OutputStream.class));
 		verify(fileAccessMock).deleteFile(new File("/part1.txt"));

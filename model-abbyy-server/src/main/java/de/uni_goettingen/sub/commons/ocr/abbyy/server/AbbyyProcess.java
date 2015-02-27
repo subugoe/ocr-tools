@@ -157,8 +157,8 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 				//hotfolder.deleteIfExists(errorResultUri);
 				hotfolderManager.deleteTicket(abbyyTicket);
 				if(processMerger != null) {
-					finished = true;
-					processMerger.update();
+					//finished = true;
+					processMerger.update(this);
 				}		
 				logger.info("Process finished  (" + getName() + ")");
 			} catch (IOException e) {
@@ -269,6 +269,10 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	
 	public boolean hasFinished() {
 		return finished;
+	}
+	
+	public void setFinished() {
+		finished = true;
 	}
 	
 	public List<String> getRemoteImageNames() {

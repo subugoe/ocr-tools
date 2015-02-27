@@ -18,8 +18,6 @@ import de.unigoettingen.sub.commons.ocr.util.merge.MergerProvider;
 public class ProcessMergingObserver {
 
 	private final static Logger logger = LoggerFactory.getLogger(ProcessMergingObserver.class);
-	private Object monitor = new Object();
-	private boolean alreadyBeenHere = false;
 	private AbbyyProcess parentProcess;
 	private List<AbbyyProcess> subProcesses = new ArrayList<AbbyyProcess>();
 	private MergerProvider mergerProvider = new MergerProvider();
@@ -41,23 +39,15 @@ public class ProcessMergingObserver {
 		subProcesses.add(subProcess);
 	}
 
-	public void update() {
-		synchronized (monitor) {	   
+	public synchronized void update(AbbyyProcess finishedSubProcess) {
+			finishedSubProcess.setFinished();
 			for (AbbyyProcess sub : subProcesses) {
 				boolean currentFinished = sub.hasFinished();
 				if (!currentFinished) {
 					return;
 				}
 			}
-			// only get here when all processes are finished
-
-			// it might happen that a subprocess (not the last one) must wait too 
-			// long in the monitor and gets here after the last one, because it 
-			// also finds out that all subprocesses have finished
-			if (alreadyBeenHere) {
-				return;
-			}
-			alreadyBeenHere = true;
+			// only get here when all subprocesses are finished
 			
 			for (AbbyyProcess sub : subProcesses) {
 				if(sub.hasFailed()) {
@@ -66,7 +56,6 @@ public class ProcessMergingObserver {
 				}
 			}
 			mergeAllFormats();				 
-		}		
 	}
 
 	private void mergeAllFormats() {
