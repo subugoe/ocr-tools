@@ -88,4 +88,13 @@ public class HazelcastLockFileHandlerTest {
 		verify(hotfolderMock).delete(lockUri);
 	}
 
+	@Test
+	public void shouldNotDeleteLock() throws IOException {
+		when(hazelMock.getCluster().getMembers().size()).thenReturn(2);
+		
+		lockHandlerSut.deleteLockAndCleanUp();
+		
+		verify(hotfolderMock, never()).delete(lockUri);
+	}
+
 }
