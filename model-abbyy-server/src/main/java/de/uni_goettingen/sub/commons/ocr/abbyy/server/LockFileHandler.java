@@ -22,7 +22,7 @@ public class LockFileHandler {
 	protected Hotfolder hotfolder;
 	protected URI lockUri;
 	private final static Logger logger = LoggerFactory.getLogger(LockFileHandler.class);
-	private HotfolderProvider hotfolderProvider = new HotfolderProvider();
+	protected HotfolderProvider hotfolderProvider = new HotfolderProvider();
 
 	// for unit tests
 	void setHotfolderProvider(HotfolderProvider newProvider) {
@@ -46,27 +46,16 @@ public class LockFileHandler {
 					// the lock is deleted here, but a new one is created later
 					hotfolder.deleteIfExists(lockUri);
 				}
-				handleLock();
+				boolean lockExists = hotfolder.exists(lockUri);
+				
+				if (lockExists) {
+					throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockUri);
+				}
+				writeLockFile();
 			} catch (IOException e) {
 				logger.error("Error with server lock file: " + lockUri, e);
 			}
 		}
-	}
-
-	/**
-	 * Controls the program flow depending on the state of the server lock.
-	 * Can be overridden by subclasses to implement a different state management.
-	 * 
-	 * @throws IOException
-	 */
-	protected void handleLock() throws IOException {
-		boolean lockExists = hotfolder.exists(lockUri);
-		
-		if (lockExists) {
-			throw new ConcurrentModificationException("Another client instance is running! See the lock file at " + lockUri);
-		}
-		writeLockFile();
-
 	}
 	
 	/**
@@ -76,10 +65,10 @@ public class LockFileHandler {
 	 */
 	protected void writeLockFile() throws IOException {
 		String thisIp = InetAddress.getLocalHost().getHostAddress();
-		String thisId = ManagementFactory.getRuntimeMXBean().getName();
+		String thisJvmId = ManagementFactory.getRuntimeMXBean().getName();
 		
 		OutputStream tempLock = hotfolder.createTmpFile("lock");
-		IOUtils.write("IP: " + thisIp + "\nID: " + thisId, tempLock);
+		IOUtils.write("IP: " + thisIp + "\nID: " + thisJvmId, tempLock);
 		hotfolder.copyTmpFile("lock", lockUri);
 		hotfolder.deleteTmpFile("lock");
 		
