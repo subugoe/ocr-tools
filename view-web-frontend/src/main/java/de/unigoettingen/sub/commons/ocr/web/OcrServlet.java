@@ -30,7 +30,6 @@ public class OcrServlet extends HttpServlet {
 		setProperty(request, param, "user");
 		setProperty(request, param, "password");
 		setEngineParameters(request, param);
-		param.props.setProperty("splitJobs", "500");
 		ocrStarter.setParameters(param);
 		
 		String validationMessage = ocrStarter.checkParameters();
@@ -56,14 +55,15 @@ public class OcrServlet extends HttpServlet {
 		if ("gbvAntiqua".equals(ocrService)) {
 			param.ocrEngine = "abbyy-multiuser";
 			param.props.setProperty("abbyy.config", "gbv-antiqua.properties");
-			// TODO: kleine Buchstaben
-			param.inputTextType = "NORMAL";
+			// just overriding it for now, since the antiqua server won't accept gothic
+			param.inputTextType = "normal";
 		} else if ("gbvFraktur".equals(ocrService)) {
 			param.ocrEngine = "abbyy-multiuser";
 			param.props.setProperty("abbyy.config", "gbv-fraktur.properties");
 		} else if ("abbyyCloud".equals(ocrService)) {
 			param.ocrEngine = "ocrsdk";
 		}
+		param.props.setProperty("books.split", "true");
 	}
 
 	protected void goToView(String viewName, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

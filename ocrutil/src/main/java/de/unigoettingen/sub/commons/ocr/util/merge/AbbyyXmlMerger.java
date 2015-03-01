@@ -33,7 +33,7 @@ public class AbbyyXmlMerger implements Merger {
 			Integer pageCount = inputs.size();
 			XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
 	
-			XMLStreamWriter writer = outFactory.createXMLStreamWriter(output);
+			XMLStreamWriter writer = outFactory.createXMLStreamWriter(output, "UTF-8");
 	
 			Integer f = 0;
 			HashMap<String, String> nsPrefixes = new HashMap<String, String>();
