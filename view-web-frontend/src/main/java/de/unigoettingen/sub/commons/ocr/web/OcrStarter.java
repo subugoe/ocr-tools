@@ -72,7 +72,8 @@ public class OcrStarter implements Runnable {
 		
 		engineStarter.startOcrWithParams(params);
 		
-		mailer.sendFinished(params);
+		mailer.sendFinished(params);	
+		logSelector.useDefaults();
 	}
 
 }

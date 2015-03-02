@@ -13,7 +13,6 @@
 	var inputFolderInfo = "Absolute Pfadangabe eines Ordners auf dem Server. Dieser Ordner muss Unterordner (oder Links) haben, "
 	 + "die jeweils einen Band repräsentieren. In jedem dieser Unterordner befinden sich Bilddateien des Bandes.";
 	var outputFolderInfo = "Absolute Angabe eines Ordners auf dem Server.";
-	var imageFormatInfo = "Dateiendung der zu erkennenden Bilder.";
 	var textTypeInfo = "Die Auswahl hier ist unabhängig von der Auswahl der OCR-Engine. Man kann z. B. einen Fraktur-"
 	 + "Text mit einer Antiqua-Engine erkennen lassen.";
 	var languagesInfo = "Sprachen, die in den Bänden vorkommen. Mehrfachauswahl mit Strg+Maus möglich. "
@@ -34,7 +33,7 @@
 </head>
 <body>
 
-	<h1>GDZ OCR</h1>
+	<h1>GBV OCR</h1>
 
 	<h3>Hier haben Sie die Möglichkeit, OCR an einem oder mehreren Bänden durchzuführen.</h3>
 
