@@ -30,9 +30,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import de.unigoettingen.sub.commons.ocrComponents.cli.Main;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
-import de.unigoettingen.sub.ocr.controller.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.Validator;
 
 public class MainTest {

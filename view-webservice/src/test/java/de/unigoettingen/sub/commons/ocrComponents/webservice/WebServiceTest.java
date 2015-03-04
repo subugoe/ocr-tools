@@ -41,8 +41,8 @@ import org.junit.Test;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
 import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
+import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
-import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 
 public class WebServiceTest {

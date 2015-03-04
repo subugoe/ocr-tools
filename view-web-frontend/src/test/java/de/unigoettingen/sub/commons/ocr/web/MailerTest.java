@@ -6,7 +6,7 @@ import org.apache.commons.mail.EmailException;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.unigoettingen.sub.ocr.controller.OcrParameters;
+import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import static org.mockito.Mockito.*;
 
 public class MailerTest {

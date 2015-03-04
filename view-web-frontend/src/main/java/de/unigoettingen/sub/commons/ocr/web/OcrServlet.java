@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import de.unigoettingen.sub.ocr.controller.OcrParameters;
+import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 
 public class OcrServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;

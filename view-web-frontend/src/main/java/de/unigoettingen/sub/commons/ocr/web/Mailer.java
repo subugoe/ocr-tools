@@ -6,7 +6,7 @@ import org.apache.commons.mail.SimpleEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.ocr.controller.OcrParameters;
+import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 
 public class Mailer {
 	final static Logger log = LoggerFactory.getLogger(Mailer.class);
