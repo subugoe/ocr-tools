@@ -6,7 +6,6 @@ import java.util.Date;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
-import de.unigoettingen.sub.commons.ocr.util.Mailer;
 import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.Validator;
@@ -15,15 +14,11 @@ import de.unigoettingen.sub.ocr.controller.ValidatorGerman;
 public class OcrStarter implements Runnable {
 	
 	private OcrParameters params;
-	private Mailer mailer = new Mailer();
 	private LogSelector logSelector = new LogSelector();
 	private Validator paramsValidator = new ValidatorGerman();
 	private OcrEngineStarter engineStarter = new OcrEngineStarter();
 
 	// for unit tests
-	void setMailer(Mailer newMailer) {
-		mailer = newMailer;
-	}
 	void setLogSelector(LogSelector newSelector) {
 		logSelector = newSelector;
 	}
@@ -67,13 +62,9 @@ public class OcrStarter implements Runnable {
 		String timeStamp = f.format(new Date()).replaceAll(" ", "-").replaceAll(":", ".");
 		String logFile = new File(new File(params.outputFolder), "log-" + timeStamp + ".txt").getAbsolutePath();
 		logSelector.logToFile(logFile);
-		
-		int estimatedDuration = engineStarter.getEstimatedDurationInSeconds();
-		mailer.sendStarted(params, estimatedDuration);
-		
+				
 		engineStarter.startOcrWithParams(params);
 		
-		mailer.sendFinished(params);	
 		logSelector.useDefaults();
 	}
 

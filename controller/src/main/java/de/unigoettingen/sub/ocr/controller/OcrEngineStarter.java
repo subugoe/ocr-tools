@@ -12,6 +12,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
 import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
+import de.unigoettingen.sub.commons.ocr.util.Mailer;
 import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 
 public class OcrEngineStarter {
@@ -57,13 +58,20 @@ public class OcrEngineStarter {
 			process.setQuality(OcrQuality.BEST);
 			engine.addOcrProcess(process);
 		}
+		
+		Mailer mailer = null;
+		String mailAddress = params.props.getProperty("email");
+		if (mailAddress != null) {
+			int estimatedExecTime = engine.getEstimatedDurationInSeconds();
+			mailer = beanProvider.getMailer();
+			mailer.sendStarted(mailAddress, estimatedExecTime);
+		}
+		
 		engine.recognize();
+		
+		if (mailAddress != null) {
+			mailer.sendFinished(mailAddress, params.outputFolder);
+		}
 	}
 	
-	public int getEstimatedDurationInSeconds() {
-		if (engine == null) {
-			return 0;
-		}
-		return engine.getEstimatedDurationInSeconds();
-	}
 }

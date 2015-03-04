@@ -6,14 +6,12 @@ import org.apache.commons.mail.EmailException;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import static org.mockito.Mockito.*;
 
 public class MailerTest {
 
 	private Email emailMock;
 	private Mailer mailer;
-	private OcrParameters param;
 	
 	@Before
 	public void before() {
@@ -21,32 +19,30 @@ public class MailerTest {
 		mailer = new Mailer();
 		mailer.setEmailStarted(emailMock);
 		mailer.setEmailFinished(emailMock);
-		param = new OcrParameters();
-		param.props.setProperty("email", "test@test.com");
 	}
 	
 	@Test
 	public void ocrStarted() throws EmailException {
-		mailer.sendStarted(param, 1);
+		mailer.sendStarted("test@test.com", 1);
 		
-		verify(emailMock).addTo(param.props.getProperty("email"));
+		verify(emailMock).addTo("test@test.com");
 		verify(emailMock).send();
 	}
 	
 	@Test
 	public void ocrFinished() throws EmailException {
-		mailer.sendFinished(param);
+		mailer.sendFinished("test@test.com", "/tmp");
 		
-		verify(emailMock).addTo(param.props.getProperty("email"));
+		verify(emailMock).addTo("test@test.com");
 		verify(emailMock).send();
 	}
 	
 	@Test
 	public void ocrStartedAndFinished() throws EmailException {
-		mailer.sendStarted(param, 1);
-		mailer.sendFinished(param);
+		mailer.sendStarted("test@test.com", 1);
+		mailer.sendFinished("test@test.com", "/tmp");
 		
-		verify(emailMock, times(2)).addTo(param.props.getProperty("email"));
+		verify(emailMock, times(2)).addTo("test@test.com");
 		verify(emailMock, times(2)).send();
 	}
 }

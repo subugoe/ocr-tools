@@ -14,7 +14,6 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.unigoettingen.sub.commons.ocr.util.Mailer;
 import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.Validator;
@@ -23,7 +22,6 @@ import de.unigoettingen.sub.ocr.controller.Validator;
 public class OcrStarterTest {
 
 	private OcrStarter ocrStarter;
-	private Mailer mailerMock;
 	private LogSelector logSelectorMock;
 	private OcrEngineStarter engineStarterMock;
 	private Validator validatorMock;
@@ -31,13 +29,11 @@ public class OcrStarterTest {
 	@Before
 	public void before() throws Exception {
 		engineStarterMock = mock(OcrEngineStarter.class);
-		mailerMock = mock(Mailer.class);
 		logSelectorMock = mock(LogSelector.class);
 		validatorMock = mock(Validator.class);
 
 		ocrStarter = new OcrStarter();
 		ocrStarter.setOcrEngineStarter(engineStarterMock);
-		ocrStarter.setMailer(mailerMock);
 		ocrStarter.setLogSelector(logSelectorMock);
 		ocrStarter.setValidator(validatorMock);
 		
@@ -89,15 +85,6 @@ public class OcrStarterTest {
 		ocrStarter.setParameters(param);
 		String validation = ocrStarter.checkParameters();
 		assertThat(validation, containsString("Inkorrekte Benachrichtigungsadresse"));
-	}
-
-	@Test
-	public void shouldSendEmail() {
-		OcrParameters param = validParams();
-		ocrStarter.setParameters(param);
-		ocrStarter.run();
-		
-		verify(mailerMock).sendFinished(param);
 	}
 
 	@Test

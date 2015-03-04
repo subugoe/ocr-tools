@@ -6,8 +6,6 @@ import org.apache.commons.mail.SimpleEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
-
 public class Mailer {
 	final static Logger log = LoggerFactory.getLogger(Mailer.class);
 	
@@ -22,14 +20,14 @@ public class Mailer {
 		emailFinished = newEmail;
 	}
 	
-	public void sendStarted(OcrParameters param, int estimatedDuration) {
-		send(emailStarted, param.props.getProperty("email"), "OCR Prozess gestartet", 
+	public void sendStarted(String mailAddress, int estimatedDuration) {
+		send(emailStarted, mailAddress, "OCR Prozess gestartet", 
 				"Voraussichtliche Dauer: " + (estimatedDuration/60) + " Minuten"
 				+ " (" + (estimatedDuration/60/60) + " Stunden)");
 	}
-	public void sendFinished(OcrParameters param) {
-		String message = "Ausgabeordner: " + param.outputFolder;
-		send(emailFinished, param.props.getProperty("email"), "OCR Prozess beendet", message);
+	public void sendFinished(String mailAddress, String outputFolder) {
+		String message = "Ausgabeordner: " + outputFolder;
+		send(emailFinished, mailAddress, "OCR Prozess beendet", message);
 	}
 	
 	private void send(Email email, String toAddress, String subject, String message) {

@@ -1,6 +1,5 @@
 package de.unigoettingen.sub.ocr.controller;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
@@ -14,6 +13,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
+import de.unigoettingen.sub.commons.ocr.util.Mailer;
 import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 
 public class OcrEngineStarterTest {
@@ -25,11 +25,13 @@ public class OcrEngineStarterTest {
 	private FileAccess fileAccessMock = mock(FileAccess.class);
 	private OcrEngine engineMock = mock(OcrEngine.class);
 	private OcrProcess processMock = mock(OcrProcess.class);
+	private Mailer mailerMock = mock(Mailer.class);
 	
 	@Before
 	public void beforeEachTest() throws Exception {
 		when(providerMock.createFactory(anyString(), any(Properties.class))).thenReturn(factoryMock);
 		when(beanProviderMock.getFileAccess()).thenReturn(fileAccessMock);
+		when(beanProviderMock.getMailer()).thenReturn(mailerMock);
 		when(factoryMock.createEngine()).thenReturn(engineMock);
 		when(factoryMock.createProcess()).thenReturn(processMock);
 		
@@ -54,6 +56,19 @@ public class OcrEngineStarterTest {
 		
 		verify(processMock).setName("book1");
 		verify(engineMock).recognize();
+	}
+	
+	@Test
+	public void shouldStartAndSendMails() {
+		prepareOneBookWithOneImage();
+		OcrParameters params = validParams();
+		when(engineMock.getEstimatedDurationInSeconds()).thenReturn(1);
+		
+		starterSut.startOcrWithParams(params);
+		
+		verify(mailerMock).sendStarted("test@test.com", 1);
+		verify(engineMock).recognize();
+		verify(mailerMock).sendFinished("test@test.com", "tmp/output");
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -83,21 +98,6 @@ public class OcrEngineStarterTest {
 		starterSut.startOcrWithParams(params);
 	}
 	
-	@Test
-	public void shouldReturnZeroSeconds() {
-		assertEquals("Job duration", 0, starterSut.getEstimatedDurationInSeconds());
-	}
-
-	@Test
-	public void shouldDelegateDurationRequest() {
-		prepareOneBookWithOneImage();
-		
-		starterSut.startOcrWithParams(validParams());
-		starterSut.getEstimatedDurationInSeconds();
-		
-		verify(engineMock).getEstimatedDurationInSeconds();
-	}
-
 	private void prepareOneBookWithOneImage() {
 		File[] book = new File[]{new File("tmp/book1")};
 		when(fileAccessMock.getAllFolders(anyString(), any(String[].class))).thenReturn(book);
@@ -112,6 +112,7 @@ public class OcrEngineStarterTest {
 		params.outputFormats = new String[]{"pdf", "xml"};
 		params.inputLanguages = new String[]{"de", "en"};
 		params.inputTextType = "normal";
+		params.props.setProperty("email", "test@test.com");
 		return params;
 	}
 
