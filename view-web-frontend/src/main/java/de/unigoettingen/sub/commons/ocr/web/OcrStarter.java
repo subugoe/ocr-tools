@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
+import de.unigoettingen.sub.commons.ocr.util.Mailer;
 import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.Validator;

@@ -1,4 +1,4 @@
-package de.unigoettingen.sub.commons.ocr.web;
+package de.unigoettingen.sub.commons.ocr.util;
 
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;

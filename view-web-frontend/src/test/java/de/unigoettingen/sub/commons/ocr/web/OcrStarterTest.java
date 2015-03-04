@@ -14,6 +14,7 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.unigoettingen.sub.commons.ocr.util.Mailer;
 import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
 import de.unigoettingen.sub.ocr.controller.Validator;
