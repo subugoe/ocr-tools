@@ -34,8 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
-import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 /**
  * IMPACT Abbyy Fine Reader 8.0 Service. This service provides the basic

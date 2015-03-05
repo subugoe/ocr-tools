@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
-import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 
 public class ValidatorTest {
 

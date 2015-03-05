@@ -32,8 +32,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.Validator;
 
 public class Main {

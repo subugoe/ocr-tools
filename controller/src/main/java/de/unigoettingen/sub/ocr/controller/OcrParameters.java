@@ -1,4 +1,4 @@
-package de.unigoettingen.sub.commons.ocr.util;
+package de.unigoettingen.sub.ocr.controller;
 
 import java.util.Properties;
 

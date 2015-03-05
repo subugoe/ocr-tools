@@ -13,7 +13,6 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrFactory;
 import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.Mailer;
-import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 
 public class OcrEngineStarter {
 

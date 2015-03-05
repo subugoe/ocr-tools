@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
-import de.unigoettingen.sub.commons.ocr.util.OcrParameters;
 import de.unigoettingen.sub.ocr.controller.OcrEngineStarter;
+import de.unigoettingen.sub.ocr.controller.OcrParameters;
 
 public class SimpleOcrServlet extends HttpServlet {
 	
