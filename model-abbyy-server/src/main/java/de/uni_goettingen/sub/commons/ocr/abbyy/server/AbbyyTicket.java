@@ -134,7 +134,7 @@ public class AbbyyTicket {
 		ocrProcess = initProcess;
 	}
 
-	public synchronized void write(final OutputStream out) throws IOException {
+	public void write(final OutputStream out) throws IOException {
 
 		if (out == null) {
 			logger.error("OutputStream is not set! (" + ocrProcess.getName() + ")");

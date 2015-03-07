@@ -18,7 +18,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server;
 
  */
 
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Queue;

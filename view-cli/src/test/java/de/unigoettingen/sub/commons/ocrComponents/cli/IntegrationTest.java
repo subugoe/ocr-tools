@@ -1,7 +1,6 @@
 package de.unigoettingen.sub.commons.ocrComponents.cli;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -92,7 +91,6 @@ public class IntegrationTest {
 		
 		main.execute(validOptions());
 		
-		// TODO: 1 time
 		verify(hotfolderMock, times(2)).configureConnection("http://localhost:9001/", "me", "pass");;
 	}
 
@@ -105,11 +103,10 @@ public class IntegrationTest {
 		
 		String outString = new String(baos.toByteArray());
 		assertThat(outString, containsString("Finished OCR."));
-		verify(hotfolderMock, atLeastOnce()).download(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
+		verify(hotfolderMock).download(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
 	}
 	
-	// TODO: works in production, but not in test
-	//@Test
+	@Test
 	public void shouldCompleteSuccessfullyWithMultiuser() throws IOException, URISyntaxException {
 		prepareFileAccessMockForSuccess();
 		prepareHotfolderMockForSuccess();
@@ -119,8 +116,8 @@ public class IntegrationTest {
 		main.execute(opts);
 		
 		String outString = new String(baos.toByteArray());
-		assertThat(outString, isEmptyString());
-		verify(hotfolderMock, atLeastOnce()).download(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
+		assertThat(outString, containsString("Finished OCR"));
+		verify(hotfolderMock).download(new URI("http://localhost:9001/output/in.xml"), new File("/tmp/out/in.xml").toURI());
 	}
 
 	private void prepareFileAccessMockForSuccess() {

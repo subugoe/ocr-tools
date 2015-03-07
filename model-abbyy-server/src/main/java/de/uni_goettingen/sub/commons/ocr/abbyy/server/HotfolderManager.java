@@ -82,13 +82,11 @@ public class HotfolderManager {
 	public void createAndSendTicket(AbbyyTicket abbyyTicket, String name) throws IOException, URISyntaxException {
 		String ticketFileName = name + ".xml";
 		URI inputTicketUri = abbyyTicket.getRemoteInputUri();
-		
-		synchronized (monitor) {
-			OutputStream os = hotfolder.createTmpFile(ticketFileName);
-			abbyyTicket.write(os);
-			if (os != null)
-				os.close();
-		}
+	
+		OutputStream os = hotfolder.createTmpFile(ticketFileName);
+		abbyyTicket.write(os);
+		if (os != null)
+			os.close();
 		
 		//TODO: remove
 //		URI ticketLogPath = new java.io.File("/home/dennis/temp/tickets/" + ticketFileName).toURI();
