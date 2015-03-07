@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.merge.Merger;
 import de.unigoettingen.sub.commons.ocr.util.merge.MergerProvider;
@@ -25,6 +26,7 @@ public class ProcessMergingObserverTest {
 	private MergerProvider mergerProviderMock = mock(MergerProvider.class);
 	private Merger mergerMock = mock(Merger.class);
 	private FileAccess fileAccessMock = mock(FileAccess.class);
+	private BeanProvider providerMock = mock(BeanProvider.class);
 	private AbbyyProcess parentProcessMock = mock(AbbyyProcess.class);
 	private AbbyyProcess subProcessMock1 = mock(AbbyyProcess.class);
 	private AbbyyProcess subProcessMock2 = mock(AbbyyProcess.class);
@@ -35,7 +37,8 @@ public class ProcessMergingObserverTest {
 
 		when(mergerProviderMock.createMerger(any(OcrFormat.class))).thenReturn(mergerMock);
 		observerSut.setMergerProvider(mergerProviderMock);
-		observerSut.setFileAccess(fileAccessMock);
+		observerSut.setBeanProvider(providerMock);
+		when(providerMock.getFileAccess()).thenReturn(fileAccessMock);
 		observerSut.setParentProcess(parentProcessMock);
 		observerSut.addSubProcess(subProcessMock1);
 		observerSut.addSubProcess(subProcessMock2);

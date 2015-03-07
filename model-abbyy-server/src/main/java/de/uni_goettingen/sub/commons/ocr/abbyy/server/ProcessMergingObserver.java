@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;
+import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.merge.Merger;
 import de.unigoettingen.sub.commons.ocr.util.merge.MergerProvider;
@@ -21,14 +22,15 @@ public class ProcessMergingObserver {
 	private AbbyyProcess parentProcess;
 	private List<AbbyyProcess> subProcesses = new ArrayList<AbbyyProcess>();
 	private MergerProvider mergerProvider = new MergerProvider();
-	private FileAccess fileAccess = new FileAccess();
-	
+	private BeanProvider beanProvider = new BeanProvider();
+	private FileAccess fileAccess;
+
 	// for unit tests
+	void setBeanProvider(BeanProvider newProvider) {
+		beanProvider = newProvider;
+	}
 	void setMergerProvider(MergerProvider newProvider) {
 		mergerProvider = newProvider;
-	}
-	void setFileAccess(FileAccess newAccess) {
-		fileAccess = newAccess;
 	}
 
 	public void setParentProcess(AbbyyProcess process) {
@@ -55,6 +57,7 @@ public class ProcessMergingObserver {
 					throw new IllegalStateException("Subprocess failed: " + sub.getName());
 				}
 			}
+			fileAccess = beanProvider.getFileAccess();
 			mergeAllFormats();				 
 	}
 
