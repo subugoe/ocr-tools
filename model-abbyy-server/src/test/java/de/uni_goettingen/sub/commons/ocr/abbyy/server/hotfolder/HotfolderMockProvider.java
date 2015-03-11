@@ -1,4 +1,4 @@
-package de.unigoettingen.sub.commons.ocrComponents.cli.testutil;
+package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 
 import java.io.IOException;
 import java.net.URI;

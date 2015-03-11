@@ -62,20 +62,20 @@ public class AbbyyTicket {
 	 * A Map containing predefined fragments (read settings) for different
 	 * formats
 	 */
-	private final static Map<OcrFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
+	private final Map<OcrFormat, OutputFileFormatSettings> FORMAT_FRAGMENTS;
 	
 	private static String encoding = "UTF8";
 
 	private Long processTimeout = null;
 
-	private static XmlOptions opts = new XmlOptions();
+	private XmlOptions opts = new XmlOptions();
 	private AbbyyProcess ocrProcess;
 
 	private URI remoteInputFolder;
 
 	private URI remoteErrorFolder;
 
-	static {
+	{
 
 		opts.setSavePrettyPrint();
 		Map<String, String> namespaces = new HashMap<String, String>();

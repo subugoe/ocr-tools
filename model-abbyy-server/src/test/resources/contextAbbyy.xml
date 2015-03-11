@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<bean id="hotfolderImplementation"
-		class="de.unigoettingen.sub.commons.ocrComponents.cli.testutil.HotfolderMockProvider" factory-method="getMock">
+		class="de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderMockProvider" factory-method="getMock">
 	</bean>
 
 </beans>
