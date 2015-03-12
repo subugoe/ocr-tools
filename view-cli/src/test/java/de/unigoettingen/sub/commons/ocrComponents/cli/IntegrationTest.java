@@ -24,7 +24,7 @@ import org.junit.Test;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.HotfolderMockProvider;
 import de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ServerHotfolder;
 import de.unigoettingen.sub.commons.ocr.util.FileAccess;
-import de.unigoettingen.sub.commons.ocrComponents.cli.testutil.FileAccessMockProvider;
+import de.unigoettingen.sub.commons.ocr.util.FileAccessMockProvider;
 
 public class IntegrationTest {
 
