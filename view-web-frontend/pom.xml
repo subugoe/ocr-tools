@@ -15,6 +15,20 @@
 	</properties>
 	<dependencies>
             
+        <dependency>
+            <groupId>de.uni-goettingen.sub</groupId>
+            <artifactId>ocrutil</artifactId>
+            <version>0.9-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+       <dependency>
+            <groupId>de.uni-goettingen.sub</groupId>
+            <artifactId>model-abbyy-server</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 	    <dependency>
             <groupId>de.uni-goettingen.sub</groupId>
             <artifactId>model-abbyy-server</artifactId>
