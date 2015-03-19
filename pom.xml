@@ -22,6 +22,15 @@
         <module>controller</module>
     </modules>
     
+    <profiles>
+    	<profile>
+    		<id>includeSystemTests</id>
+    		<modules>
+		        <module>system-tests</module>
+    		</modules>
+    	</profile>
+    </profiles>
+    
     <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
