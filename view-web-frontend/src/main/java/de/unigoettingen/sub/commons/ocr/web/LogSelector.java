@@ -3,10 +3,9 @@ package de.unigoettingen.sub.commons.ocr.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
 import org.apache.log4j.LogManager;
+import org.apache.log4j.MDC;
 import org.apache.log4j.PropertyConfigurator;
-import org.slf4j.MDC;
 
 public class LogSelector {
 
@@ -43,7 +42,7 @@ public class LogSelector {
 	}
 
 	public void useDefaults() {
-		MDC.remove("logFile");
+		MDC.clear();
 		LogManager.resetConfiguration();
 		PropertyConfigurator.configure(readDefaults());
 	}
