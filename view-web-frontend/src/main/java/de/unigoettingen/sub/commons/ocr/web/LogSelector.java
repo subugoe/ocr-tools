@@ -6,18 +6,26 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.MDC;
 
 public class LogSelector {
 
 	public void logToFile(String filePath) {
+		MDC.put("logFile", filePath);
 		Properties props = readDefaults();
-		props.setProperty("log4j.rootLogger", "INFO , file");
-		props.setProperty("log4j.logger.httpclient.wire", "ERROR, file");
-		props.setProperty("log4j.logger.org.apache.commons.httpclient", "WARN, file");
+		props.setProperty("log4j.rootLogger", "INFO, file, CONSOLE");
+
+		props.setProperty("log4j.logger.httpclient.wire", "ERROR");
+		props.setProperty("log4j.logger.org.apache.commons.httpclient", "WARN");
+
 		props.setProperty("log4j.appender.file", "org.apache.log4j.FileAppender");
 		props.setProperty("log4j.appender.file.File", filePath);
 		props.setProperty("log4j.appender.file.layout", "org.apache.log4j.PatternLayout");
-		props.setProperty("log4j.appender.file.layout.ConversionPattern", "%-5p %t %d %C.%M(%F:%L)%n        %m%n");
+		props.setProperty("log4j.appender.file.layout.ConversionPattern", "%-5p %d %l%n        %m%n");
+
+		props.setProperty("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
+		props.setProperty("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.CONSOLE.layout.ConversionPattern", "%-5p %m %d %l  (%X{logFile})%n");
 		LogManager.resetConfiguration();
 		PropertyConfigurator.configure(props);
 	}
@@ -35,6 +43,7 @@ public class LogSelector {
 	}
 
 	public void useDefaults() {
+		MDC.remove("logFile");
 		LogManager.resetConfiguration();
 		PropertyConfigurator.configure(readDefaults());
 	}
