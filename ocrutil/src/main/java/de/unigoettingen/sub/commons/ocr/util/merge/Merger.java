@@ -8,16 +8,16 @@ import java.util.List;
 
 public abstract class Merger {
 
-	public void merge(List<InputStream> inputs, OutputStream output) throws IOException {
+	public void mergeBuffered(List<InputStream> inputs, OutputStream output) throws IOException {
 		BufferedOutputStream bufferedOutput = new BufferedOutputStream(output, 8*1024);
 		try {
-			mergeBuffered(inputs, bufferedOutput);
+			merge(inputs, bufferedOutput);
 		} finally {
 			bufferedOutput.flush();
 			bufferedOutput.close();
 		}
 	}
 	
-	protected abstract void mergeBuffered(List<InputStream> inputs, OutputStream output);
+	protected abstract void merge(List<InputStream> inputs, OutputStream output);
 	
 }

@@ -21,7 +21,7 @@ import org.w3c.tidy.Tidy;
 public class HocrMerger extends Merger {
 
 	@Override
-	public void mergeBuffered(List<InputStream> inputs, OutputStream output) {
+	public void merge(List<InputStream> inputs, OutputStream output) {
 		try {
 			int fileCounter = 1;
 

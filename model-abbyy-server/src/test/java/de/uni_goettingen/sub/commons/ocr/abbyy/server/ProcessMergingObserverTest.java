@@ -86,7 +86,7 @@ public class ProcessMergingObserverTest {
 		
 		observerSut.update(subProcessMock2);
 		
-		verify(mergerMock).merge(any(List.class), any(OutputStream.class));
+		verify(mergerMock).mergeBuffered(any(List.class), any(OutputStream.class));
 		verify(fileAccessMock).deleteFile(new File("/part1.txt"));
 		verify(fileAccessMock).deleteFile(new File("/part2.txt"));
 	}

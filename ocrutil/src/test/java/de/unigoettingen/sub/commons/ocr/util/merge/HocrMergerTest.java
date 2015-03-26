@@ -54,7 +54,7 @@ public class HocrMergerTest {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 
 		Merger mergerSut = new HocrMerger();
-		mergerSut.merge(inputs, output);	
+		mergerSut.mergeBuffered(inputs, output);	
 		String result = output.toString();
 
 		assertXpathEvaluatesTo("2", "count(//*[local-name()='div' and @class='ocr_page'])", result);

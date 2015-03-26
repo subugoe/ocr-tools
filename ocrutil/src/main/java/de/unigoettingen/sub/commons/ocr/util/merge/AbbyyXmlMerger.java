@@ -20,7 +20,7 @@ import javax.xml.stream.XMLStreamWriter;
 public class AbbyyXmlMerger extends Merger {
 
 	@Override
-	public void mergeBuffered(List<InputStream> inputs, OutputStream output) {
+	public void merge(List<InputStream> inputs, OutputStream output) {
 		BufferedOutputStream bufferedOutput = new BufferedOutputStream(output, 8*1024);
 		try {
 			Set<String> ignoredElements = new HashSet<String>();

@@ -56,7 +56,7 @@ public class AbbyyXmlMergerTest {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		
 		Merger mergerSut = new AbbyyXmlMerger();
-		mergerSut.merge(inputs, output);	
+		mergerSut.mergeBuffered(inputs, output);	
 		String result = output.toString();
 		
 		assertXpathEvaluatesTo("2", "count(//page)", result);

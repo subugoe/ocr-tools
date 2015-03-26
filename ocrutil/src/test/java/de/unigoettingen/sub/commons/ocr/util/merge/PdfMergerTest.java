@@ -25,7 +25,7 @@ public class PdfMergerTest {
 		PdfMerger mergerSut = new PdfMerger();
 		List<InputStream> inputs = Arrays.asList(new InputStream[]{createPdf("test1"), createPdf("test2")});
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		mergerSut.merge(inputs, output);
+		mergerSut.mergeBuffered(inputs, output);
 		
 		String result = readFromPdf(output);
 

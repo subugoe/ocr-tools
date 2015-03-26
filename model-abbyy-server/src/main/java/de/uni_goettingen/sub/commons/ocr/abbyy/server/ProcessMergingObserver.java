@@ -80,7 +80,7 @@ public class ProcessMergingObserver {
 					File mergedFile = new File(parentProcess.getOutputUriForFormat(format));
 					mergedStream = fileAccess.outputStreamForFile(mergedFile);
 					logger.debug("Trying to merge into " + mergedFile + " (" + parentProcess.getName() + ")");
-					merger.merge(streamsToMerge, mergedStream);
+					merger.mergeBuffered(streamsToMerge, mergedStream);
 					logger.debug(mergedFile + " merged successfully (" + parentProcess.getName() + ")");
 					
 					removeSubProcessResults(filesToMerge);

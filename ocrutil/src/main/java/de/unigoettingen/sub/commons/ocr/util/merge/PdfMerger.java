@@ -18,7 +18,7 @@ public class PdfMerger extends Merger {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void mergeBuffered(List<InputStream> inputs, OutputStream output) {
+	public void merge(List<InputStream> inputs, OutputStream output) {
 		try {
 			// Stolen from itext (com.lowagie.tools.concat_pdf)
 
