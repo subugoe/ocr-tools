@@ -13,10 +13,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-public class ResultXmlMerger implements Merger {
+public class ResultXmlMerger extends Merger {
 
 	@Override
-	public void merge(List<InputStream> inputs, OutputStream output) {
+	public void mergeBuffered(List<InputStream> inputs, OutputStream output) {
 		try {
 			Integer pageCount = inputs.size();
 			// Output

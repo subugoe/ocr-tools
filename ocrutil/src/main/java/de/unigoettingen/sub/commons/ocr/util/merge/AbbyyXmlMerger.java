@@ -1,5 +1,7 @@
 package de.unigoettingen.sub.commons.ocr.util.merge;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -15,10 +17,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-public class AbbyyXmlMerger implements Merger {
+public class AbbyyXmlMerger extends Merger {
 
 	@Override
-	public void merge(List<InputStream> inputs, OutputStream output) {
+	public void mergeBuffered(List<InputStream> inputs, OutputStream output) {
+		BufferedOutputStream bufferedOutput = new BufferedOutputStream(output, 8*1024);
 		try {
 			Set<String> ignoredElements = new HashSet<String>();
 			ignoredElements.add("documentData");
@@ -33,7 +36,7 @@ public class AbbyyXmlMerger implements Merger {
 			Integer pageCount = inputs.size();
 			XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
 	
-			XMLStreamWriter writer = outFactory.createXMLStreamWriter(output, "UTF-8");
+			XMLStreamWriter writer = outFactory.createXMLStreamWriter(bufferedOutput, "UTF-8");
 	
 			Integer f = 0;
 			HashMap<String, String> nsPrefixes = new HashMap<String, String>();
@@ -148,6 +151,13 @@ public class AbbyyXmlMerger implements Merger {
 			writer.close();
 		} catch(XMLStreamException e) {
 			throw new IllegalStateException("Error while merging files.", e);
+		} finally {
+			try {
+				bufferedOutput.flush();
+				bufferedOutput.close();
+			} catch (IOException e) {
+				System.out.println("Error while merging files");
+			}
 		}
 	}
 

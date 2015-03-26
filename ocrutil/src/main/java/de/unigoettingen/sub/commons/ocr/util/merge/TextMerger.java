@@ -8,10 +8,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
-public class TextMerger implements Merger {
+public class TextMerger extends Merger {
 
 	@Override
-	public void merge(List<InputStream> inputs, OutputStream output) {
+	public void mergeBuffered(List<InputStream> inputs, OutputStream output) {
 		try {
 			OutputStreamWriter osw = new OutputStreamWriter(output, "UTF-8");
 			// Ascii page break dec 12, hex 0c

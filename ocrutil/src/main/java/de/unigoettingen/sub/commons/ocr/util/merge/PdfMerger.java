@@ -14,11 +14,11 @@ import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.SimpleBookmark;
 
-public class PdfMerger implements Merger {
+public class PdfMerger extends Merger {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void merge(List<InputStream> inputs, OutputStream output) {
+	public void mergeBuffered(List<InputStream> inputs, OutputStream output) {
 		try {
 			// Stolen from itext (com.lowagie.tools.concat_pdf)
 
