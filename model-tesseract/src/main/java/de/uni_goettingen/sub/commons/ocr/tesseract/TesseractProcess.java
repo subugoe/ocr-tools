@@ -29,14 +29,14 @@ import de.unigoettingen.sub.commons.ocr.util.FileMerger;
 /**
  * Represents an OCR job with several images.
  */
-public class TesseractOCRProcess extends AbstractProcess implements
+public class TesseractProcess extends AbstractProcess implements
 		OcrProcess {
 
 	private static final long serialVersionUID = 4819408808755150623L;
 
 	/** The logger. */
 	protected static Logger logger = LoggerFactory
-			.getLogger(TesseractOCRProcess.class);
+			.getLogger(TesseractProcess.class);
 
 	/**
 	 * The temp files which are generated for each run of tesseract. Are merged
@@ -76,7 +76,7 @@ public class TesseractOCRProcess extends AbstractProcess implements
 	/**
 	 * Instantiates a new tesseract ocr process.
 	 */
-	public TesseractOCRProcess() {
+	public TesseractProcess() {
 		super();
 	}
 

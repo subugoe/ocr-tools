@@ -8,7 +8,7 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 /**
  * Implementation of the engine that uses the tesseract cli tool
  */
-public class TesseractOCREngine extends AbstractEngine implements OcrEngine {
+public class TesseractEngine extends AbstractEngine implements OcrEngine {
 
 
 	/* (non-Javadoc)
@@ -26,7 +26,7 @@ public class TesseractOCREngine extends AbstractEngine implements OcrEngine {
 	public void recognize() {
 
 		for (OcrProcess process : ocrProcesses) {
-			((TesseractOCRProcess) process).start();
+			((TesseractProcess) process).start();
 		}
 
 	}

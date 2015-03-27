@@ -9,12 +9,12 @@ public class TesseractFactory implements OcrFactory {
 
 	@Override
 	public OcrEngine createEngine() {
-		return new TesseractOCREngine();
+		return new TesseractEngine();
 	}
 
 	@Override
 	public OcrProcess createProcess() {
-		return new TesseractOCRProcess();
+		return new TesseractProcess();
 	}
 
 }
