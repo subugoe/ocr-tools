@@ -112,7 +112,7 @@ public class HocrMerger extends Merger {
 													.startsWith("xword_"))) {
 										String[] parts = value.split("_");
 										value = parts[0] + "_" + fileCounter + "_"
-												+ parts[2];
+												+ (parts.length==3?parts[2]:parts[1]);
 
 									}
 									if (parser.getAttributeNamespace(i) != null) {
