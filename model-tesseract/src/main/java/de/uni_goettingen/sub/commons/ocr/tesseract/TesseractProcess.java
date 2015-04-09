@@ -82,6 +82,9 @@ public class TesseractProcess extends AbstractProcess implements
 	void setBeanProvider(BeanProvider newBeanProvider) {
 		beanProvider = newBeanProvider;
 	}
+	Tesseract createTesseract(File image, File output) {
+		return new Tesseract(image, output);
+	}
 
 	@Override
 	public void addImage(URI localUri) {
@@ -110,19 +113,17 @@ public class TesseractProcess extends AbstractProcess implements
 		List<InputStream> inputsToMerge = new ArrayList<InputStream>();
 				
 		for (OcrOutput output : ocrOutputs) {
+			// eg TXT
+			OcrFormat format = output.getFormat();
 
 			try {
-
-				// eg TXT
-				OcrFormat format = output.getFormat();
 
 				// to have a different file name for each OCRed text
 				int i = 1;
 
 				for (OcrImage image : ocrImages) {
 					File imageFile = new File(image.getLocalUri());
-					File tempOutput = new File(output.getLocalUri().getPath()
-							+ i);
+					File tempOutput = new File(output.getLocalUri().getPath() + i);
 					i++;
 
 					executeTesseract(imageFile, format, tempOutput);
@@ -141,8 +142,7 @@ public class TesseractProcess extends AbstractProcess implements
 
 				File localOutput = new File(output.getLocalUri().getPath());
 
-				OutputStream mergedOutput = null;
-				mergedOutput = fileAccess.outputStreamForFile(localOutput);
+				OutputStream mergedOutput = fileAccess.outputStreamForFile(localOutput);
 				
 				Merger merger = mergerProvider.createMerger(format);
 				merger.mergeBuffered(inputsToMerge, mergedOutput);
@@ -152,8 +152,7 @@ public class TesseractProcess extends AbstractProcess implements
 					fileAccess.deleteFile(file);
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Could not finish the process for format '" + format + "'.", e);
 			}
 		}
 	}
@@ -166,7 +165,7 @@ public class TesseractProcess extends AbstractProcess implements
 			fileAccess.makeDirs(parentDir);
 		}
 		
-		Tesseract tesseract = new Tesseract(image, output);
+		Tesseract tesseract = createTesseract(image, output);
 		tesseract.setFormat(formats.get(format));
 
 		// tesseract only takes one language

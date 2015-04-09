@@ -38,6 +38,8 @@ public class Tesseract {
 	 */
 	private String language = "deu";
 
+	private boolean isGothic = false;
+
 	public Tesseract(File inputImage, File outputBase) {
 		this.inputImage = inputImage;
 		this.outputBase = outputBase;
@@ -62,7 +64,6 @@ public class Tesseract {
 		this.isGothic = isGothic;
 	}
 
-	private boolean isGothic = false;
 
 	/**
 	 * Starts tesseract on the command line using the parameter fields
