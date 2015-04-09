@@ -1,9 +1,6 @@
 package de.uni_goettingen.sub.commons.ocr.tesseract;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,6 +22,8 @@ import de.uni_goettingen.sub.commons.ocr.api.OcrImage;
 import de.uni_goettingen.sub.commons.ocr.api.OcrOutput;
 import de.uni_goettingen.sub.commons.ocr.api.OcrProcess;
 import de.uni_goettingen.sub.commons.ocr.api.OcrTextType;
+import de.unigoettingen.sub.commons.ocr.util.BeanProvider;
+import de.unigoettingen.sub.commons.ocr.util.FileAccess;
 import de.unigoettingen.sub.commons.ocr.util.merge.Merger;
 import de.unigoettingen.sub.commons.ocr.util.merge.MergerProvider;
 
@@ -62,7 +61,9 @@ public class TesseractProcess extends AbstractProcess implements
 	private static Map<OcrFormat, String> formats = new HashMap<OcrFormat, String>();
 
 	private MergerProvider mergerProvider = new MergerProvider();
-
+	private BeanProvider beanProvider = new BeanProvider();
+	private FileAccess fileAccess;
+	
 	static {
 		languages.put("de", "deu");
 		languages.put("en", "eng");
@@ -74,16 +75,12 @@ public class TesseractProcess extends AbstractProcess implements
 		formats.put(OcrFormat.HOCR, "hocr");
 	}
 
-	/**
-	 * Instantiates a new tesseract ocr process.
-	 */
-	public TesseractProcess() {
-		super();
-	}
-
 	// for unit tests
 	void setMergerProvider(MergerProvider newProvider) {
 		mergerProvider = newProvider;
+	}
+	void setBeanProvider(BeanProvider newBeanProvider) {
+		beanProvider = newBeanProvider;
 	}
 
 	@Override
@@ -109,68 +106,64 @@ public class TesseractProcess extends AbstractProcess implements
 	 * each image.
 	 */
 	public void start() {
+		fileAccess = beanProvider.getFileAccess();
 		List<InputStream> inputsToMerge = new ArrayList<InputStream>();
 				
 		for (OcrOutput output : ocrOutputs) {
 
-			// eg TXT
-			OcrFormat format = output.getFormat();
+			try {
 
-			// to have a different file name for each OCRed text
-			int i = 1;
+				// eg TXT
+				OcrFormat format = output.getFormat();
 
-			for (OcrImage image : ocrImages) {
-				File imageFile = new File(image.getLocalUri());
-				File tempOutput = new File(output.getLocalUri().getPath() + i);
-				i++;
+				// to have a different file name for each OCRed text
+				int i = 1;
 
-				executeTesseract(imageFile, format, tempOutput);
+				for (OcrImage image : ocrImages) {
+					File imageFile = new File(image.getLocalUri());
+					File tempOutput = new File(output.getLocalUri().getPath()
+							+ i);
+					i++;
 
-				// eg html for HOCR files, is automatically added by tesseract
-				String actualExtension = extensions.get(format);
+					executeTesseract(imageFile, format, tempOutput);
 
-				String actualOutput = tempOutput.getAbsolutePath() + "."
-						+ actualExtension;
-				tempFiles.add(new File(actualOutput));
-				try {
-					inputsToMerge.add(new FileInputStream(new File(actualOutput)));
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// eg html for HOCR files, is automatically added by
+					// tesseract
+					String actualExtension = extensions.get(format);
+
+					String actualOutput = tempOutput.getAbsolutePath() + "."
+							+ actualExtension;
+					tempFiles.add(new File(actualOutput));
+					InputStream is = fileAccess.inputStreamForFile(new File(actualOutput));
+					inputsToMerge.add(is);
+
 				}
 
-			}
+				File localOutput = new File(output.getLocalUri().getPath());
 
-			File localOutput = new File(output.getLocalUri().getPath());
-			
-			OutputStream mergedOutput = null;
-			try {
-				mergedOutput = new FileOutputStream(localOutput);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Merger merger = mergerProvider.createMerger(format);
-			try {
+				OutputStream mergedOutput = null;
+				mergedOutput = fileAccess.outputStreamForFile(localOutput);
+				
+				Merger merger = mergerProvider.createMerger(format);
 				merger.mergeBuffered(inputsToMerge, mergedOutput);
+
+				for (File file : tempFiles) {
+					logger.info("Deleting file " + file.getAbsolutePath());
+					fileAccess.deleteFile(file);
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			for (File file : tempFiles) {
-				logger.info("Deleting file " + file.getAbsolutePath());
-				file.delete();
-			}
 		}
 	}
 
-	private void executeTesseract(File image, OcrFormat format, File output) {
+	private void executeTesseract(File image, OcrFormat format, File output) throws IOException {
 
 		File parentDir = new File(output.getParent());
 		
-		if(!parentDir.exists()) {
-				parentDir.mkdirs();
+		if(!fileAccess.fileExists(parentDir)) {
+			fileAccess.makeDirs(parentDir);
 		}
 		
 		Tesseract tesseract = new Tesseract(image, output);

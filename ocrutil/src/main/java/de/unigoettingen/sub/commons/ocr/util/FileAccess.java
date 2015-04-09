@@ -133,4 +133,11 @@ public class FileAccess {
 		return File.createTempFile(name, null);
 	}
 
+	public void makeDirs(File lastDir) throws IOException {
+		boolean success = lastDir.mkdirs();	
+		if (!success) {
+			throw new IOException("Could not create directory: " + lastDir.getAbsolutePath());
+		}
+	}
+
 }
