@@ -38,12 +38,59 @@ public class TesseractProcessTest {
 		processSpy.setMergerProvider(mergerProviderMock);
 	}
 
-	//@Test
-	public void test() throws Exception {
+	@Test
+	public void shouldAddOneImage() throws Exception {
+		assertEquals("Number of images", 0, processSpy.getNumberOfImages());
+
+		processSpy.addImage(new URI("file:/test.tif"));
+		
+		assertEquals("Number of images", 1, processSpy.getNumberOfImages());
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldRejectRemoteUriForImage() throws Exception {
+		processSpy.addImage(new URI("http://test.com/test.tif"));
+	}
+
+	@Test
+	public void shouldAddOneOutput() throws Exception {
+		assertEquals("Number of outputs", 0, processSpy.getAllOutputFormats().size());
+
+		processSpy.addOutput(OcrFormat.HOCR);
+		
+		assertEquals("Number of outputs", 1, processSpy.getAllOutputFormats().size());
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldRejectUnsupportedFormatForOutput() throws Exception {
+		processSpy.addOutput(OcrFormat.PDF);
+	}
+
+	@Test
+	public void shouldDoNothingWithoutImages() throws Exception {
+		processSpy.addOutput(OcrFormat.HOCR);
+		processSpy.start();
+		
+		verify(tesseractMock, never()).execute();
+	}
+
+	@Test
+	public void shouldDoNothingWithoutOutputs() throws Exception {
+		processSpy.addImage(new URI("file:/test.tif"));
+		processSpy.start();
+		
+		verify(tesseractMock, never()).execute();
+	}
+
+	@Test
+	public void shouldRunTesseract() throws Exception {
+		processSpy.setName("testProcess");
 		processSpy.addImage(new URI("file:/test.tif"));
 		processSpy.addOutput(OcrFormat.TXT);
 		
 		processSpy.start();
+
+		verify(tesseractMock).execute();
 	}
 
 }
