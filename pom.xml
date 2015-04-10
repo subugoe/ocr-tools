@@ -12,7 +12,6 @@
         <module>model-abbyy-server</module>
         <module>view-cli</module>
         <module>model-api</module>
-        <module>model-abbyy-cli</module>
         <module>ocrutil</module>
         <module>view-goobi-servlet</module>
         <module>view-webservice</module>
