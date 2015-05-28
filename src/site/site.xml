@@ -4,8 +4,7 @@
 	 	<menu name="Dokumentation">
 		   <item name="Übersicht" href="overview.html"/>
 		   <item name="Installation" href="installation.html"/>
-                   <item name="Möglicher Verbessetungen und Erweiterungen" href="todo.html"/>
-                </menu>
+        </menu>
 	 	<menu ref="modules"/>
 	 	<menu ref="reports"/>
 	 </body>

@@ -7,56 +7,6 @@ mvn clean package
 +---------------
   
   im Hauptordner <<<ocr-tools>>>.
-
-* Auswahl einer OCR-Implementierung (gilt nur noch für Web Service und Goobi Servlet)
-
-  Ein bestimmtes Frontend kann mit einer OCR-Implementierung bereits beim Kompilieren verdrahtet werden.
-  Dafür dienen die Maven-Profile
-  
-    * <<<abbyy>>>: Ist aktiviert by default, wenn nichts Anderes angegeben wird. Wählt die Abbyy-Implementierung 
-    aus, die kein paralleles Benutzen des Abbyy Servers erlaubt. D. h. wenn beispielsweise eine 
-    Kommandozeilenanwendung (CLI)
-    gestartet ist und den Server benutzt, wird der Zugriff von einer anderen Anwendung oder von einem Web Service 
-    verweigert.
-    
-    * <<<abbyy-multiuser>>>: Wählt die Abbyy-Implementierung, erlaubt aber gleichzeitiges Zugreifen auf den Abbyy-Server
-    von beliebig vielen CLI-Anwendungen und anderen Frontends. So ist z. B. eine dauerhafte OCR-Verarbeitung 
-    und gleichzeitig eine just-in-time Benutzung von einzelnen Bildern durch den Web Service möglich.
-  
-    * <<<tesseract>>>: Wählt die Tesseract-Implementierung aus.
-  
-  Das Profil kann entweder auf das ganze Projekt, oder auf ein bestimmtes Frontend-Modul (Web Service, Goobi Servlet)
-  angewendet werden. Beispiel:
-  
-+----------------------------+
-mvn package -Pabbyy-multiuser
-+----------------------------+
-
-  Um im Nachhinein die Zuordnung zu ändern, muss eine XML-Konfigurationsdatei editiert werden.
-  
-    * <<<WEB-INF/classes/context.xml>>> in der WAR-Datei des Goobi-Servlet-Moduls
-    
-    * <<<WEB-INF/classes/contentWebService.xml>>> in der WAR-Datei des Web Sevice-Moduls
-  
-  Der relevante Ausschnitt sieht z.B. so aus: 
-  
-+----------------+
- 	<bean id="abbyyServerOCREngine" name="abbyyServerOCREngine"
-		class="de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine"
-		factory-method="getInstance">
-	</bean>
-+----------------+
- 
-   Hier muss das <<<class>>>-Attribut entsprechend geändert werden:
-   
-     * "<<<de.uni_goettingen.sub.commons.ocr.abbyy.server.AbbyyServerOCREngine>>>" für die Single-User-Implementierung 
-       für Abbyy (entspricht dem Profil <<<abbyy>>>).
-       
-     * "<<<de.uni_goettingen.sub.commons.ocr.abbyy.server.multiuser.MultiUserAbbyyOCREngine>>>"
-       für die Multi-User-Implementierung (entspricht dem Profil <<<abbyy-multiuser>>>).
-       
-     * "<<<de.uni_goettingen.sub.commons.ocr.tesseract.TesseractOCREngine>>>" für die Tesseract-Implementierung 
-       (entspricht dem Profil <<<tesseract>>>).
  
 * Benutzen
 
@@ -68,6 +18,8 @@ mvn package -Pabbyy-multiuser
     
     * Goobi OCR Servlet
     
+    * Web Frontend
+    
   Das CLI-Tool kann direkt mit 
   
 +---------------------------+
@@ -76,7 +28,7 @@ java -jar cli.jar <options>
 
   ausgeführt werden (siehe Dokumentation im Modul für Details).
   
-  Beim Web Service und beim Servlet entstehen WAR-Dateien, die in einen Webcontainer wie z.B. Tomcat deployt 
+  Beim Web Service, beim Servlet und beim Web Frontend entstehen WAR-Dateien, die in einen Webcontainer wie z.B. Tomcat deployt 
   werden müssen. Für Details siehe Dokumentation in den entsprechenden Modulen.
   
   
@@ -94,7 +46,7 @@ java -jar cli.jar <options>
   {{{http://www.hazelcast.com}Hazelcast}} synchronisiert.
   Genau wie beim Single-User-Betrieb wird hier zunächst eine Lock-Datei angelegt. Wenn weitere Anwendungen
   gestartet werden und sich zum selben Hazelcast-Cluster anbinden, wird die Lock-Datei ignoriert. Sobald alle
-  Prozesse im Cluster durchgelaufen sind, wird das Cluster zerstört und die Lock-Datei wieder gelöscht.
+  Prozesse im Cluster durchgelaufen sind, wird das Cluster aufgelöst und die Lock-Datei wieder gelöscht.
   
   Damit sich weitere Anwendungen an das bestehende Cluster anschließen können, muss Hazelcast richtig konfiguriert 
   sein. 

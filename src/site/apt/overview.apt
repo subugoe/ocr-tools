@@ -1,6 +1,6 @@
 Übersicht
 
-  Dieses Projekt enthält mehrere OCR-Implementierungen (zum Zugriff auf einen Abbyy Recognition Server, Tesseract OCR Engine).
+  Dieses Projekt enthält mehrere OCR-Implementierungen (zum Zugriff auf einen Abbyy Recognition Server, Abbyy SDK Service, Tesseract OCR Engine).
   
   Für den Anwender stehen mehrere Frontend-Schnittstellen zur Verfügung, die beliebig mit den Implementierungen 
-  kombinierbar sind (Kommandozeilen-Tool, Web Service, Servlet) 
+  kombinierbar sind (Kommandozeilen-Tool, Web Service, Servlet, Web Frontend) 
