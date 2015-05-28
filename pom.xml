@@ -8,7 +8,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>abbyy-schemas</module>
         <module>model-abbyy-server</module>
         <module>view-cli</module>
         <module>model-api</module>
