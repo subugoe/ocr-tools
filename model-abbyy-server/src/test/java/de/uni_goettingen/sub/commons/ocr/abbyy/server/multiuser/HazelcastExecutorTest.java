@@ -46,7 +46,7 @@ public class HazelcastExecutorTest {
 	private Answer<Void> withShortPause = new Answer<Void>() {
 		@Override
 		public Void answer(InvocationOnMock invocation) throws Throwable {
-			Thread.sleep(10);
+			Thread.sleep(50);
 			return null;
 		}
 	};
