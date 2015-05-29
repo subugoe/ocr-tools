@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>de.uni-goettingen.sub</groupId>
 		<artifactId>ocr-tools</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>model-ocrsdk</artifactId>
 	<name>model-ocrsdk</name>
@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>model-api</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

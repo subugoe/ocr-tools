@@ -3,13 +3,12 @@
 	<parent>
 		<artifactId>ocr-tools</artifactId>
 		<groupId>de.uni-goettingen.sub</groupId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<groupId>org.goobi</groupId>
 	<artifactId>view-goobi-servlet</artifactId>
-	<version>0.3-SNAPSHOT</version>
 	<name>view-goobi-servlet</name>
 	<packaging>war</packaging>
+
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -21,7 +20,7 @@
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>controller</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>httpunit</groupId>

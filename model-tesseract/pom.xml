@@ -4,11 +4,9 @@
 	<parent>
 		<artifactId>ocr-tools</artifactId>
 		<groupId>de.uni-goettingen.sub</groupId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>model-tesseract</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>model-tesseract</name>
 
 
@@ -16,14 +14,14 @@
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>model-api</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>de.uni-goettingen.sub</groupId>
 			<artifactId>ocrutil</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
