@@ -226,11 +226,11 @@ public class HazelcastExecutorTest {
 	
 	private void shutdownExecutors() throws InterruptedException {
 		executorSutA.shutdown();
-		executorSutA.awaitTermination(50, TimeUnit.MILLISECONDS);
+		executorSutA.awaitTermination(100, TimeUnit.MILLISECONDS);
 		executorSutB.shutdown();
-		executorSutB.awaitTermination(50, TimeUnit.MILLISECONDS);
+		executorSutB.awaitTermination(100, TimeUnit.MILLISECONDS);
 		executorSutC.shutdown();
-		executorSutC.awaitTermination(50, TimeUnit.MILLISECONDS);
+		executorSutC.awaitTermination(100, TimeUnit.MILLISECONDS);
 	}
 
 }
