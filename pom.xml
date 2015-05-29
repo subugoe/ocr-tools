@@ -8,16 +8,16 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>model-abbyy-server</module>
         <module>view-cli</module>
-        <module>model-api</module>
-        <module>ocrutil</module>
-        <module>view-goobi-servlet</module>
-        <module>view-webservice</module>
-        <module>model-tesseract</module>
-        <module>model-ocrsdk</module>
         <module>view-web-frontend</module>
+        <module>view-webservice</module>
+        <module>view-goobi-servlet</module>
+        <module>model-api</module>
+        <module>model-abbyy-server</module>
+        <module>model-ocrsdk</module>
+        <module>model-tesseract</module>
         <module>controller</module>
+        <module>ocrutil</module>
     </modules>
     
     <profiles>
