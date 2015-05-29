@@ -8,6 +8,7 @@
 	<groupId>org.goobi</groupId>
 	<artifactId>view-goobi-servlet</artifactId>
 	<version>0.3-SNAPSHOT</version>
+	<name>view-goobi-servlet</name>
 	<packaging>war</packaging>
 	<dependencies>
 		<dependency>

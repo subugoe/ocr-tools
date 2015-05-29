@@ -6,6 +6,7 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>system-tests</artifactId>
+  <name>system-tests</name>
   <dependencies>
   	<dependency>
   		<groupId>de.uni-goettingen.sub</groupId>

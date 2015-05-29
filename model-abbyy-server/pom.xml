@@ -10,6 +10,7 @@
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>model-abbyy-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>model-abbyy-server</name>
 	<repositories>
 	<!-- 
 		<repository>

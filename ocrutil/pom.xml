@@ -9,6 +9,7 @@
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>ocrutil</artifactId>
 	<version>0.9-SNAPSHOT</version>
+	<name>ocrutil</name>
 	<dependencies>
 
 		<dependency>

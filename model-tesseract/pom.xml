@@ -9,7 +9,7 @@
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>model-tesseract</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-
+	<name>model-tesseract</name>
 
 
 	<dependencies>

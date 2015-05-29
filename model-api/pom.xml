@@ -8,6 +8,7 @@
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>model-api</artifactId>
 	<version>0.9-SNAPSHOT</version>
+	<name>model-api</name>
 	
 	<dependencies>
 		<dependency>
