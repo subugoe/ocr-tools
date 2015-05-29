@@ -10,7 +10,6 @@
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>model-abbyy-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Abbyy Recognition Server implementation</name>
 	<repositories>
 	<!-- 
 		<repository>

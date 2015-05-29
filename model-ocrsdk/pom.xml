@@ -7,7 +7,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>model-ocrsdk</artifactId>
-	<name>Abbyy OCRSDK implementation</name>
 
 	<dependencies>
 		<dependency>

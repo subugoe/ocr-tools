@@ -8,7 +8,6 @@
 	<groupId>de.uni-goettingen.sub</groupId>
 	<artifactId>model-api</artifactId>
 	<version>0.9-SNAPSHOT</version>
-	<name>SUB Commons OCR API</name>
 	
 	<dependencies>
 		<dependency>

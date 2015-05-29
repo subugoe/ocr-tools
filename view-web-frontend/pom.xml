@@ -7,7 +7,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>view-web-frontend</artifactId>
-	<name>OCR Web Frontend</name>
 	<packaging>war</packaging>
 
 	<properties>

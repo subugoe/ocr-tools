@@ -10,7 +10,6 @@
 	<artifactId>view-webservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>ocr-webservice</name>
 	<properties>
 		<cxf.version>2.2.3</cxf.version>
 	</properties>
