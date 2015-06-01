@@ -1,74 +1,74 @@
 Einfaches Starten auf der Kommandozeile
 
-  Syntax:
+  Syntax (mit benötigten Parametern):
   
 +------------------+
-  java -jar cli.jar -l <languages> -f <output_file_format> -t <text_type> -o <output_path> <input_path>
+  java -jar cli.jar -langs <languages> -outformats <output_file_formats> -texttype <text_type> -indir <input_path> -outdir <output_path>
 +------------------+
 
   Beispiel:
   
 +------------------+
-  java -jar cli.jar -l de,en,ru -f TXT -t GOTHIC -o /tmp/myresults /tmp/myimages
+  java -jar cli.jar -langs de,en,ru -outformats txt,pdf -texttype gothic -indir /tmp/myimages -outdir /tmp/myresults
 +------------------+
 
   Parameter:
   
-  * -l <languages>: 
-    eine oder mehrere Sprachen, durch Kommas getrennt. Nach 
+  * -langs <languages>: 
+    eine oder mehrere Sprachen, durch Kommata getrennt. Nach 
     {{{http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt}ISO 369}}
     
-  * -f <output_file_format>: 
+  * -outformats <output_file_formats>: 
     Format für die Ausgabedateien. Mögliche Werte:
     
-    * TXT
+    * txt
     
-    * XML
+    * xml
     
-    * PDF
+    * pdf
     
-    * PDFA
+    * pdfa
     
-    * HTML
+    * html
     
-    * XHTML
+    * xhtml
     
-    * DOC
+    * doc
     
-    * HOCR
+    * hocr
     
-    * METADATA
+    * metadata
     
-  * -t <text_type>:
+  * -texttype <text_type>:
     Typ des zu erkennenden Textes. Mögliche Werte (Für Details siehe OCRProcess.OCRTextTyp):
     
-    * NORMAL
+    * normal
+ 
+    * gothic
     
-    * TYPEWRITER
+    * typewriter
     
-    * MATRIX
+    * matrix
     
-    * OCR_A
+    * ocr_a
     
-    * OCR_B
+    * ocr_b
     
-    * MICR_E13B
-    
-    * GOTHIC
-    
-  * -o <output_path>:
+    * micr_e13b
+        
+  * -indir <input_path>:
+    Verzeichnis mit den Eingabedateien. Alle Unterverzeichnisse werden standardmäßig
+    nach allen Bilddateien durchsucht. Bestimmte Dateitypen können mit -informats <extensions> angegeben werden (s. u.).
+  
+  * -outdir <output_path>:
     Verzeichnis für die Ausgabedateien
     
-  * <input_path>:
-    Verzeichnis mit den Eingabedateien. Alle Unterverzeichnisse werden standardmäßig
-    nach tif-Dateien durchsucht. Ein anderer Dateityp kann mit -e <extension> angegeben werden.
-  
   Weitere optionale Parameter:
   
-  * -h:
+  * -help:
     Hilfe
     
-  * -E <ocr_engine>:
+  * -engine <ocr_engine>:
   
     * abbyy (default)
     
@@ -78,33 +78,31 @@ Einfaches Starten auf der Kommandozeile
     
     * ocrsdk
   
-  * -e <extension>:
-    Dateierweiterung bzw. -typ. Default ist "tif".
+  * -informats <extensions>:
+    Dateierweiterungen bzw. -typen (Default-Werte sind in der Klasse OcrParameters definiert).
   
-  * -p <priority>:
+  * -prio <priority>:
     
-    * HIGH
+    * 2
     
-    * ABOVENORMAL
+    * 1
     
-    * NORMAL
+    * 0 (default)
     
-    * BELOWNORMAL
+    * -1
     
-    * LOW
-    
-  * -s: Einschalten der Dateisegmentierung
-  
-  * -O: weitere Optionen, die direkt an die Implementierung weitergereicht werden. Bei mehreren durch Kommata 
+    * -2
+      
+  * -props: weitere Eigenschaften, die direkt an die Implementierung weitergereicht werden. Bei mehreren durch Kommata 
     getrennt
   
-    * -Olock.overwrite=true: Die Lock-Datei auf dem WebDAV-Server wird ignoriert und notfalls überschrieben
-      (nur für Abbyy Server).
-      
-    * -Ooutput.xml.charcoordinates=false: Keine Ausgabe von Koordinaten für jeden Buchstaben (nur für Abbyy XML).
+    * -props lock.overwrite=true: Die Lock-Datei auf dem WebDAV-Server wird ignoriert und notfalls überschrieben
+      (nur für Abbyy Server, d. h. bei den Werten "abbyy" und "abbyy-multiuser" für "-engine").
+          
+    * -props abbyy.config=<file-in-WEBINF/classes>: Config-Datei, z. B. gbv-antiqua.properties, gbv-fraktur.properties.
     
-    * -Oabbyy.config=<file-in-WEBINF/classes>: Config-Datei, z. B. gbv-antiqua.properties, gbv-fraktur.properties.
+    * -props user=<user>,password=<password>: Benutzerdaten für die gewählte OCR Engine. Überschreibt ggf. die Angaben in der Config-Datei.
     
-    * -Ouser=<user>,password=<password>: Benutzerdaten für die gewählte OCR Engine. Überschreibt ggf. die Angaben in der Config-Datei.
+    * -props books.split=true: Segmentierung; Werke werden in kleinere Teile zerlegt. Die Größe der Teile ist in der Config-Datei angegeben.
     
     

@@ -8,16 +8,16 @@ resources/AbbyyServerOCREngine.properties
 
   Wichtige Felder:
   
-  - serverUrl, username, password: Verbindungsdaten zum WebDAV-Server, auf dem sich die Hotfolder 
+  - serverUrl, user, password: Verbindungsdaten zum WebDAV-Server, auf dem sich die Hotfolder 
     von Abbyy befinden
     
   - inputFolder, outputFolder, errorFolder: Hotfolder die von Abbyy gelesen (input), bzw. beschrieben (output, error) werden
   
-  - maxImagesInSubprocess: maximale Anzahl von Bildern pro Prozess. Gilt nur, wenn  
-     Dateisegmentierung eingeschaltet ist.
+  - maxImagesInSubprocess: maximale Anzahl von Bildern pro Prozess, bzw. pro Teil eines Werkes. Gilt nur, wenn die 
+     Segmentierung von Werken eingeschaltet ist ("books.split").
     
-  - maxParallelProcesses: maximale Anzahl von parallel laufenden Prozessen. Achtung: Bei Dateisegmentierung 
-    könnte bereits ein Prozess alle Slots belegen, wenn er in entsprechend viele Teil-Prozesse segmentiert 
+  - maxParallelProcesses: maximale Anzahl von parallel laufenden Prozessen. Achtung: Bei Segmentierung 
+    könnte bereits ein Prozess/Werk alle Slots belegen, wenn er in entsprechend viele Teil-Prozesse segmentiert 
     wird.
     
     
@@ -33,8 +33,8 @@ resources/contextAbbyy.xml
    
 +----------------+
   Für WebDAV:
-    de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolderImpl
+    de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.JackrabbitHotfolder
     
   Für andere Protokolle(z. B. file, ftp)
-    de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.ApacheVFSHotfolderImpl
+    de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder.VfsHotfolder
 +----------------+

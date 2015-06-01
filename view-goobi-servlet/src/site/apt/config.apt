@@ -2,16 +2,16 @@ Konfiguration
 
   Das Servlet kann in der Datei WEB-INF/web.xml konfiguriert werden (\<param-name\> und \<param-value\> Elemente).
   
-  * <<<defaultLang>>>: Sprache, die standardmäßig angenommen wird. Siehe 
+  * <<<defaultLanguage>>>: Sprache, die standardmäßig angenommen wird. Siehe 
     {{{http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt}ISO 369}}. Kann bei der Ausführung des Sevlets
     überschrieben werden.
     
-  * <<<cacheDir>>>: Verzeichnis, das zum Zwischenspeichern benutzt werden soll.
+  * <<<tempRootDir>>>: Verzeichnis, das zum Zwischenspeichern benutzt werden soll.
   
-  * <<<dirPrefix>>>: Stammverzeichnis der Inputs. Das tatsächliche Unterverzeichnis, in dem sich die 
+  * <<<sourceRootDir>>>: Stammverzeichnis der Inputs. Das tatsächliche Unterverzeichnis, in dem sich die 
     Input-Dateien befinden, muss bei der Ausführung angegeben werden.
     
-  * <<<suffix>>>: Dateiendung für die Zwischenergebnisse.
+  * <<<fileExtension>>>: Dateiendung für die Zwischenergebnisse.
   
   
 Ausführen
@@ -20,10 +20,10 @@ Ausführen
   aufgerufen werden:
   
 +----------+
-http://localhost/GoobiOCRServlet/?path=subdir_with_images&imgrange=1-10&lang=de
+http://localhost/<war-name>/?path=subdir_with_images&imgrange=1-10&lang=de
 +----------+
 
-  * <path> ist ein relativer Pfad, der an <<<dirPrefix>>> aus der Konfiguration angehängt wird.
+  * <path> ist ein relativer Pfad, der an <<<sourceRootDir>>> aus der Konfiguration angehängt wird.
   
   * <imgrange> gibt an, welche Bilder bearbeitet werden sollen. Es kann entweder nur eine Zahl oder 
     ein Zahlenbereich angegeben werden. Das Servlet sucht dann nach Dateien, die nach diesem Muster

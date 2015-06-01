@@ -3,12 +3,8 @@
     <body>
     	<menu ref="parent"/>
         <menu name="Dokumentation">
-            <item name="Öffentliche API" href="interfaces.html"/>
-            <item name="Typisches Beispiel-Szenario" href="sequence.html"/>
-            <item name="Abstrakte Klassen" href="abstract-classes.html"/>
             <item name="Mögliche Verbesserungen und Erweiterungen" href="todo.html"/>
         </menu>
-        <menu ref="modules"/>
         <menu ref="reports"/>
     </body>
 </project>
