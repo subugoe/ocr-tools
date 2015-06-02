@@ -9,31 +9,52 @@
 	</parent>
 	<artifactId>model-abbyy-server</artifactId>
 	<name>model-abbyy-server</name>
+	<dependencies>
+		<dependency>
+			<groupId>de.unigoettingen.sub.commons</groupId>
+			<artifactId>abbyyTicket</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.uni-goettingen.sub</groupId>
+			<artifactId>model-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>de.uni-goettingen.sub</groupId>
+			<artifactId>ocrutil</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-vfs2</artifactId> 
+			<version>2.0</version>
+		</dependency> 
+
+		<dependency>
+			<groupId>stax</groupId>
+			<artifactId>stax-api</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>jackrabbit-webdav</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+		
+	</dependencies>
 	<repositories>
-	<!-- 
-		<repository>
-			<id>milton</id>
-			<name>Ettrema Repository</name>
-			<url>http://www.ettrema.com/maven2/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		 -->
-		<repository>
-			<id>kantega</id>
-			<name>Kantega Repository</name>
-			<url>http://opensource.kantega.no/nexus/content/groups/public/</url>
-		</repository>
-		<repository>
-			<id>sardine-google-svn-repo</id>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<name>Sardine maven repo at Google Code</name>
-			<url>http://sardine.googlecode.com/svn/maven/</url>
-		</repository>
-		<!-- Archive maven -->
+		<!-- for abbyyTicket -->
 		<repository>
 			<id>archiva.internal.http</id>
 			<name>Nexus Internal Repository</name>
@@ -56,145 +77,20 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<!-- ende -->
+        <repository>
+            <id>archiva.releases.http</id>
+            <name>Nexus Releases Repository</name>
+            <url>http://dev.dariah.eu/nexus/content/repositories/bibforge2-releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
 	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>de.unigoettingen.sub.commons</groupId>
-			<artifactId>abbyyTicket</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<!--<dependency>
-			<groupId>de.unigoettingen.sub.commons</groupId>
-			<artifactId>textmd20</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		-->
-		<dependency>
-			<groupId>de.uni-goettingen.sub</groupId>
-			<artifactId>model-api</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>de.uni-goettingen.sub</groupId>
-			<artifactId>ocrutil</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast</artifactId>
-			<version>3.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.7</version>
-			<scope>test</scope>
-		</dependency>
-		 <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-vfs2</artifactId> 
-			<version>2.0</version> </dependency> 
-
-		<!-- for test Webdav -->
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
-			<version>6.1.25</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>it.could</groupId>
-			<artifactId>webdav</artifactId>
-			<version>0.4</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- End -->
-		<!--
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-vfs</artifactId>
-			<version>2.0-SNAPSHOT</version>
-		</dependency>
-		-->
-		<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unigoettingen.sub.commons</groupId>
-			<artifactId>util</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
-		</dependency>
-		<!-- TODO: Enable these if we have a WebDAV test case. <dependency> <groupId>org.apache.jackrabbit</groupId> 
-			<artifactId>jackrabbit-core</artifactId> <version>2.1.1</version> <scope>test</scope> 
-			</dependency> <dependency> <groupId>org.apache.jackrabbit</groupId> <artifactId>jackrabbit-webdav</artifactId> 
-			<version>2.1.1</version> <type>jar</type> <scope>test</scope> </dependency> -->
-		<dependency>
-			<groupId>stax</groupId>
-			<artifactId>stax-api</artifactId>
-			<version>1.0.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
-			<!-- JCR-683: Exclude bad transitive dependencies, check again when upgrading 
-				version -->
-			<exclusions>
-				<exclusion>
-					<groupId>junit</groupId>
-					<artifactId>junit</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>jackrabbit-webdav</artifactId>
-			<version>1.5.2</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.mortbay.jetty</groupId> -->
-		<!-- <artifactId>jetty</artifactId> -->
-		<!-- <version>6.1.24</version> -->
-		<!-- <type>jar</type> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
-		<!--dependency>
-			<groupId>com.ettrema</groupId>
-			<artifactId>milton-servlet</artifactId>
-			<version>1.5.3</version>
-		</dependency-->
-        <dependency>
-			<groupId>com.googlecode.sardine</groupId>
-			<artifactId>sardine</artifactId>
-			<version>129</version>
-		</dependency>
-		
-	</dependencies>
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>false</filtering>
-			</resource>
-		</resources>
 		<plugins>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4.3</version>
-				<configuration>
-					<includeEmptyDirs>true</includeEmptyDirs>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>

@@ -8,14 +8,4 @@
 	<artifactId>model-api</artifactId>
 	<name>model-api</name>
 	
-	<dependencies>
-		<dependency>
-			<groupId>de.unigoettingen.sub.commons</groupId>
-			<artifactId>textmd20</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-	</dependencies>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 </project>
