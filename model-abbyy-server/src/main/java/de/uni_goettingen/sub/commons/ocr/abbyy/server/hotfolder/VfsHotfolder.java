@@ -20,7 +20,6 @@ package de.uni_goettingen.sub.commons.ocr.abbyy.server.hotfolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
@@ -33,7 +32,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
-import org.apache.commons.vfs2.Selectors;
 import org.apache.commons.vfs2.VFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +60,6 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 	// The total file size.
 	protected static Long totalFileSize = 0l;
 	
-	private String serverUrl = null;
 
 	/**
 	 * Instantiates a new apacheVFSHotfolderImpl.
@@ -93,7 +90,7 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 //		FileObject src = fsManager.resolveFile(from.toString());
 //		FileObject dest = fsManager.resolveFile(to.toString());
 //		if (dest.exists()) {
-//			//TODO: There is an error in here.
+//			// There is an error in here.
 //			throw new IOException("Remote file already exists!");
 //		}
 //		//localFile.copyFrom(remoteFile, new AllFileSelector());
@@ -195,12 +192,6 @@ public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Se
 
 	
 	public void configureConnection(String newServerUrl, String newUsername, String newPassword) {
-		//Construct the login part.
-		if (newUsername != null && newPassword != null && newServerUrl.startsWith("https")) {
-			serverUrl = newServerUrl.replace("https://", "webdav://" + newUsername + ":" + newPassword + "@");
-		} else if (newUsername != null && newPassword != null && newServerUrl.startsWith("http")) {
-			serverUrl = newServerUrl.replace("http://", "webdav://" + newUsername + ":" + newPassword + "@");
-		}
 	}
 
 	@Override

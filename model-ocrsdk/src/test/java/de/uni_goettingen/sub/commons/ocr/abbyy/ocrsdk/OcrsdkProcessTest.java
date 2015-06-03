@@ -7,12 +7,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import de.uni_goettingen.sub.commons.ocr.api.OcrFormat;

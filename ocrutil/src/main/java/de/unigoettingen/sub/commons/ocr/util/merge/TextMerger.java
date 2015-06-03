@@ -14,10 +14,8 @@ public class TextMerger extends Merger {
 	public void merge(List<InputStream> inputs, OutputStream output) {
 		try {
 			OutputStreamWriter osw = new OutputStreamWriter(output, "UTF-8");
-			// Ascii page break dec 12, hex 0c
-			char pb = (char) 12;
 			// Use the platform dependent separator here
-			String seperator = System.getProperty("line.separator");
+			String separator = System.getProperty("line.separator");
 
 			int f = 0;
 			while (f < inputs.size()) {
@@ -26,7 +24,7 @@ public class TextMerger extends Merger {
 				String line;
 				while ((line = br.readLine()) != null) {
 					osw.write(line);
-					osw.write(seperator);
+					osw.write(separator);
 				}
 				//osw.write(pb);
 
