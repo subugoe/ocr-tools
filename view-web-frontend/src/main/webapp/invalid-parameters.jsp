@@ -1,22 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Invalid parameters</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="style.css">
+	<title>Invalid parameters</title>
 </head>
 
 <body>
-<br/>
-<br/>
-<h4>Ihre Angaben waren nicht vollständig oder inkorrekt.</h4>
-<h4>Details:</h4> 
-
-<pre>
-${validationMessage}
-</pre>
-
+	<h1>Fehlerhafte Angaben</h1>
+	<p>Ihre Angaben waren fehlerhaft oder unvollständig:</p>
+	<pre>${validationMessage}</pre>
 </body>
 
 </html>
