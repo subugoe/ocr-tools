@@ -98,8 +98,10 @@
 				<input type="text" name="email">
 			</label>
 		</fieldset>
-		<a href="#" class="more-options-toggle -visible">Weitere Optionen anzeigen</a>
-		<a href="#" class="more-options-toggle">Weitere Optionen ausblenden</a>
+		<div class="row">
+			<span class="more-options-toggle -visible">Weitere Optionen anzeigen</span>
+			<span class="more-options-toggle">Weitere Optionen ausblenden</span>
+		</div>
 		<fieldset class="more-options">
 			<label>
 				OCR-Engine

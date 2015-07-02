@@ -13,7 +13,7 @@ for (var i = 0; i < helpButtons.length; i++) {
 		thisPopup = this.nextElementSibling
 		visiblePopup = closePopup()
 		if ( visiblePopup !== thisPopup ) {
-			this.nextElementSibling.toggleClass('-visible')
+			this.parentNode.toggleClass('-show-popup')
 		}
 	})
 }
@@ -30,9 +30,11 @@ forEach( document.querySelectorAll('.more-options-toggle'), function(e) {
 })
 
 function closePopup() {
-	popup = document.querySelector('.help_popup.-visible')
-	if ( popup ) popup.removeClass('-visible')
-	return popup
+	help = document.querySelector('.help.-show-popup')
+	if ( help ) {
+		help.removeClass('-show-popup')
+		return help.querySelector('.help_popup')
+	}
 }
 
 HTMLElement.prototype.addClass = function(className) {
@@ -78,8 +80,10 @@ HTMLElement.prototype.slideToggle = function() {
 	var tween = function() {
 		if ( down ) {
 			height += heightIncrement
+			window.scrollBy(0, heightIncrement);
 		} else {
 			height -= heightIncrement
+			window.scrollBy(0, -heightIncrement);
 		}
 		el.style.height = height + 'px'
 		if ( down ) {
