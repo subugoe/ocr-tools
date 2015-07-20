@@ -1,0 +1,173 @@
+* {
+	border: 0;
+	box-sizing: border-box;
+	color: #444;
+	margin: 0;
+	padding: 0;
+}
+body {
+	font: 16px / 26px sans-serif;
+	margin: 0 auto;
+	overflow-y: scroll;
+	padding: 26px;
+	max-width: 1000px;
+	*zoom: 1;
+}
+body:before,
+body:after {
+	display: table;
+	content: '';
+	line-height: 0;
+}
+@media (max-width: 640px) {
+	body {
+		padding: 13px;
+	}
+}
+body:after {
+	clear: both;
+}
+a {
+	color: #1a3771;
+}
+h1 {
+	color: #1a3771;
+	font-size: 2em;
+	font-weight: normal;
+	margin: 26px 0;
+}
+p {
+	margin: 0 0 26px;
+}
+fieldset {
+	border-bottom: 1px solid #ccc;
+	padding: 13px 0 0;
+}
+legend {
+	float: left;
+	padding: 13px 0;
+}
+label {
+	clear: both;
+	display: block;
+	padding: 13px 0;
+}
+label.inline {
+	display: inline-block;
+	margin-right: 26px;
+}
+[type=text],
+[type=submit],
+select,
+textarea,
+.field-group {
+	border-radius: 3px;
+	float: right;
+	font: inherit;
+	margin: -13px 0  13px;
+	padding: 12px;
+	width: 61.8%;
+}
+@media (max-width: 640px) {
+	[type=text],
+	[type=submit],
+	select,
+	textarea,
+	.field-group {
+		margin: 13px 0;
+		width: 100%;
+	}
+}
+[type=text],
+[type=submit],
+select,
+textarea {
+	border: 1px solid #ccc;
+
+}
+.field-group {
+	margin-bottom: 0;
+}
+[type=submit] {
+	background: #fff;
+	border-color: #1a3771;
+	color: #1a3771;
+	cursor: pointer;
+	margin: 13px 0;
+	width: auto;
+}
+[type=submit]:hover {
+	background: #eee;
+}
+.help {
+	display: inline;
+	position: relative;
+}
+.help_button {
+	background: #eee;
+	border-radius: 3px;
+	cursor: pointer;
+	display: inline-block;
+	font: inherit;
+	font-weight: bold;
+	padding: 0 .5em;
+}
+.help_popup {
+	transition: bottom .5s, opacity .5s, z-index .5s;
+	background: #666;
+	border-radius: 3px;
+	bottom: 78px;
+	box-shadow: 0 0 26px rgba(0, 0, 0, .25);
+	color: #fff;
+	display: block;
+	opacity: 0;
+	padding: 13px;
+	position: absolute;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+	width: 480px;
+	z-index: -1;
+}
+@media (max-width: 640px) {
+	.help_popup {
+		width: 286px;
+	}
+}
+.help.-show-popup .help_popup {
+	bottom: 39px;
+	opacity: 1;
+	z-index: 99;
+}
+.help_button:after {
+	transition: bottom .5s, opacity .5s, z-index .5s;
+	content: '';
+	display: block;
+	border: 13px solid transparent;
+	border-top-color: #666;
+	bottom: 52px;
+	height: 0;
+	opacity: 0;
+	position: absolute;
+	left: 0;
+	width: 0;
+	z-index: -1;
+}
+.help.-show-popup .help_button:after {
+	bottom: 13px;
+	opacity: 1;
+	z-index: 999;
+}
+.more-options-toggle {
+	border-bottom: 1px solid;
+	color: #1a3771;
+	cursor: pointer;
+}
+.more-options,
+.more-options-toggle {
+	display: none;
+}
+.row {
+	margin: 13px 0 0;
+}
+.-visible {
+	display: inline;
+}
