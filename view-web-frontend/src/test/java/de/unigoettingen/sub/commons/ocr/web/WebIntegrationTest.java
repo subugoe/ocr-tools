@@ -64,6 +64,7 @@ public class WebIntegrationTest {
 		MailerMockProvider.mock = mailerMock;
 		
 		WebClient webClient = new WebClient();
+		webClient.getOptions().setThrowExceptionOnScriptError(false);
 		HtmlPage jsp = webClient.getPage("http://localhost:" + jettyPort + "/index.jsp");
 		form = jsp.getFormByName("startOcr");
 	}
@@ -74,7 +75,7 @@ public class WebIntegrationTest {
 		HtmlPage h = button.click();
 		String returnedText = h.getBody().getTextContent();
 		
-		assertThat(returnedText, containsString("nicht vollständig oder inkorrekt"));
+		assertThat(returnedText, containsString("fehlerhaft oder unvollständig"));
 	}
 
 	@Test

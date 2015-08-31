@@ -23,6 +23,7 @@ public class IndexJspTestPart {
 	@Before
 	public void setUp() throws Exception {
 		WebClient webClient = new WebClient();
+		webClient.getOptions().setThrowExceptionOnScriptError(false);
 		HtmlPage jsp = webClient.getPage("http://localhost:" + jettyPort + "/index.jsp");
 		form = jsp.getFormByName("startOcr");
 	}
