@@ -110,6 +110,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		try {			
 			errorResultXmlUri = new URI(errorDavUri.toString() + resultXmlFileName);
 			logger.info("Cleaning Server (" + getName() + ")");
+			hotfolderManager.deleteSingleFile(errorResultXmlUri);
 			hotfolderManager.deleteOutputs(ocrOutputs);
 			hotfolderManager.deleteImages(ocrImages);
 			

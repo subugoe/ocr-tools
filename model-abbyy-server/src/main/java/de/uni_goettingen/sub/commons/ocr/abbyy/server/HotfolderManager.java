@@ -185,5 +185,9 @@ public class HotfolderManager {
 		return errorDescription;
 	}
 
+	public void deleteSingleFile(URI file) throws IOException {
+		hotfolder.deleteIfExists(file);
+	}
+
 	
 }
