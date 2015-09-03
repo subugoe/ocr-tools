@@ -14,11 +14,11 @@
                 <multicast-port>54327</multicast-port>
             </multicast>
             <tcp-ip enabled="true">
-            	<interface>134.76.21.69</interface>
-            	<interface>134.76.163.183</interface>
+            	<interface>127.0.0.1</interface>
 				<!-- add more ip addresses here to participate in this cluster -->
 				
-				<!--hostname>myhost</hostname-->
+				<hostname>gdz-wrk1</hostname>
+				<hostname>gdz-wrk3</hostname>
 				<!-- add more host names here to participate in this cluster -->
 				
             </tcp-ip>
