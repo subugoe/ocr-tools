@@ -49,105 +49,42 @@ public class ByUrlRequestType {
 	public ByUrlRequestType(){
 		
 	}
-	/**
-	 * Gets the input priority type.
-	 * 
-	 * @return the input priority type
-	 */
 	public OcrPriority getOcrPriorityType() {
 		return ocrPriorityType;
 	}
 
-	/**
-	 * Sets the input priority type.
-	 * 
-	 * @param value
-	 *            the new input priority type
-	 */
 	public void setOcrPriorityType(OcrPriority value) {
 		this.ocrPriorityType = value;
 	}
 
-	/**
-	 * Gets the value of the inputTextType property.
-	 * 
-	 * @return possible object is {@link InputTextType }
-	 * 
-	 */
 	public OcrTextType getTextType() {
 		return textType;
 	}
 
-	/**
-	 * Sets the value of the inputTextType property.
-	 * 
-	 * @param textTypes
-	 *            the new text types
-	 */
 	public void setTextType(OcrTextType value) {
 		this.textType = value;
 	}
 
-	/**
-	 * Gets the value of the outputFormat property.
-	 * 
-	 * @return possible object is {@link OutputFormatType }
-	 * 
-	 */
 	public OcrFormat getOutputFormat() {
 		return outputFormat;
 	}
 
-	/**
-	 * Sets the value of the outputFormat property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link OutputFormatType }
-	 * 
-	 */
 	public void setOutputFormat(OcrFormat value) {
 		this.outputFormat = value;
 	}
-
-	/**
-	 * Gets the value of the languages property.
-	 * 
-	 * @return possible object is {@link RecognitionLanguages }
-	 * 
-	 */
 
 	public RecognitionLanguages getOcrlanguages() {
 		return ocrlanguages;
 	}
 
-	/**
-	 * Sets the value of the languages property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link RecognitionLanguages }
-	 * 
-	 */
 	public void setOcrlanguages(RecognitionLanguages ocrlanguages) {
 		this.ocrlanguages = ocrlanguages;
 	}
 
-	/**
-	 * Gets the value of the inputUrl property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
 	public String getInputUrl() {
 		return inputUrl;
 	}
 
-	/**
-	 * Sets the value of the inputUrl property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
 	public void setInputUrl(String value) {
 		this.inputUrl = value;
 	}

@@ -43,7 +43,6 @@ public class OcrsdkClient {
 	
 	/**
 	 * Sends an image to the abbyy ocr service.
-	 * @param imageBytes
 	 */
 	public void submitImage(byte[] imageBytes) {
 		String returnedXml = http.submitPost(submitImageUrl(), imageBytes);
@@ -165,8 +164,6 @@ public class OcrsdkClient {
 	/**
 	 * Retrieves the result document for the specified output format.
 	 * 
-	 * @param format
-	 * @return
 	 */
 	public InputStream getResultForFormat(String format) {
 		int listIndex = formatsToUse.indexOf(format);

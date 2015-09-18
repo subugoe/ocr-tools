@@ -47,7 +47,6 @@ public class Tesseract {
 
 	/**
 	 * tesseract v3 only supports txt and hocr
-	 * @param format
 	 */
 	public void setFormat(String format) {
 		this.format = format;
