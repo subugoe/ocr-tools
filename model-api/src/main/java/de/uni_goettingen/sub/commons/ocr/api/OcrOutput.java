@@ -34,21 +34,8 @@ import java.net.URI;
  */
 public interface OcrOutput {
 
-	/**
-	 * Gets the uri where the results should be stored. If {@link #isResult()}
-	 * is true, the result should be at this location.
-	 * 
-	 * @return the uri
-	 */
 	public URI getLocalUri();
 
-	/**
-	 * Sets the uri for the result. If {@link #isResult()} is true, the result
-	 * should be at this location.
-	 * 
-	 * @param uri
-	 *            the new uri
-	 */
 	public void setLocalUri(URI uri);
 	
 	public void setFormat(OcrFormat format);

@@ -21,15 +21,6 @@ package de.uni_goettingen.sub.commons.ocr.api;
 
 import java.net.URI;
 
-/**
- * The Class AbstractOutput is a abstract super class for {@link OcrImage}
- * implementations. To support different unterlying {@link OcrEngine}
- * implementations parameters can set as a simple {@link Map}.
- * 
- * @author abergna
- * @author cmahnke
- * 
- */
 public abstract class AbstractOutput implements OcrOutput {
 
 	protected URI localUri;
