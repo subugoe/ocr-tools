@@ -44,60 +44,26 @@ public class AbbyyImage extends AbstractImage {
 	/** This represents the URI if the images is part of a failed process. */
 	private URI errorUri;
 
-	/**
-	 * Gets the remoteFilename is the local file name on the remote system.
-	 * 
-	 * @return the remoteFilename.
-	 */
 	public String getRemoteFileName() {
 		return remoteFileName;
 	}
 
-	/**
-	 * Sets the remoteFilename is the local file name on the remote system.
-	 * 
-	 * @param remoteFileName
-	 */
 	public void setRemoteFileName(String remoteFileName) {
 		this.remoteFileName = remoteFileName;
 	}
 
-	/**
-	 * Gets the remoteUri. The URI of the file, need to be resolvable from the
-	 * local machine.
-	 * 
-	 * @return the remoteUri
-	 */
 	public URI getRemoteUri() {
 		return this.remoteUri;
 	}
 
-	/**
-	 * Sets the remoteUri. The URI of the file, need to be resolvable from the
-	 * local machine.
-	 * 
-	 * @param remoteUri
-	 */
 	public void setRemoteUri(URI remoteUri) {
 		this.remoteUri = remoteUri;
 	}
 
-	/**
-	 * Gets the errorUri, This represents the URI if the images is part of a
-	 * failed process.
-	 * 
-	 * @return the errorUri
-	 */
 	public URI getErrorUri() {
 		return errorUri;
 	}
 
-	/**
-	 * Sets the errorUri, This represents the URI if the images is part of a
-	 * failed process.
-	 * 
-	 * @param errorUri
-	 */
 	public void setErrorUri(URI errorUri) {
 		this.errorUri = errorUri;
 	}

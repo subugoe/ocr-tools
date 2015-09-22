@@ -61,7 +61,6 @@ public class LockFileHandler {
 	/**
 	 * Creates a lock file containing the IP address and an ID of the current JVM process.
 	 * 
-	 * @throws IOException
 	 */
 	protected void writeLockFile() throws IOException {
 		String thisIp = InetAddress.getLocalHost().getHostAddress();

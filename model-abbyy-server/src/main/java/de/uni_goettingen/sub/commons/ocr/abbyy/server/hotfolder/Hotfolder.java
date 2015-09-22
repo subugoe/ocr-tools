@@ -36,62 +36,19 @@ public interface Hotfolder {
 	
 	public void download(URI fromRemote, URI toLocal) throws IOException;
 	
-	/**
-	 * Deletes a resource.
-	 * 
-	 */
 	public abstract void delete(URI uri) throws IOException;
 
-	/**
-	 * Deletes a resource at the specified URI if it exists.
-	 * 
-	 */
 	public abstract void deleteIfExists(URI uri) throws IOException;
 
-	/**
-	 * Checks if a resource at the specified URI exists
-	 * 
-	 */
 	public abstract boolean exists(URI uri) throws IOException;
 
-	/**
-	 * Creates a temporary file and returns the {@link java.io.OutputStream}
-	 * to write to this file.
-	 * 
-	 * @param name
-	 *            The name of the temp file. Note that this might be just used
-	 *            by implementations of this interface, the file isn't guaranteed
-	 *            to be named like specified here.
-	 * @return the output stream to write to
-	 */
 	public abstract OutputStream createTmpFile(String name) throws IOException;
 
-	/**
-	 * Deletes the previously created temporary file.
-	 * 
-	 * @param name
-	 *            The name of the temp file. Note that this might be just used
-	 *            by implementations of this interface, the file isn't guaranteed
-	 *            to be named like specified here.
-	 */
 	public abstract void deleteTmpFile(String name) throws IOException;
 
-	/**
-	 * Copies a temporary file with the given name. Make sure it was created using
-	 * {@link #createTmpFile(String)} before.
-	 * 
-	 * @param to
-	 *            the URI to copy the file to
-	 */
 	public abstract void copyTmpFile(String tmpFile, URI to)
 			throws IOException;
 
-	/**
-	 * Gets the total size for a URI returns just the size of this URI if it
-	 * represents a single file. This method also looks for the size of children
-	 * if they exists.
-	 * 
-	 */
 	public abstract long getUsedSpace(URI uri) throws IOException;
 
 	public abstract byte[] getResponse(URI uri) throws IOException;

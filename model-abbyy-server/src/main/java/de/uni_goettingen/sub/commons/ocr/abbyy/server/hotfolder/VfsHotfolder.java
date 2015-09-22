@@ -44,29 +44,18 @@ import org.slf4j.LoggerFactory;
 public final class VfsHotfolder extends ServerHotfolder implements Hotfolder, Serializable {
 	private static final long serialVersionUID = 2628453844788155875L;
 
-	// The Constant logger.
 	final static Logger logger = LoggerFactory.getLogger(VfsHotfolder.class);
 
 
 	private final String ticketTmpStore = "tmp://";
 	
-	// The fsmanager.
 	transient protected FileSystemManager fsManager = null;
 
-	// State variables
-	// The total file count.
 	protected static Long totalFileCount = 0l;
 
-	// The total file size.
 	protected static Long totalFileSize = 0l;
 	
 
-	/**
-	 * Instantiates a new apacheVFSHotfolderImpl.
-	 * 
-	 * @throws FileSystemException
-	 *             the file system exception
-	 */
 	public VfsHotfolder() {
 		try {
 			//VFS.setUriStyle(true);
