@@ -54,8 +54,8 @@ public class AbbyyTicketTest {
 		assertXpathEvaluatesTo("2", "count(//InputFile)", xml);
 		assertXpathEvaluatesTo("Thorough", "//RecognitionParams/@RecognitionQuality", xml);
 		assertXpathEvaluatesTo("Normal", "//TextType", xml);
-		assertXpathEvaluatesTo("English", "//Language[1]", xml);
-		assertXpathEvaluatesTo("German", "//Language[2]", xml);
+		assertXpathExists("//Language[text()='English']", xml);
+		assertXpathExists("//Language[text()='German']", xml);
 		assertXpathEvaluatesTo("MergeIntoSingleFile", "//ExportParams/@DocumentSeparationMethod", xml);
 		assertXpathEvaluatesTo("XML", "//ExportFormat/@OutputFileFormat", xml);
 		assertXpathEvaluatesTo("result.xml", "//NamingRule", xml);
