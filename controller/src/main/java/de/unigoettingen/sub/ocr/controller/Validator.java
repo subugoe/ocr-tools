@@ -17,7 +17,7 @@ public class Validator {
 		fileAccess = beanProvider.getFileAccess();
 		String validationMessage = "";
 		if (!isReadable(params.inputFolder)) {
-			validationMessage += inputFolderError();
+			validationMessage += inputFolderError() + params.inputFolder;
 		}
 		if (isEmpty(params.inputTextType)) {
 			validationMessage += noInputTextType();
@@ -26,7 +26,7 @@ public class Validator {
 			validationMessage += noInputLanguages();
 		}
 		if (!isWritable(params.outputFolder)) {
-			validationMessage += outputFolderError();
+			validationMessage += outputFolderError() + params.outputFolder;
 		}
 		if (isEmpty(params.outputFormats)) {
 			validationMessage += noOutputFormats();
