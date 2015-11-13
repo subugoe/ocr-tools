@@ -29,7 +29,7 @@ public class ToAbbyyMapper {
 		LANGUAGE_MAP.put(new Locale("ab"), "Abkhazian");	LANGUAGE_MAP.put(new Locale("az"), "Azerbaijani");
 		LANGUAGE_MAP.put(new Locale("af"), "Afrikaans"); 	LANGUAGE_MAP.put(new Locale("am"), "Amharic");
 		LANGUAGE_MAP.put(new Locale("ay"), "Aymara"); 	
-		/*LANGUAGE_MAP.put(new Locale("ar"), "Arabic"); 		LANGUAGE_MAP.put(new Locale("as"), "Assamese");
+		LANGUAGE_MAP.put(new Locale("ar"), "Arabic"); /*		LANGUAGE_MAP.put(new Locale("as"), "Assamese");
 		LANGUAGE_MAP.put(new Locale("aa"), "Afar"); */
 		
 		
@@ -51,7 +51,7 @@ public class ToAbbyyMapper {
 		
 		LANGUAGE_MAP.put(new Locale("fi"), "Finnish");      LANGUAGE_MAP.put(new Locale("fo"), "Faroese");
 		LANGUAGE_MAP.put(new Locale("fr"), "French"); 		LANGUAGE_MAP.put(new Locale("fy"), "Frisian");
-		/*LANGUAGE_MAP.put(new Locale("fa"), "Persian");  LANGUAGE_MAP.put(new Locale("fj"), "Fiji"); */
+		LANGUAGE_MAP.put(new Locale("fa"), "Persian"); /*  LANGUAGE_MAP.put(new Locale("fj"), "Fiji"); */
 		
 		LANGUAGE_MAP.put(new Locale("ga"), "Irish");		LANGUAGE_MAP.put(new Locale("gd"), "Scots Gaelic");
 		LANGUAGE_MAP.put(new Locale("gl"), "Galician"); 	LANGUAGE_MAP.put(new Locale("gn"), "Guarani");
