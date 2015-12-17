@@ -109,7 +109,7 @@ public class ToAbbyyMapper {
 		LANGUAGE_MAP.put(new Locale("sn"), "Shona"); 		LANGUAGE_MAP.put(new Locale("so"), "Somali");
 		LANGUAGE_MAP.put(new Locale("sq"), "Albanian"); 	LANGUAGE_MAP.put(new Locale("sr"), "Serbian");
 		LANGUAGE_MAP.put(new Locale("sw"), "Swahili");
-		/*LANGUAGE_MAP.put(new Locale("sa"), "Sanskrit");		LANGUAGE_MAP.put(new Locale("sd"), "Sindhi");
+		LANGUAGE_MAP.put(new Locale("sa"), "Sanskrit");		/*LANGUAGE_MAP.put(new Locale("sd"), "Sindhi");
 		LANGUAGE_MAP.put(new Locale("sg"), "Sangho"); 		LANGUAGE_MAP.put(new Locale("sh"), "Serbo-Croatian");
 		LANGUAGE_MAP.put(new Locale("si"), "Sinhalese");	LANGUAGE_MAP.put(new Locale("su"), "Sundanese");
 		LANGUAGE_MAP.put(new Locale("ss"), "Siswati");		LANGUAGE_MAP.put(new Locale("st"), "Sesotho");*/
