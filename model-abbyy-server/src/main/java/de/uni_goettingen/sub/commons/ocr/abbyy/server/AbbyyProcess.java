@@ -58,6 +58,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	transient private HotfolderManager hotfolderManager;
 	private String windowsPathForServer;
 	private transient Pause pause = new Pause();
+	private transient RunningStatus runningStatus = new RunningStatus();
 
 	// for unit tests
 	HotfolderManager createHotfolderManager() {
@@ -68,6 +69,9 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 	}
 	void setPause(Pause newPause) {
 		pause = newPause;
+	}
+	void setRunningStatus(RunningStatus newStatus) {
+		runningStatus = newStatus;
 	}
 		
 	public void initialize(Properties initProps) {
@@ -99,6 +103,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 
 	@Override
 	public void run() {
+		boolean recoverLastRun = false;
 		long startTime = System.currentTimeMillis();
 
 		long maxMillis = Long.parseLong(props.getProperty("maxMillisPerFile"));
@@ -107,20 +112,34 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		String resultXmlFileName = name + ".xml.result.xml";
 		URI errorResultXmlUri = null;
 		
-		try {			
+		try {
 			errorResultXmlUri = new URI(errorDavUri.toString() + resultXmlFileName);
-			logger.info("Cleaning Server (" + getName() + ")");
-			hotfolderManager.deleteSingleFile(errorResultXmlUri);
-			hotfolderManager.deleteOutputs(ocrOutputs);
-			hotfolderManager.deleteImages(ocrImages);
 			
-			logger.info("Creating and sending Abbyy ticket (" + getName() + ")");
-			hotfolderManager.createAndSendTicket(abbyyTicket, name);
+			if (statusIsRunning()) {
+				recoverLastRun = true;
+			}
+			
+			setStatusToRunning();
+			
+			if (recoverLastRun) {
+				logger.info("The process did not finish correctly in the last session. Trying to recover. " + getName());
+			} else {
+				logger.info("Cleaning Server (" + getName() + ")");
+				hotfolderManager.deleteSingleFile(errorResultXmlUri);
+				hotfolderManager.deleteOutputs(ocrOutputs);
+				hotfolderManager.deleteImages(ocrImages);
+				
+				logger.info("Creating and sending Abbyy ticket (" + getName() + ")");
+				hotfolderManager.createAndSendTicket(abbyyTicket, name);
 
-			logger.info("Copying images to server. (" + getName() + ")");
-			hotfolderManager.copyImagesToHotfolder(ocrImages);
-
+				logger.info("Copying images to server. (" + getName() + ")");
+				hotfolderManager.copyImagesToHotfolder(ocrImages);	
+			}
+			
 			long minWait = ocrImages.size() * Long.parseLong(props.getProperty("minMillisPerFile"));
+			if (recoverLastRun) {
+				minWait = 0L;
+			}
 			long maxWait = ocrImages.size() * Long.parseLong(props.getProperty("maxMillisPerFile"));
 			logger.info("Waiting " + minWait + " milli seconds for results (" + minWait/1000/60 + " minutes) (" + getName() + ")");
 			
@@ -134,6 +153,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			hotfolderManager.waitForResults(restTime, waitInterval, ocrOutputs, errorResultXmlUri);
 			
 			hotfolderManager.retrieveResults(ocrOutputs);
+			removeRunningStatus();
 			
 			long endTime = System.currentTimeMillis();
 			logger.info("OCR Output file has been created successfully after " + (endTime - startTime) + " milliseconds (" + getName() + ")");
@@ -171,6 +191,16 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 
 	}
 
+	private boolean statusIsRunning() {
+		return runningStatus.isOn(this.getName());
+	}
+	private void setStatusToRunning() {
+		runningStatus.switchOn(this.getName());
+	}
+	private void removeRunningStatus() {
+		runningStatus.switchOff(this.getName());
+	}
+	
 	@Override
 	public void addImage(URI localUri) {
 		AbbyyImage image = new AbbyyImage();

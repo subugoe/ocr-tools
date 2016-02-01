@@ -24,6 +24,7 @@ public class AbbyyProcessTest {
 	private HotfolderManager hotManagerMock = mock(HotfolderManager.class);
 	private Pause pauseMock = mock(Pause.class);
 	private ProcessMergingObserver mergerMock = mock(ProcessMergingObserver.class);
+	private RunningStatus statusMock = mock(RunningStatus.class);
 	
 	
 	@Before
@@ -34,6 +35,7 @@ public class AbbyyProcessTest {
 		doReturn(hotManagerMock).when(processSut).createHotfolderManager();
 		processSut.setPause(pauseMock);
 		processSut.setMerger(mergerMock);
+		processSut.setRunningStatus(statusMock);
 	}
 
 	@Test
