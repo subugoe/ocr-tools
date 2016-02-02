@@ -177,6 +177,58 @@ public class AbbyyProcessTest {
 		assertEquals(new URI("file:/tmp/result.xml"), xmlUri);
 	}
 	
+	@Test
+	public void shouldTryToRecoverLastSession() throws IOException {
+		when(statusMock.isOn(anyString())).thenReturn(true);
+		
+		Properties props = validProps();
+		props.setProperty("session.recover", "true");
+		processSut.initialize(props);
+		
+		processSut.run();
+
+		verify(hotManagerMock, never()).copyImagesToHotfolder(anyListOf(OcrImage.class));
+		verify(statusMock, never()).switchOn(anyString());
+	}
+	
+	@Test
+	public void shouldTryToRecoverByDefault() throws IOException {
+		when(statusMock.isOn(anyString())).thenReturn(true);
+		
+		processSut.initialize(validProps());
+		
+		processSut.run();
+
+		verify(hotManagerMock, never()).copyImagesToHotfolder(anyListOf(OcrImage.class));
+		verify(statusMock, never()).switchOn(anyString());
+	}
+	
+	@Test
+	public void shouldNotTryToRecover() throws IOException {
+		when(statusMock.isOn(anyString())).thenReturn(true);
+		
+		Properties props = validProps();
+		props.setProperty("session.recover", "false");
+		processSut.initialize(props);
+		
+		processSut.run();
+
+		verify(hotManagerMock).copyImagesToHotfolder(anyListOf(OcrImage.class));
+		verify(statusMock).switchOn(anyString());
+	}
+	
+	@Test
+	public void shouldNotTryToRecoverWhenWasNotRunning() throws IOException {
+		when(statusMock.isOn(anyString())).thenReturn(false);
+		
+		processSut.initialize(validProps());
+		
+		processSut.run();
+
+		verify(hotManagerMock).copyImagesToHotfolder(anyListOf(OcrImage.class));
+		verify(statusMock).switchOn(anyString());
+	}
+	
 	private Properties validProps() {
 		Properties props = new Properties();
 		// file properties

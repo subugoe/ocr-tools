@@ -103,7 +103,6 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 
 	@Override
 	public void run() {
-		boolean recoverLastRun = false;
 		long startTime = System.currentTimeMillis();
 
 		long maxMillis = Long.parseLong(props.getProperty("maxMillisPerFile"));
@@ -115,12 +114,12 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 		try {
 			errorResultXmlUri = new URI(errorDavUri.toString() + resultXmlFileName);
 			
-			if (statusIsRunning()) {
+			boolean recoverLastRun = false;
+			boolean skipRecovery = "false".equals(props.getProperty("session.recover"));
+			if (!skipRecovery && statusIsRunning()) {
 				recoverLastRun = true;
 			}
-			
-			setStatusToRunning();
-			
+						
 			if (recoverLastRun) {
 				logger.info("The process did not finish correctly in the last session. Trying to recover. " + getName());
 			} else {
@@ -133,7 +132,9 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 				hotfolderManager.createAndSendTicket(abbyyTicket, name);
 
 				logger.info("Copying images to server. (" + getName() + ")");
-				hotfolderManager.copyImagesToHotfolder(ocrImages);	
+				hotfolderManager.copyImagesToHotfolder(ocrImages);
+				
+				setStatusToRunning();
 			}
 			
 			long minWait = ocrImages.size() * Long.parseLong(props.getProperty("minMillisPerFile"));
