@@ -140,4 +140,11 @@ public class FileAccess {
 		}
 	}
 
+	public void createEmptyFile(File file) throws IOException {
+		boolean success = file.createNewFile();
+		if (!success) {
+			throw new IOException("Could not create file " + file + ". Does it already exist?");
+		}
+	}
+
 }
