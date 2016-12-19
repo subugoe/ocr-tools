@@ -154,7 +154,6 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			hotfolderManager.waitForResults(restTime, waitInterval, ocrOutputs, errorResultXmlUri);
 			
 			hotfolderManager.retrieveResults(ocrOutputs);
-			removeRunningStatus();
 			
 			long endTime = System.currentTimeMillis();
 			logger.info("OCR Output file has been created successfully after " + (endTime - startTime) + " milliseconds (" + getName() + ")");
@@ -174,6 +173,7 @@ public class AbbyyProcess extends AbstractProcess implements OcrProcess,Serializ
 			failed = true;
 		} finally {
 			try {
+				removeRunningStatus();
 				hotfolderManager.deleteImages(ocrImages);
 				hotfolderManager.deleteOutputs(ocrOutputs);
 				//hotfolder.deleteIfExists(errorResultUri);
